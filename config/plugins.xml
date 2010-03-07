@@ -1,0 +1,10 @@
+<plugins>
+	<plugin name="linkTo" helper="link" method="to" />
+	<plugin name="linkToCSS" helper="asset" method="linkToCSS" />
+	<plugin name="linkToImage" helper="asset" method="linkToImage" />
+	<plugin name="linkToJS" helper="asset" method="linkToJS" />
+	<plugin name="linkToUpload" helper="asset" method="linkToUpload" />
+	<plugin name="renderCSS" helper="asset" method="renderCSS" />
+	<plugin name="renderImage" helper="asset" method="renderImage" />
+	<plugin name="renderJS" helper="asset" method="renderJS" />
+</plugins>

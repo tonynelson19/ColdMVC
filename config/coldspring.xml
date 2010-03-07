@@ -1,0 +1,145 @@
+<beans default-autowire="byName">
+	
+	<bean id="applicationContext" class="coldmvc.utils.ApplicationContext">
+		<property name="observers">
+			<map>
+				<entry key="factoryLoaded">
+					<list>
+						<value>metaDataObserver.findObservers</value>
+					</list>
+				</entry>
+				<entry key="applicationStart">
+					<list>
+						<value>scopeManager.addScopes</value>
+						<value>helperManager.addHelpers</value>
+						<value>tagManager.generateTags</value>
+						<value>renderer.generateTemplates</value>
+						<value>modelInjector.injectModels</value>
+					</list>
+				</entry>
+				<entry key="requestStart">
+					<list>
+						<value>scopeManager.addScopes</value>
+						<value>helperManager.addHelpers</value>
+						<value>tagManager.generateTags</value>
+						<value>renderer.generateTemplates</value>
+						<value>paramManager.populateParams</value>
+						<value>flashManager.startRequest</value>
+						<value>filterManager.enableFilters</value>
+						<value>routeHandler.handleRoute</value>
+					</list>
+				</entry>
+				<entry key="requestEnd">
+					<list>
+						<value>flashManager.endRequest</value>
+					</list>
+				</entry>
+			</map>
+		</property>
+	</bean>
+	
+	<bean id="beanInjector" class="coldmvc.utils.BeanInjector" />
+	
+	<bean id="beanFinder" class="coldmvc.utils.BeanFinder">
+		<property name="directories">
+			<list>
+				<value>/app/controllers/</value>
+				<value>/app/services/</value>
+			</list>
+		</property>
+		<property name="patterns">
+			<list>
+				<value>[\w]+Controller</value>
+				<value>[\w]+Service</value>
+			</list>
+		</property>
+	</bean>
+	
+	<bean id="collectionParser" class="coldmvc.utils.CollectionParser" />
+	
+	<bean id="config" class="coldmvc.utils.Config" />
+	
+	<bean id="dao" class="coldmvc.DAO" />
+	
+	<bean id="factoryPostProcessor" class="coldmvc.utils.FactoryPostProcessor" factory-post-processor="true">
+		<property name="postProcessors">
+			<list>
+				<ref bean="beanFinder" />
+				<ref bean="scopeManager" />
+				<ref bean="helperManager" />
+			</list>
+		</property>
+	</bean>
+	
+	<bean id="flashManager" class="coldmvc.utils.FlashManager" />
+	
+	<bean id="filterManager" class="coldmvc.utils.FilterManager">
+		<property name="filters">
+			<list>
+				<value>softDeletes</value>
+			</list>
+		</property>
+	</bean>
+	
+	<bean id="helperManager" class="coldmvc.utils.HelperManager">
+		<property name="directories">
+			<list>
+				<value>/app/helpers/</value>
+				<value>/coldmvc/helpers/</value>
+			</list>
+		</property>
+	</bean>
+	
+	<bean id="layoutController" class="coldmvc.LayoutController" />
+	
+	<bean id="metaDataFlattener" class="coldmvc.utils.MetaDataFlattener">
+		<property name="methodAnnotations">
+			<value>events</value>
+		</property>
+	</bean>
+	
+	<bean id="metaDataObserver" class="coldmvc.utils.MetaDataObserver" />
+	
+	<bean id="modelInjector" class="coldmvc.utils.ModelInjector">
+		<property name="suffixes">
+			<list>
+				<value>Controller</value>
+				<value>Service</value>
+			</list>
+		</property>
+	</bean>
+	
+	<bean id="paramManager" class="coldmvc.utils.ParamManager" />
+	
+	<bean id="pluginManager" class="coldmvc.utils.PluginManager">
+		<property name="configPaths">
+			<list>
+				<value>/config/plugins.xml</value>
+				<value>/coldmvc/config/plugins.xml</value>
+			</list>
+		</property>
+	</bean>
+	
+	<bean id="renderer" class="coldmvc.utils.Renderer" />
+	
+	<bean id="routeHandler" class="coldmvc.utils.RouteHandler" />
+	
+	<bean id="scopeManager" class="coldmvc.utils.ScopeManager">
+		<property name="key">
+			<value>${key}</value>
+		</property>	
+	</bean>
+	
+	<bean id="tagManager" class="coldmvc.utils.TagManager">
+		<property name="tags">
+			<list>
+				<value>/app/tags/</value>
+				<value>/coldmvc/tags/</value>
+			</list>
+		</property>
+		<property name="tagPrefix">
+			<value>${tagPrefix}</value>
+		</property>
+	</bean>
+	
+</beans>

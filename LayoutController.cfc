@@ -1,0 +1,6 @@
+/**
+ * @extends coldmvc.Component
+ */
+component {
+
+}

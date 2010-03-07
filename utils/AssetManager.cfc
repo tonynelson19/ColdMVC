@@ -1,0 +1,6 @@
+/**
+ * @accessors true
+ */
+component {
+
+}

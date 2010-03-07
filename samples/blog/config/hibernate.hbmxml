@@ -1,0 +1,68 @@
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+                                   "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd">
+<hibernate-mapping>
+	<class entity-name="Category" lazy="true" name="cfc:blog.app.model.Category" table="Category">
+        <id name="id" type="int">
+            <column length="10" name="ID" />
+            <generator class="identity" />
+        </id>
+        <property name="link" type="string">
+            <column name="Link" />
+        </property>
+        <property name="name" type="string">
+            <column name="Name" />
+        </property>
+        <bag cascade="all" lazy="true" name="posts" table="Post_Category">
+            <key column="Category_ID" />
+            <many-to-many class="cfc:blog.app.model.Post" column="Post_ID" />
+        </bag>
+    </class>
+    <class entity-name="Comment" lazy="true" name="cfc:blog.app.model.Comment" table="Comment">
+         <id name="id" type="int">
+            <column length="10" name="ID" />
+            <generator class="identity" />
+        </id>
+        <property name="author" type="string">
+            <column name="Author" />
+        </property>
+         <property name="body" type="string">
+            <column name="Body" sql-type="varchar(max)" />
+        </property>
+        <property name="date" type="timestamp">
+            <column name="`Date`" sql-type="datetime" />
+        </property>
+        <property name="email" type="string">
+            <column name="Email" />
+        </property>
+        <property name="website" type="string">
+            <column name="Website" />
+        </property>
+        <many-to-one class="cfc:blog.app.model.Post" column="Post_ID" name="post" />
+    </class>
+	<class entity-name="Post" lazy="true" name="cfc:blog.app.model.Post" table="Post">
+		<id name="id" type="int">
+            <column length="10" name="ID" />
+            <generator class="identity" />
+        </id>
+         <property name="body" type="string">
+            <column name="Body" sql-type="varchar(max)" />
+        </property>
+        <property name="date" type="timestamp">
+            <column name="`Date`" sql-type="datetime" />
+        </property>
+        <property name="link" type="string">
+            <column length="500" name="Link" />
+        </property>
+        <property name="title" type="string">
+            <column name="Title" />
+        </property>
+        <bag cascade="all" lazy="true" name="categories" table="Post_Category">
+            <key column="Post_ID" />
+            <many-to-many class="cfc:blog.app.model.Category" column="Category_ID" />
+        </bag>
+        <bag cascade="all-delete-orphan" inverse="true" name="comments">
+            <key column="Post_ID" />
+            <one-to-many class="cfc:blog.app.model.Comment" />
+        </bag>
+    </class>
+</hibernate-mapping>

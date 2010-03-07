@@ -1,0 +1,176 @@
+body, 
+input,
+select,
+textarea {
+	font-family: Trebuchet, Trebuchet MS, Arial, sans-serif;
+	color: #333;
+	font-size: 1em;
+	line-height: 1.5em;
+}
+
+input[type=text],
+select,
+textarea {
+	padding: 3px;
+}
+
+input[type=text] {
+	width: 450px;
+}
+
+legend {
+	font-weight: bold;
+}
+
+textarea {
+	width: 450px;
+	height: 150px;
+}
+
+a {
+	color: #58a;
+	text-decoration: none;
+}
+
+a:hover {
+	text-decoration: underline;
+}
+
+div#navigation {
+	padding: 3px 15px;
+	text-align: right;
+	border-bottom: 1px solid #ccc;
+	background-color: #ededed;
+}
+
+div#navigation ul li {
+	display: inline;
+	padding-left: 6px;
+}
+
+div#header {
+	margin: 15px 50px;
+	padding:4px;
+	border: 1px solid #ccc;
+}
+
+div#header h1 {
+	border: 1px solid #ccc;
+	padding:15px;
+	text-align: center;
+	font-size: 1.9em;
+	text-transform: uppercase;
+	letter-spacing:0.15em;
+}
+
+div#header h1 a {
+	color: #777;	
+}
+
+div#wrapper {
+	padding:15px 50px;
+	min-width: 800px;
+	min-height: 400px;
+}
+
+div#content {
+	float: left;
+	width: 80%;
+}
+
+div#container {
+	padding-right: 15px;
+}
+
+div#sidebar {
+	float: left;
+	width: 20%;
+}
+
+div#footer {
+	border-top: 1px solid #ccc;
+	font-size: .9em;
+	color: #888;
+	padding: 20px;
+}
+
+div.clear {
+	clear: both;
+}
+
+div.wrapper {
+	margin-bottom: 3px;
+}
+
+div.label,
+div.field {
+	padding: 1px 0px;
+}
+
+div.post {
+	padding: 10px 0px;
+	border-bottom: 1px solid #dfdfdf;
+	margin-bottom: 10px;
+}
+
+div.post h2 {
+	font-weight: bold;
+	font-size: 1.1em;	
+}
+
+div.post h2 a {
+	color: #c60;
+}
+
+div.post div.info,
+div.post div.categories,
+div.post div.links {
+	color: #555;
+	font-size: .9em;
+}
+
+div.post div.body {
+	padding: 10px 0px;
+}
+
+div.post div.links ul li {
+	display: inline;
+	padding: 0px 6px 0px 9px;
+	border-left: 1px solid #dfdfdf;	
+}
+
+div.post div.links ul li.first {
+	border-left: 0;
+	padding-left: 0;
+}
+
+div.comments {
+	margin-bottom: 10px;
+	font-size: .9em;
+}
+
+div.comments h3 {
+	font-weight: bold;
+}
+
+div.comments ul li {
+	border: 1px solid #ddd;
+	margin-bottom: 10px;
+}
+
+div.comments ul li h5 {
+	background-color: #eee;
+	font-weight: bold;
+	padding: 0px 6px;
+}
+
+div.comments ul li div.info {
+	background-color: #eee;
+	border-bottom: 1px solid #ddd;
+	padding: 0px 6px;
+	color: #555;
+}
+
+div.comments ul li div.body {
+	padding: 15px;
+}

@@ -7,10 +7,7 @@ component {
 	property __Model;
 	
 	function set__Model(any model) {
-		__singular = arguments.model.singular;
-		__plural = arguments.model.plural;
-		variables["_" & arguments.model.singular] = arguments.model.object;
-		variables.__Model = arguments.model.object;
+		structAppend(variables, model);
 	}
 	
 	function create() {

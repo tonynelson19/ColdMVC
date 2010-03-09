@@ -210,6 +210,7 @@ component {
 			development = false,
 			key = "coldmvc",
 			layout = "index",
+			modelPrefix = "_",
 			reload = "init",
 			sesURLs = "false",
 			tagPrefix = "",

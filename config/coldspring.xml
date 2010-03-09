@@ -101,6 +101,9 @@
 	<bean id="metaDataObserver" class="coldmvc.utils.MetaDataObserver" />
 	
 	<bean id="modelInjector" class="coldmvc.utils.ModelInjector">
+		<property name="modelPrefix">
+			<value>${modelPrefix}</value>
+		</property>
 		<property name="suffixes">
 			<list>
 				<value>Controller</value>

@@ -3,6 +3,7 @@
  */
 component {
  
+ 	property modelPrefix;
 	property suffixes;
  
 	public void function init() {
@@ -46,11 +47,17 @@ component {
 					}
 					
 					if ($.model.exists(model)) {
-					
+						
+						var object = getModel(model);
+						
+						var singular = $.string.camelize(model);
+						var plural = $.string.camelize($.string.pluralize(model));
+						
 						var arg = {
-							object = getModel(model),
-							singular = $.string.camelize(model),
-							plural = $.string.camelize($.string.pluralize(model))
+							"#modelPrefix##singular#" = object,
+							"__Model" = object,
+							"__singular" = singular,
+							"__plural" = plural
 						};
 						
 						bean.set__Model(arg);
@@ -59,9 +66,9 @@ component {
 					
 					for (model in models) {
 
-						if (structKeyExists(bean, "set_#model#")) {
+						if (structKeyExists(bean, "set#modelPrefix##model#")) {
 						
-							evaluate("bean.set_#model#(getModel(model))");      
+							evaluate("bean.set#modelPrefix##model#(getModel(model))");      
 						
 						}				
 					

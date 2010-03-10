@@ -2,7 +2,7 @@ Description
 ColdMVC is a convention based MVC framework for ColdFusion 9 loosely based on concepts from Ruby on Rails and Grails.
 
 Licensing
-I don't know much about open source licensing. With that being said, ColdMVC is free to use or modify, but don't blame me if you break it or it crashes your serves.
+I don't know much about open source licensing. With that being said, ColdMVC is free to use or modify, but don't blame me if you break it or it crashes your server. This is pre-alpha software. Use at your own risk.
 
 Operating System
 I've written everything using Windows 7, although things should work fine on a Mac. If they don't, let me know.
@@ -22,6 +22,9 @@ Installation
 	6. Start building your applications
 
 For further guidance, check out the sample applications inside /coldmvc/samples/.
+
+Documentation
+I'll try to get more documentation available when I can, but admittedly it's not a very high priority for me right. If anyone would like to help out, I'd appreciate it.
 
 Bugs
 If you find a bug, you can either log it on GitHub (http://github.com/tonynelson19/ColdMVC/issues) or contact me directly via email or twitter.

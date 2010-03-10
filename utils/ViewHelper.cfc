@@ -1,4 +1,4 @@
-<cfcomponent accessors="true" extends="coldmvc.Helper">
+<cfcomponent extends="coldmvc.Helper">
 
 	<cfset this.bindTags = "checkbox,email,hidden,input,radio,select,textarea,upload" />
 
@@ -189,7 +189,7 @@
 	<cffunction name="getAllowBinding" access="private" output="false" returntype="boolean">
 		<cfargument name="args" required="true" type="struct" />
 		
-		<cfif listFindNoCase(variables.this.bindTags, args.tag)>
+		<cfif listFindNoCase(this.bindTags, args.tag)>
 			<cfreturn true />
 		</cfif>
 		

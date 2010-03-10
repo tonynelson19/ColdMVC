@@ -167,7 +167,7 @@ component {
 		
 			var name = $.model.name(model);
 			
-			var result = _get(model, id);
+			var result = get(name, id);
 			
 			if (isNull(result)) {
 				return false;

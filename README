@@ -11,7 +11,7 @@ ColdFusion Server
 ColdMVC was written specifically for Adobe ColdFusion 9. I don't believe it will work on any other platforms without full support for Hibernate ORM.
 
 Dependencies
-ColdMVC requires ColdSpring (http://www.coldspringframework.org/)
+ColdSpring (http://www.coldspringframework.org/)
 
 Installation
 	1. Download ColdMVC

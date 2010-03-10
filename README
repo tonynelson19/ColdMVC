@@ -24,14 +24,15 @@ Installation
 For further guidance, check out the sample applications inside /coldmvc/samples/.
 
 Documentation
-I'll try to get more documentation available when I can, but admittedly it's not a very high priority for me right. If anyone would like to help out, I'd appreciate it.
+I'll try to get more documentation available when I can, but admittedly it's not a very high priority for me right now. If anyone would like to help out, I'd appreciate it.
 
 Bugs
 If you find a bug, you can either log it on GitHub (http://github.com/tonynelson19/ColdMVC/issues) or contact me directly via email or twitter.
 
 Future Plans
-There are still quite a few more features I'd like to add (logging, validation, security), but haven't decided on the best approach yet. I'm also open to feature requests, so feel free to contact me.
+I'll try to update things when I can. There are still quite a few more features I'd like to add (logging, validation, security, etc...), but haven't decided on the best approach yet. I'm also open to feature requests, so feel free to contact me.
 
-Contact Information
+Contact 
 Email: tonynelson19@gmail.com
-Twitter: tonynelson19
+Twitter: http://twitter.com/tonynelson19
+Blog: http://bears-eat-beets.blogspot.com/

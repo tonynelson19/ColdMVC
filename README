@@ -1,0 +1,34 @@
+Description
+ColdMVC is a convention based MVC framework for ColdFusion 9 loosely based on concepts from Ruby on Rails and Grails.
+
+Licensing
+I don't know much about open source licensing. With that being said, ColdMVC is free to use or modify, but don't blame me if you break it or it crashes your serves.
+
+Operating System
+I've written everything using Windows 7, although things should work fine on a Mac. If they don't, let me know.
+
+ColdFusion Server
+ColdMVC was written specifically for Adobe ColdFusion 9. I don't believe it will work on any other platforms without full support for Hibernate ORM.
+
+Dependencies
+ColdMVC requires ColdSpring (http://www.coldspringframework.org/)
+
+Installation
+	1. Download ColdMVC
+	2. Download ColdSpring
+	3. Create server mappings in ColdFusion administrator for ColdMVC and ColdSpring or put them in your server's webroot
+	4. Create a new ColdFusion project
+	5. Create a new datasource in ColdFusion adminstrator with the same name as your project
+	6. Start building your applications
+
+For further guidance, check out the sample applications inside /coldmvc/samples/.
+
+Bugs
+If you find a bug, you can either log it on GitHub (http://github.com/tonynelson19/ColdMVC/issues) or contact me directly via email or twitter.
+
+Future Plans
+There are still quite a few more features I'd like to add (logging, validation, security), but haven't decided on the best approach yet. I'm also open to feature requests, so feel free to contact me.
+
+Contact Information
+Email: tonynelson19@gmail.com
+Twitter: tonynelson19

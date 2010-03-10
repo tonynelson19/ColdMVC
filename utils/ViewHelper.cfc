@@ -1,12 +1,14 @@
-<cfcomponent extends="coldmvc.Helper">
+<cfcomponent accessors="true" extends="coldmvc.Helper">
+
+	<cfset this.bindTags = "checkbox,email,hidden,input,radio,select,textarea,upload" />
 
 	<!------>
 
-	<cffunction name="configure" access="public" output="false" returntype="struct">
-		<cfargument name="args" required="true" />
+	<cffunction name="configure" access="private" output="false" returntype="void">
+		<cfargument name="args" required="true" type="struct" />
 
 		<cfif structKeyExists(args, "_processed")>
-			<cfreturn args />
+			<cfreturn />
 		</cfif>
 		
 		<cfset var i = "" />
@@ -61,8 +63,125 @@
 		
 		<cfset args.common = arrayToList(args.common, " ") />
 
-		<cfreturn args />
+	</cffunction>
+	
+	<!------>
+	
+	<cffunction name="configureOptions" access="private" output="false" returntype="void">
+		<cfargument name="args" required="true" type="struct" />
+		
+		<cfset var array = [] />
+		<cfset var option = "" />
+		<cfset var i = "" />
+		
+		<cfif not structKeyExists(args, "options")>
+			<cfset args.options = "" />
+		</cfif>
+	
+		<cfif not structKeyExists(args, "optionKey")>
+			<cfset args.optionKey = "id" />
+		</cfif>
+		
+		<cfif not structKeyExists(args, "optionValue")>
+			<cfset args.optionValue = "name" />
+		</cfif>
+		
+		<cfif not structKeyExists(args, "optionTitle")>
+			<cfset args.optionTitle = args.optionValue />
+		</cfif>
+		
+		<!--- if it's a list, convert it to an array --->
+		<cfif isSimpleValue(args.options)>
 
+			<cfloop list="#args.options#" index="i">
+
+				<cfset var option = {
+					id = trim(i),
+					name = trim(i),
+					title = trim(i)
+				} />
+
+				<cfset arrayAppend(array, option) />
+
+			</cfloop>
+
+		<cfelseif isArray(args.options)>
+
+			<cfset var length = arrayLen(args.options) />
+
+			<cfif length gt 0>
+
+				<cfif isObject(args.options[1])>
+
+					<cfloop array="#args.options#" index="option">
+						
+						<cfset var item = {
+							id = evaluate("option.#args.optionKey#()"),
+							name = evaluate("option.#args.optionValue#()"),
+							title = evaluate("option.#args.optionTitle#()")
+						} />
+						
+						<cfset arrayAppend(array, item) />
+
+					</cfloop>
+
+				<cfelse>
+
+					<cfif args.optionKey neq "id" or args.optionValue neq "name" or args.optionTitle neq "name" or args.optionValue neq args.optionTitle>
+
+						<cfloop array="#args.options#" index="option">
+							
+							<cfset var item = {
+								id = option[args.optionKey],
+								name = option[args.optionValue],
+								title = option[args.optionTitle]
+							} />
+							
+							<cfset arrayAppend(array, item) />
+
+						</cfloop>
+						
+					<cfelse>
+					
+						<cfset array = args.options />
+
+					</cfif>
+
+				</cfif>
+
+			</cfif>
+
+		<cfelseif isQuery(args.options)>
+
+			<cfloop query="args.options">
+			
+				<cfset var item = {
+					id = args.options[args.optionKey][currentRow],
+					name = args.options[args.optionValue][currentRow],
+					title = args.options[args.optionTitle][currentRow]
+				} />
+				
+				<cfset arrayAppend(array, item) />
+
+			</cfloop>			
+
+		</cfif>
+		
+		<cfset args.options = array />
+		
+		<!--- if we're dealing with options, make sure we're dealing with a simple value --->
+		<cfif not isSimpleValue(args.value)>
+
+			<cfset var value = [] />
+
+			<cfloop array="#args.options#" index="option">
+				<cfset arrayAppend(value, option.id) />
+			</cfloop>
+
+			<cfset args.value = arrayToList(value) />
+
+		</cfif>
+	
 	</cffunction>
 	
 	<!------>
@@ -70,7 +189,7 @@
 	<cffunction name="getAllowBinding" access="private" output="false" returntype="boolean">
 		<cfargument name="args" required="true" type="struct" />
 		
-		<cfif listFindNoCase("checkbox,email,hidden,input,radio,select,textarea,upload", args.tag)>
+		<cfif listFindNoCase(variables.this.bindTags, args.tag)>
 			<cfreturn true />
 		</cfif>
 		

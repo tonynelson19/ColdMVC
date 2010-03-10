@@ -22,7 +22,7 @@
 	</each>
 	<cfif users.size() eq 0>
 		<tr>
-			<td colspan="3">No users have been added yet</td>
+			<td colspan="100%">No users have been added yet</td>
 		</tr>
 	</cfif>
 </table>

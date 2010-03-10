@@ -9,4 +9,8 @@ component  {
 	property lastName;
 	property email;
 	
+	function getName() {
+		return firstName & " " & lastName;
+	}
+	
 }

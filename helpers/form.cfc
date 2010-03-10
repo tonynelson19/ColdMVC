@@ -36,6 +36,14 @@
 	
 	<!------>
 	
+	<cffunction name="checkbox" access="public" output="false" returntype="string">
+
+		<cfreturn radioOrCheckbox(arguments, "checkbox") />
+
+	</cffunction>
+	
+	<!------>
+	
 	<cffunction name="email" access="public" output="false" returntype="string">
 		
 		<cfset arguments.tag = "email" />
@@ -139,6 +147,93 @@
 		<cfoutput>
 		<cfsavecontent variable="arguments.field">
 			<input type="password" #arguments.common# value="#htmlEditFormat(arguments.value)#" />
+		</cfsavecontent>
+		</cfoutput>
+
+		<cfreturn this.field(argumentCollection=arguments) />
+		
+	</cffunction>
+	
+	<!------>
+	
+	<cffunction name="radio" access="public" output="false" returntype="string">
+
+		<cfreturn radioOrCheckbox(arguments, "radio") />
+
+	</cffunction>
+	
+	<!------>
+	
+	<cffunction name="radioOrCheckbox" access="private" output="false" returntype="string">
+		<cfargument name="args" required="true" type="struct" />
+		<cfargument name="type" required="true" type="string" />
+
+		<cfset var i = "" />
+		
+		<cfset args.tag = type />
+		
+		<cfset configure(args) />
+		<cfset configureOptions(args) />
+		
+		<cfset var length = arrayLen(args.options) />
+
+		<cfif length neq 0>
+			<cfset args.id = "#args.name#[1]" />
+		</cfif>
+		
+		<cfif not structKeyExists(args, "align")>
+			<cfif length gt 2>
+				<cfset args.align = "vertical" />
+			<cfelse>
+				<cfset args.align = "horizontal" />
+			</cfif>
+		</cfif>
+		
+		<cfoutput>
+		<cfsavecontent variable="args.field">			
+			<ul class="#type# #args.align#">
+				<cfloop from="1" to="#length#" index="i">
+					<li <cfif i eq 1>class="first"<cfelseif i eq local.length>class="last"</cfif>><input type="#type#" name="#args.name#" id="#args.name#[#i#]" value="#htmlEditFormat(args.options[i].id)#" title="#htmlEditFormat(args.options[i].title)#" <cfif listFindNoCase(args.value, args.options[i].id) or (args.value eq args.options[i].id)>checked="checked"</cfif>><label for="#args.name#[#i#]" title="#htmlEditFormat(args.options[i].title)#">#args.options[i].name#</label></li>
+				</cfloop>
+			</ul>
+		</cfsavecontent>
+		</cfoutput>
+
+		<cfreturn this.field(argumentCollection=args) />
+
+	</cffunction>
+	
+	<!------>
+	
+	<cffunction name="select" access="public" output="false" returntype="string">
+		<cfargument name="blank" required="false" default="true" type="boolean" />
+		<cfargument name="blankKey" required="false" default="" type="string" />
+		
+		<cfset var option = "" />
+		
+		<cfset arguments.tag = "select" />
+		
+		<cfset configure(arguments) />		
+		<cfset configureOptions(arguments) />
+		
+		<cfif not structKeyExists(arguments, "blankValue")>
+			<cfset arguments.blankValue = "- #arguments.label# -" />
+		</cfif>
+		
+		<cfif not structKeyExists(arguments, "blankTitle")>
+			<cfset arguments.blankTitle = arguments.label />
+		</cfif>
+		
+		<cfoutput>
+		<cfsavecontent variable="arguments.field">
+			<select #arguments.common#>
+				<cfif arguments.blank>
+					<option value="#htmlEditFormat(arguments.blankKey)#" title="#htmlEditFormat(arguments.blankTitle)#">#htmlEditFormat(arguments.blankValue)#</option>
+				</cfif>
+				<cfloop array="#arguments.options#" index="option">
+					<option value="#htmlEditFormat(option.id)#" title="#htmlEditFormat(option.title)#">#htmlEditFormat(option.name)#</option>
+				</cfloop>			
+			</select>
 		</cfsavecontent>
 		</cfoutput>
 

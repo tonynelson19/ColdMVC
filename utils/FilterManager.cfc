@@ -7,14 +7,17 @@ component {
 	
 	public void function enableFilters() {
 		
-		var i = "";
+		if ($.orm.enabled()) {
 		
-		var definedFilters = ormGetSessionFactory().getDefinedFilterNames();
-		
-		for (i=1; i <= arrayLen(filters); i++) {
-			if (definedFilters.contains(filters[i])) {
-				ormGetSession().enableFilter(filters[i]);
+			var definedFilters = ormGetSessionFactory().getDefinedFilterNames();		
+			var i = "";
+			
+			for (i=1; i <= arrayLen(filters); i++) {
+				if (definedFilters.contains(filters[i])) {
+					ormGetSession().enableFilter(filters[i]);
+				}
 			}
+		
 		}
 		
 	}

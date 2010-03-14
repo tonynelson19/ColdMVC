@@ -3,7 +3,7 @@ component {
 	setupApplication();
 	
 	public any function onApplicationStart() {
-		
+	
 		lock name="coldmvc.Application" type="exclusive" timeout="5" throwontimeout="true" {			
 			
 			structDelete(application, "coldmvc");			
@@ -163,7 +163,12 @@ component {
 		var settings = getSettings();
 		
 		if (structKeyExists(settings, "datasource")) {
-			this.datasource = settings.datasource;
+			if (settings.datasource != "") {
+				this.datasource = settings.datasource;
+			}
+			else {
+				this.ormEnabled = false;
+			}
 		}
 		else {
 			this.datasource = this.directory;

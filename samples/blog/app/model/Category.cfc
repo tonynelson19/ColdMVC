@@ -9,7 +9,7 @@ component  {
 	property link;
 	property url;
 	property posts;
-	
+
 	function preInsert() {
 		setLink(createLink());
 	}

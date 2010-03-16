@@ -1,16 +1,19 @@
 <!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
-	"http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd">
+								   "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd">
 <hibernate-mapping>
 	<class entity-name="Category" lazy="true" name="cfc:blog.app.model.Category" table="Category">
 		<id name="id" type="int">
-			<column length="10" name="ID" />
+			<column name="ID" />
 			<generator class="identity" />
 		</id>
+		<property name="name" type="string">
+			<column name="Name" />
+		</property>
 		<property name="link" type="string">
 			<column name="Link" />
 		</property>
-		<property name="name" type="string">
-			<column name="Name" />
+		<property name="url" type="string">
+			<column name="URL" />
 		</property>
 		<bag cascade="all" lazy="true" name="posts" table="Post_Category">
 			<key column="Category_ID" />
@@ -19,17 +22,17 @@
 	</class>
 	<class entity-name="Comment" lazy="true" name="cfc:blog.app.model.Comment" table="Comment">
 		<id name="id" type="int">
-			<column length="10" name="ID" />
+			<column name="ID" />
 			<generator class="identity" />
 		</id>
 		<property name="author" type="string">
 			<column name="Author" />
 		</property>
 		<property name="body" type="string">
-			<column name="Body" sql-type="varchar" length="4000" />
+			<column name="Body" length="4000" />
 		</property>
 		<property name="date" type="timestamp">
-			<column name="[Date]" sql-type="datetime" />
+			<column name="`Date`" />
 		</property>
 		<property name="email" type="string">
 			<column name="Email" />
@@ -41,26 +44,29 @@
 	</class>
 	<class entity-name="Post" lazy="true" name="cfc:blog.app.model.Post" table="Post">
 		<id name="id" type="int">
-			<column length="10" name="ID" />
+			<column name="ID" />
 			<generator class="identity" />
 		</id>
-		<property name="body" type="string">
-			<column name="Body" sql-type="varchar" length="4000" />
-		</property>
-		<property name="date" type="timestamp">
-			<column name="[Date]" sql-type="datetime" />
-		</property>
-		<property name="link" type="string">
-			<column length="500" name="Link" />
-		</property>
 		<property name="title" type="string">
 			<column name="Title" />
+		</property>
+		<property name="body" type="string">
+			<column name="Body" length="4000" />
+		</property>
+		<property name="date" type="timestamp">
+			<column name="`Date`" />
+		</property>
+		<property name="link" type="string">
+			<column name="Link" />
+		</property>
+		<property name="url" type="string">
+			<column name="URL" />
 		</property>
 		<bag cascade="all" lazy="true" name="categories" table="Post_Category">
 			<key column="Post_ID" />
 			<many-to-many class="cfc:blog.app.model.Category" column="Category_ID" />
 		</bag>
-		<bag cascade="all-delete-orphan" inverse="true" name="comments">
+		<bag name="comments">
 			<key column="Post_ID" />
 			<one-to-many class="cfc:blog.app.model.Comment" />
 		</bag>

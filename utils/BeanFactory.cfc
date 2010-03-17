@@ -1,20 +1,17 @@
 component extends="coldspring.beans.DefaultXmlBeanFactory" {
 	
-	public beanFactory function init(required string beans, struct config) {
+	public beanFactory function init(required string xml, struct config) {
 		
-		if (!isNull(config)) {
+		variables.nonSingletonCache = {};
+		variables.config = arguments.config;
+		
+		var setting = "";
 			
-			var setting = "";
-			
-			for (setting in config) {
-				beans = replaceNoCase(beans, "${#setting#}", config[setting], "all");
-			}
-			
+		for (setting in variables.config) {
+			xml = replaceNoCase(xml, "${#setting#}", variables.config[setting], "all");
 		}
 		
-		var xml = xmlParse(beans);
-		
-		loadBeansFromXmlObj(xml);
+		loadBeansFromXmlObj(xmlParse(xml));
 		
 		return this;
 		
@@ -23,6 +20,14 @@ component extends="coldspring.beans.DefaultXmlBeanFactory" {
 	private any function constructBean(required string beanName) {
 		
 		var bean = super.constructBean(beanName, true);
+		
+		processBean(bean, beanName);
+		
+		return bean;
+		
+	}
+	
+	private void function processBean(required any bean, required string beanName) {
 		
 		if (structKeyExists(bean, "setBeanFactory")) {			
 			bean.setBeanFactory(this);			
@@ -33,8 +38,6 @@ component extends="coldspring.beans.DefaultXmlBeanFactory" {
 		}
 		
 		processBeanPostProcessors(bean, beanName);
-		
-		return bean;
 		
 	}
 	
@@ -76,6 +79,74 @@ component extends="coldspring.beans.DefaultXmlBeanFactory" {
 		}
 		
 		return variables.beanPostProcessors;
+		
+	}
+	
+	public boolean function containsBean(required string beanName) {
+		
+		if (structKeyExists(variables.nonSingletonCache, arguments.beanName)) {
+			return true;
+		}
+		
+		return super.containsBean(arguments.beanName);
+		
+	}
+	
+	public any function getBean(required string beanName) {
+		
+		if (structKeyExists(variables.nonSingletonCache, arguments.beanName)) {
+			
+			// create a new instance of the bean
+			var bean = createObject("component", variables.nonSingletonCache[arguments.beanName]);
+		
+			// process it as if it were a singleton
+			processBean(bean, beanName);
+			
+			return bean;
+				
+		}
+		
+		else {
+			return super.getBean(arguments.beanName);
+		}
+		
+	}
+	
+	public void function addBean(required string id, required string class) {
+		
+		// if you're in development mode, don't create singletons
+		if (config.development) {		
+			variables.nonSingletonCache[arguments.id] = arguments.class;		
+		}
+		
+		else {		
+			createBeanDefinition(
+				beanID = arguments.id,
+				beanClass = arguments.class,
+				children = [],
+				isSingleton = true,
+				isInnerBean = false,
+				autowire = "byName"
+			);		
+		}
+		
+	}
+	
+	public struct function getBeanDefinitions() {
+		
+		var beanDefinitions = {};
+		var beanDefs = getBeanDefinitionList();
+		var beanDef = "";
+		
+		for (beanDef in beanDefs) {
+			beanDefinitions[beanDef] = beanDefs[beanDef].getBeanClass();
+		}
+		
+		for (beanDef in nonSingletonCache) {
+			beanDefinitions[beanDef] = nonSingletonCache[beanDef];
+		}
+		
+		return beanDefinitions;
 		
 	}
 

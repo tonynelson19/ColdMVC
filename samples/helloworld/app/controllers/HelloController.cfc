@@ -6,7 +6,7 @@
 component {
 
 	function world() {	
-		params.say_hello = "Hello World";		
+		params.say_hello = "Hello World";			
 	}
 
 }

@@ -45,8 +45,8 @@ component {
 		addBeans(beans, "/coldmvc/config/coldspring.xml");		
 		addBeans(beans, "/config/coldspring.xml");
 		
-		var config = toString(beans);		
-		config = replace(config, "<!---->", "", "all");
+		var xml = toString(beans);		
+		xml = replace(xml, "<!---->", "", "all");
 		
 		var settings = getSettings();
 		
@@ -58,7 +58,7 @@ component {
 			settings.directory = this.directory;
 		}
 		
-		var beanFactory = createObject("component","coldmvc.utils.BeanFactory").init(config, settings);	
+		var beanFactory = createObject("component", "coldmvc.utils.BeanFactory").init(xml, settings);	
 		return beanFactory;
 	
 	}

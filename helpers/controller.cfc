@@ -127,7 +127,7 @@ component {
 		
 		var controllers = {};
 		
-		var beanDefinitions = $.factory.get().getBeanDefinitionList();
+		var beanDefinitions = $.factory.definitions();
 		
 		var beanDef = "";
 		
@@ -139,7 +139,7 @@ component {
 				
 				var controller = {};
 				
-				controller.class = beanDefinitions[beanDef].getBeanClass();				
+				controller.class = beanDefinitions[beanDef];				
 				controller.name = beanDef;
 				
 				var metaData = $.factory.get("metaDataFlattener").flattenMetaData(controller.class);

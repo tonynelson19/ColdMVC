@@ -5,13 +5,11 @@ component {
  
 	property directories;
 	property patterns;
-	property autowire;
 	
 	public any function init() {
 	
 		directories = [];
 		patterns = [];
-		autowire = "byName";
 	
 	}
 	
@@ -75,17 +73,8 @@ component {
 		
 		}
 		
-		for (i in beans) {
-		
-			beanFactory.createBeanDefinition(
-				beanID = beans[i].id,
-				beanClass = beans[i].class,
-				children = [],
-				isSingleton = true,
-				isInnerBean = false,
-				autowire = autowire
-			);
-		
+		for (i in beans) {		
+			beanFactory.addBean(beans[i].id,  beans[i].class);		
 		} 
 	
 	}

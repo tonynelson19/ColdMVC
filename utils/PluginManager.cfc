@@ -30,15 +30,16 @@ component {
 				var config = xmlParse(fileRead(configPath));
 				
 				for (j=1; j <= arrayLen(config.plugins.xmlChildren); j++) {
-					
+
 					var xml = config.plugins.xmlChildren[j];
-					
-					var plugin = {};
-					plugin.name = $.xml.get(xml, "name");
-					plugin.bean = $.xml.get(xml, "bean");
-					plugin.helper = $.xml.get(xml, "helper");
-					plugin.method = $.xml.get(xml, "method");
-					
+
+					var plugin = {
+						name = $.xml.get(xml, "name"),
+						bean = $.xml.get(xml, "bean"),
+						helper = $.xml.get(xml, "helper"),
+						method = $.xml.get(xml, "method")
+					};
+
 					if (!structKeyExists(plugins, plugin.name)) {
 						plugins[plugin.name] = plugin;
 					}

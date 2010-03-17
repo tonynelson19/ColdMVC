@@ -8,13 +8,13 @@ component {
 		
 	public void function findObservers(string event) {
 		
-		var beanDefinitions = $.factory.get().getBeanDefinitionList();		
+		var beanDefinitions = $.factory.definitions();		
 		var beanName = "";
 		var method = "";
 		
 		for (beanName in beanDefinitions) {
 			
-			var classPath = beanDefinitions[beanName].getBeanClass();			
+			var classPath = beanDefinitions[beanName];			
 			var metaData = metaDataFlattener.flattenMetaData(classPath);
 			
 			for (method in metaData.functions) {

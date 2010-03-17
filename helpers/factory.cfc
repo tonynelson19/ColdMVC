@@ -14,12 +14,12 @@ component {
 		return factory;
 	}
 	
-	public boolean function has(string key) {
-		
-		var factory = getBeanFactory();
-		
-		return factory.containsBean(key);
-		
+	public boolean function has(string key) {		
+		return getBeanFactory().containsBean(key);		
+	}
+	
+	public struct function definitions() {
+		return getBeanFactory().getBeanDefinitions();
 	}
 	
 	public void function autowire(any entity) {		

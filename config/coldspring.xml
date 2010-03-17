@@ -55,6 +55,14 @@
 		</property>
 	</bean>
 	
+	<bean id="beanPostProcessor" class="coldmvc.utils.BeanPostProcessor" bean-post-processor="true">
+		<property name="postProcessors">
+			<list>
+				<ref bean="modelInjector" />
+			</list>
+		</property>
+	</bean>
+	
 	<bean id="collectionParser" class="coldmvc.utils.CollectionParser" />
 	
 	<bean id="config" class="coldmvc.utils.Config" />
@@ -101,6 +109,9 @@
 	<bean id="metaDataObserver" class="coldmvc.utils.MetaDataObserver" />
 	
 	<bean id="modelInjector" class="coldmvc.utils.ModelInjector">
+		<property name="development">
+			<value>${development}</value>
+		</property>
 		<property name="modelPrefix">
 			<value>${modelPrefix}</value>
 		</property>

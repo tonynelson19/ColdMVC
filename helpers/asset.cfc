@@ -1,4 +1,5 @@
 /**
+ * @accessors true;
  * @extends coldmvc.Helper
  */
 component {

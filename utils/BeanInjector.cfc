@@ -3,8 +3,9 @@
  */
 component {
 
-	public void function init() {
+	public any function init() {
 		cache = {};
+		return this;
 	}
 	
 	public any function autowire(required any object, string beanName="") {

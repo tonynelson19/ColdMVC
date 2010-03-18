@@ -26,6 +26,7 @@
 						<value>paramManager.populateParams</value>
 						<value>flashManager.startRequest</value>
 						<value>filterManager.enableFilters</value>
+						<value>metaDataObserver.findObservers</value>
 						<value>routeHandler.handleRoute</value>
 					</list>
 				</entry>
@@ -134,9 +135,20 @@
 		</property>
 	</bean>
 	
-	<bean id="renderer" class="coldmvc.utils.Renderer" />
+	<bean id="renderer" class="coldmvc.utils.Renderer">
+		<property name="development">
+			<value>${development}</value>
+		</property>
+	</bean>
 	
-	<bean id="routeHandler" class="coldmvc.utils.RouteHandler" />
+	<bean id="routeHandler" class="coldmvc.utils.RouteHandler">
+		<property name="defaultController">
+			<value>${controller}</value>
+		</property>
+		<property name="defaultLayout">
+			<value>${layout}</value>
+		</property>
+	</bean>
 	
 	<bean id="scopeManager" class="coldmvc.utils.ScopeManager">
 		<property name="key">
@@ -145,6 +157,9 @@
 	</bean>
 	
 	<bean id="tagManager" class="coldmvc.utils.TagManager">
+		<property name="development">
+			<value>${development}</value>
+		</property>
 		<property name="tags">
 			<list>
 				<value>/app/tags/</value>

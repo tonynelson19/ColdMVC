@@ -3,6 +3,7 @@
  */
 component {
 	
+	property development;
 	property tags;
 	property tagPrefix;
 	property templatePrefix;
@@ -60,12 +61,8 @@ component {
 		}
 		
 		// if you're in development mode, generate the tags each request
-		if (event == "requestStart") {
-
-			if ($.config.get("development")) {				
-				generate();			
-			}
-		
+		if (event == "requestStart" && development) {
+			generate();		
 		}
 	
 	}

@@ -3,20 +3,20 @@
  */
 component {
 	
-	property config;
+	property settings;
 	
 	public any function get(string key) {
 		
 		if (structKeyExists(arguments, "key")) {
-			return config[key];
+			return settings[key];
 		}
 		
-		return config;
+		return settings;
 
 	}
 	
 	public boolean function has(string key) {
-		return structKeyExists(config, "key");
+		return structKeyExists(settings, "key");
 	}
 	
 }

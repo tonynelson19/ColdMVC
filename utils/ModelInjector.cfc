@@ -7,18 +7,16 @@ component {
 	property suffixes;
 	property development;
  
-	public void function init() {
-  
-		cache = {};
-		
-		var appSettings = application.getApplicationSettings();
-		
+	public any function init() {
+		cache = {};		
+		var appSettings = application.getApplicationSettings();		
 		if (structKeyExists(appSettings, "ormEnabled") and appSettings.ormEnabled) {
 			models = ormGetSessionFactory().getAllClassMetaData();
 		}
 		else {
 			models = {};
 		}
+		return this;
   
 	}
 	
@@ -64,8 +62,7 @@ component {
 				
 				if ($.model.exists(model)) {
 					
-					var object = getModel(model);
-					
+					var object = getModel(model);					
 					var singular = $.string.camelize(model);
 					var plural = $.string.camelize($.string.pluralize(model));
 					
@@ -81,13 +78,9 @@ component {
 				}
 				
 				for (model in models) {
-
-					if (structKeyExists(bean, "set#modelPrefix##model#")) {
-					
-						evaluate("bean.set#modelPrefix##model#(getModel(model))");      
-					
-					}				
-				
+					if (structKeyExists(bean, "set#modelPrefix##model#")) {					
+						evaluate("bean.set#modelPrefix##model#(getModel(model))");
+					}
 				}
 			 
 			}
@@ -96,24 +89,18 @@ component {
 	
 	}
 	 
-	public void function postProcessAfterInitialization(required any bean, required string beanName) {
-	
+	public void function postProcessAfterInitialization(required any bean, required string beanName) {	
 		if (development) {			
 			inject(beanName, bean);		
-		}
-	
+		}	
 	} 
 	
 	private any function getModel(string model) {
 	
-		if (!structKeyExists(cache, model)) {        
-								
+		if (!structKeyExists(cache, model)) {								
 			var entity = entityNew(model);
-			
 			$.factory.autowire(entity);
-			
-			cache[model] = entity;  
-		
+			cache[model] = entity;		
 		}
 		
 		return cache[model];

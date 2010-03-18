@@ -1,3 +1,4 @@
+// Form Utilities CFC by Brian Kotek
 component {
 
 	public struct function parseCollection(required struct collection) {
@@ -14,20 +15,16 @@ component {
 		result = {};
 		result[collectionsList] = "";
 		
-		// Loop over the form scope.
 		for (key in collection) {
 			
 			key = trim(key);
 
-			// If the field has a dot or a bracket...
 			if (find(".", key) || find("[", key)) {
 
-				// Add collection to list if not present.
 				result[collectionsList] = addToList(result[collectionsList], key);
 
 				currentElement = result;
 
-				// Loop over the field using . as the delimiter.
 				delimeterCounter = 1;
 				
 				elementArray = listToArray(key, ".");

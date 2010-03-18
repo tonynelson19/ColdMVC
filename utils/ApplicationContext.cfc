@@ -42,18 +42,12 @@ component {
 		var key = "";
 		var i = "";
 		
-		for (key in events) {
-			
-			if (reFindNoCase(key, event)) {
-				
-				for (i=1; i <= arrayLen(events[key]); i++) {
-					
-					arrayAppend(result, events[key][i]);	
-				
-				}
-				
-			}
-			
+		for (key in events) {			
+			if (reFindNoCase(key, event)) {				
+				for (i=1; i <= arrayLen(events[key]); i++) {					
+					arrayAppend(result, events[key][i]);				
+				}				
+			}			
 		}
 		
 		return result;

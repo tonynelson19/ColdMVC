@@ -19,10 +19,8 @@ component extends="coldspring.beans.DefaultXmlBeanFactory" {
 	
 	private any function constructBean(required string beanName) {
 		
-		var bean = super.constructBean(beanName, true);
-		
-		processBean(bean, beanName);
-		
+		var bean = super.constructBean(beanName, true);		
+		processBean(bean, beanName);		
 		return bean;
 		
 	}
@@ -48,12 +46,9 @@ component extends="coldspring.beans.DefaultXmlBeanFactory" {
 			var postProcessors = getBeanPostProcessors();
 			var i = "";
 			
-			for (i=1; i <= arrayLen(postProcessors); i++) {
-				
-				var postProcessor = getBean(postProcessors[i]);
-				
-				postProcessor.postProcessAfterInitialization(bean, beanName);
-				
+			for (i=1; i <= arrayLen(postProcessors); i++) {				
+				var postProcessor = getBean(postProcessors[i]);				
+				postProcessor.postProcessAfterInitialization(bean, beanName);				
 			}
 			
 		}
@@ -64,16 +59,13 @@ component extends="coldspring.beans.DefaultXmlBeanFactory" {
 		
 		if (!structKeyExists(variables, "beanPostProcessors")) {
 			
-			variables.beanPostProcessors = [];
-		
+			variables.beanPostProcessors = [];		
 			var beanName = "";
 			
-			for (beanName in variables.beanDefs) {
-				
+			for (beanName in variables.beanDefs) {				
 				if (variables.beanDefs[beanName].isBeanPostProcessor()) {
 					arrayAppend(variables.beanPostProcessors, beanName);
-				}
-				
+				}				
 			}
 			
 		}
@@ -95,17 +87,10 @@ component extends="coldspring.beans.DefaultXmlBeanFactory" {
 	public any function getBean(required string beanName) {
 		
 		if (structKeyExists(variables.nonSingletonCache, arguments.beanName)) {
-			
-			// create a new instance of the bean
 			var bean = createObject("component", variables.nonSingletonCache[arguments.beanName]);
-		
-			// process it as if it were a singleton
-			processBean(bean, beanName);
-			
-			return bean;
-				
-		}
-		
+			processBean(bean, beanName);			
+			return bean;				
+		}		
 		else {
 			return super.getBean(arguments.beanName);
 		}
@@ -117,8 +102,7 @@ component extends="coldspring.beans.DefaultXmlBeanFactory" {
 		// if you're in development mode, don't create singletons
 		if (config.development) {		
 			variables.nonSingletonCache[arguments.id] = arguments.class;		
-		}
-		
+		}		
 		else {		
 			createBeanDefinition(
 				beanID = arguments.id,

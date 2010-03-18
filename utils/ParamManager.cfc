@@ -3,14 +3,11 @@
  */
 component {
 
-	property CollectionParser;
+	property collectionParser;
 
-	public void function populateParams(string event) {
-		
+	public void function populateParams(string event) {		
 		var collection = getCollection();
-
-		$.params.set(collection);
-		
+		$.params.set(collection);		
 	}
 	
 	private struct function getCollection() {
@@ -25,7 +22,7 @@ component {
 			structAppend(collection, url);
 		}
 		
-		return CollectionParser.parseCollection(collection);
+		return collectionParser.parseCollection(collection);
 
 	}
 

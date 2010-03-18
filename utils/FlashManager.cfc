@@ -23,35 +23,21 @@ component {
 		
 	}
 	
-	private void function setFlashScope(required struct data) {
-	
-		var container = getContainer();
-		
-		container["flash"] = data;
-	
+	private void function setFlashScope(required struct data) {	
+		var container = getContainer();		
+		container["flash"] = data;	
 	}
 	
-	public void function startRequest() {
-		
+	public void function startRequest() {		
 		$.flash.incrementCounter();
-		
-		var previousFlash = $.flash.getPreviousRequest();
-		
-		structAppend(params, previousFlash);
-		
-		var data = $.flash.getCurrentRequest();
-		
-		setFlashScope(data);
-	
+		structAppend(params, $.flash.getPreviousRequest());
+		setFlashScope($.flash.getCurrentRequest());	
 	}
 	
 	
 	public void function endRequest() {		
-		
-		$.flash.setCurrentRequest(flash);
-		
-		$.flash.clearOldRequests();
-	
+		$.flash.setCurrentRequest(flash);		
+		$.flash.clearOldRequests();	
 	}
 
 }

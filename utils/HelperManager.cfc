@@ -6,9 +6,10 @@ component {
 	property config;
 	property directories;
 	
-	public void function init() {
+	public any function init() {
 		directories = [];
-		directoroes[1] = "/coldmvc/helpers/";
+		directories[1] = "/coldmvc/helpers/";
+		return this;
 	}
 	
 	public void function postProcessBeanFactory(any beanFactory) {
@@ -17,8 +18,7 @@ component {
 	
 	public void function addHelpers() {
 		
-		var helpers = getHelpers();
-		
+		var helpers = getHelpers();		
 		var container = getPageContext().getFusionContext().hiddenScope;
 		
 		if (!structKeyExists(container, "$")) {
@@ -62,7 +62,7 @@ component {
 					
 					// can't use the beanInjector to autowire since the beanInjector uses helpers to get a reference to the bean factory
 					if (structKeyExists(helper.object, "setConfig")) {
-					 	helper.object.setConfig(config);
+						helper.object.setConfig(config);
 					}
 					
 					helpers[helper.name] = helper.object;
@@ -77,14 +77,10 @@ component {
 	
 	}
 	
-	private string function getClassPath(string directory, string name) {
-	
-		directory = replace(directory, "\", "/", "all");  
-    
-		directory = arrayToList(listToArray(directory, "/"), ".");
-		
-		return directory & "." & name;
-	
+	private string function getClassPath(string directory, string name) {	
+		directory = replace(directory, "\", "/", "all");    
+		directory = arrayToList(listToArray(directory, "/"), ".");		
+		return directory & "." & name;	
 	}
 
 }

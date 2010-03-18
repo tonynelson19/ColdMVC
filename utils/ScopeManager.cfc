@@ -7,9 +7,10 @@ component {
 	property scopes;
 	property beanInjector;
 	
-	public void function init() {
+	public any function init() {
 		cache = {};
 		scopes = "application,session,request";
+		return this;
 	}
 	
 	public void function postProcessBeanFactory(any beanFactory) {

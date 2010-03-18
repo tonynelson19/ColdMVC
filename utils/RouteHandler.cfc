@@ -6,10 +6,13 @@ component {
 	property renderer;
 	property applicationContext;
 	property config;
+	property defaultController;
+	property defaultLayout;
 	
-	public void function init() {
+	public any function init() {
 		routes = {};
-		addresses = {};	
+		addresses = {};
+		return this;
 	}
 	
 	public string function build(string controller, string action, any params, string format="") {
@@ -266,9 +269,6 @@ component {
 				// if it's the default action, don't append it to the url
 				if (action == defaultAction) {
 					
-					// grab the default controller from the settings
-					var defaultController = $.config.get("controller");
-					
 					// if it's not the default controller, append it to the address
 					if (!controller == defaultController && controller != "") {
 						address = address & "/" & controller;
@@ -385,7 +385,7 @@ component {
 		
 		// it couldn't determine the layout, so set it to the default layout
 		if (layout == "") {
-			layout = $.config.get("layout");
+			layout = defaultLayout;
 		}
 		
 		// set the layout back into the event
@@ -435,7 +435,7 @@ component {
 		
 		if (route.address eq "") {
 			
-			route.controller = $.config.get("controller");
+			route.controller = defaultController;
 			route.action = $.controller.action(route.controller);
 			route.view = route.view = convertToView(route.controller, route.action);
 			route.layout = $.controller.layout(route.controller, route.action);
@@ -466,7 +466,7 @@ component {
 		else {
 			
 			// an empty array, so use the default controller
-			route.controller = $.config.get("controller");
+			route.controller = defaultController;
 		}
 		
 		if (!$.controller.exists(route.controller)) {			

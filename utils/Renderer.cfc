@@ -5,6 +5,7 @@ component {
 	
 	property tagManager;
 	property pluginManager;
+	property development;
 	
 	public void function generateTemplates(string event) {		
 		
@@ -12,12 +13,8 @@ component {
 			generateFiles();		
 		}
 		
-		if (event == "requestStart") {
-
-			if ($.config.get("development")) {				
-				generateFiles();			
-			}
-		
+		if (event == "requestStart" && development) {
+			generateFiles();	
 		}
 	
 	}
@@ -36,7 +33,6 @@ component {
 	
 	private function generate(string directory) {
 		
-		var root = $.config.get("directory");
 		var i = "";
 		
 		if (directoryExists(expandPath("/app/#directory#/"))) {

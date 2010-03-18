@@ -12,7 +12,7 @@ component {
 			
 			var beanFactory = createBeanFactory();			
 			setBeanFactory(beanFactory);			
-			beanFactory.getBean("config").setConfig(getSettings());			
+			beanFactory.getBean("config").setSettings(getSettings());			
 			
 			publishEvent("factoryLoaded");			
 			publishEvent("applicationStart");					

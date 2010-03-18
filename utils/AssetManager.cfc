@@ -1,6 +1,0 @@
-/**
- * @accessors true
- */
-component {
-
-}

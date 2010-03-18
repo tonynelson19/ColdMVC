@@ -5,14 +5,10 @@ component {
 	
 	property configPaths;
 	
-	public void function setConfigPaths(array configPaths) {
-		
-		variables.configPaths = arguments.configPaths;
-		
-		variables.plugins = loadPlugins();
-		
-		$.plugins.set(variables.plugins);
-		
+	public void function setConfigPaths(array configPaths) {		
+		variables.configPaths = arguments.configPaths;		
+		variables.plugins = loadPlugins();		
+		$.plugins.set(variables.plugins);		
 	}
 	
 	public struct function loadPlugins() {
@@ -84,12 +80,9 @@ component {
 			if (plugin.helper != "") {
 				return evaluate("$.#plugin.helper#.#plugin.method#(argumentCollection=args)");
 			}
-			else if (plugin.bean != ""){
-				
-				var bean = $.factory.get(plugin.bean);
-				
-				return evaluate("bean.#plugin.method#(argumentCollection=args)");
-			
+			else if (plugin.bean != "") {				
+				var bean = $.factory.get(plugin.bean);				
+				return evaluate("bean.#plugin.method#(argumentCollection=args)");			
 			}
 			
 		}

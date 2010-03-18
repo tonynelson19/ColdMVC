@@ -6,11 +6,10 @@ component {
 	property directories;
 	property patterns;
 	
-	public any function init() {
-	
+	public any function init() {	
 		directories = [];
 		patterns = [];
-	
+		return this;	
 	}
 	
 	public void function postProcessBeanFactory(required any beanFactory) {
@@ -48,21 +47,17 @@ component {
 					}
 					
 					if (!structKeyExists(beans, bean.id)) {
-					
+
 						if (arrayIsEmpty(patterns)) {       
 							beans[bean.id] = bean;       
 					 	} 
-						else {
-					 
-					  		for (k=1; k <= arrayLen(patterns); k++) {
-					   
+						else {					 
+					  		for (k=1; k <= arrayLen(patterns); k++) {					   
 					   			if (reFindNoCase(patterns[k], bean.id)) {
 					   				beans[bean.id] = bean;
 					   				break;        
-					  			}
-					   
-					  		}
-					  
+					  			}					   
+					  		}					  
 						}
 					
 					}
@@ -86,6 +81,5 @@ component {
 		return arrayToList(listToArray(directory, "/"), ".");
 	
 	}
-
 
 }

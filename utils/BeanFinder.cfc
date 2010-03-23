@@ -32,8 +32,11 @@ component {
 			
 				for (j=1; j <= components.recordCount; j++) {
 				 
+				 	var beanName = listFirst(components.name[j], ".");
+					beanName = lcase(left(beanName, 1)) & replace(beanName, left(beanName, 1), "");
+
 					var bean = {};
-					bean.id = listFirst(components.name[j], ".");
+					bean.id = beanName;
 					
 					var folder = replaceNoCase(components.directory[j] & "\", directory, "");
 					

@@ -9,61 +9,44 @@ component {
 	property templatePrefix;
 	
 	public any function init() {		
-		templatePrefix = "";		
+		folder = "/generated/tags/";
+		directory = expandPath(folder);
+		templatePrefix = "";
+		loaded = false;	
 		return this;		
 	}
 	
-	private void function generate() {
-		
-		lock name="coldmvc.utils.TagManager" type="exclusive" timeout="5" throwontimeout="true" {
-			generateFiles();
-		}
-		
-	}
-	
 	private void function generateFiles() {
-		
-		var content = [];
-		var template = "";
-		
-		var folder = "/generated/tags/";
-		
-		var directory = expandPath(folder);
 		
 		if (directoryExists(directory)) {
 			directoryDelete(directory, true);
 		}
 		
 		directoryCreate(directory);
-		
-		for (template in config.templates) {		
-			
-			var content = '<cfinclude template="#config.templates[template]#" />';
-				
-			var path = folder & templatePrefix & template;	
-				
-			fileWrite(expandPath(path), content);
+
+		var template = "";		
+		for (template in config.templates) {
+			fileWrite(config.templates[template].file, '<cfinclude template="#config.templates[template].path#" />');
 			
 		}
 		
 		config.content = '<cfimport prefix="#tagPrefix#" taglib="#folder#" />' & chr(13) & chr(13);	
-		
+
 	}
 	
-	public void function generateTags(string event) {		
+	public void function generateTags() {		
 		
-		// load the config into memory and generate the tags
-		if (event == "applicationStart") {
-			
+		if (!loaded) {
 			loadConfig();
-			generate();
-		
+		}
+
+		if (!loaded || development) {
+			lock name="coldmvc.utils.TagManager" type="exclusive" timeout="5" throwontimeout="true" {
+				generateFiles();
+			}
 		}
 		
-		// if you're in development mode, generate the tags each request
-		if (event == "requestStart" && development) {
-			generate();		
-		}
+		loaded = true;
 	
 	}
 	
@@ -91,9 +74,10 @@ component {
 					var template = {};
 					template.name = getFileFromPath(templates[k]);
 					template.path = library.path & template.name;
+					template.file = expandPath(folder & templatePrefix & template.name);
 					
 					if (!structKeyExists(result.templates, template.name)) {
-						result.templates[template.name] = template.path;
+						result.templates[template.name] = template;
 					}
 				
 				}

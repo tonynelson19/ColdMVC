@@ -7,15 +7,18 @@ component {
 	property pluginManager;
 	property development;
 	
-	public void function generateTemplates(string event) {		
+	public any function init() {
+		loaded = false;
+		return this;
+	}
+	
+	public void function generateTemplates() {		
 		
-		if (event == "applicationStart") {
-			generateFiles();		
-		}
-		
-		if (event == "requestStart" && development) {
+		if (!loaded || development) {
 			generateFiles();	
 		}
+		
+		loaded = true;
 	
 	}
 	
@@ -34,6 +37,7 @@ component {
 	private function generate(string directory) {
 		
 		var i = "";
+		var tagContent = tagManager.getContent();
 		
 		if (directoryExists(expandPath("/app/#directory#/"))) {
 		
@@ -41,12 +45,9 @@ component {
 				
 			for (i=1; i <= arrayLen(files); i++) {
 				
-				var file = replace(files[i], "\", "/", "all");
-				
-				var generated = replace(file, "/app/#directory#/", "/.generated/#directory#/");
-				
-				var content = tagManager.getContent() & fileRead(file);
-				
+				var file = replace(files[i], "\", "/", "all");				
+				var generated = replace(file, "/app/#directory#/", "/.generated/#directory#/");				
+				var content = tagContent & fileRead(file);	
 				var path = getDirectoryFromPath(generated);
 						
 				if (!directoryExists((path))) {
@@ -54,7 +55,7 @@ component {
 				}
 				
 				fileWrite(generated, content);
-			
+
 			}
 		
 		}
@@ -63,13 +64,11 @@ component {
 	
 	private function generateFiles() {
 		
-		lock name="coldmvc.utils.Renderer" type="exclusive" timeout="5" throwontimeout="true" {
-			
+		lock name="coldmvc.utils.Renderer" type="exclusive" timeout="5" throwontimeout="true" {			
 			delete("views");
 			delete("layouts");
 			generate("views");
 			generate("layouts");
-		
 		}
 	
 	}
@@ -86,37 +85,25 @@ component {
 	}
 	
 	public boolean function layoutExists(string layout) {
-		
-		var template = getTemplate(arguments, "layout");
-		
-		return fileExists(expandPath(template));
-	
+		return templateExists(arguments, "layout");	
 	}
 	
-	
-	
 	private string function render(any obj, string template) {
-	
-		pluginManager.addPlugins(obj);
-		
-		$.factory.autowire(obj);
-			
+
+		pluginManager.addPlugins(obj);		
+		$.factory.autowire(obj);			
 		return obj._render(template);
 	
 	}
 	
 	public string function renderLayout(string layout) {
 		
-		var template = getTemplate(arguments, "layout");
-		
+		var template = getTemplate(arguments, "layout");		
 		var output = "";
 		
-		if (fileExists(expandPath(template))) {
-		
-			var _layout = new coldmvc.Layout();
-			
-			output = render(_layout, template);
-		
+		if (fileExists(expandPath(template))) {		
+			var _layout = new coldmvc.Layout();			
+			output = render(_layout, template);		
 		}
 		
 		return output;
@@ -125,28 +112,24 @@ component {
 
 	public string function renderView(string view) {
 		
-		var template = getTemplate(arguments, "view");
-		
+		var template = getTemplate(arguments, "view");		
 		var output = "";
 		
-		if (fileExists(expandPath(template))) {
-		
-			var _view = new coldmvc.View();
-			
-			output = render(_view, template);
-		
+		if (fileExists(expandPath(template))) {		
+			var _view = new coldmvc.View();			
+			output = render(_view, template);		
 		}
 		
 		return output;
 	
 	}
 	
-	public boolean function viewExists(string view) {
-		
-		var template = getTemplate(arguments, "view");
-		
-		return fileExists(expandPath(template));
+	private boolean function templateExists(struct args, string type) {
+		return fileExists(expandPath(getTemplate(args, type)));
+	}
 	
+	public boolean function viewExists(string view) {
+		return templateExists(arguments, "view");
 	}
 
 }

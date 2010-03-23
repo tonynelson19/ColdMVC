@@ -15,7 +15,7 @@
 		<cfset configure(arguments) />
 		
 		<cfif arguments.url neq "">
-			<cfset local.buttonLocation = $.link.to(address=arguments.url) />
+			<cfset local.buttonLocation = $.link.to(url=arguments.url) />
 		<cfelse>
 			<cfset local.buttonLocation = $.link.to(arguments.controller, arguments.action, arguments.params) />
 		</cfif>

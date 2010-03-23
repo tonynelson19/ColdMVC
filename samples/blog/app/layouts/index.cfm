@@ -23,7 +23,7 @@
 			</ul>
 		</div>
 		<div id="header">
-			<h1><a href="#linkTo("", "", "")#">Bears. Beets. Battlestar Galactica.</a></h1>
+			<h1><a href="#linkTo(controller='post', action='list')#">Bears. Beets. Battlestar Galactica.</a></h1>
 		</div>
 		<div id="wrapper">
 			<div id="content">
@@ -53,7 +53,7 @@
 						<h4>Categories</h4>
 						<ul>
 							<each in="#categories#" value="category">
-								<li><a href="#linkTo(address=category.url())#">#category.name()# (#arrayLen(category.posts())#)</a></li>
+								<li><a href="#linkTo(url=category.url())#">#category.name()# (#arrayLen(category.posts())#)</a></li>
 							</each>
 						</ul>
 					</div>

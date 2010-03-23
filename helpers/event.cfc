@@ -4,8 +4,8 @@
  */
 component {
 
-	public any function address() {		
-		return getOrSet("address", arguments);		
+	public any function url() {		
+		return getOrSet("url", arguments);		
 	}
 
 	public any function controller() {		

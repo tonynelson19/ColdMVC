@@ -23,9 +23,17 @@ component {
 
 	public any function onRequestStart() {
 		
-		if (structKeyExists(url, getSetting("reload"))) {
-			ormReload();
-			onApplicationStart();
+		var reload = getSetting("reload");
+		
+		if (structKeyExists(url, reload)) {
+			
+			var reloadPassword = getSetting("reloadPassword");
+			
+			if (reloadPassword == "" || url[reload] == reloadPassword) {	
+				ormReload();
+				onApplicationStart();			
+			}
+		
 		}
 		
 		publishEvent("requestStart");
@@ -217,6 +225,7 @@ component {
 			layout = "index",
 			modelPrefix = "_",
 			reload = "init",
+			reloadPassword = "",
 			sesURLs = "false",
 			tagPrefix = "",
 			view = "index"
@@ -238,8 +247,11 @@ component {
 		return application.coldmvc.settings;
 	}
 	
-	private any function getSetting(required key) {
-		return application.coldmvc.settings[key];		
+	private any function getSetting(required string key) {
+		if (structKeyExists(application.coldmvc.settings, key)) {
+			return application.coldmvc.settings[key];
+		}
+		return "";				
 	}
 	
 	private void function loadSettings(required string configPath, required string environment) {

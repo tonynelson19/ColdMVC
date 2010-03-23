@@ -52,8 +52,7 @@ component {
 	
 	public void function addPlugins(any view) {
 		
-		var plugin = "";
-		
+		var plugin = "";		
 		for (plugin in plugins) {			
 			view[plugin] = callPlugin;
 		}
@@ -62,8 +61,7 @@ component {
 	
 	public any function callPlugin() {
 		
-		var method = getFunctionCalledName();
-		
+		var method = getFunctionCalledName();		
 		var plugins = $.plugins.get();
 		
 		if (structKeyExists(plugins, method)) {

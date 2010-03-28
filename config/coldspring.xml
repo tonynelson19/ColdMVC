@@ -60,7 +60,7 @@
 	<bean id="beanPostProcessor" class="coldmvc.utils.BeanPostProcessor" bean-post-processor="true">
 		<property name="postProcessors">
 			<list>
-				<ref bean="modelInjector" />
+				<value>modelInjector</value>
 			</list>
 		</property>
 	</bean>
@@ -74,9 +74,9 @@
 	<bean id="factoryPostProcessor" class="coldmvc.utils.FactoryPostProcessor" factory-post-processor="true">
 		<property name="postProcessors">
 			<list>
-				<ref bean="beanFinder" />
-				<ref bean="scopeManager" />
-				<ref bean="helperManager" />
+				<value>beanFinder</value>
+				<value>scopeManager</value>
+				<value>helperManager</value>
 			</list>
 		</property>
 	</bean>

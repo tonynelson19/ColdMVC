@@ -1,25 +1,40 @@
 component extends="coldspring.beans.DefaultXmlBeanFactory" {
 
-	public beanFactory function init(required string xml, struct config) {
+	public beanFactory function init(required string xml, required struct config) {
 
-		variables.nonSingletons = {};
-		variables.singletons = {};
 		variables.config = arguments.config;
+
+		nonSingletons = {};
+		singletons = {};
+
+		xml = replaceConfig(xml, config);
+
+		loadBeansFromXmlObj(xmlParse(xml));
+
+		loadSingletons();
+
+		return this;
+
+	}
+
+	private string function replaceConfig(required string xml, required struct config) {
 
 		var setting = "";
 
-		for (setting in variables.config) {
-			xml = replaceNoCase(xml, "${#setting#}", variables.config[setting], "all");
+		for (setting in config) {
+			xml = replaceNoCase(xml, "${#setting#}", config[setting], "all");
 		}
 
-		loadBeansFromXmlObj(xmlParse(xml));
+		return xml;
+
+	}
+
+	private any function loadSingletons() {
 
 		var beanDef = "";
 		for (beanDef in getBeanDefinitionList()) {
 			singletons[beanDef] = beanDefs[beanDef].getBeanClass();
 		}
-
-		return this;
 
 	}
 

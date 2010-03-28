@@ -4,15 +4,15 @@
 component {
 
 	property postProcessors;
-	
+
 	public void function postProcessBeanFactory(required any beanFactory) {
-	
+
 		var i = "";
-		
+
 		for (i=1; i <= arrayLen(postProcessors); i++) {
-			postProcessors[i].postProcessBeanFactory(beanFactory);
+			beanFactory.getBean(postProcessors[i]).postProcessBeanFactory(beanFactory);
 		}
-		
+
 	}
 
 }

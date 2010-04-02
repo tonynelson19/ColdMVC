@@ -391,12 +391,11 @@ component {
 
 			singletons[id] = class;
 
-			beanDefinions[id] = {
+			beanDefinitions[id] = {
 				id = id,
 				class = class,
 				constructed = false,
 				autowired = false,
-				dependencies = "",
 				properties = {}
 			};
 

@@ -3,6 +3,7 @@
  */
 component {
 
+	property beanFactory;
 	property renderer;
 	property applicationContext;
 	property config;
@@ -37,7 +38,7 @@ component {
 
 	}
 
-	private string function buildView(string controller, string action) {
+	private string function buildView(required string controller, required string action) {
 
 		if (controller == "") {
 			return action;
@@ -47,7 +48,7 @@ component {
 
 	}
 
-	private void function callMethods(string beanName, string type) {
+	private void function callMethods(required string beanName, required string type) {
 
 		var action = $.event.get(type);
 
@@ -95,11 +96,11 @@ component {
 
 	}
 
-	private void function callMethod(string beanName, string action) {
+	private void function callMethod(required string beanName, required string action) {
 
-		if ($.factory.has(beanName)) {
+		if (beanFactory.containsBean(beanName)) {
 
-			var bean = $.factory.get(beanName);
+			var bean = beanFactory.getBean(beanName);
 
 			// make sure the action exists on the bean before calling it
 			if (structKeyExists(bean, action)) {
@@ -110,7 +111,7 @@ component {
 
 	}
 
-	private boolean function checkView(string controller, string action) {
+	private boolean function checkView(required string controller, required string action) {
 		return viewExists(buildView(controller, action));
 	}
 
@@ -305,7 +306,7 @@ component {
 		var controller = $.controller.name($.event.controller());
 
 		// check to make sure the factory has the requested controller
-		if (!$.factory.has(controller)) {
+		if (!beanFactory.containsBean(controller)) {
 			applicationContext.publishEvent("invalidController");
 		}
 

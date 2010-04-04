@@ -1,14 +1,17 @@
 /**
+ * @accessors true
  * @extends coldmvc.Helper
  */
 component {
 
+	property config;
+
 	public any function get(string key) {
-		return $.factory.get("config").get(argumentCollection=arguments);
+		return config.get(argumentCollection=arguments);
 	}
-	
+
 	public any function has(string key) {
-		return $.factory.get("config").has(argumentCollection=arguments);
+		return config.has(argumentCollection=arguments);
 	}
 
 }

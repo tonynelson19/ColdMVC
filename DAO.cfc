@@ -4,9 +4,11 @@
  */
 component {
 
+	property beanInjector;
+
 	public any function init() {
 
-		conjunctions = listToArray("and,or");
+		conjunctions = ["and", "or"];
 
 		operators = {};
 		operators["greaterThanEquals"] = {operator=">=", value="${value}"};
@@ -272,20 +274,6 @@ component {
 
 	}
 
-	private any function _findWhere(required any model, required struct parameters, required struct options) {
-
-		var name = $.model.name(model);
-		var paging = parseOptions(options);
-		var sortorder = parseSortOrder(model, options);
-
-		// TODO: _findWhere
-		writeDump(parameters);
-		abort;
-
-		return entityLoad(name, parameters, sortorder, paging);
-
-	}
-
 	private any function _findDynamic(required any model, required string method, required struct args, required string prefix) {
 
 		method = replaceNoCase(method, prefix, "");
@@ -301,6 +289,52 @@ component {
 		else if (prefix == "findAllBy") {
 			return findAll(model, query.hql, query.parameters, query.options);
 		}
+
+	}
+
+	private any function _findWhere(required any model, required struct parameters, required struct options) {
+
+		var name = $.model.name(model);
+		var alias = $.model.alias(model);
+		var joins = parseInclude(model, options);
+		var i = "";
+		var counter = 0;
+		var filters = {};
+
+		var query = [];
+		arrayAppend(query, "select #alias# from #name# #alias#");
+		arrayAppend(query, joins);
+
+		parameters = parseParameters(model, parameters);
+
+		if (!structIsEmpty(parameters)) {
+
+			arrayAppend(query, "where");
+
+			for (i in parameters) {
+
+				counter++;
+
+				var parameter = parameters[i];
+				arrayAppend(query, parameter.alias);
+				arrayAppend(query, parameter.operator.operator);
+
+				if (parameter.operator.value != "") {
+					arrayAppend(query, ":#parameter.property#");
+					filters[parameter.property] = replaceNoCase(parameter.operator.value, "${value}", parameter.value);
+				}
+
+				if (counter < structCount(parameters)) {
+					arrayAppend(query, "and");
+				}
+
+			}
+
+		}
+
+		query = arrayToList(query, " ");
+
+		return _find(model, query, filters, options);
 
 	}
 
@@ -405,10 +439,15 @@ component {
 	public any function new(required any model) {
 
 		var name = $.model.name(model);
-
 		var obj = entityNew(name);
+		var relationships = $.model.relationships(model);
+		var i = "";
 
-		$.factory.autowire(obj);
+		for (i in relationships) {
+			obj._set(relationships[i].property, []);
+		}
+
+		beanInjector.autowire(obj);
 
 		return obj;
 
@@ -418,33 +457,28 @@ component {
 
 		if (structKeyExists(options, "include")) {
 
-			var name = $.model.name(model);
 			var alias = $.model.alias(model);
 			var joins = [];
 			var i = "";
 
-			if (isSimpleValue(options.include)) {
+			var includes = listToArray(replace(options.include, " ", "", "all"));
 
-				var includes = listToArray(options.include);
+			for (i=1; i <= arrayLen(includes); i++) {
 
-				for (i=1; i <= arrayLen(includes); i++) {
+				var property = $.model.name(includes[i]);
+				var related = property;
 
-					var property = trim(includes[i]);
-					var related = property;
-
-					if (!$.model.exists(related)) {
-						related = $.string.singularize(related);
-					}
-
-					var propertyAlias = $.model.alias(related);
-
-					arrayAppend(joins, "join #alias#.#property# as #propertyAlias#");
-
+				if (!$.model.exists(related)) {
+					related = $.string.singularize(related);
 				}
 
-				return arrayToList(joins, " ");
+				var propertyAlias = $.model.alias(related);
+
+				arrayAppend(joins, "join #alias#.#property# as #propertyAlias#");
 
 			}
+
+			return arrayToList(joins, " ");
 
 		}
 		else {
@@ -529,6 +563,99 @@ component {
 			}
 
          } while (method != "");
+
+		return result;
+
+	}
+
+	private struct function parseParameters(required any model, required struct parameters) {
+
+		var alias = $.model.alias(model);
+		var properties = $.model.properties(model);
+		var result = {};
+		var property = "";
+
+		for (property in parameters) {
+
+			var value = parameters[property];
+			var parameter = {};
+			parameter.operator = "equal";
+			parameter.value = "";
+
+			if (find(".", property)) {
+
+				var prop = listToArray(property, ".");
+				var len = arrayLen(prop);
+
+				// { "foo.bar" = "baz" }
+				parameter.model = $.model.alias(prop[len-1]);
+				parameter.property = $.model.property(parameter.model, prop[len]);
+				parameter.alias = parameter.model & "." & parameter.property;
+
+				// if the parameter belongs to a different model
+				if (parameter.model != alias) {
+
+					// _Comment.findWhere({"post.title" = "Hello, World"}) => comment.post.title = 'Hello, World';
+					if (len == 2) {
+						parameter.alias = alias & "." & parameter.alias;
+					}
+
+				}
+
+			}
+			else {
+				parameter.model = alias;
+				parameter.property = properties[property].name;
+				parameter.alias = parameter.model & "." & parameter.property;
+			}
+
+
+			if (isSimpleValue(value)) {
+
+				// foo = "bar";
+				parameter.value = value;
+
+			}
+			else if (isArray(value)) {
+
+				// foo = [ "isNotNull" ]
+				parameter.operator = value[1];
+
+				// foo = [ "like", "bar" ]
+				if (arrayLen(value) gte 2) {
+					parameter.value = value[2];
+				}
+
+			}
+			else if (isStruct(value)) {
+
+				if (structKeyExists(value, "operator")) {
+
+					// foo = { operator="isNotNull" }
+					parameter.operator = value.operator;
+
+					// foo = { operator="like", value="bar" }
+					if (structKeyExists(value, "value")) {
+						parameter.value = value.value;
+					}
+
+				}
+				else if (structCount(value) == 1) {
+
+					// foo = { like = "bar" }
+					parameter.operator = structKeyList(value);
+					parameter.value = value[parameter.operator];
+				}
+
+			}
+
+			// get the full operator definition
+			parameter.operator = operators[parameter.operator];
+
+			// add the parameter back to the result
+			result[property] = parameter;
+
+		}
 
 		return result;
 

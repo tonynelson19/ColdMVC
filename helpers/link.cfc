@@ -1,7 +1,10 @@
 /**
+ * @accessors true
  * @extends coldmvc.Helper
  */
 component {
+
+	property beanFactory;
 
 	public any function init() {
 		keys = ["controller", "action", "params", "format"];
@@ -78,7 +81,7 @@ component {
 
 		args.params = $.data.toQueryString(args.params);
 
-		return $.factory.get("routeHandler").build(args.controller, args.action, args.params, args.format);
+		return beanFactory.getBean("routeHandler").build(args.controller, args.action, args.params, args.format);
 
 	}
 

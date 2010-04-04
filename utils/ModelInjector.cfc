@@ -3,7 +3,9 @@
  */
 component {
 
- 	property modelPrefix;
+ 	property beanFactory;
+	property beanInjector;
+	property modelPrefix;
 	property suffixes;
 	property development;
 
@@ -24,7 +26,7 @@ component {
 
 		if (!development) {
 
-			var beanDefinitions = $.factory.definitions();
+			var beanDefinitions = beanFactory.getBeanDefinitions();
 			var beanName = "";
 
 			for (beanName in beanDefinitions) {
@@ -46,7 +48,7 @@ component {
 			if (right(beanName, len(suffix)) == suffix) {
 
 				if (!structKeyExists(arguments, "bean")) {
-					bean = $.factory.get(beanName);
+					bean = beanFactory.getBean(beanName);
 				}
 
 				var metaData = getMetaData(bean);
@@ -97,8 +99,10 @@ component {
 
 		if (!structKeyExists(cache, model)) {
 			var entity = entityNew(model);
-			$.factory.autowire(entity);
+			beanInjector.autowire(entity);
 			cache[model] = entity;
+			// used to pre-populate the cache to do lookups by entity name without knowing the full class path (hack)
+			$.orm.getEntityMetaData(entity);
 		}
 
 		return cache[model];

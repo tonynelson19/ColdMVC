@@ -3,12 +3,13 @@
  */
 component {
 
+	property beanFactory;
 	property applicationContext;
 	property metaDataFlattener;
 
 	public void function findObservers(string event) {
 
-		var beanDefinitions = $.factory.definitions();
+		var beanDefinitions = beanFactory.getBeanDefinitions();
 		var beanName = "";
 		var method = "";
 

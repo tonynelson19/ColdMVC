@@ -46,6 +46,16 @@ component {
 
 	}
 
+	public any function findWhere(required struct parameters, struct options) {
+
+		if (isNull(options)) {
+			options = {};
+		}
+
+		return DAO.findWhere(this, parameters, options);
+
+	}
+
 	public array function findAllWhere(required struct parameters, struct options) {
 
 		if (isNull(options)) {
@@ -125,18 +135,12 @@ component {
 
 	}
 
-	public any function new(any data) {
+	public any function new(any data, string properties="") {
 
 		var model = DAO.new(this);
-		var relationships = $.model.relationships(model);
-		var i = "";
-
-		for (i in relationships) {
-			model._set(relationships[i].property, []);
-		}
 
 		if (structKeyExists(arguments, "data")) {
-			model.populate(data);
+			model.populate(data, properties);
 		}
 
 		return model;

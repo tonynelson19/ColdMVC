@@ -18,6 +18,10 @@ component {
 		return DAO.count(this);
 	}
 
+	public numeric function countWhere(required struct parameters) {
+		return DAO.countWhere(this, parameters);
+	}
+
 	public void function delete(boolean flush="true") {
 		DAO.delete(this, flush);
 	}

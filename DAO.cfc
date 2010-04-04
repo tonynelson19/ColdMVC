@@ -5,8 +5,11 @@
 component {
 
 	property beanInjector;
+	property development;
 
 	public any function init() {
+
+		development = false;
 
 		conjunctions = ["and", "or"];
 
@@ -45,7 +48,7 @@ component {
 
 	}
 
-	public any function _addToDynamic(required any model, required string method, required struct args) {
+	public any function addTo(required any model, required string method, required struct args) {
 
 		var to = replaceNoCase(method, "addTo", "");
 		to = $.model.name(to);
@@ -53,10 +56,62 @@ component {
 
 	}
 
-	private struct function buildQuery(required any model, required string method, required struct args, required string select) {
+	private struct function buildQuery(required any model, required struct parameters, required struct options, required string select) {
+
+		var query = {};
+		query.hql = [];
+		query.parameters = {};
+		query.options = options;
+
+		var name = $.model.name(model);
+		var alias = $.model.alias(model);
+		var joins = parseInclude(model, options);
+		var i = "";
+		var counter = 0;
+
+		arrayAppend(query.hql, select);
+		arrayAppend(query.hql, joins);
+
+		parameters = parseParameters(model, parameters);
+
+		if (!structIsEmpty(parameters)) {
+
+			arrayAppend(query.hql, "where");
+
+			for (i in parameters) {
+
+				counter++;
+
+				var parameter = parameters[i];
+				arrayAppend(query.hql, parameter.alias);
+				arrayAppend(query.hql, parameter.operator.operator);
+
+				if (parameter.operator.value != "") {
+					arrayAppend(query.hql, ":#parameter.property#");
+					query.parameters[parameter.property] = replaceNoCase(parameter.operator.value, "${value}", parameter.value);
+				}
+
+				if (counter < structCount(parameters)) {
+					arrayAppend(query.hql, "and");
+				}
+
+			}
+
+		}
+
+		query.hql = arrayToList(query.hql, " ");
+
+		return query;
+
+	}
+
+	private struct function buildDynamicQuery(required any model, required string method, required struct args, required string select) {
+
+		var query = {};
+		query.parameters = {};
+		query.hql = [];
 
 		var parsed = parseMethod(model, method);
-		var result = {};
 		var i = "";
 		var parameters = [];
 
@@ -64,46 +119,44 @@ component {
 			arrayAppend(parameters, args[i]);
 		}
 
-		result.parameters = {};
-		result.hql = [];
-		arrayAppend(result.hql, select);
+		arrayAppend(query.hql, select);
 
 		for (i=1; i <= arrayLen(parsed.joins); i++) {
-			arrayAppend(result.hql, "join #parsed.joins[i]# #replace(parsed.joins[i], '.', '_')#");
+			arrayAppend(query.hql, "join #parsed.joins[i]# #replace(parsed.joins[i], '.', '_')#");
 		}
 
 		for (i=1; i <= arrayLen(parsed.parameters); i++) {
 
 			if (i == 1) {
-				arrayAppend(result.hql, "where");
+				arrayAppend(query.hql, "where");
 			}
 
 			var parameter = parsed.parameters[i];
-			arrayAppend(result.hql, parameter.alias);
-			arrayAppend(result.hql, parameter.operator.operator);
+			arrayAppend(query.hql, parameter.alias);
+			arrayAppend(query.hql, parameter.operator.operator);
 
 			if (parameter.operator.value != "") {
-				arrayAppend(result.hql, ":#parameter.property#");
-				result.parameters[parameter.property] = replaceNoCase(parameter.operator.value, "${value}", parameters[1]);
+				arrayAppend(query.hql, ":#parameter.property#");
+				query.parameters[parameter.property] = replaceNoCase(parameter.operator.value, "${value}", parameters[1]);
 				arrayDeleteAt(parameters, 1);
 			}
 
 			if (i < arrayLen(parsed.parameters)) {
-				arrayAppend(result.hql, parameter.conjunction);
+				arrayAppend(query.hql, parameter.conjunction);
 			}
 
 		}
 
-		result.hql = arrayToList(result.hql, " ");
+		query.hql = arrayToList(query.hql, " ");
 
-		result.options = {};
+		query.options = {};
 
 		// if there are still parameters left over, consider them options
 		if (arrayLen(parameters) > 0) {
-			result.options = parameters[1];
+			query.options = parameters[1];
 		}
 
-		return result;
+		return query;
 
 	}
 
@@ -111,29 +164,31 @@ component {
 
 		var name = $.model.name(model);
 
-		return ormExecuteQuery("select count(*) from #name#", true);
+		return execute("select count(*) from #name#", {}, true, {});
 
 	}
 
-	public numeric function countBy(required any model, required string query, required struct parameters) {
-
-		var result = ormExecuteQuery(query, parameters);
-
-		return result[1];
-
-	}
-
-	public numeric function _countByDynamic(required any model, required string method, required struct args) {
+	public numeric function countBy(required any model, required string method, required struct args) {
 
 		method = replaceNoCase(method, "countBy", "");
 
 		var name = $.model.name(model);
 		var alias = $.model.alias(model);
 
-		var query = buildQuery(model, method, args, "select count(*) from #name# #alias#");
+		var query = buildDynamicQuery(model, method, args, "select count(*) from #name# #alias#");
 
-		return countBy(model, query.hql, query.parameters, query.options);
+		return execute(query.hql, query.parameters, true, {});
 
+	}
+
+	public numeric function countWhere(required any model, required struct parameters) {
+
+		var name = $.model.name(model);
+		var alias = $.model.alias(model);
+
+		var query = buildQuery(model, parameters, {}, "select count(*) from #name# #alias#");
+
+		return execute(query.hql, query.parameters, true, {});
 
 	}
 
@@ -150,6 +205,19 @@ component {
 		if (flush) {
 			ormFlush();
 		}
+
+	}
+
+	/**
+		@hint Wrapper for almost all ORM queries that can be used for simple logging
+	*/
+	private any function execute(query, parameters, unique, paging) {
+
+		if (development) {
+			writeLog(serializeJSON(arguments));
+		}
+
+		return ormExecuteQuery(query, parameters, unique, paging);
 
 	}
 
@@ -211,7 +279,7 @@ component {
 			query = query & " order by " & sortorder;
 		}
 
-		return ormExecuteQuery(query, parameters, unique, paging);
+		return execute(query, parameters, unique, paging);
 
 	}
 
@@ -232,7 +300,7 @@ component {
 		var name = $.model.name(model);
 		var alias = $.model.alias(name);
 		var query = [];
-		arrayAppend(query, "from #name# #alias#");
+		arrayAppend(query, "select #alias# from #name# #alias#");
 
 		if (arrayLen(relationships) > 0) {
 
@@ -281,7 +349,7 @@ component {
 		var name = $.model.name(model);
 		var alias = $.model.alias(model);
 
-		var query = buildQuery(model, method, args, "select #alias# from #name# #alias#");
+		var query = buildDynamicQuery(model, method, args, "select #alias# from #name# #alias#");
 
 		if (prefix == "findBy") {
 			return this.find(model, query.hql, query.parameters, query.options);
@@ -296,45 +364,10 @@ component {
 
 		var name = $.model.name(model);
 		var alias = $.model.alias(model);
-		var joins = parseInclude(model, options);
-		var i = "";
-		var counter = 0;
-		var filters = {};
 
-		var query = [];
-		arrayAppend(query, "select #alias# from #name# #alias#");
-		arrayAppend(query, joins);
+		var query = buildQuery(model, parameters, options, "select #alias# from #name# #alias#");
 
-		parameters = parseParameters(model, parameters);
-
-		if (!structIsEmpty(parameters)) {
-
-			arrayAppend(query, "where");
-
-			for (i in parameters) {
-
-				counter++;
-
-				var parameter = parameters[i];
-				arrayAppend(query, parameter.alias);
-				arrayAppend(query, parameter.operator.operator);
-
-				if (parameter.operator.value != "") {
-					arrayAppend(query, ":#parameter.property#");
-					filters[parameter.property] = replaceNoCase(parameter.operator.value, "${value}", parameter.value);
-				}
-
-				if (counter < structCount(parameters)) {
-					arrayAppend(query, "and");
-				}
-
-			}
-
-		}
-
-		query = arrayToList(query, " ");
-
-		return _find(model, query, filters, options);
+		return _find(model, query.hql, query.parameters, query.options);
 
 	}
 
@@ -405,7 +438,7 @@ component {
 		var name = $.model.name(model);
 		var pk = $.model.id(model);
 
-		return ormExecuteQuery("from #name# where #pk# = :id", {id=id}, true);
+		return execute("from #name# where #pk# = :id", {id=id}, true, {});
 
 	}
 
@@ -421,10 +454,10 @@ component {
 			return _findAllWithDynamic(model, method, args);
 		}
 		else if (left(method, 5) == "addTo") {
-			return _addToDynamic(model, method, args);
+			return addTo(model, method, args);
 		}
 		else if (left(method, 7) == "countBy") {
-			return _countByDynamic(model, method, args);
+			return countBy(model, method, args);
 		}
 
 		if (structKeyExists(args, 1)) {
@@ -681,22 +714,33 @@ component {
 	private string function parseSortOrder(required any model, required struct options) {
 
 		var sortorder = "";
+		var sortAlias = "";
+		var sortProperty = "";
+		var alias = "";
+		var sort = "";
+		var value = "";
+		var i = "";
 
 		if (structKeyExists(options, "sort")) {
 
-			var alias = $.model.alias(model);
-			var sort = listToArray(options.sort);
-			var i = "";
+			alias = $.model.alias(model);
+			sort = listToArray(options.sort);
+			i = "";
 
 			for (i=1; i <= arrayLen(sort); i++) {
 
-				var property = sort[i];
+				value = sort[i];
 
-				if (!find(".", property)) {
-					property = alias & "." & property;
+				if (find(".", value)) {
+					sortAlias = $.model.alias(listFirst(value, "."));
+					sortProperty = $.model.property(sortAlias, listLast(value, "."));
+				}
+				else {
+					sortAlias = alias;
+					sortProperty = $.model.property(sortAlias, value);
 				}
 
-				sort[i] = property;
+				sort[i] = sortAlias & "." & sortProperty;
 
 			}
 

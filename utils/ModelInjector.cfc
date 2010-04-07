@@ -24,6 +24,7 @@ component {
 
 	public void function injectModels(required string event) {
 
+		// if you're not in development mode, then inject the models now during applicationStart
 		if (!development) {
 
 			var beanDefinitions = beanFactory.getBeanDefinitions();
@@ -33,6 +34,15 @@ component {
 				inject(beanName);
 			}
 
+		}
+
+	}
+
+	public void function postProcessAfterInitialization(required any bean, required string beanName) {
+
+		// if you're in development mode, inject the models after the bean is created
+		if (development) {
+			inject(beanName, bean);
 		}
 
 	}
@@ -87,12 +97,6 @@ component {
 
 		}
 
-	}
-
-	public void function postProcessAfterInitialization(required any bean, required string beanName) {
-		if (development) {
-			inject(beanName, bean);
-		}
 	}
 
 	private any function getModel(string model) {

@@ -7,9 +7,9 @@
 		<input name="email" />
 		<submit />
 		<cfif user.exists()>
-			<a href="#linkTo('delete','userID=#user.id()#')#">Delete</a>
+			<a href="#linkTo({action='delete', id=user})#">Delete</a>
 		</cfif>
-		<a href="#linkTo('list')#">Back to List</a>
+		<a href="#linkTo({action='list'})#">Back to List</a>
 	</form>
 </fieldset>
 </cfoutput>

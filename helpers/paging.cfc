@@ -5,11 +5,15 @@ component {
 
 	private string function buildLink(required string querystring, required string pars) {
 
+		var args = {};
+		args.controller = $.event.controller();
+		args.action = $.event.action();
+
 		if (querystring == "") {
-			return $.link.to(params=pars);
+			return $.link.to(parameters=args, additional=pars);
 		}
 		else {
-			return $.link.to(params="#querystring#&#pars#");
+			return $.link.to(parameters=args, additional="#querystring#&#pars#");
 		}
 
 	}
@@ -246,8 +250,15 @@ component {
 
 	private numeric function validateMax(required any value) {
 
-		if (isStruct(value) && structKeyExists(value, "max")) {
-			value = value.max;
+		if (isStruct(value)) {
+
+			if (structKeyExists(value, "max") && isNumeric(value.max)) {
+				value = value.max;
+			}
+			else {
+				value = this.max();
+			}
+
 		}
 
 		if (!isNumeric(value) || value == 0) {

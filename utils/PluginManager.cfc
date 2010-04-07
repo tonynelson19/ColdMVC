@@ -7,14 +7,12 @@ component {
 	property configPaths;
 
 	public void function setConfigPaths(array configPaths) {
-		variables.configPaths = arguments.configPaths;
-		variables.plugins = loadPlugins();
-		$.plugins.set(variables.plugins);
+		plugins = {};
+		loadPlugins(configPaths);
 	}
 
-	public struct function loadPlugins() {
+	public void function loadPlugins(required array configPaths) {
 
-		var plugins = {};
 		var i = "";
 		var j = "";
 
@@ -34,12 +32,11 @@ component {
 						name = $.xml.get(xml, "name"),
 						bean = $.xml.get(xml, "bean"),
 						helper = $.xml.get(xml, "helper"),
-						method = $.xml.get(xml, "method")
+						method = $.xml.get(xml, "method"),
+						includeMethod = $.xml.get(xml, "includeMethod", false)
 					};
 
-					if (!structKeyExists(plugins, plugin.name)) {
-						plugins[plugin.name] = plugin;
-					}
+					addPlugin(plugin.name, plugin.bean, plugin.helper, plugin.method, plugin.includeMethod);
 
 				}
 
@@ -47,40 +44,53 @@ component {
 
 		}
 
-		return plugins;
+	}
+
+	public void function addPlugin(required string name, string beanName="", string helper="", required string method, boolean includeMethod="false") {
+
+		if (!structKeyExists(plugins, arguments.name)) {
+			plugins[arguments.name] = arguments;
+		}
 
 	}
 
-	public void function addPlugins(any view) {
+	public void function addPlugins(required any object) {
 
 		var plugin = "";
 		for (plugin in plugins) {
-			view[plugin] = callPlugin;
+			object[plugin] = callPlugin;
 		}
 
+	}
+
+	public struct function getPlugins() {
+		return plugins;
 	}
 
 	public any function callPlugin() {
 
 		var method = getFunctionCalledName();
-		var plugins = $.plugins.get();
+		var plugins = $.factory.get("pluginManager").getPlugins();
 
 		if (structKeyExists(plugins, method)) {
 
-			plugin = plugins[method];
+			var plugin = plugins[method];
 
 			var args = {};
-			var key = "";
 
-			for (key in arguments) {
-				args[key] = arguments[key];
+			if (plugin.includeMethod) {
+				args.method = method;
+				args.parameters = arguments;
+			}
+			else {
+				args = arguments;
 			}
 
 			if (plugin.helper != "") {
 				return evaluate("$.#plugin.helper#.#plugin.method#(argumentCollection=args)");
 			}
-			else if (plugin.bean != "") {
-				var bean = beanFactory.getBean(plugin.bean);
+			else if (plugin.beanName != "") {
+				var bean = $.factory.get(plugin.beanName);
 				return evaluate("bean.#plugin.method#(argumentCollection=args)");
 			}
 

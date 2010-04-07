@@ -64,14 +64,20 @@ component {
 			action = $.event.get("action");
 		}
 
-		var view = "";
-
 		var controllers = getAll();
 
+		// if the controller exists and it's valid method, get the view from the metadata
 		if (structKeyExists(controllers, controller) && structKeyExists(controllers[controller].methods, action)) {
 			return controllers[controller].methods[action].view;
 		}
 
+		// not a valid controller/action, so build it assuming it's a normal request
+		return buildView(controller, action);
+
+	}
+
+	private string function buildView(required string controller, required string action) {
+		 return controller & "/" & action & ".cfm";
 	}
 
 	public string function layout(string controller, string method) {
@@ -102,13 +108,9 @@ component {
 
 		// a string was passed in, so check the cache
 		if (isSimpleValue(controller)) {
-
 			var controllers = getAll();
-
 			return structKeyExists(controllers[controller].methods, method);
-
 		}
-
 		// an object was passed in, so check the public functions
 		else {
 			return structKeyExists(controller, method);
@@ -129,11 +131,8 @@ component {
 	private struct function loadControllers() {
 
 		var controllers = {};
-
 		var beanDefinitions = $.factory.definitions();
-
 		var beanDef = "";
-
 		var length = len("Controller");
 
 		for (beanDef in beanDefinitions) {
@@ -164,9 +163,7 @@ component {
 				}
 
 				controller.layout = getLayout(controller.key, metaData);
-
-				controller.methods = getMethods(controller.layout, metaData);
-
+				controller.methods = getMethods(controller.key, controller.layout, metaData);
 				controllers[controller.key] = controller;
 
 			}
@@ -177,33 +174,21 @@ component {
 
 	}
 
-	private struct function getMethods(string layout, struct metaData) {
-
-		var defaults = {
-			layout = layout,
-			view = ""
-		};
-
-		return processMethods(metaData, defaults);
-
-	}
-
-	private struct function processMethods(required struct metaData, required struct defaults) {
+	private struct function getMethods(required string controller, required string layout, required struct metaData) {
 
 		var methods = {};
 		var i = "";
-		var key = "";
 
 		for (i in metaData.functions) {
 
 			var method = metaData.functions[i];
 
-			for (key in defaults) {
+			if (!structKeyExists(method, "view")) {
+				method["view"] = buildView(controller, method.name);
+			}
 
-				if (!structKeyExists(method, key)) {
-					method[key] = defaults[key];
-				}
-
+			if (!structKeyExists(method, "layout")) {
+				method["layout"] = layout;
 			}
 
 		}

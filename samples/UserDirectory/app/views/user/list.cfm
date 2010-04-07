@@ -16,8 +16,8 @@
 			<td>#user.firstName()#</td>
 			<td>#user.lastName()#</td>
 			<td>#user.email()#</td>
-			<td><a href="#linkTo('edit','userID=#user.id()#')#">Edit</a></td>
-			<td><a href="#linkTo('delete','userID=#user.id()#')#">Delete</a></td>
+			<td><a href="#linkTo({action='edit', id=user})#">Edit</a></td>
+			<td><a href="#linkTo({action='delete', id=user})#">Delete</a></td>
 		</tr>
 	</each>
 	<cfif users.size() eq 0>
@@ -27,5 +27,5 @@
 	</cfif>
 </table>
 <paging records="#count#" />
-<a href="#linkTo('edit')#">Add a User</a>
+<a href="#linkTo({action='edit'})#">Add a User</a>
 </cfoutput>

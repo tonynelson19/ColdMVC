@@ -76,12 +76,20 @@ component {
 
 	private string function getTemplate(required struct args, required string type) {
 
+		var path = "";
+
 		if (structKeyExists(args, type)) {
-			return "/#type#s/" & args[type] & ".cfm";
+			path = "/#type#s/" & args[type];
 		}
 		else {
-			return "/#type#s/" & $.event.get(type) & ".cfm";
+			path = "/#type#s/" & $.event.get(type) & ".cfm";
 		}
+
+		if (right(path, 4) != ".cfm") {
+			path = path & ".cfm";
+		}
+
+		return path;
 
 	}
 

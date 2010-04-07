@@ -6,82 +6,27 @@ component {
 
 	property beanFactory;
 
-	public any function init() {
-		keys = ["controller", "action", "params", "format"];
-		return this;
-	}
+	public string function to(any name="", any parameters, string additional) {
 
-	public struct function getDefaults() {
+		if (isStruct(arguments.name)) {
 
-		var defaults = {
-			controller = $.event.controller(),
-			action = $.event.action(),
-			params = "",
-			format = ""
-		};
+			if (structKeyExists(arguments, "parameters") && !structKeyExists(arguments, "additional")) {
+				arguments.additional = arguments.parameters;
+			}
 
-		return defaults;
-
-	}
-
-	/** @hint Supports the following combinations of unnamed arguments
-			controller, action, params, format
-			controller, action, params
-			action, params
-			action
-	  */
-	public string function to(any arg1, any arg2, any arg3, any arg4) {
-
-		var defaults = getDefaults();
-		var args = {};
-
-		if (structKeyExists(arguments, "url")) {
-
-			args.controller = arguments.url;
-			args.action = "";
-			args.params = "";
+			arguments.parameters = arguments.name;
+			arguments.name = "";
 		}
 
-		else {
-
-			// check for unnamed arguments
-			if (structKeyExists(arguments, "arg4")) {
-				args.format = arguments["arg4"];
-			}
-			else if (structKeyExists(arguments, "arg3")) {
-				args.controller = arguments["arg1"];
-				args.action = arguments["arg2"];
-				args.params = arguments["arg3"];
-			}
-			else if (structKeyExists(arguments, "arg2")) {
-				args.action = arguments["arg1"];
-				args.params = arguments["arg2"];
-
-			}
-			else if (structKeyExists(arguments, "arg1")) {
-				args.action = arguments["arg1"];
-			}
-
+		if (!structKeyExists(arguments, "parameters")) {
+			arguments.parameters = {};
 		}
 
-		// check for named params
-		var i = "";
-		for (i=1; i <= arrayLen(keys); i++) {
-
-			var key = keys[i];
-
-			if (structKeyExists(arguments, key)) {
-				args[key] = arguments[key];
-			}
-
+		if (!structKeyExists(arguments, "additional")) {
+			arguments.additional = "";
 		}
 
-		// append the args to the default values, which are populated from the event
-		structAppend(args, defaults, false);
-
-		args.params = $.data.toQueryString(args.params);
-
-		return beanFactory.getBean("routeHandler").build(args.controller, args.action, args.params, args.format);
+		return beanFactory.getBean("routeHandler").buildURL(name=arguments.name, parameters=arguments.parameters, additional=arguments.additional);
 
 	}
 

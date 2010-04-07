@@ -14,11 +14,20 @@ component {
 			setBeanFactory(beanFactory);
 			beanFactory.getBean("config").setSettings(getSettings());
 
-			publishEvent("factoryLoaded");
+			publishEvent("preApplication");
 			publishEvent("applicationStart");
 
 		}
 
+	}
+
+	public any function onSessionStart() {
+		publishEvent("sessionStart");
+
+	}
+
+	public any function onSessionEnd() {
+		publishEvent("sessionEnd");
 	}
 
 	public any function onRequestStart() {
@@ -32,10 +41,13 @@ component {
 			if (reloadPassword == "" || url[reloadKey] == reloadPassword) {
 				ormReload();
 				onApplicationStart();
+				publishEvent("postReload");
+
 			}
 
 		}
 
+		publishEvent("preRequest");
 		publishEvent("requestStart");
 
 	}
@@ -223,6 +235,8 @@ component {
 			development = false,
 			key = "coldmvc",
 			layout = "index",
+			logEvents = "false",
+			logQueries = "false",
 			modelPrefix = "_",
 			reloadKey = "init",
 			reloadPassword = "",

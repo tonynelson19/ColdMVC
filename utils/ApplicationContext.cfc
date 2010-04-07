@@ -5,59 +5,82 @@ component {
 
 	property beanFactory;
 	property observers;
+	property logEvents;
 	property development;
 
 	public any function init() {
-		events = {};
-		listeners = {};
+		systemObservers = {};
+		customObservers = {};
+		cache = {};
 		return this;
 	}
 
-	public void function addObserver(string event, string beanName, string method) {
+	public void function addSystemObserver(required string event, required string beanName, required string method) {
+		add(systemObservers, arguments);
+	}
 
-		if (!structKeyExists(events, event)) {
-			events[event] = [];
+	public void function addCustomObserver(required string event, required string beanName, required string method) {
+		add(customObservers, arguments);
+	}
+
+	public void function clearCustomObservers() {
+		customObservers = {};
+	}
+
+	public void function add(required struct observers, required struct collection) {
+
+		if (!structKeyExists(observers, collection.event)) {
+			observers[collection.event] = [];
 		}
 
-		arrayAppend(events[event], {
-			beanName = beanName,
-			method = method,
-			string = beanName & "." & method
+		arrayAppend(observers[collection.event], {
+			beanName = collection.beanName,
+			method = collection.method,
+			string = collection.beanName & "." & collection.method
 		});
 
 	}
 
-	private array function getListeners(string event) {
+	private array function getListeners(required string event) {
 
-		if (!structKeyExists(listeners, event)) {
-			listeners[event] = findListeners(event);
+		// check to see if there's data in the cache for the event
+		if (structKeyExists(cache, event)) {
+			return cache[event];
 		}
 
-		return listeners[event];
+		var listeners = [];
+		listeners = findListeners(listeners, systemObservers, event);
+		listeners = findListeners(listeners, customObservers, event);
+
+		// if you're not in development mode, cache the listeners for the next request
+		if (!development) {
+			cache[event] = listeners;
+		}
+
+		return listeners;
 
 	}
 
-	private array function findListeners(string event) {
+	private array function findListeners(required array listeners, required struct observers, required string event) {
 
-		var result = [];
 		var key = "";
 		var i = "";
 
-		for (key in events) {
+		for (key in observers) {
 			if (reFindNoCase(key, event)) {
-				for (i=1; i <= arrayLen(events[key]); i++) {
-					arrayAppend(result, events[key][i]);
+				for (i=1; i <= arrayLen(observers[key]); i++) {
+					arrayAppend(listeners, observers[key][i]);
 				}
 			}
 		}
 
-		return result;
+		return listeners;
 
 	}
 
-	private void function logEvent(string event, array listeners) {
+	private void function logEvent(required string event, required array listeners) {
 
-		if (development) {
+		if (logEvents) {
 
 			var count = arrayLen(listeners);
 			var text = "applicationContext.publishEvent(#event#)";
@@ -82,9 +105,9 @@ component {
 
 	}
 
-	private void function logListener(string beanName, string method, numeric start, numeric end) {
+	private void function logListener(required string beanName, required string method, required numeric start, required numeric end) {
 
-		if (development) {
+		if (logEvents) {
 			writeLog("#beanName#.#method#(): #end-start# ms");
 		}
 
@@ -126,7 +149,7 @@ component {
 				var beanName = listFirst(observers[event][i], ".");
 				var method = listLast(observers[event][i], ".");
 
-				addObserver(event, beanName, method);
+				addSystemObserver(event, beanName, method);
 
 			}
 

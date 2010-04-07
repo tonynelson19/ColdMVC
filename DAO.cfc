@@ -5,11 +5,9 @@
 component {
 
 	property beanInjector;
-	property development;
+	property logQueries;
 
 	public any function init() {
-
-		development = false;
 
 		conjunctions = ["and", "or"];
 
@@ -213,7 +211,7 @@ component {
 	*/
 	private any function execute(query, parameters, unique, paging) {
 
-		if (development) {
+		if (logQueries) {
 			writeLog(serializeJSON(arguments));
 		}
 

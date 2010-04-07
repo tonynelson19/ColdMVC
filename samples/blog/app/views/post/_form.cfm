@@ -6,6 +6,6 @@
 <input name="categories" value="#post.categoryList()#" />
 <buttons>
 	<submit />
-	<a href="#linkTo('list')#">Cancel</a>
+	<a href="#linkTo({action='list'})#">Cancel</a>
 </buttons>
 </cfoutput>

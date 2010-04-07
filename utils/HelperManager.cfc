@@ -59,7 +59,11 @@ component {
 					var helper = {};
 					helper.name = listFirst(files.name[j], ".");
 					helper.classPath = getClassPath(directories[i], helper.name);
-					helper.object = createObject("component", helper.classPath).init();
+					helper.object = createObject("component", helper.classPath);
+
+					if (structKeyExists(helper.object, "init")) {
+						helper.object = helper.object.init();
+					}
 
 					// can't use the beanInjector to autowire since the beanInjector uses helpers to get a reference to the bean factory
 					if (structKeyExists(helper.object, "setBeanFactory")) {

@@ -24,54 +24,29 @@ component {
 
 	function category() {
 
+		if (!structKeyExists(params, "id")) {
+			params.category = _Category.findByLink(params.link);
+			params.id = params.category.id();
+		}
+
 		var paging = $.paging.options();
 
-		params.posts = _Post.findAllByCategoryID(params.categoryID, {
+		params.posts = _Post.findAllByCategoryID(params.id, {
 			sort = "date",
 			order = "asc",
 			max = paging.max,
 			offset = paging.offset
 		});
 
-		var count = _Post.countByCategoryID(params.categoryID);
+		var count = _Post.countByCategoryID(params.id);
 
 		params.page = paging.page;
 		params.pages = $.paging.pages(count);
 
 	}
 
-	/**
-	 * @events missingController
-	 */
-	function handleEvent(string event) {
-
-		var address = $.event.url();
-
-		var controller = listFirst(address, "/");
-
-		if (isNumeric(controller)) {
-
-			var params.post = _Post.findByLink(address);
-			params.postID = params.post.id();
-
-			$.event.controller("post");
-			$.event.action("show");
-			$.event.view("post/show");
-
-		}
-
-		if (controller == "category") {
-
-			var name = replaceNoCase(address, "category/", "");
-			var params.category = _Category.findByLink(name);
-			params.categoryID = params.category.id();
-
-			$.event.controller("post");
-			$.event.action("category");
-			$.event.view("post/category");
-
-		}
-
+	function show() {
+		params.post = _Post.findByLink(params.link);
 	}
 
 	function list() {
@@ -125,7 +100,7 @@ component {
 
 		post.save();
 
-		redirect("show", "postID=#post.id()#");
+		redirect({action="show", id=post});
 
 	}
 
@@ -137,7 +112,7 @@ component {
 
 		post.populate(params.post);
 
-		redirect("show", "postID=#post.id()#");
+		redirect({action="show", id=post});
 
 	}
 

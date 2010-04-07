@@ -10,12 +10,12 @@
 		<cfif structKeyExists(args, "_processed")>
 			<cfreturn />
 		</cfif>
-		
+
 		<cfset var i = "" />
 
 		<cfset args._processed = true />
 
-		<cfset args.tag = getKey(args, "tag") />		
+		<cfset args.tag = getKey(args, "tag") />
 		<cfset args.allowBinding = getAllowBinding(args) />
 		<cfset args.binding = getKey(args, "binding", args.allowBinding) />
 		<cfset args.bind = getKey(args, "bind") />
@@ -30,17 +30,14 @@
 		<cfset args.readonly = getKey(args, "readonly", false) />
 		<cfset args.disabled = getKey(args, "disabled", false) />
 		<cfset args.visible = getKey(args, "visible", true) />
-		<cfset args.controller = getEvent(args, "controller") />
-		<cfset args.action = getEvent(args, "action") />
-		<cfset args.params = getEvent(args, "params") />
-		<cfset args.url = getKey(args, "url") />
+		<cfset args.url = getURL(args) />
 
 		<cfloop list="class,style,instructions" index="i">
 			<cfset args[i] = getKey(args, i) />
 		</cfloop>
-		
+
 		<cfset args.common = [] />
-		
+
 		<cfloop list="name,id,title,class" index="i">
 			<cfif args[i] neq "">
 				<cfset arrayAppend(args.common, '#i#="#htmlEditFormat(args[i])#"') />
@@ -54,42 +51,42 @@
 				<cfset arrayAppend(args.common, '#event#="#args[event]#"') />
 			</cfif>
 		</cfloop>
-		
+
 		<cfloop list="readonly,disabled" index="i">
 			<cfif args[i] eq "true">
 				<cfset arrayAppend(args.common, '#i#="#htmlEditFormat(args[i])#"') />
 			</cfif>
 		</cfloop>
-		
+
 		<cfset args.common = arrayToList(args.common, " ") />
 
 	</cffunction>
-	
+
 	<!------>
-	
+
 	<cffunction name="configureOptions" access="private" output="false" returntype="void">
 		<cfargument name="args" required="true" type="struct" />
-		
+
 		<cfset var array = [] />
 		<cfset var option = "" />
 		<cfset var i = "" />
-		
+
 		<cfif not structKeyExists(args, "options")>
 			<cfset args.options = "" />
 		</cfif>
-	
+
 		<cfif not structKeyExists(args, "optionKey")>
 			<cfset args.optionKey = "id" />
 		</cfif>
-		
+
 		<cfif not structKeyExists(args, "optionValue")>
 			<cfset args.optionValue = "name" />
 		</cfif>
-		
+
 		<cfif not structKeyExists(args, "optionTitle")>
 			<cfset args.optionTitle = args.optionValue />
 		</cfif>
-		
+
 		<!--- if it's a list, convert it to an array --->
 		<cfif isSimpleValue(args.options)>
 
@@ -114,13 +111,13 @@
 				<cfif isObject(args.options[1])>
 
 					<cfloop array="#args.options#" index="option">
-						
+
 						<cfset var item = {
 							id = evaluate("option.#args.optionKey#()"),
 							name = evaluate("option.#args.optionValue#()"),
 							title = evaluate("option.#args.optionTitle#()")
 						} />
-						
+
 						<cfset arrayAppend(array, item) />
 
 					</cfloop>
@@ -130,19 +127,19 @@
 					<cfif args.optionKey neq "id" or args.optionValue neq "name" or args.optionTitle neq "name" or args.optionValue neq args.optionTitle>
 
 						<cfloop array="#args.options#" index="option">
-							
+
 							<cfset var item = {
 								id = option[args.optionKey],
 								name = option[args.optionValue],
 								title = option[args.optionTitle]
 							} />
-							
+
 							<cfset arrayAppend(array, item) />
 
 						</cfloop>
-						
+
 					<cfelse>
-					
+
 						<cfset array = args.options />
 
 					</cfif>
@@ -154,21 +151,21 @@
 		<cfelseif isQuery(args.options)>
 
 			<cfloop query="args.options">
-			
+
 				<cfset var item = {
 					id = args.options[args.optionKey][currentRow],
 					name = args.options[args.optionValue][currentRow],
 					title = args.options[args.optionTitle][currentRow]
 				} />
-				
+
 				<cfset arrayAppend(array, item) />
 
-			</cfloop>			
+			</cfloop>
 
 		</cfif>
-		
+
 		<cfset args.options = array />
-		
+
 		<!--- if we're dealing with options, make sure we're dealing with a simple value --->
 		<cfif not isSimpleValue(args.value)>
 
@@ -181,54 +178,54 @@
 			<cfset args.value = arrayToList(value) />
 
 		</cfif>
-	
+
 	</cffunction>
-	
+
 	<!------>
-	
+
 	<cffunction name="getAllowBinding" access="private" output="false" returntype="boolean">
 		<cfargument name="args" required="true" type="struct" />
-		
+
 		<cfif listFindNoCase(this.bindTags, args.tag)>
 			<cfreturn true />
 		</cfif>
-		
+
 		<cfreturn false />
-		
+
 	</cffunction>
-	
+
 	<!------>
-	
+
 	<cffunction name="getName" access="private" output="false" returntype="string">
 		<cfargument name="args" required="true" type="struct" />
-		
+
 		<cfset var name = args.name />
-		
+
 		<cfif args.binding>
-		
+
 			<cfset var binding = $.bind.get("form") />
-			
+
 			<cfif binding neq "">
-				
+
 				<cfset name = $.string.camelize(binding) & "." & args.name />
-				
+
 			</cfif>
-		
+
 		</cfif>
-		
+
 		<cfif isSimpleValue(name)>
 			<cfset name = trim(name) />
 		</cfif>
 
 		<cfreturn name />
-	
+
 	</cffunction>
 
 	<!------>
-	
+
 	<cffunction name="getID" access="private" output="false" returntype="string">
 		<cfargument name="args" required="true" type="struct" />
-		
+
 		<cfif not structKeyExists(args, "id")>
 			<cfset args.id = replace(args.name, " ", "_", "all") />
 		</cfif>
@@ -236,42 +233,42 @@
 		<cfreturn args.id />
 
 	</cffunction>
-	
+
 	<!------>
-	
+
 	<cffunction name="getValue" access="private" output="false" returntype="string">
 		<cfargument name="args" required="true" type="struct" />
-		
+
 		<cfset var value = "" />
-		
+
 		<cfif structKeyExists(args, "value")>
-			
+
 			<cfset value = args.value />
-		
+
 		<cfelse>
-				
+
 			<cfif args.binding>
-			
+
 				<cfset var binding = $.bind.get("form") />
-				
+
 				<cfif binding neq "">
-					
+
 					<cfif structKeyExists(params, binding)>
 						<cfset value = params[binding]._get(args.name) />
 					</cfif>
-					
+
 				</cfif>
-			
+
 			</cfif>
-			
+
 		</cfif>
-		
+
 		<cfif isSimpleValue(value)>
 			<cfset value = trim(value) />
 		</cfif>
 
 		<cfreturn value />
-	
+
 	</cffunction>
 
 	<!------>
@@ -294,20 +291,20 @@
 		<cfreturn value />
 
 	</cffunction>
-	
+
 	<!------>
-	
+
 	<cffunction name="getEvent" access="private" output="false" returntype="string">
 		<cfargument name="args" required="true" type="struct" />
 		<cfargument name="key" required="true" type="string" />
 
 		<cfset value = "" />
 
-		<cfif structKeyExists(args, key)>			
-			<cfset value = args[key] />		
-		<cfelse>			
-			<cfset value =  $.event.get(key) />			
-		</cfif>	
+		<cfif structKeyExists(args, key)>
+			<cfset value = args[key] />
+		<cfelse>
+			<cfset value =  $.event.get(key) />
+		</cfif>
 
 		<cfif isSimpleValue(value)>
 			<cfset value = trim(value) />
@@ -318,7 +315,7 @@
 	</cffunction>
 
 	<!------>
-	
+
 	<cffunction name="getLabel" access="private" output="false" returntype="string">
 		<cfargument name="args" required="true" type="struct" />
 
@@ -327,7 +324,7 @@
 		<cfif not structKeyExists(args, "label")>
 
 			<cfset args.label = $.string.underscore(args.name) />
-			
+
 			<cfset args.label = $.string.humanize(args.label) />
 
 			<cfif right(args.label, 3) eq " ID">
@@ -341,7 +338,31 @@
 	</cffunction>
 
 	<!------>
-	
+
+	<cffunction name="getURL" access="private" output="false" returntype="string">
+		<cfargument name="args" required="true" type="struct" />
+
+		<cfif not structKeyExists(args, "url")>
+
+			<cfset args.additional = getKey(args, "additional") />
+
+			<cfif not structKeyExists(args, "parameters")>
+
+				<cfset args.parameters.controller = getKey(args, "controller", $.event.controller()) />
+				<cfset args.parameters.action = getKey(args, "action", $.event.action()) />
+
+			</cfif>
+
+			<cfset args.url = $.link.to(args.parameters, args.additional) />
+
+		</cfif>
+
+		<cfreturn trim(args.url) />
+
+	</cffunction>
+
+	<!------>
+
 	<cffunction name="field" access="public" output="false" returntype="string">
 		<cfargument name="field" required="true" type="string" />
 
@@ -376,9 +397,9 @@
 		<cfreturn trim(local.string) />
 
 	</cffunction>
-	
+
 	<!------>
-	
+
 	<cffunction name="_wrapper" access="private" output="false" returntype="string">
 		<cfargument name="args" required="true" type="struct" />
 g
@@ -391,11 +412,11 @@ g
 		<cfif not args.visible>
 			<cfset string = string & ' style="display:none;"' />
 		</cfif>
-		
+
 		<cfreturn string />
 
 	</cffunction>
-	
+
 	<!------>
 
 </cfcomponent>

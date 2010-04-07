@@ -4,9 +4,12 @@
 		<property name="development">
 			<value>${development}</value>
 		</property>
+		<property name="logEvents">
+			<value>${logEvents}</value>
+		</property>
 		<property name="observers">
 			<map>
-				<entry key="factoryLoaded">
+				<entry key="preApplication">
 					<list>
 						<value>metaDataObserver.findObservers</value>
 					</list>
@@ -18,6 +21,11 @@
 						<value>modelInjector.injectModels</value>
 					</list>
 				</entry>
+				<entry key="preRequest">
+					<list>
+						<value>metaDataObserver.findObservers</value>
+					</list>
+				</entry>
 				<entry key="requestStart">
 					<list>
 						<value>scopeManager.addScopes</value>
@@ -27,8 +35,7 @@
 						<value>paramManager.populateParams</value>
 						<value>flashManager.startRequest</value>
 						<value>filterManager.enableFilters</value>
-						<value>metaDataObserver.findObservers</value>
-						<value>routeHandler.handleRoute</value>
+						<value>routeHandler.handleRequest</value>
 					</list>
 				</entry>
 				<entry key="requestEnd">
@@ -70,8 +77,8 @@
 	<bean id="config" class="coldmvc.utils.Config" />
 	
 	<bean id="dao" class="coldmvc.DAO">
-		<property name="development">
-			<value>${development}</value>
+		<property name="logQueries">
+			<value>${logQueries}</value>
 		</property>
 	</bean>
 	
@@ -112,7 +119,11 @@
 		</property>
 	</bean>
 	
-	<bean id="metaDataObserver" class="coldmvc.utils.MetaDataObserver" />
+	<bean id="metaDataObserver" class="coldmvc.utils.MetaDataObserver">
+		<property name="development">
+			<value>${development}</value>
+		</property>
+	</bean>
 	
 	<bean id="modelInjector" class="coldmvc.utils.ModelInjector">
 		<property name="development">
@@ -146,12 +157,24 @@
 		</property>
 	</bean>
 	
+	<bean id="routeDispatcher" class="coldmvc.utils.RouteDispatcher">
+		<property name="defaultLayout">
+			<value>${layout}</value>
+		</property>
+	</bean>
+	
 	<bean id="routeHandler" class="coldmvc.utils.RouteHandler">
 		<property name="defaultController">
 			<value>${controller}</value>
 		</property>
-		<property name="defaultLayout">
-			<value>${layout}</value>
+	</bean>
+	
+	<bean id="router" class="coldmvc.utils.Router">
+		<property name="configPaths">
+			<list>
+				<value>/config/routes.cfm</value>
+				<value>/coldmvc/config/routes.cfm</value>
+			</list>
 		</property>
 	</bean>
 	

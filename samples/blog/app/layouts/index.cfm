@@ -18,12 +18,12 @@
 	<body>
 		<div id="navigation">
 			<ul>
-				<li><a href="#linkTo('create')#">New Post</a></li>
+				<li><a href="#linkTo({action='create'})#">New Post</a></li>
 				<li>Sign In</li>
 			</ul>
 		</div>
 		<div id="header">
-			<h1><a href="#linkTo(controller='post', action='list')#">Bears. Beets. Battlestar Galactica.</a></h1>
+			<h1><a href="#linkTo({action='list'})#">Bears. Beets. Battlestar Galactica.</a></h1>
 		</div>
 		<div id="wrapper">
 			<div id="content">
@@ -53,7 +53,8 @@
 						<h4>Categories</h4>
 						<ul>
 							<each in="#categories#" value="category">
-								<li><a href="#linkTo(url=category.url())#">#category.name()# (#arrayLen(category.posts())#)</a></li>
+								<cfset parameters = {action = "category", id=category } />
+								<li><a href="#linkTo(parameters)#">#category.name()# (#arrayLen(category.posts())#)</a></li>
 							</each>
 						</ul>
 					</div>

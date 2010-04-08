@@ -8,8 +8,7 @@
 		<div class="categories">
 			Categories:
 			<each in="#post.categories()#" value="category" index="i" count="count">
-				<cfset parameters = {action = "category", id=category } />
-				<a href="#linkTo(parameters)#">#category.name()#</a><cfif i neq count>, </cfif>
+				<a href="#categoryURL(category)#">#category.name()#</a><cfif i neq count>, </cfif>
 			</each>
 		</div>
 	</cfif>

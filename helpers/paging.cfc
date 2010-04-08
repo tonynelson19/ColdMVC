@@ -10,10 +10,10 @@ component {
 		args.action = $.event.action();
 
 		if (querystring == "") {
-			return $.link.to(parameters=args, additional=pars);
+			return $.link.to(parameters=args, querystring=pars);
 		}
 		else {
-			return $.link.to(parameters=args, additional="#querystring#&#pars#");
+			return $.link.to(parameters=args, querystring="#querystring#&#pars#");
 		}
 
 	}

@@ -8,5 +8,5 @@
 </cfif>
 
 <br />
-<cfif page lt pages>	<a href="#linkTo(additional='page=#page+1#')#">Older Posts</a></cfif><cfif page gt 1>	<a href="#linkTo(additional='page=#page-1#')#">Newer Posts</a></cfif>
+<cfif page lt pages>	<a href="#linkTo('page=#page+1#')#">Older Posts</a></cfif><cfif page gt 1>	<a href="#linkTo('page=#page-1#')#">Newer Posts</a></cfif>
 </cfoutput>

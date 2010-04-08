@@ -53,8 +53,7 @@
 						<h4>Categories</h4>
 						<ul>
 							<each in="#categories#" value="category">
-								<cfset parameters = {action = "category", id=category } />
-								<li><a href="#linkTo(parameters)#">#category.name()# (#arrayLen(category.posts())#)</a></li>
+								<li><a href="#categoryURL(category)#">#category.name()# (#arrayLen(category.posts())#)</a></li>
 							</each>
 						</ul>
 					</div>

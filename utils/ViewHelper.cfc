@@ -344,7 +344,7 @@
 
 		<cfif not structKeyExists(args, "url")>
 
-			<cfset args.additional = getKey(args, "additional") />
+			<cfset args.querystring = getKey(args, "querystring") />
 
 			<cfif not structKeyExists(args, "parameters")>
 
@@ -353,7 +353,7 @@
 
 			</cfif>
 
-			<cfset args.url = $.link.to(args.parameters, args.additional) />
+			<cfset args.url = $.link.to(args.parameters, args.querystring) />
 
 		</cfif>
 

@@ -30,11 +30,24 @@ component {
 
 	}
 
-	function redirect() {
+	function redirect(any parameters, string querystring) {
 
 		$.factory.get("applicationContext").publishEvent("requestEnd");
 
-		location($.link.to(parameters=arguments), false);
+		if (isSimpleValue(arguments.parameters)) {
+			arguments.querystring = arguments.parameters;
+			arguments.parameters = {};
+		}
+
+		if (!structKeyExists(arguments, "parameters")) {
+			arguments.parameters = {};
+		}
+
+		if (!structKeyExists(arguments, "querystring")) {
+			arguments.querystring = "";
+		}
+
+		location($.link.to(parameters=arguments, querystring=querystring), false);
 
 	}
 

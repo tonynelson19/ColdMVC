@@ -50,7 +50,7 @@ component {
 
 	}
 
-	public function buildURL(required string name, required struct parameters, required string additional) {
+	public function buildURL(required string name, required struct parameters, required string querystring) {
 
 		var path = router.generate(name, parameters);
 
@@ -61,8 +61,8 @@ component {
 				parameters.controller = $.event.controller();
 			}
 
-			if (!structKeyExists(parameters, "controller")) {
-				parameters.controller = $.event.controller();
+			if (!structKeyExists(parameters, "action")) {
+				parameters.action = $.event.action();
 			}
 
 			path = router.generate(name, parameters);
@@ -71,12 +71,12 @@ component {
 
 		path = getBaseURL() & path;
 
-		if (additional != "") {
-			if (left(additional, 1) == "##") {
-				path = path & additional;
+		if (querystring != "") {
+			if (left(querystring, 1) == "##") {
+				path = path & querystring;
 			}
 			else {
-				path = path & "?" & additional;
+				path = path & "?" & querystring;
 			}
 
 		}

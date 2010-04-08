@@ -10,7 +10,6 @@ component {
 	public any function init() {
 		routes = [];
 		namedRoutes = {};
-		parameterLists = {};
 		models = {};
 		return this;
 	}
@@ -46,7 +45,33 @@ component {
 		// remove URL from the end
 		var namedRoute = left(method, len(method)-3);
 
-		return $.link.to(name=namedRoute, parameters=parameters[1]);
+		var plugin = {};
+		plugin.parameters = {};
+		plugin.querystring = "";
+
+		if (structKeyExists(parameters, "1")) {
+			parsePluginParameter(plugin, parameters[1]);
+		}
+
+		if (structKeyExists(parameters, "2")) {
+			parsePluginParameter(plugin, parameters[2]);
+		}
+
+		return $.link.to(name=namedRoute, parameters=plugin.parameters, querystring=plugin.querystring);
+
+	}
+
+	private void function parsePluginParameter(required struct plugin, required any parameter) {
+
+		if (isSimpleValue(parameter)) {
+			plugin.querystring = parameter;
+		}
+		else if (isObject(parameter)) {
+			plugin.parameters.id = parameter;
+		}
+		else if (isStruct(parameter)) {
+			plugin.parameters = parameter;
+		}
 
 	}
 
@@ -106,7 +131,7 @@ component {
 		}
 
 		// create a list of parameters to check against when generating routes
-		route.parameterList = listSort(arrayToList(route.parameters), "textnocase");
+		route.parameterList = createParameterList(route.parameters);
 
 		// build out a regex to match again the path
 		route.expression = route.pattern;
@@ -134,14 +159,6 @@ component {
 
 		// add the route to the array of routes for this model
 		arrayAppend(models[route.model], route);
-
-		// create an array of all the parameter lists for quicker generation lookups
-		if (!structKeyExists(parameterLists, route.parameterList)) {
-			parameterLists[route.parameterList] = [];
-		}
-
-		// add the route to the array of routes that match this parameters list
-		arrayAppend(parameterLists[route.parameterList], route);
 
 		// if the route has a name, add it to the named route
 		if (route.name != "") {
@@ -215,51 +232,30 @@ component {
 	public string function generate(required string name, required struct parameters) {
 
 		var path = "";
+		var parameterList = "";
 		var flattenedParameters = flattenParameters(parameters);
-		var parameterList = listSort(structKeyList(parameters), "textnocase");
 		var i = "";
 
-		// if the name matches a named route
-		if (structKeyExists(namedRoutes, name)) {
+		// if there are routes that pertain to models
+		if (!structIsEmpty(models)) {
 
-			var route = namedRoutes[name];
+			// if an action and an id were passed in and the id is an object
+			if (structKeyExists(parameters, "id") && isObject(parameters.id)) {
 
-			// make sure all the required parameters were passed in
-			if (route.parameterList == parameterList) {
+				// get the name of the model
+				var model = $.model.name(parameters.id);
 
-				// if all the parameters passed their requirements
-				if (validateRequirements(route.requirements, flattenedParameters)) {
+				// check to see if there are any routes defined for this model
+				if (structKeyExists(models, model)) {
 
-					// then return the populated path
-					return populateParameters(route.pattern, flattenedParameters);
+					for (i=1; i <= arrayLen(models[model]); i++) {
 
-				}
+						var route = models[model][i];
 
-			}
+						var combinedParameters = combineParameters(parameters, route);
 
-		}
-		else {
-
-			// if there are routes that pertain to models
-			if (!structIsEmpty(models)) {
-
-				// if an action and an id were passed in and the id is an object
-				if (structKeyExists(parameters, "action") && structKeyExists(parameters, "id") && isObject(parameters.id)) {
-
-					// get the name of the model
-					var model = $.model.name(parameters.id);
-
-					// check to see if there are any routes defined for this model
-					if (structKeyExists(models, model)) {
-
-						for (i=1; i <= arrayLen(models[model]); i++) {
-
-							var route = models[model][i];
-
-							if (route.defaults.action == parameters.action) {
-								return populateModel(route.generates, parameters);
-							}
-
+						if (route.defaults.action == combinedParameters.action) {
+							return populatePathForModel(route.generates, combinedParameters);
 						}
 
 					}
@@ -268,15 +264,40 @@ component {
 
 			}
 
-			// check to see if there are any routes defined for this set of parameters
-			if (structKeyExists(parameterLists, parameterList)) {
+		}
 
-				var parameter = "";
+		// if the name matches a named route
+		if (structKeyExists(namedRoutes, name)) {
 
-				// loop over all the routes with the same parameter lists
-				for (i=1; i <= arrayLen(parameterLists[parameterList]); i++) {
+			var route = namedRoutes[name];
+			var combinedParameters = combineParameters(flattenedParameters, route);
+			parameterList = createParameterList(combinedParameters);
 
-					var route = parameterLists[parameterList][i];
+			// make sure all the required parameters were passed in
+			if (route.parameterList == parameterList) {
+
+				// if all the parameters passed their requirements
+				if (validateRequirements(route.requirements, combinedParameters)) {
+
+					// then return the populated path
+					return populateParameters(route.pattern, combinedParameters);
+
+				}
+
+			}
+
+		}
+		else {
+
+			// loop over all the routes
+			for (i=1; i <= arrayLen(routes); i++) {
+
+				var route = routes[i];
+				var combinedParameters = combineParameters(flattenedParameters, route);
+				parameterList = createParameterList(combinedParameters);
+
+				// make sure all the required parameters were passed in
+				if (route.parameterList == parameterList) {
 
 					// if all the parameters passed their requirements
 					if (validateRequirements(route.requirements, flattenedParameters)) {
@@ -351,7 +372,7 @@ component {
 
 	}
 
-	private string function populateModel(required string path, required struct parameters) {
+	private string function populatePathForModel(required string path, required struct parameters) {
 
 		var continueLoop = true;
 		var remaining = path;
@@ -408,6 +429,26 @@ component {
 		}
 
 		return path;
+
+	}
+
+	private struct function combineParameters(required struct parameters, required struct route) {
+
+		var combined = {};
+		structAppend(combined, parameters);
+		structAppend(combined, route.defaults);
+		return combined;
+
+	}
+
+	private string function createParameterList(required any parameters) {
+
+		if (isArray(parameters)) {
+			return listSort(arrayToList(parameters), "textnocase");
+		}
+		else {
+			return listSort(structKeyList(parameters), "textnocase");
+		}
 
 	}
 

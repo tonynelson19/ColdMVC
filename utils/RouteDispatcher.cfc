@@ -41,8 +41,6 @@ component {
 		// call the action
 		callMethods(controller, "Action");
 
-		var view = $.event.view();
-
 		// find the layout for the controller and action
 		var layout = $.controller.layout($.event.controller(), $.event.action());
 
@@ -59,13 +57,16 @@ component {
 			callMethods("layoutController", "Layout");
 		}
 
+		var view = $.event.view();
+		var output = "";
+
 		// if the layout exists, render it
-		if (renderer.layoutExists()) {
-			var output = renderer.renderLayout();
+		if (renderer.layoutExists(layout)) {
+			output = renderer.renderLayout(layout);
 		}
-		// the layout didn't exists, so just render the view
+		// the layout didn't exists, so try to render the view
 		else {
-			var output = renderer.renderView();
+			output = renderer.renderView(view);
 		}
 
 		writeOutput(output);

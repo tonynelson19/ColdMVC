@@ -28,6 +28,7 @@
 				</entry>
 				<entry key="requestStart">
 					<list>
+						<value>modelInjector.clearCache</value>
 						<value>scopeManager.addScopes</value>
 						<value>helperManager.addHelpers</value>
 						<value>tagManager.generateTags</value>
@@ -154,6 +155,9 @@
 	<bean id="renderer" class="coldmvc.utils.Renderer">
 		<property name="development">
 			<value>${development}</value>
+		</property>
+		<property name="logTemplateGeneration">
+			<value>${logTemplateGeneration}</value>
 		</property>
 	</bean>
 	

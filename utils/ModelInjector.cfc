@@ -22,6 +22,15 @@ component {
 
 	}
 
+	public void function clearCache() {
+
+		// if you're in development mode, clear the cache each request in case the models change
+		if (development) {
+			cache = {};
+		}
+
+	}
+
 	public void function injectModels(required string event) {
 
 		// if you're not in development mode, then inject the models now during applicationStart

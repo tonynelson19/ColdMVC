@@ -237,6 +237,7 @@ component {
 			layout = "index",
 			logEvents = "false",
 			logQueries = "false",
+			logTemplateGeneration = "false",
 			modelPrefix = "_",
 			reloadKey = "init",
 			reloadPassword = "",

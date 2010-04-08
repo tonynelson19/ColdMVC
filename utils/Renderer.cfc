@@ -7,6 +7,7 @@ component {
 	property tagManager;
 	property pluginManager;
 	property development;
+	property logTemplateGeneration;
 
 	public any function init() {
 		loaded = false;
@@ -15,6 +16,10 @@ component {
 
 	public void function generateTemplates() {
 
+		// grab the content from the tagManager and store it locally for performance gains
+		tagContent = tagManager.getContent();
+
+		// if the files haven't been generated yet (onApplicationStart) or you're in development mode, generate the files
 		if (!loaded || development) {
 			generateFiles();
 		}
@@ -25,46 +30,39 @@ component {
 
 	private void function delete(string directory) {
 
-		var expanded = expandPath("/#directory#/");
+		// delete and recreate the folder
+		directory = expandPath("/#directory#/");
 
-		if (directoryExists(expanded)) {
-			directoryDelete(expanded, true);
+		// if it exists, delete the directory
+		if (directoryExists(directory)) {
+			directoryDelete(directory, true);
 		}
 
-		directoryCreate(expanded);
+		// now create the empty directory
+		directoryCreate(directory);
 
 	}
 
-	private function generate(string directory) {
+	private void function generate(string directory) {
 
-		var i = "";
-		var tagContent = tagManager.getContent();
-
+		// if the directory exists, loop over all the files and generate the templates
 		if (directoryExists(expandPath("/app/#directory#/"))) {
 
-			var files = directoryList(expandPath("/app/#directory#/"), true, "path", "*.cfm");
+			// only generate files with underscores, since those files are never accessed directory
+			var files = directoryList(expandPath("/app/#directory#/"), true, "path", "*_*.cfm");
+			var i = "";
 
 			for (i=1; i <= arrayLen(files); i++) {
-
-				var file = replace(files[i], "\", "/", "all");
-				var generated = replace(file, "/app/#directory#/", "/.generated/#directory#/");
-				var content = tagContent & fileRead(file);
-				var path = getDirectoryFromPath(generated);
-
-				if (!directoryExists((path))) {
-					directoryCreate(path);
-				}
-
-				fileWrite(generated, content);
-
+				generateTemplate(directory, files[i]);
 			}
 
 		}
 
 	}
 
-	private function generateFiles() {
+	private void function generateFiles() {
 
+		// delete and recreate all views and layouts
 		lock name="coldmvc.utils.Renderer" type="exclusive" timeout="5" throwontimeout="true" {
 			delete("views");
 			delete("layouts");
@@ -74,71 +72,113 @@ component {
 
 	}
 
-	private string function getTemplate(required struct args, required string type) {
+	private void function generateTemplate(required string directory, required string path) {
 
-		var path = "";
+		// make the file path OS agnostic
+		path = replace(path, "\", "/", "all");
 
-		if (structKeyExists(args, type)) {
-			path = "/#type#s/" & args[type];
-		}
-		else {
-			path = "/#type#s/" & $.event.get(type) & ".cfm";
+		if (logTemplateGeneration) {
+			writeLog("Generating template: #path#");
 		}
 
-		if (right(path, 4) != ".cfm") {
-			path = path & ".cfm";
+		// switch the path to the generated folder
+		var generated = replace(path, "/app/#directory#/", "/.generated/#directory#/");
+
+		// get the contect from the view/layout
+		var content = tagContent & fileRead(path);
+
+		// now get the directory for the generated template
+		directory = getDirectoryFromPath(generated);
+
+		// if the directory doesn't exist, create it
+		if (!directoryExists((directory))) {
+			directoryCreate(directory);
 		}
 
-		return path;
+		// now write the generated file to disk
+		fileWrite(generated, content);
 
 	}
 
-	public boolean function layoutExists(string layout) {
-		return templateExists(arguments, "layout");
+	private string function lazyGenerate(required string directory, required string path) {
+
+		// build the full path to the template
+		var template = "/#directory#/#path#";
+
+		if (right(template, 4) != ".cfm") {
+			template = template & ".cfm";
+		}
+
+		var expanded = expandPath(template);
+
+		if (!fileExists(expanded)) {
+
+			// make the file path OS agnostic
+			expanded = replace(expanded, "\", "/", "all");
+
+			// get the path to the ungenerated template
+			var original = replace(expanded, "/.generated/#directory#/", "/app/#directory#/");
+
+			// if the original file exists
+			if (fileExists(original)) {
+
+				// then generate the template
+				generateTemplate(directory, original);
+
+			}
+
+		}
+
+		return template;
+
 	}
 
-	private string function render(any obj, string template) {
+	public boolean function layoutExists(required string layout) {
+		return templateExists("layouts", layout);
+	}
 
-		pluginManager.addPlugins(obj);
-		beanInjector.autowire(obj);
-		return obj._render(template);
+	public boolean function viewExists(required string view) {
+		return templateExists("views", view);
+	}
+
+	private boolean function templateExists(required string directory, required string path) {
+
+		var template = lazyGenerate(directory, path);
+
+		return fileExists(expandPath(template));
 
 	}
 
-	public string function renderLayout(string layout) {
+	public string function renderLayout(required string layout) {
+		return renderTemplate("layouts", layout, "coldmvc.Layout");
+	}
 
-		var template = getTemplate(arguments, "layout");
+	public string function renderView(required string view) {
+		return renderTemplate("views", view, "coldmvc.View");
+	}
+
+	private string function renderTemplate(required string directory, required string path, required string class) {
+
+		var template = lazyGenerate(directory, path);
 		var output = "";
 
 		if (fileExists(expandPath(template))) {
-			var _layout = new coldmvc.Layout();
-			output = render(_layout, template);
+
+			var obj = createObject("component", class);
+
+			// add all the plugins to the object
+			pluginManager.addPlugins(obj);
+
+			// now autowire the object
+			beanInjector.autowire(obj);
+
+			// now call the object's render method
+			output = obj._render(template);
+
 		}
 
 		return output;
 
-	}
-
-	public string function renderView(string view) {
-
-		var template = getTemplate(arguments, "view");
-		var output = "";
-
-		if (fileExists(expandPath(template))) {
-			var _view = new coldmvc.View();
-			output = render(_view, template);
-		}
-
-		return output;
-
-	}
-
-	private boolean function templateExists(struct args, string type) {
-		return fileExists(expandPath(getTemplate(args, type)));
-	}
-
-	public boolean function viewExists(string view) {
-		return templateExists(arguments, "view");
 	}
 
 }

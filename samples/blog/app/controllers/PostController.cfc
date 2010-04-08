@@ -112,6 +112,8 @@ component {
 
 		post.populate(params.post);
 
+		post.save();
+
 		redirect({action="show", id=post});
 
 	}

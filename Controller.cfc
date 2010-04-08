@@ -77,8 +77,13 @@ component {
 		var id = $.params.get("#__singular#id");
 
 		// check for user.id with binding
-		if ($.params.has("#__singular#.id")) {
-			id = $.params.get("#__singular#.id");
+		if (structKeyExists(params, __singular)) {
+			if (isStruct(params[__singular])) {
+				if (structKeyExists(params[__singular], "id")) {
+					id = params[__singular].id;
+				}
+			}
+
 		}
 
 		var model = __Model.get(id);

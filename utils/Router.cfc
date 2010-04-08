@@ -251,7 +251,6 @@ component {
 					for (i=1; i <= arrayLen(models[model]); i++) {
 
 						var route = models[model][i];
-
 						var combinedParameters = combineParameters(parameters, route);
 
 						if (route.defaults.action == combinedParameters.action) {
@@ -435,8 +434,8 @@ component {
 	private struct function combineParameters(required struct parameters, required struct route) {
 
 		var combined = {};
-		structAppend(combined, parameters);
-		structAppend(combined, route.defaults);
+		structAppend(combined, parameters, false);
+		structAppend(combined, route.defaults, false);
 		return combined;
 
 	}

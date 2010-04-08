@@ -155,6 +155,7 @@ component {
 					controller.key = $.string.underscore(controller.key);
 				}
 
+				// check for a default action for the controller
 				if (structKeyExists(metaData, "action")) {
 					controller.action = metaData.action;
 				}
@@ -162,8 +163,16 @@ component {
 					controller.action = $.config.get("action");
 				}
 
+				// get the directory where the views should live
+				if (structKeyExists(metaData, "directory")) {
+					controller.directory = metaData.directory;
+				}
+				else {
+					controller.directory = controller.key;
+				}
+
 				controller.layout = getLayout(controller.key, metaData);
-				controller.methods = getMethods(controller.key, controller.layout, metaData);
+				controller.methods = getMethods(controller.directory, controller.layout, metaData);
 				controllers[controller.key] = controller;
 
 			}
@@ -174,7 +183,7 @@ component {
 
 	}
 
-	private struct function getMethods(required string controller, required string layout, required struct metaData) {
+	private struct function getMethods(required string directory, required string layout, required struct metaData) {
 
 		var methods = {};
 		var i = "";
@@ -184,7 +193,7 @@ component {
 			var method = metaData.functions[i];
 
 			if (!structKeyExists(method, "view")) {
-				method["view"] = buildView(controller, method.name);
+				method["view"] = buildView(directory, method.name);
 			}
 
 			if (!structKeyExists(method, "layout")) {

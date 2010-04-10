@@ -1,5 +1,5 @@
-<fieldset label="Add a Post">
-	<form action="save" bind="post">
+<c:fieldset label="Add a Post">
+	<c:form action="save" bind="post">
 		<cfinclude template="_form.cfm" />
-	</form>
-</fieldset>
+	</c:form>
+</c:fieldset>

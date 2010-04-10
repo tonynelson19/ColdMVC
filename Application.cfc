@@ -242,7 +242,7 @@ component {
 			reloadKey = "init",
 			reloadPassword = "",
 			sesURLs = "false",
-			tagPrefix = "",
+			tagPrefix = "c",
 			view = "index"
 		};
 

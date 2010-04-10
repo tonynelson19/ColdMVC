@@ -176,7 +176,7 @@ component {
 
 	}
 
-	public any function onMissingMethod(string missingMethodName, struct missingMethodArguments) {
+	public any function onMissingMethod(required string missingMethodName, required struct missingMethodArguments) {
 		return DAO.missingMethod(this, missingMethodName, missingMethodArguments);
 	}
 

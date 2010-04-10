@@ -57,6 +57,7 @@ component {
 			callMethods("layoutController", "Layout");
 		}
 
+		// get the view from the event
 		var view = $.event.view();
 		var output = "";
 
@@ -74,6 +75,13 @@ component {
 	}
 
 	private void function callMethods(required string beanName, required string type) {
+
+		/*
+			possible TODO: after publishing each event,
+			check to see if the current event's controller and action have changed,
+			which could have happened if applying security filtering.
+			depending on the changes, this method could maybe use some heavy refactoring...
+		*/
 
 		var action = $.event.get(type);
 
@@ -123,6 +131,7 @@ component {
 
 	private void function callMethod(required string beanName, required string action) {
 
+		// make sure the requested beanName actually exists
 		if (beanFactory.containsBean(beanName)) {
 
 			var bean = beanFactory.getBean(beanName);

@@ -1,7 +1,7 @@
 <cfoutput>
-<each in="#posts#" value="post">
+<c:each in="#posts#" value="post">
 	<cfinclude template="_post.cfm" />
-</each>
+</c:each>
 
 <cfif arrayIsEmpty(posts)>
 	There are no posts

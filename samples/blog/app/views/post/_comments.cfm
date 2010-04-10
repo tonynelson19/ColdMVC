@@ -3,7 +3,7 @@
 <div class="comments">
 	<h3>#arrayLen(post.comments())# Comment<cfif arrayLen(post.comments()) neq 1>s</cfif></h3>
 	<ul>
-		<each in="#post.comments()#" value="comment" index="i">
+		<c:each in="#post.comments()#" value="comment" index="i">
 			<li>
 				<a name="#i#"></a>
 				<h5>
@@ -20,21 +20,21 @@
 					#comment.body()#
 				</div>
 			</li>
-		</each>
+		</c:each>
 	</ul>
 </div>
 </cfoutput>
 
 <a name="comment"></a>
-<fieldset label="Add a Comment">
-	<form action="addComment" bind="comment">
-		<hidden name="postID" value="#post.id()#" />
-		<input name="author" />
-		<input name="email" />
-		<input name="website" />
-		<textarea name="body" label="Comment" />
-		<buttons>
-			<submit label="Add Comment" />
-		</buttons>
-	</form>
-</fieldset>
+<c:fieldset label="Add a Comment">
+	<c:form action="addComment" bind="comment">
+		<c:hidden name="postID" value="#post.id()#" />
+		<c:input name="author" />
+		<c:input name="email" />
+		<c:input name="website" />
+		<c:textarea name="body" label="Comment" />
+		<c:buttons>
+			<c:submit label="Add Comment" />
+		</c:buttons>
+	</c:form>
+</c:fieldset>

@@ -10,25 +10,33 @@ component {
 
 	public void function handleRequest(string event) {
 
+		// parse the path info from the script
 		var path = parseURL();
+
+		// build the parameters from the path
 		var parameters = router.recognize(path);
 
+		// check to see if a controller was returned from the router
 		if (structKeyExists(parameters, "controller")) {
 			var controller = parameters.controller;
 			structDelete(parameters, "controller");
 		}
+		// if a controller wasn't returned, use the default controller
 		else {
 			var controller = defaultController;
 		}
 
+		// check to see if an action was returned from the router
 		if (structKeyExists(parameters, "action")) {
 			var action = parameters.action;
 			structDelete(parameters, "action");
 		}
+		// if an action wasn't returned, use the default action for the controller
 		else {
 			var action = $.controller.action(controller);
 		}
 
+		// dispatch the current request
 		routeDispatcher.dispatch(controller, action, parameters);
 
 	}
@@ -52,26 +60,39 @@ component {
 
 	public function buildURL(required string name, required struct parameters, required string querystring) {
 
+		// if the querystring is like "/post/show/5", consider it a manually created url and simply prepend the base url
+		if (left(querystring, 1) == "/") {
+			return getBaseURL() & querystring;
+		}
+
+		// generate a path for the given arguments
 		var path = router.generate(name, parameters);
 
 		// if the router couldn't generate a route, add the event parameters and try again
 		if (path == "") {
 
+			// if a controller wasn't already specified, add the current controller
 			if (!structKeyExists(parameters, "controller")) {
 				parameters.controller = $.event.controller();
 			}
 
+			// if an action wasn't already specified, add the current action
 			if (!structKeyExists(parameters, "action")) {
 				parameters.action = $.event.action();
 			}
 
+			// generate a new path with the added parameters
 			path = router.generate(name, parameters);
 
 		}
 
+		// add the base URL to the generated path
 		path = getBaseURL() & path;
 
+		// if the querystring wasn't empty, append it to the path
 		if (querystring != "") {
+
+			// if the querystring starts with a hash, don't add a question mark
 			if (left(querystring, 1) == "##") {
 				path = path & querystring;
 			}
@@ -87,7 +108,7 @@ component {
 
 	private string function getBaseURL() {
 
-		// start the address
+		// check for ssl
 		if (cgi.https == "off" || cgi.https == "") {
 			var address = "http://#cgi.server_name##cgi.script_name#";
 		}
@@ -95,9 +116,10 @@ component {
 			var address = "https://#cgi.server_name##cgi.script_name#";
 		}
 
-		var sesURLs = config.get("sesURLs");
+		// if sesURLs are enabled
+		if (config.get("sesURLs")) {
 
-		if (sesURLs) {
+			// remove the reference to the index file
 			address = replaceNoCase(address, "/index.cfm", "");
 		}
 

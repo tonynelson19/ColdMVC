@@ -7,9 +7,9 @@
 	<cfif post.has("categories")>
 		<div class="categories">
 			Categories:
-			<each in="#post.categories()#" value="category" index="i" count="count">
+			<c:each in="#post.categories()#" value="category" index="i" count="count">
 				<a href="#categoryURL(category)#">#category.name()#</a><cfif i neq count>, </cfif>
-			</each>
+			</c:each>
 		</div>
 	</cfif>
 	<div class="body">

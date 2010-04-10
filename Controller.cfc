@@ -11,9 +11,7 @@ component {
 	}
 
 	function create() {
-
 		params[__singular] = __Model.new();
-
 	}
 
 	function edit() {
@@ -25,9 +23,7 @@ component {
 	}
 
 	function list() {
-
 		params[__plural] = __Model.list();
-
 	}
 
 	function redirect(any parameters, string querystring) {
@@ -47,16 +43,14 @@ component {
 			arguments.querystring = "";
 		}
 
-		location($.link.to(parameters=arguments, querystring=querystring), false);
+		location($.link.to(parameters=arguments.parameters, querystring=arguments.querystring), false);
 
 	}
 
 	function save() {
 
 		var model = __Model.new();
-
 		model.populate(params[__singular]);
-
 		model.save();
 
 		redirect({action="show", id=model});
@@ -87,9 +81,7 @@ component {
 		}
 
 		var model = __Model.get(id);
-
 		model.populate(params[__singular]);
-
 		model.save();
 
 		redirect({action="show", id=model});

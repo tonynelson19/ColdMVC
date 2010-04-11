@@ -29,13 +29,6 @@ component {
 
 	}
 
-	function edit() {
-
-		var userID = $.params.get("userID");
-		params.user = _User.get(userID);
-
-	}
-
 	function save() {
 
 		var user = _User.get(params.user.id, params.user);
@@ -43,16 +36,6 @@ component {
 
 		flash.message = "User saved successfully";
 		redirect({action="edit", id=user});
-
-	}
-
-	function delete() {
-
-		var user = _User.get(params.userID);
-		user.delete();
-
-		flash.message = "User deleted successfully";
-		redirect("list");
 
 	}
 

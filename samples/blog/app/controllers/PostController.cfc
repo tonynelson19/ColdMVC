@@ -17,7 +17,7 @@ component {
 
 		flash.message = "Comment added successfully";
 
-		redirect(url="#post.url()####arrayLen(post.comments())#");
+		redirect({action="show", id=post}, "###arrayLen(post.comments())#");
 
 	}
 

@@ -10,9 +10,9 @@
 <br />
 
 <cfif page lt pages>
-	<a href="#category.url()#?page=#page+1#">Older Posts</a>
+	<a href="#categoryURL(category, 'page=#page+1#')#">Older Posts</a>
 </cfif>
 <cfif page gt 1>
-	<a href="#category.url()#?page=#page-1#">Newer Posts</a>
+	<a href="#categoryURL(category, 'page=#page-1#')#">Newer Posts</a>
 </cfif>
 </cfoutput>

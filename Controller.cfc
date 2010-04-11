@@ -14,6 +14,18 @@ component {
 		params[__singular] = __Model.new();
 	}
 
+	function delete() {
+
+		var id = $.params.get("#__singular#id");
+
+		var model = __Model.get(id);
+		model.delete();
+
+		flash.message = $.string.capitalize(__singular) & " deleted successfully";
+		redirect({action="list"});
+
+	}
+
 	function edit() {
 
 		var id = $.params.get("#__singular#id");
@@ -53,6 +65,8 @@ component {
 		model.populate(params[__singular]);
 		model.save();
 
+		flash.message = $.string.capitalize(__singular) & " added successfully";
+
 		redirect({action="show", id=model});
 
 	}
@@ -83,6 +97,8 @@ component {
 		var model = __Model.get(id);
 		model.populate(params[__singular]);
 		model.save();
+
+		flash.message = $.string.capitalize(__singular) & " saved successfully";
 
 		redirect({action="show", id=model});
 

@@ -2,25 +2,25 @@
  * @extends coldmvc.Helper
  */
 component {
-	
-	public any function init() {		
+
+	public any function init() {
 		setWords();
 		setPatterns();
 		return this;
 	}
-	
-	public string function singularize(string value) {
-		
+
+	public string function singularize(required string value) {
+
 		var length = len(value);
-		
+
 		if (structKeyExists(plurals, value)) {
 			return plurals[value];
 		}
-		
+
 		if (len(value) <= 2) {
 			return setAndReturn(plurals, value, value);
 		}
-		
+
 		if (length >= 4) {
 
 			if (listFindNoCase("bies,cies,dies,fies,gies,hies,jies,kies,lies,mies,nies,pies,ries,sies,ties,vies,wies,xies,zies", right(value, 4))) {
@@ -35,7 +35,7 @@ component {
 			else if (listFindNoCase("men", right(value, 3))) {
 				return setAndReturn(plurals, value, left(value, len(value)-3) & "man");
 			}
-		
+
 		}
 
 		if (length >= 3) {
@@ -43,7 +43,7 @@ component {
 			if (listFindNoCase("ses,zes,xes", right(value, 3))) {
 				return setAndReturn(plurals, value, left(value, len(value)-2));
 			}
-			
+
 		}
 
 		if (length >= 2) {
@@ -51,64 +51,64 @@ component {
 			if (listFindNoCase("ae", right(value, 2))) {
 				return setAndReturn(plurals, value, left(value, len(value)-1));
 			}
-			
+
 		}
-		
+
 		if (right(value, 1) == "i") {
 			return setAndReturn(plurals, value, left(value, len(value)-1) & "us");
 		}
-		
+
 		if (right(value, 1) == "s") {
 			return setAndReturn(plurals, value, left(value, len(value)-1));
 		}
-		
-		return setAndReturn(plurals, value, value);	
-		
+
+		return setAndReturn(plurals, value, value);
+
 	}
-	
-	public string function pluralize(string value, numeric count="0") {
-		
+
+	public string function pluralize(required string value, numeric count="0") {
+
 		var i = "";
-		
+
 		if (count == 1) {
 			return singularize(value);
 		}
-		
+
 		if (structKeyExists(singulars, value)) {
 			return singulars[value];
 		}
-		
-		for (i=1; i <= arrayLen(patterns); i++) {	
-			
+
+		for (i=1; i <= arrayLen(patterns); i++) {
+
 			if (reFindNoCase(patterns[i].key, value)) {
-				
+
 				var pattern = createObject("java", "java.util.regex.Pattern").compile(javaCast("string",patterns[i].key));
-	
+
 				var matcher = pattern.matcher(javaCast("string", value));
-				
+
 				return setAndReturn(singulars, value, matcher.replaceAll(patterns[i].value));
 
 			}
-			
+
 		}
-		
+
 		return setAndReturn(singulars, value, value);
 
 	}
-	
-	private string function setAndReturn(collection, key, value) {
+
+	private string function setAndReturn(required struct collection, required string key, required any value) {
 		collection[key] = value;
 		return value;
 	}
-	
-	public string function humanize(string value) {
-	
+
+	public string function humanize(required string value) {
+
 		var i = "";
 
 	    value = ucase(value);
 
 	    value = replace(value, "_", " ", "all");
-		
+
 		var list = "A,AN,OF";
 		for (i=1; i <= listLen(list); i++) {
 			value = replace(value," #listGetAt(list,i)# ", " #lcase(listGetAt(list,i))# ", "all");
@@ -117,55 +117,65 @@ component {
 	    value = reReplace(value, "([[:upper:]])([[:upper:]]*)", "\1\L\2\E", "all");
 
 	    return trim(value);
-	
+
 	}
-	
-	public string function pascalize(string value) {
-	
+
+	public string function pascalize(required string value) {
+
 		value = humanize(value);
 
-	    value = replace(value," ","","all");
+	    value = replace(value, " ", "", "all");
 
 	    return value;
-	
+
 	}
-	
-	public string function camelize(string value) {
-		
+
+	public string function camelize(required string value) {
+
 		value = pascalize(value);
 
-	    value = lcase(left(value,"1")) & right(value,len(value)-1);
+	    value = lcase(left(value, 1)) & right(value, len(value)-1);
 
 	    return value;
-		
+
 	}
-	
-	public string function slugify(string value) {
-		
+
+	public string function capitalize(required string value) {
+
+		value = humanize(value);
+
+		value = left(value, 1) & lcase(right(value, len(value)-1));
+
+		return value;
+
+	}
+
+	public string function slugify(required string value) {
+
 		value = lcase(trim(value));
 		value = replace(value, "'", "", "all");
 	    value = reReplace(value, "[^a-z0-9-]", "-", "all");
 	    value = reReplace(value, "-+", "-", "all");
-	    
+
 	    if (left(value, 1) == "-") {
 	        value = right(value, len(value)-1);
 		}
-		
+
 		if (right(value, 1) == "-") {
 			 value = left(value, len(value)-1);
 		}
-		
+
 		return value;
-		
+
 	}
-	
-	public string function underscore(string value) {
-	
+
+	public string function underscore(required string value) {
+
 		var array = [];
 		var i = "";
 
 		for (i=1; i <= len(value); i++) {
-   			
+
 			var char = mid(value, i, 1);
 
 			if (i == 1) {
@@ -184,69 +194,69 @@ component {
   		var name = arrayToList(array, "");
 
   		return trim(lcase(name));
-	
+
 	}
-	
-	public string function isLower(string value) {
+
+	public string function isLower(required string value) {
 		return compare(value, lcase(value)) == 0;
 	}
-	
-	public string function isUpper(string value) {
+
+	public string function isUpper(required string value) {
 		return compare(value, ucase(value)) == 0;
 	}
-	
-	public array function toArray(string value, string delimeter=",") {
-		
+
+	public array function toArray(required string value, string delimeter=",") {
+
 		var array = listToArray(value, delimeter);
-		
+
 		var i = "";
-		
+
 		for (i=1; i <= arrayLen(array); i++) {
 			array[i] = trim(array[i]);
 		}
-		
+
 		return array;
-		
+
 	}
-	
-	public string function toOrdinal(string value) {
-	
+
+	public string function toOrdinal(required string value) {
+
 		var lastTwo = right(value, 2);
-		
+
 		if (listFind("11,12,13", lastTwo)) {
 			var check = lastTwo;
 		}
 		else {
 			var check = right(value, 1);
 		}
-		
+
 		var ordinal = "th";
-		
+
 		// 1st, 2nd, 3rd, everything else is "th"
 		switch(check) {
-			case "1": { 
-				ordinal = "st"; 
-				break; 
+			case "1": {
+				ordinal = "st";
+				break;
 			}
-			case "2": { 
+			case "2": {
 				ordinal = "nd";
-				break; 
+				break;
 			}
-			case "3": { 
-				ordinal = "rd"; 
-				break; 
+			case "3": {
+				ordinal = "rd";
+				break;
 			}
 		}
-		
-		return value & ordinal;				
-		
+
+		return value & ordinal;
+
 	}
-	
+
 	private string function setWords() {
-		
+
 		var words = {};
 		var i = "";
-		
+
 		words["advice"] = "advice";
 		words["afterlife"] = "afterlives";
 		words["air"] = "air";
@@ -365,20 +375,20 @@ component {
 		words["wildebeest"] = "wildebeest";
 		words["wolf"] = "wolves";
 		words["yen"] = "yen";
-		
+
 		singulars = words;
 		plurals = {};
-		
+
 		for (i in words) {
 			plurals[words[i]] = i;
 		}
-	
+
 	}
-	
+
 	private void function setPatterns() {
-		
+
 		patterns = [];
-		 
+
 		addPattern("(.*)fe?", "$1ves");
 		addPattern("(.*)man$", "$1men");
 		addPattern("(.+[aeiou]y)$", "$1s");
@@ -389,11 +399,11 @@ component {
 		addPattern("(octop|vir)us$", "$1i");
 		addPattern("(.+(s|x|sh|ch))$", "$1es");
 		addPattern("(.+)", "$1s");
-	
+
 	}
-	
+
 	private void function addPattern(string key, string value) {
 		arrayAppend(patterns, arguments);
 	}
-	
+
 }

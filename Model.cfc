@@ -36,17 +36,17 @@ component {
 
 	}
 
-	public array function findAll(required string query, struct filters, struct options) {
+	public array function findAll(required string query, struct parameters, struct options) {
 
-		if (isNull(filters)) {
-			filters = {};
+		if (isNull(parameters)) {
+			parameters = {};
 		}
 
 		if (isNull(options)) {
 			options = {};
 		}
 
-		return DAO.findAll(this, query, filters, options);
+		return DAO.findAll(this, query, parameters, options);
 
 	}
 
@@ -117,15 +117,21 @@ component {
 
 	}
 
-	public any function getAll(required string ids) {
-		return DAO.getAll(this, ids);
-	}
-
 	public boolean function has(required string property) {
 
 		var value = _get(property);
 
 		return $.data.count(value) > 0;
+
+	}
+
+	public array function getAll(required string ids, struct options) {
+
+		if (isNull(options)) {
+			arguments.options = {};
+		}
+
+		return DAO.getAll(this, arguments.ids, arguments.options);
 
 	}
 

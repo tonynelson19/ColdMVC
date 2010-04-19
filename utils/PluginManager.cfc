@@ -6,47 +6,29 @@ component {
 	property beanFactory;
 	property configPaths;
 
-	public void function setConfigPaths(array configPaths) {
+	public any function init() {
 		plugins = {};
-		loadPlugins(configPaths);
+		return this;
 	}
 
-	public void function loadPlugins(required array configPaths) {
+	public void function setConfigPaths(required array configPaths) {
 
 		var i = "";
-		var j = "";
 
+		// loop over the array of config files and include them if they exist
 		for (i=1; i <= arrayLen(configPaths); i++) {
-
-			var configPath = expandPath(configPaths[i]);
-
-			if (fileExists(configPath)) {
-
-				var config = xmlParse(fileRead(configPath));
-
-				for (j=1; j <= arrayLen(config.plugins.xmlChildren); j++) {
-
-					var xml = config.plugins.xmlChildren[j];
-
-					var plugin = {
-						name = $.xml.get(xml, "name"),
-						bean = $.xml.get(xml, "bean"),
-						helper = $.xml.get(xml, "helper"),
-						method = $.xml.get(xml, "method"),
-						includeMethod = $.xml.get(xml, "includeMethod", false)
-					};
-
-					addPlugin(plugin.name, plugin.bean, plugin.helper, plugin.method, plugin.includeMethod);
-
-				}
-
+			if (fileExists(expandPath(configPaths[i])) ){
+				include configPaths[i];
 			}
-
 		}
 
 	}
 
-	public void function addPlugin(required string name, string beanName="", string helper="", required string method, boolean includeMethod="false") {
+	public void function add(required string name, string beanName="", string helper="", string method="", boolean includeMethod="false") {
+
+		if (method == "") {
+			method = name;
+		}
 
 		if (!structKeyExists(plugins, arguments.name)) {
 			plugins[arguments.name] = arguments;

@@ -146,8 +146,8 @@
 	<bean id="pluginManager" class="coldmvc.utils.PluginManager">
 		<property name="configPaths">
 			<list>
-				<value>/config/plugins.xml</value>
-				<value>/coldmvc/config/plugins.xml</value>
+				<value>/config/plugins.cfm</value>
+				<value>/coldmvc/config/plugins.cfm</value>
 			</list>
 		</property>
 	</bean>

@@ -88,6 +88,8 @@ component {
 				type=classMetaData.getIdentifierType().getName()
 			};
 
+			property.javatype = getJavaType(property.type);
+
 			entityMetaData.properties[property.name] = property;
 
 			arrayAppend(entityMetaData.propertyNames, property.name);
@@ -101,6 +103,8 @@ component {
 					column=classMetaData.getPropertyColumnNames(propertyNames[i])[1],
 					type=propertyTypes[i].getName()
 				};
+
+				property.javatype = getJavaType(property.type);
 
 				entityMetaData.properties[property.name] = property;
 
@@ -186,6 +190,15 @@ component {
 		var entityName = getEntityName(data);
 
 		return ormGetSessionFactory().getClassMetaData(entityName).getIdentifierPropertyName();
+
+	}
+
+	private string function getJavaType(required string type) {
+
+		if (type == "integer") {
+			return "int";
+		}
+		return type;
 
 	}
 

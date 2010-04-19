@@ -22,7 +22,9 @@ component {
 		operators["endsWith"] = {operator="like", value="%${value}"};
 		operators["isNull"] = {operator="is null", value=""};
 		operators["equal"] = {operator="=", value="${value}"};
+		operators["notIn"] = {operator="not in", value="${value}"};
 		operators["like"] = {operator="like", value="%${value}%"};
+		operators["in"] = {operator="in", value="${value}"};
 
 		operatorArray = listToArray($.list.sortByLen(structKeyList(operators)));
 
@@ -81,16 +83,11 @@ component {
 				counter++;
 
 				var parameter = parameters[i];
-				arrayAppend(query.hql, parameter.alias);
-				arrayAppend(query.hql, parameter.operator.operator);
 
-				if (parameter.operator.value != "") {
-					arrayAppend(query.hql, ":#parameter.property#");
-					query.parameters[parameter.property] = replaceNoCase(parameter.operator.value, "${value}", parameter.value);
-				}
+				buildParameter(query, parameter);
 
 				if (counter < structCount(parameters)) {
-					arrayAppend(query.hql, "and");
+					arrayAppend(query.hql, parameter.conjunction);
 				}
 
 			}
@@ -130,14 +127,8 @@ component {
 			}
 
 			var parameter = parsed.parameters[i];
-			arrayAppend(query.hql, parameter.alias);
-			arrayAppend(query.hql, parameter.operator.operator);
 
-			if (parameter.operator.value != "") {
-				arrayAppend(query.hql, ":#parameter.property#");
-				query.parameters[parameter.property] = replaceNoCase(parameter.operator.value, "${value}", parameters[1]);
-				arrayDeleteAt(parameters, 1);
-			}
+			parameters = buildParameter(query, parameter, parameters);
 
 			if (i < arrayLen(parsed.parameters)) {
 				arrayAppend(query.hql, parameter.conjunction);
@@ -155,6 +146,53 @@ component {
 		}
 
 		return query;
+
+	}
+
+	private array function buildParameter(required struct query, required struct parameter, array parameters) {
+
+		if (!structKeyExists(arguments, "parameters")) {
+			arguments.parameters = [];
+		}
+
+		arrayAppend(query.hql, parameter.alias);
+		arrayAppend(query.hql, parameter.operator.operator);
+
+		if (parameter.operator.value != "") {
+
+			if (structKeyExists(parameter, "value")) {
+				var value = parameter.value;
+			}
+			else {
+				var value = parameters[1];
+			}
+
+			var type = $.model.javatype(parameter.model, parameter.property);
+
+			if (parameter.operator.operator == "in" || parameter.operator.operator == "not in") {
+				arrayAppend(query.hql, "(:#parameter.property#)");
+				query.parameters[parameter.property] = toJavaArray(type, value);
+			}
+			else {
+				arrayAppend(query.hql, ":#parameter.property#");
+
+				// if the value is just the value, make sure it's the property type
+				if (parameter.operator.value == "${value}") {
+					query.parameters[parameter.property] = toJavaType(type, value);
+				}
+				else {
+					query.parameters[parameter.property] = replaceNoCase(parameter.operator.value, "${value}", toJavaType(type, value));
+				}
+
+			}
+
+			if (!arrayIsEmpty(parameters)) {
+				arrayDeleteAt(parameters, 1);
+			}
+
+		}
+
+		return parameters;
 
 	}
 
@@ -209,13 +247,45 @@ component {
 	/**
 		@hint Wrapper for almost all ORM queries that can be used for simple logging
 	*/
-	private any function execute(query, parameters, unique, paging) {
+	private any function execute(required string query, required struct parameters, required boolean unique, required struct options) {
 
 		if (logQueries) {
 			writeLog(serializeJSON(arguments));
 		}
 
-		return ormExecuteQuery(query, parameters, unique, paging);
+		// need to use createQuery() to handle the "in" operator with arrays...
+		// return ormExecuteQuery(query, parameters, unique, options);
+
+		var result = ormGetSession().createQuery(query);
+
+		var parameter = "";
+		for (parameter in parameters) {
+
+			var value = parameters[parameter];
+
+			if (isSimpleValue(value)) {
+				result.setParameter(parameter, value);
+			}
+			else {
+				result.setParameterList(parameter, value);
+			}
+
+		}
+
+		if (structKeyExists(options, "offset") && isNumeric(options.offset)) {
+			result.setFirstResult(options.offset);
+		}
+
+		if (structKeyExists(options, "max") && isNumeric(options.max)) {
+			result.setMaxResults(options.max);
+		}
+
+		if (unique) {
+			return result.uniqueResult();
+		}
+		else {
+			return result.list();
+		}
 
 	}
 
@@ -269,7 +339,6 @@ component {
 
 	private any function _find(required any model, required string query, required struct parameters, required struct options) {
 
-		var paging = parseOptions(options);
 		var unique = parseUnique(options);
 		var sortorder = parseSortOrder(model, options);
 
@@ -277,7 +346,7 @@ component {
 			query = query & " order by " & sortorder;
 		}
 
-		return execute(query, parameters, unique, paging);
+		return execute(query, parameters, unique, options);
 
 	}
 
@@ -402,15 +471,24 @@ component {
 
 	}
 
-	public array function getAll(required any model, required string ids) {
-
-		// TODO: getAll
+	public array function getAll(required any model, required string ids, required struct options) {
 
 		var name = $.model.name(model);
-		var array = [];
+		var alias = $.model.alias(model);
+		var pk = $.model.id(model);
+		var joins = parseInclude(model, options);
+		var query = [];
+		var type = $.model.javatype(name, pk);
 
-		writeDump(local);
-		abort;
+		ids = toJavaArray(type, ids);
+
+		arrayAppend(query, "select #alias# from #name# #alias#");
+		arrayAppend(query, joins);
+		arrayAppend(query, "where #alias#.#pk# in (:id)");
+
+		query = arrayToList(query, " ");
+
+		return findAll(model, query, {"id"=ids}, options);
 
 	}
 
@@ -435,8 +513,11 @@ component {
 		// possible bug with entityLoadByPK, so use hql instead
 		var name = $.model.name(model);
 		var pk = $.model.id(model);
+		var type = $.model.javatype(name, pk);
 
-		return execute("from #name# where #pk# = :id", {id=id}, true, {});
+		id = toJavaType(type, id);
+
+		return execute("from #name# where #pk# = :id", {"id"=id}, true, {});
 
 	}
 
@@ -526,6 +607,7 @@ component {
 		result.parameters = [];
 		result.joins = [];
 
+		var name = $.model.name(model);
 		var alias = $.model.alias(model);
 		var properties = $.model.properties(model);
 		var relationships = $.model.relationships(model);
@@ -549,12 +631,15 @@ component {
 				if (left(method, len(property)) == property) {
 
 					var parameter = {};
+					parameter.model = name;
+					parameter.property = property;
 					parameter.conjunction = "and";
 					parameter.operator = operators["equal"];
-					parameter.property = property;
 
 					if (structKeyExists(related, property)) {
+						parameter.model = related[property].entity;
 						parameter.alias = alias & "_" & related[property].property & ".id";
+						parameter.property = "id";
 						arrayAppend(result.joins, alias & "." & related[property].property);
 					}
 					else {
@@ -610,6 +695,7 @@ component {
 
 			var value = parameters[property];
 			var parameter = {};
+			parameter.conjunction = "and";
 			parameter.operator = "equal";
 			parameter.value = "";
 
@@ -639,7 +725,6 @@ component {
 				parameter.property = properties[property].name;
 				parameter.alias = parameter.model & "." & parameter.property;
 			}
-
 
 			if (isSimpleValue(value)) {
 
@@ -689,23 +774,6 @@ component {
 		}
 
 		return result;
-
-	}
-
-	private struct function parseOptions(required struct options) {
-
-		var result = {};
-
-		if (structKeyExists(options, "max")) {
-			result.maxResults = options.max;
-		}
-
-		if (structKeyExists(options, "offset")) {
-			result.offset = options.offset;
-		}
-
-		return result;
-
 
 	}
 
@@ -881,6 +949,26 @@ component {
 		}
 
 		return model;
+
+	}
+
+	private any function toJavaType(required string type, required any value) {
+		return javaCast(type, value);
+	}
+
+	private any function toJavaArray(required string type, required any value) {
+
+		var result = [];
+
+		if (!isArray(value)) {
+			value = listToArray(value);
+		}
+
+		for (i=1; i <= arrayLen(value); i++) {
+			arrayAppend(result, javaCast(type, value[i]));
+		}
+
+		return result.toArray();
 
 	}
 

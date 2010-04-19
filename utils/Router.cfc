@@ -35,7 +35,7 @@ component {
 
 		// for each named route, add a corresponding view plugin ("post" => postURL())
 		for (namedRoute in namedRoutes) {
-			pluginManager.addPlugin(name="#namedRoute#URL", beanName=beanName, method="handlePlugin", includeMethod="true");
+			pluginManager.add(name="#namedRoute#URL", beanName=beanName, method="handlePlugin", includeMethod="true");
 		}
 
 	}

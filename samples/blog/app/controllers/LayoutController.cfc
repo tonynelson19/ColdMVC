@@ -7,11 +7,11 @@ component {
 	property _Category;
 
 	function index() {
-		
+
 		params.categories = _Category.findAllWithPosts({
 			sort = "name"
 		});
-		
+
 	}
 
 }

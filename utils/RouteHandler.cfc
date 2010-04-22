@@ -13,8 +13,15 @@ component {
 		// parse the path info from the script
 		var path = parseURL();
 
-		// build the parameters from the path
-		var parameters = router.recognize(path);
+		if (path == "/") {
+			var parameters = {};
+			parameters.controller = defaultController;
+			parameters.action = $.controller.action(parameters.controller);
+		}
+		else {
+			// build the parameters from the path
+			var parameters = router.recognize(path);
+		}
 
 		// check to see if a controller was returned from the router
 		if (structKeyExists(parameters, "controller")) {

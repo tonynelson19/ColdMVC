@@ -40,7 +40,7 @@ component {
 
 	function redirect(any parameters, string querystring) {
 
-		$.factory.get("applicationContext").publishEvent("requestEnd");
+		$.factory.get("eventDispatcher").dispatchEvent("requestEnd");
 
 		if (isSimpleValue(arguments.parameters)) {
 			arguments.querystring = arguments.parameters;

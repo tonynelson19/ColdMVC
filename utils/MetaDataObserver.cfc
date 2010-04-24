@@ -4,7 +4,7 @@
 component {
 
 	property beanFactory;
-	property applicationContext;
+	property eventDispatcher;
 	property metaDataFlattener;
 	property development;
 
@@ -12,7 +12,7 @@ component {
 
 		if (event == "preApplicationStart" || development) {
 
-			applicationContext.clearCustomObservers();
+			eventDispatcher.clearCustomObservers();
 
 			var beanDefinitions = beanFactory.getBeanDefinitions();
 			var beanName = "";
@@ -39,7 +39,7 @@ component {
 		var i = "";
 
 		for (i=1; i <= arrayLen(events); i++) {
-			applicationContext.addCustomObserver(events[i], beanName, method.name);
+			eventDispatcher.addCustomObserver(events[i], beanName, method.name);
 		}
 
 	}

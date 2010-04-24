@@ -14,20 +14,20 @@ component {
 			setBeanFactory(beanFactory);
 			beanFactory.getBean("config").setSettings(getSettings());
 
-			publishEvent("preApplication");
-			publishEvent("applicationStart");
+			dispatchEvent("preApplication");
+			dispatchEvent("applicationStart");
 
 		}
 
 	}
 
 	public any function onSessionStart() {
-		publishEvent("sessionStart");
+		dispatchEvent("sessionStart");
 
 	}
 
 	public any function onSessionEnd() {
-		publishEvent("sessionEnd");
+		dispatchEvent("sessionEnd");
 	}
 
 	public any function onRequestStart() {
@@ -41,19 +41,19 @@ component {
 			if (reloadPassword == "" || url[reloadKey] == reloadPassword) {
 				ormReload();
 				onApplicationStart();
-				publishEvent("postReload");
+				dispatchEvent("postReload");
 
 			}
 
 		}
 
-		publishEvent("preRequest");
-		publishEvent("requestStart");
+		dispatchEvent("preRequest");
+		dispatchEvent("requestStart");
 
 	}
 
 	public any function onRequestEnd() {
-		publishEvent("requestEnd");
+		dispatchEvent("requestEnd");
 	}
 
 	private any function createBeanFactory() {
@@ -143,8 +143,8 @@ component {
 		return application.coldmvc.data.beanFactory;
 	}
 
-	private void function publishEvent(string event) {
-		getBeanFactory().getBean("applicationContext").publishEvent(event);
+	private void function dispatchEvent(required string event) {
+		getBeanFactory().getBean("eventDispatcher").dispatchEvent(event);
 	}
 
 	private void function setupApplication() {

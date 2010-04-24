@@ -1,6 +1,41 @@
 <beans default-autowire="byName">
 	
-	<bean id="applicationContext" class="coldmvc.utils.ApplicationContext">
+	<bean id="beanInjector" class="coldmvc.utils.BeanInjector" />
+	
+	<bean id="beanFinder" class="coldmvc.utils.BeanFinder">
+		<property name="directories">
+			<list>
+				<value>/app/controllers/</value>
+				<value>/app/services/</value>
+			</list>
+		</property>
+		<property name="patterns">
+			<list>
+				<value>[\w]+Controller</value>
+				<value>[\w]+Service</value>
+			</list>
+		</property>
+	</bean>
+	
+	<bean id="beanPostProcessor" class="coldmvc.utils.BeanPostProcessor" bean-post-processor="true">
+		<property name="postProcessors">
+			<list>
+				<value>modelInjector</value>
+			</list>
+		</property>
+	</bean>
+	
+	<bean id="collectionParser" class="coldmvc.utils.CollectionParser" />
+	
+	<bean id="config" class="coldmvc.utils.Config" />
+	
+	<bean id="dao" class="coldmvc.DAO">
+		<property name="logQueries">
+			<value>${logQueries}</value>
+		</property>
+	</bean>
+	
+	<bean id="eventDispatcher" class="coldmvc.utils.EventDispatcher">
 		<property name="development">
 			<value>${development}</value>
 		</property>
@@ -45,41 +80,6 @@
 					</list>
 				</entry>
 			</map>
-		</property>
-	</bean>
-	
-	<bean id="beanInjector" class="coldmvc.utils.BeanInjector" />
-	
-	<bean id="beanFinder" class="coldmvc.utils.BeanFinder">
-		<property name="directories">
-			<list>
-				<value>/app/controllers/</value>
-				<value>/app/services/</value>
-			</list>
-		</property>
-		<property name="patterns">
-			<list>
-				<value>[\w]+Controller</value>
-				<value>[\w]+Service</value>
-			</list>
-		</property>
-	</bean>
-	
-	<bean id="beanPostProcessor" class="coldmvc.utils.BeanPostProcessor" bean-post-processor="true">
-		<property name="postProcessors">
-			<list>
-				<value>modelInjector</value>
-			</list>
-		</property>
-	</bean>
-	
-	<bean id="collectionParser" class="coldmvc.utils.CollectionParser" />
-	
-	<bean id="config" class="coldmvc.utils.Config" />
-	
-	<bean id="dao" class="coldmvc.DAO">
-		<property name="logQueries">
-			<value>${logQueries}</value>
 		</property>
 	</bean>
 	

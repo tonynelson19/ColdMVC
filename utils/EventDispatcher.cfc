@@ -16,18 +16,18 @@ component {
 	}
 
 	public void function addSystemObserver(required string event, required string beanName, required string method) {
-		add(systemObservers, arguments);
+		addObserver(systemObservers, arguments);
 	}
 
 	public void function addCustomObserver(required string event, required string beanName, required string method) {
-		add(customObservers, arguments);
+		addObserver(customObservers, arguments);
 	}
 
 	public void function clearCustomObservers() {
 		customObservers = {};
 	}
 
-	public void function add(required struct observers, required struct collection) {
+	public void function addObserver(required struct observers, required struct collection) {
 
 		if (!structKeyExists(observers, collection.event)) {
 			observers[collection.event] = [];
@@ -38,6 +38,29 @@ component {
 			method = collection.method,
 			string = collection.beanName & "." & collection.method
 		});
+
+	}
+
+	public void function dispatchEvent(required string event) {
+
+		var listeners = getListeners(event);
+		var i = "";
+
+		logEvent(event, listeners);
+
+		for (i=1; i <= arrayLen(listeners); i++) {
+
+			var beanName = listeners[i].beanName;
+			var method = listeners[i].method;
+			var bean = getBeanFactory().getBean(beanName);
+
+			var start = getTickCount();
+			evaluate("bean.#method#(event)");
+			var end = getTickCount();
+
+			logListener(beanName, method, start, end);
+
+		}
 
 	}
 
@@ -83,7 +106,7 @@ component {
 		if (logEvents) {
 
 			var count = arrayLen(listeners);
-			var text = "applicationContext.publishEvent(#event#)";
+			var text = "eventDispatcher.dispatchEvent(#event#)";
 
 			if (count > 0) {
 
@@ -109,30 +132,6 @@ component {
 
 		if (logEvents) {
 			writeLog("#beanName#.#method#(): #end-start# ms");
-		}
-
-
-	}
-
-	public void function publishEvent(required string event) {
-
-		var listeners = getListeners(event);
-		var i = "";
-
-		logEvent(event, listeners);
-
-		for (i=1; i <= arrayLen(listeners); i++) {
-
-			var beanName = listeners[i].beanName;
-			var method = listeners[i].method;
-			var bean = getBeanFactory().getBean(beanName);
-
-			var start = getTickCount();
-			evaluate("bean.#method#(event)");
-			var end = getTickCount();
-
-			logListener(beanName, method, start, end);
-
 		}
 
 	}

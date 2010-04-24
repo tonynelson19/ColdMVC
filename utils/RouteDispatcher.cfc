@@ -3,7 +3,7 @@
  */
 component {
 
-	property applicationContext;
+	property eventDispatcher;
 	property beanFactory;
 	property defaultLayout;
 	property renderer;
@@ -19,7 +19,7 @@ component {
 
 		// if the controller is empty, publish the event
 		if (controller == "" ) {
-			applicationContext.publishEvent("missingController");
+			eventDispatcher.dispatchEvent("missingController");
 		}
 
 		// use the values from the event rather than the route in case missingController changed them
@@ -27,12 +27,12 @@ component {
 
 		// check to make sure the factory has the requested controller
 		if (!beanFactory.containsBean(controller)) {
-			applicationContext.publishEvent("invalidController");
+			eventDispatcher.dispatchEvent("invalidController");
 		}
 
 		// check to see if the controller has the specified action
 		if (!$.controller.has($.event.controller(), $.event.action())) {
-			applicationContext.publishEvent("invalidAction");
+			eventDispatcher.dispatchEvent("invalidAction");
 		}
 
 		// use the values from the event rather than the route in case invalidController/invalidAction changed them
@@ -86,16 +86,16 @@ component {
 		var action = $.event.get(type);
 
 		// event => actionStart
-		applicationContext.publishEvent("#lcase(type)#Start");
+		eventDispatcher.dispatchEvent("#lcase(type)#Start");
 
 		// event => preAction
-		applicationContext.publishEvent("pre#type#");
+		eventDispatcher.dispatchEvent("pre#type#");
 
 		// event => pre:UserController
-		applicationContext.publishEvent("pre:#beanName#");
+		eventDispatcher.dispatchEvent("pre:#beanName#");
 
 		// event => pre:UserController.list
-		applicationContext.publishEvent("pre:#beanName#.#action#");
+		eventDispatcher.dispatchEvent("pre:#beanName#.#action#");
 
 		// userController.pre()
 		callMethod(beanName, "pre");
@@ -104,7 +104,7 @@ component {
 		callMethod(beanName, "pre" & action);
 
 		// event => action
-		applicationContext.publishEvent("action");
+		eventDispatcher.dispatchEvent("action");
 
 		// userController.list()
 		callMethod(beanName, action);
@@ -116,16 +116,16 @@ component {
 		callMethod(beanName, "post");
 
 		// event => post:UserController.list
-		applicationContext.publishEvent("post:#beanName#.#action#");
+		eventDispatcher.dispatchEvent("post:#beanName#.#action#");
 
 		// event => post:UserController
-		applicationContext.publishEvent("post:#beanName#");
+		eventDispatcher.dispatchEvent("post:#beanName#");
 
 		// event => postAction
-		applicationContext.publishEvent("post#type#");
+		eventDispatcher.dispatchEvent("post#type#");
 
 		// event => actionEnd
-		applicationContext.publishEvent("#lcase(type)#End");
+		eventDispatcher.dispatchEvent("#lcase(type)#End");
 
 	}
 

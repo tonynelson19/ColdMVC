@@ -5,7 +5,9 @@
 component {
 
 	property beanInjector;
+	property development;
 	property logQueries;
+	property debugManager;
 
 	public any function init() {
 
@@ -281,11 +283,24 @@ component {
 		}
 
 		if (unique) {
-			return result.uniqueResult();
+			var start = getTickCount();
+			var records = result.uniqueResult();
+			var end = getTickCount();
+			var count = 1;
 		}
 		else {
-			return result.list();
+			var start = getTickCount();
+			var records = result.list();
+			var end = getTickCount();
+			var count = arrayLen(records);
 		}
+
+
+		if (development) {
+			debugManager.addQuery(query, parameters, unique, options, end-start, count);
+		}
+
+		return records;
 
 	}
 
@@ -512,12 +527,13 @@ component {
 
 		// possible bug with entityLoadByPK, so use hql instead
 		var name = $.model.name(model);
+		var alias = $.model.alias(model);
 		var pk = $.model.id(model);
 		var type = $.model.javatype(name, pk);
 
 		id = toJavaType(type, id);
 
-		return execute("from #name# where #pk# = :id", {"id"=id}, true, {});
+		return execute("select #alias# from #name# #alias# where #pk# = :id", {"id"=id}, true, {});
 
 	}
 

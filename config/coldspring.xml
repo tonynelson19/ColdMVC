@@ -3,6 +3,9 @@
 	<bean id="beanInjector" class="coldmvc.utils.BeanInjector" />
 	
 	<bean id="beanFinder" class="coldmvc.utils.BeanFinder">
+		<property name="root">
+			<value>${directory}</value>
+		</property>
 		<property name="directories">
 			<list>
 				<value>/app/controllers/</value>
@@ -30,10 +33,15 @@
 	<bean id="config" class="coldmvc.utils.Config" />
 	
 	<bean id="dao" class="coldmvc.DAO">
+		<property name="development">
+			<value>${development}</value>
+		</property>
 		<property name="logQueries">
 			<value>${logQueries}</value>
 		</property>
 	</bean>
+	
+	<bean id="debugManager" class="coldmvc.utils.DebugManager" />
 	
 	<bean id="eventDispatcher" class="coldmvc.utils.EventDispatcher">
 		<property name="development">
@@ -174,6 +182,9 @@
 	</bean>
 	
 	<bean id="router" class="coldmvc.utils.Router">
+		<property name="development">
+			<value>${development}</value>
+		</property>
 		<property name="configPaths">
 			<list>
 				<value>/config/routes.cfm</value>
@@ -202,5 +213,7 @@
 			<value>${tagPrefix}</value>
 		</property>
 	</bean>
+	
+	<bean id="validator" class="hyrule.Validator" />
 	
 </beans>

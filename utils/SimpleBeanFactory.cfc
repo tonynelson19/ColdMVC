@@ -9,7 +9,6 @@ component {
 		factoryPostProcessors = [];
 		beanPostProcessors = [];
 		singletons = {};
-		nonSingletons = {};
 
 		var setting = "";
 
@@ -110,30 +109,13 @@ component {
 
 	public any function getBean(required string beanName) {
 
-		if (structKeyExists(nonSingletons, beanName)) {
+		var beanDef = beanDefinitions[beanName];
 
-			var cache = structGet("request.coldmvc.factory.cache");
-
-			if (!structKeyExists(cache, beanName)) {
-				var bean = createObject("component", nonSingletons[beanName]);
-				processBean(bean, beanName);
-				cache[beanName] = bean;
-			}
-
-			return cache[beanName];
-
+		if (!beanDef.constructed) {
+			constructBean(beanName);
 		}
-		else {
 
-			var beanDef = beanDefinitions[beanName];
-
-			if (!beanDef.constructed) {
-				constructBean(beanName);
-			}
-
-			return beanInstances[beanName];
-
-		}
+		return beanInstances[beanName];
 
 	}
 
@@ -310,13 +292,7 @@ component {
 	}
 
 	public boolean function containsBean(required string beanName) {
-
-		if (structKeyExists(nonSingletons, beanName)) {
-			return true;
-		}
-
 		return structKeyExists(beanDefinitions, beanName);
-
 	}
 
 	private any function parseProperty(required xml xml, struct result) {
@@ -384,32 +360,20 @@ component {
 
 	public void function addBean(required string id, required string class) {
 
-		if (config.development) {
-			nonSingletons[id] = class;
-		}
-		else {
+		singletons[id] = class;
 
-			singletons[id] = class;
-
-			beanDefinitions[id] = {
-				id = id,
-				class = class,
-				constructed = false,
-				autowired = false,
-				properties = {}
-			};
-
-		}
+		beanDefinitions[id] = {
+			id = id,
+			class = class,
+			constructed = false,
+			autowired = false,
+			properties = {}
+		};
 
 	}
 
 	public struct function getBeanDefinitions() {
-
-		var beanDefs = {};
-		structAppend(beanDefs, singletons);
-		structAppend(beanDefs, nonSingletons);
-		return beanDefs;
-
+		return singletons;
 	}
 
 }

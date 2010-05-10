@@ -7,6 +7,7 @@ component {
 	property observers;
 	property logEvents;
 	property development;
+	property debugManager;
 
 	public any function init() {
 		systemObservers = {};
@@ -103,7 +104,7 @@ component {
 
 	private void function logEvent(required string event, required array listeners) {
 
-		if (logEvents) {
+		if (logEvents || development) {
 
 			var count = arrayLen(listeners);
 			var text = "eventDispatcher.dispatchEvent(#event#)";
@@ -118,11 +119,17 @@ component {
 				}
 
 				methods = arrayToList(methods, ", ");
-				text = text & ": " & methods;
+				var string = text & ": " & methods;
 
 			}
 
-			writeLog(text);
+			if (development) {
+				debugManager.addEvent(event, listeners);
+			}
+
+			if (logEvents) {
+				writeLog(string);
+			}
 
 		}
 

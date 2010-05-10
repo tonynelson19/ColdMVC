@@ -154,7 +154,7 @@ component {
 	}
 
 	public string function renderView(required string view) {
-		return renderTemplate("views", view, "coldmvc.View");
+		return renderTemplate("views", view, "coldmvc.utils.View");
 	}
 
 	private string function renderTemplate(required string directory, required string path, required string class) {

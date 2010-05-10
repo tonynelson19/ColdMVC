@@ -5,6 +5,7 @@
 component {
 
 	property DAO;
+	property validator;
 	property createdOn;
 	property createdBy;
 	property updatedOn;
@@ -117,14 +118,6 @@ component {
 
 	}
 
-	public boolean function has(required string property) {
-
-		var value = _get(property);
-
-		return $.data.count(value) > 0;
-
-	}
-
 	public array function getAll(required string ids, struct options) {
 
 		if (isNull(options)) {
@@ -133,6 +126,21 @@ component {
 
 		return DAO.getAll(this, arguments.ids, arguments.options);
 
+	}
+
+	public array function getErrors() {
+		var result = validator.validate(this);
+		return result.getErrors();
+	}
+
+	public boolean function has(required string property) {
+		var value = _get(property);
+		return $.data.count(value) > 0;
+	}
+
+	public boolean function hasErrors() {
+		var result = validator.validate(this);
+		return result.hasErrors();
 	}
 
 	public array function list(struct options) {
@@ -170,7 +178,7 @@ component {
 		if (structKeyExists(this, "set#property#")) {
 
 			if (!structKeyExists(arguments, "value") or isNull(value) or (isSimpleValue(value) and value eq "")) {
-				evaluate("set#property#(javacast('NULL', ''))");
+				evaluate("set#property#(javaCast('null', ''))");
 			}
 			else {
 				evaluate("set#property#(value)");
@@ -180,6 +188,11 @@ component {
 
 		return this;
 
+	}
+
+	public boolean function validate() {
+		var result = validator.validate(this);
+		return result.hasErrors();
 	}
 
 	public any function onMissingMethod(required string missingMethodName, required struct missingMethodArguments) {

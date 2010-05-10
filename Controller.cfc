@@ -1,14 +1,8 @@
 /**
  * @accessors true
- * @extends coldmvc.Component
+ * @extends coldmvc.Singleton
  */
 component {
-
-	property __Model;
-
-	function set__Model(any model) {
-		structAppend(variables, model);
-	}
 
 	function create() {
 		params[__singular] = __Model.new();

@@ -3,6 +3,7 @@
  */
 component {
 
+	property root;
 	property directories;
 	property patterns;
 
@@ -31,8 +32,8 @@ component {
 
 				for (j=1; j <= components.recordCount; j++) {
 
-				 	var beanName = listFirst(components.name[j], ".");
-					beanName = lcase(left(beanName, 1)) & replace(beanName, left(beanName, 1), "");
+				 	var name = listFirst(components.name[j], ".");
+					beanName = lcase(left(name, 1)) & replace(name, left(name, 1), "");
 
 					var bean = {};
 					bean.id = beanName;
@@ -42,10 +43,10 @@ component {
 					folder = getClassPath(folder);
 
 					if (folder == '') {
-						bean.class = classPath & "." & bean.id;
+						bean.class = root & "." & classPath & "." & name;
 					}
 					else {
-						bean.class = classPath & "." & folder & "." & bean.id;
+						bean.class = root & "." & classPath & "." & folder & "." & name;
 					}
 
 					if (!structKeyExists(beans, bean.id)) {

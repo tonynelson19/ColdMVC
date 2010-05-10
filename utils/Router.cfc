@@ -6,6 +6,8 @@ component {
 	property configPaths;
 	property beanName;
 	property pluginManager;
+	property development;
+	property debugManager;
 
 	public any function init() {
 		routes = [];
@@ -218,6 +220,10 @@ component {
 
 				// add the computed parameters to the route
 				structAppend(parameters, computed, false);
+
+				if (development) {
+					debugManager.setRoute(route.pattern);
+				}
 
 				return parameters;
 

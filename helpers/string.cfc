@@ -82,7 +82,7 @@ component {
 
 			if (reFindNoCase(patterns[i].key, value)) {
 
-				var pattern = createObject("java", "java.util.regex.Pattern").compile(javaCast("string",patterns[i].key));
+				var pattern = createObject("java", "java.util.regex.Pattern").compile(javaCast("string", patterns[i].key));
 
 				var matcher = pattern.matcher(javaCast("string", value));
 

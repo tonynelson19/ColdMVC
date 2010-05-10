@@ -1,7 +1,7 @@
 /**
  * @accessors true
- * @extends coldmvc.Template
+ * @extends coldmvc.Singleton
  */
 component {
-   
+
 }

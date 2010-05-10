@@ -39,10 +39,7 @@ component {
 			var reloadPassword = getSetting("reloadPassword");
 
 			if (reloadPassword == "" || url[reloadKey] == reloadPassword) {
-				ormReload();
-				onApplicationStart();
-				dispatchEvent("postReload");
-
+				reload();
 			}
 
 		}
@@ -50,6 +47,12 @@ component {
 		dispatchEvent("preRequest");
 		dispatchEvent("requestStart");
 
+	}
+
+	private void function reload() {
+		ormReload();
+		onApplicationStart();
+		dispatchEvent("postReload");
 	}
 
 	public any function onRequestEnd() {
@@ -91,22 +94,27 @@ component {
 		if (fileExists(configPath)) {
 
 			var content = fileRead(configPath);
-			var xml = xmlParse(content);
-			var i = "";
-			var j = "";
 
-			for (i=1; i <= arrayLen(xml.beans.xmlChildren); i++) {
+			if (isXML(content)) {
 
-				var bean = xml.beans.xmlChildren[i];
+				var xml = xmlParse(content);
+				var i = "";
+				var j = "";
 
-				var exists = xmlSearch(beans, "beans/bean[@id='#bean.xmlAttributes.id#']");
+				for (i=1; i <= arrayLen(xml.beans.xmlChildren); i++) {
 
-				if (arrayLen(exists) == 0) {
+					var bean = xml.beans.xmlChildren[i];
 
-					var imported = xmlImport(beans, bean);
+					var exists = xmlSearch(beans, "beans/bean[@id='#bean.xmlAttributes.id#']");
 
-					for (j=1; j <= arrayLen(imported); j++) {
-						arrayAppend(beans.xmlRoot.xmlChildren, imported[j]);
+					if (arrayLen(exists) == 0) {
+
+						var imported = xmlImport(beans, bean);
+
+						for (j=1; j <= arrayLen(imported); j++) {
+							arrayAppend(beans.xmlRoot.xmlChildren, imported[j]);
+						}
+
 					}
 
 				}

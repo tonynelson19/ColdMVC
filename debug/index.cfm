@@ -2,6 +2,7 @@
 	div#coldmvc_debug {
 		color: #555;
 		font-size: 14px;
+		margin-top: 30px;
 		padding: 5px 30px;
 		line-height: 20px;
 		font-family: Arial, Verdana, Helvetica, sans-serif;

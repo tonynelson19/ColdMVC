@@ -62,6 +62,7 @@
 						<value>scopeManager.addScopes</value>
 						<value>helperManager.addHelpers</value>
 						<value>modelInjector.injectModels</value>
+						<value>router.addNamedRouteViewHelpers</value>
 					</list>
 				</entry>
 				<entry key="preRequest">
@@ -151,15 +152,6 @@
 	
 	<bean id="paramManager" class="coldmvc.utils.ParamManager" />
 	
-	<bean id="pluginManager" class="coldmvc.utils.PluginManager">
-		<property name="configPaths">
-			<list>
-				<value>/config/plugins.cfm</value>
-				<value>/coldmvc/config/plugins.cfm</value>
-			</list>
-		</property>
-	</bean>
-	
 	<bean id="renderer" class="coldmvc.utils.Renderer">
 		<property name="development">
 			<value>${development}</value>
@@ -215,5 +207,14 @@
 	</bean>
 	
 	<bean id="validator" class="hyrule.Validator" />
+	
+	<bean id="viewHelperManager" class="coldmvc.utils.ViewHelperManager">
+		<property name="configPaths">
+			<list>
+				<value>/config/viewhelpers.cfm</value>
+				<value>/coldmvc/config/viewhelpers.cfm</value>
+			</list>
+		</property>
+	</bean>
 	
 </beans>

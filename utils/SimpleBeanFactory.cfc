@@ -128,9 +128,11 @@ component {
 
 		for (i=1; i <= listLen(dependencies); i++) {
 
-			var beanDef = beanDefinitions[listGetAt(dependencies, i)];
+			var id = listGetAt(dependencies, i);
 
-			lock name="coldmvc.utils.SimpleBeanFactory.constructBean.#beanDef.id#" type="exclusive" timeout="5" throwontimeout="true" {
+			lock name="coldmvc.utils.SimpleBeanFactory.constructBean.#id#" type="exclusive" timeout="5" throwontimeout="true" {
+
+				var beanDef = beanDefinitions[id];
 
 				if (!beanDef.constructed) {
 

@@ -28,10 +28,6 @@ component {
 		return "#getBaseURL()#images/#name#";
 	}
 
-	public string function linkToUpload(required string name) {
-		return "#getBaseURL()#uploads/#name#";
-	}
-
 	private string function getBaseURL() {
 		return replaceNoCase(cgi.script_name, "index.cfm", "");
 	}

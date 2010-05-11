@@ -240,6 +240,7 @@ component {
 			action = "index",
 			beanFactory = "coldmvc.utils.SimpleBeanFactory",
 			controller = "",
+			debug = true,
 			development = false,
 			key = "coldmvc",
 			layout = "index",

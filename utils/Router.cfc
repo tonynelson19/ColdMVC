@@ -5,9 +5,10 @@ component {
 
 	property configPaths;
 	property beanName;
-	property pluginManager;
+	property viewHelperManager;
 	property development;
 	property debugManager;
+	property beanFactory;
 
 	public any function init() {
 		routes = [];
@@ -27,52 +28,50 @@ component {
 			}
 		}
 
-		addNamedRoutePlugins();
-
 	}
 
-	private void function addNamedRoutePlugins() {
+	public void function addNamedRouteViewHelpers() {
 
 		var namedRoute = "";
 
-		// for each named route, add a corresponding view plugin ("post" => postURL())
+		// for each named route, add a corresponding view helper ("post" => postURL())
 		for (namedRoute in namedRoutes) {
-			pluginManager.add(name="#namedRoute#URL", beanName=beanName, method="handlePlugin", includeMethod="true");
+			viewHelperManager.add(name="#namedRoute#URL", beanName=beanName, method="handleViewHelper", includeMethod="true");
 		}
 
 	}
 
-	public any function handlePlugin(required string method, required struct parameters) {
+	public any function handleViewHelper(required string method, required struct parameters) {
 
 		// remove URL from the end
 		var namedRoute = left(method, len(method)-3);
 
-		var plugin = {};
-		plugin.parameters = {};
-		plugin.querystring = "";
+		var viewHelper = {};
+		viewHelper.parameters = {};
+		viewHelper.querystring = "";
 
 		if (structKeyExists(parameters, "1")) {
-			parsePluginParameter(plugin, parameters[1]);
+			parseViewHelperParameter(viewHelper, parameters[1]);
 		}
 
 		if (structKeyExists(parameters, "2")) {
-			parsePluginParameter(plugin, parameters[2]);
+			parseViewHelperParameter(viewHelper, parameters[2]);
 		}
 
-		return $.link.to(name=namedRoute, parameters=plugin.parameters, querystring=plugin.querystring);
+		return $.link.to(name=namedRoute, parameters=viewHelper.parameters, querystring=viewHelper.querystring);
 
 	}
 
-	private void function parsePluginParameter(required struct plugin, required any parameter) {
+	private void function parseViewHelperParameter(required struct viewHelper, required any parameter) {
 
 		if (isSimpleValue(parameter)) {
-			plugin.querystring = parameter;
+			viewHelper.querystring = parameter;
 		}
 		else if (isObject(parameter)) {
-			plugin.parameters.id = parameter;
+			viewHelper.parameters.id = parameter;
 		}
 		else if (isStruct(parameter)) {
-			plugin.parameters = parameter;
+			viewHelper.parameters = parameter;
 		}
 
 	}

@@ -198,6 +198,7 @@ component {
 		if (type == "integer") {
 			return "int";
 		}
+
 		return type;
 
 	}

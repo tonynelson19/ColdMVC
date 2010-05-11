@@ -5,7 +5,7 @@ component {
 
 	property beanInjector;
 	property tagManager;
-	property pluginManager;
+	property viewHelperManager;
 	property development;
 	property logTemplateGeneration;
 
@@ -166,8 +166,8 @@ component {
 
 			var obj = createObject("component", class);
 
-			// add all the plugins to the object
-			pluginManager.addPlugins(obj);
+			// add all the view helpers to the object
+			viewHelperManager.addViewHelpers(obj);
 
 			// now autowire the object
 			beanInjector.autowire(obj);

@@ -14,19 +14,23 @@ component {
 		conjunctions = ["and", "or"];
 
 		operators = {};
-		operators["greaterThanEquals"] = {operator=">=", value="${value}"};
-		operators["lessThanEquals"] = {operator="<=", value="${value}"};
-		operators["greaterThan"] = {operator=">", value="${value}"};
-		operators["startsWith"] = {operator="like", value="${value}%"};
-		operators["isNotNull"] = {operator="is not null", value=""};
-		operators["notEqual"] = {operator="!=", value="${value}"};
-		operators["lessThan"] = {operator=">", value="${value}"};
-		operators["endsWith"] = {operator="like", value="%${value}"};
-		operators["isNull"] = {operator="is null", value=""};
-		operators["equal"] = {operator="=", value="${value}"};
-		operators["notIn"] = {operator="not in", value="${value}"};
-		operators["like"] = {operator="like", value="%${value}%"};
-		operators["in"] = {operator="in", value="${value}"};
+		operators["equal"] = { operator="=", value="${value}" };
+		operators["notEqual"] = { operator="!=", value="${value}" };
+		operators["like"] = { operator="like", value="%${value}%" };
+		operators["startsWith"] = { operator="like", value="${value}%" };
+		operators["endsWith"] = { operator="like", value="%${value}" };
+		operators["isNull"] = { operator="is null", value="" };
+		operators["isNotNull"] = { operator="is not null", value="" };
+		operators["greaterThan"] = { operator=">", value="${value}" };
+		operators["greaterThanEquals"] = { operator=">=", value="${value}" };
+		operators["lessThan"] = { operator="<", value="${value}" };
+		operators["lessThanEquals"] = { operator="<=", value="${value}" };
+		operators["before"] = { operator="<", value="${value}" };
+		operators["after"] = { operator=">", value="${value}" };
+		operators["onOrBefore"] = { operator="<=", value="${value}" };
+		operators["onOrAfter"] = { operator=">=", value="${value}" };
+		operators["in"] = { operator="in", value="${value}" };
+		operators["notIn"] = { operator="not in", value="${value}" };
 
 		operatorArray = listToArray($.list.sortByLen(structKeyList(operators)));
 
@@ -178,7 +182,7 @@ component {
 			else {
 				arrayAppend(query.hql, ":#parameter.property#");
 
-				// if the value is just the value, make sure it's the property type
+				// if the value is just the value, make sure it's the proper type
 				if (parameter.operator.value == "${value}") {
 					query.parameters[parameter.property] = toJavaType(type, value);
 				}
@@ -294,7 +298,6 @@ component {
 			var end = getTickCount();
 			var count = arrayLen(records);
 		}
-
 
 		if (development) {
 			debugManager.addQuery(query, parameters, unique, options, end-start, count);
@@ -969,7 +972,23 @@ component {
 	}
 
 	private any function toJavaType(required string type, required any value) {
-		return javaCast(type, value);
+
+		switch(type) {
+
+			case "datetime": {
+				if (isDate(value)) {
+					value = createDate(year(value), month(vaule), day(value));
+				}
+			}
+
+			case "int": {
+				value = javaCast(type, value);
+			}
+
+		}
+
+		return value;
+
 	}
 
 	private any function toJavaArray(required string type, required any value) {
@@ -981,7 +1000,7 @@ component {
 		}
 
 		for (i=1; i <= arrayLen(value); i++) {
-			arrayAppend(result, javaCast(type, value[i]));
+			arrayAppend(result, toJavaType(type, value[i]));
 		}
 
 		return result.toArray();

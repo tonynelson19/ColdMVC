@@ -74,11 +74,11 @@ component {
 		var settings = getSettings();
 
 		if (!structKeyExists(settings, "datasource")) {
-			settings.datasource = this.datasource;
+			settings["datasource"] = this.datasource;
 		}
 
 		if (!structKeyExists(settings, "directory")) {
-			settings.directory = this.directory;
+			settings["directory"] = this.directory;
 		}
 
 		return createObject("component", getSetting("beanFactory")).init(xml, settings);
@@ -237,22 +237,22 @@ component {
 		}
 
 		var defaults = {
-			action = "index",
-			beanFactory = "coldmvc.utils.SimpleBeanFactory",
-			controller = "",
-			debug = true,
-			development = false,
-			key = "coldmvc",
-			layout = "index",
-			logEvents = "false",
-			logQueries = "false",
-			logTemplateGeneration = "false",
-			modelPrefix = "_",
-			reloadKey = "init",
-			reloadPassword = "",
-			sesURLs = "false",
-			tagPrefix = "c",
-			view = "index"
+			"action" = "index",
+			"beanFactory" = "coldmvc.utils.SimpleBeanFactory",
+			"controller" = "",
+			"debug" = "true",
+			"development" = "false",
+			"key" = "coldmvc",
+			"layout" = "index",
+			"logEvents" = "false",
+			"logQueries" = "false",
+			"logTemplateGeneration" = "false",
+			"modelPrefix" = "_",
+			"reloadKey" = "init",
+			"reloadPassword" = "",
+			"sesURLs" = "false",
+			"tagPrefix" = "c",
+			"view" = "index"
 		};
 
 		structAppend(variables.settings, defaults, false);
@@ -265,17 +265,23 @@ component {
 	}
 
 	private struct function getSettings() {
+
 		if (!isDefined('application') || !structKeyExists(application, "coldmvc") || !structKeyExists(application.coldmvc, "settings")) {
 			return setupSettings();
 		}
+
 		return application.coldmvc.settings;
+
 	}
 
 	private any function getSetting(required string key) {
+
 		if (structKeyExists(application.coldmvc.settings, key)) {
 			return application.coldmvc.settings[key];
 		}
+
 		return "";
+
 	}
 
 	private void function loadSettings(required string configPath, required string environment) {

@@ -9,7 +9,7 @@
 		<tbody>
 			<cfloop list="#listSort(structKeyList(config), 'textnocase')#" index="key">
 				<tr>
-					<td class="coldmvc_label">#lcase(key)#:</td>
+					<td class="coldmvc_label">#key#:</td>
 					<td class="coldmvc_field">#config[key]#</td>
 				</tr>
 			</cfloop>

@@ -303,7 +303,13 @@ component {
 			debugManager.addQuery(query, parameters, unique, options, end-start, count);
 		}
 
-		return records;
+		// if the result returned something, return it
+		if (!isNull(records)) {
+			return records;
+		}
+
+		// the result didn't return anything, so return null
+		return;
 
 	}
 

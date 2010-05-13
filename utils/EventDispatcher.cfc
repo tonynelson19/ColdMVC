@@ -108,6 +108,7 @@ component {
 
 			var count = arrayLen(listeners);
 			var text = "eventDispatcher.dispatchEvent(#event#)";
+			var string = "";
 
 			if (count > 0) {
 
@@ -119,7 +120,7 @@ component {
 				}
 
 				methods = arrayToList(methods, ", ");
-				var string = text & ": " & methods;
+				string = text & ": " & methods;
 
 			}
 

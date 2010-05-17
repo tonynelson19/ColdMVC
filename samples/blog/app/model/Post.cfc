@@ -5,7 +5,15 @@
 component  {
 
 	property id;
+
+	/**
+	 * @NotNull
+	 */
 	property title;
+
+	/**
+	 * @NotNull
+	 */
 	property body;
 	property date;
 	property link;
@@ -58,7 +66,7 @@ component  {
 		var categories = this.categories();
 		var i = "";
 
-		for (i=1; i <= arrayLen(categories); i++) {
+		for (i = 1; i <= arrayLen(categories); i++) {
 			arrayAppend(array, categories[i].name());
 		}
 

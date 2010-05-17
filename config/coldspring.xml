@@ -1,26 +1,20 @@
 <beans default-autowire="byName">
 	
-	<bean id="beanInjector" class="coldmvc.utils.BeanInjector" />
+	<bean id="beanInjector" class="coldmvc.app.util.BeanInjector" />
 	
-	<bean id="beanFinder" class="coldmvc.utils.BeanFinder">
-		<property name="root">
-			<value>${directory}</value>
-		</property>
+	<bean id="beanFinder" class="coldmvc.app.util.BeanFinder">
 		<property name="directories">
 			<list>
-				<value>/app/controllers/</value>
-				<value>/app/services/</value>
+				<value>/</value>
+				<value>${plugins}</value>
 			</list>
 		</property>
-		<property name="patterns">
-			<list>
-				<value>[\w]+Controller</value>
-				<value>[\w]+Service</value>
-			</list>
+		<property name="suffix">
+			<value>app/</value>
 		</property>
 	</bean>
 	
-	<bean id="beanPostProcessor" class="coldmvc.utils.BeanPostProcessor" bean-post-processor="true">
+	<bean id="beanPostProcessor" class="coldmvc.app.util.BeanPostProcessor" bean-post-processor="true">
 		<property name="postProcessors">
 			<list>
 				<value>modelInjector</value>
@@ -28,9 +22,9 @@
 		</property>
 	</bean>
 	
-	<bean id="collectionParser" class="coldmvc.utils.CollectionParser" />
+	<bean id="collectionParser" class="coldmvc.app.util.CollectionParser" />
 	
-	<bean id="config" class="coldmvc.utils.Config" />
+	<bean id="config" class="coldmvc.app.util.Config" />
 	
 	<bean id="dao" class="coldmvc.DAO">
 		<property name="development">
@@ -41,9 +35,28 @@
 		</property>
 	</bean>
 	
-	<bean id="debugManager" class="coldmvc.utils.DebugManager" />
+	<bean id="debugManager" class="coldmvc.app.util.DebugManager">
+		<property name="configPath">
+			<value>/config/debug.ini</value>
+		</property>
+		<property name="templates">
+			<list>
+				<value>/coldmvc/app/debug/info.cfm</value>
+				<value>/coldmvc/app/debug/queries.cfm</value>
+				<value>/coldmvc/app/debug/plugins.cfm</value>
+				<value>/coldmvc/app/debug/mappings.cfm</value>
+				<value>/coldmvc/app/debug/helpers.cfm</value>
+				<value>/coldmvc/app/debug/tags.cfm</value>
+				<value>/coldmvc/app/debug/viewhelpers.cfm</value>
+				<value>/coldmvc/app/debug/config.cfm</value>
+				<value>/coldmvc/app/debug/beans.cfm</value>
+				<value>/coldmvc/app/debug/events.cfm</value>
+				<value>/coldmvc/app/debug/params.cfm</value>
+			</list>
+		</property>
+	</bean>
 	
-	<bean id="eventDispatcher" class="coldmvc.utils.EventDispatcher">
+	<bean id="eventDispatcher" class="coldmvc.app.util.EventDispatcher">
 		<property name="development">
 			<value>${development}</value>
 		</property>
@@ -92,7 +105,7 @@
 		</property>
 	</bean>
 	
-	<bean id="factoryPostProcessor" class="coldmvc.utils.FactoryPostProcessor" factory-post-processor="true">
+	<bean id="factoryPostProcessor" class="coldmvc.app.util.FactoryPostProcessor" factory-post-processor="true">
 		<property name="postProcessors">
 			<list>
 				<value>beanFinder</value>
@@ -102,9 +115,9 @@
 		</property>
 	</bean>
 	
-	<bean id="flashManager" class="coldmvc.utils.FlashManager" />
+	<bean id="flashManager" class="coldmvc.app.util.FlashManager" />
 	
-	<bean id="filterManager" class="coldmvc.utils.FilterManager">
+	<bean id="filterManager" class="coldmvc.app.util.FilterManager">
 		<property name="filters">
 			<list>
 				<value>softDeletes</value>
@@ -112,30 +125,32 @@
 		</property>
 	</bean>
 	
-	<bean id="helperManager" class="coldmvc.utils.HelperManager">
+	<bean id="helperManager" class="coldmvc.app.util.HelperManager">
 		<property name="directories">
 			<list>
-				<value>/app/helpers/</value>
-				<value>/coldmvc/helpers/</value>
+				<value>/</value>
+				<value>${plugins}</value>
+				<value>/coldmvc/</value>
 			</list>
+		</property>
+		<property name="suffix">
+			<value>app/helpers/</value>
 		</property>
 	</bean>
 	
-	<bean id="layoutController" class="coldmvc.LayoutController" />
-	
-	<bean id="metaDataFlattener" class="coldmvc.utils.MetaDataFlattener">
+	<bean id="metaDataFlattener" class="coldmvc.app.util.MetaDataFlattener">
 		<property name="methodAnnotations">
 			<value>events</value>
 		</property>
 	</bean>
 	
-	<bean id="metaDataObserver" class="coldmvc.utils.MetaDataObserver">
+	<bean id="metaDataObserver" class="coldmvc.app.util.MetaDataObserver">
 		<property name="development">
 			<value>${development}</value>
 		</property>
 	</bean>
 	
-	<bean id="modelInjector" class="coldmvc.utils.ModelInjector">
+	<bean id="modelInjector" class="coldmvc.app.util.ModelInjector">
 		<property name="development">
 			<value>${development}</value>
 		</property>
@@ -150,9 +165,9 @@
 		</property>
 	</bean>
 	
-	<bean id="paramManager" class="coldmvc.utils.ParamManager" />
+	<bean id="paramManager" class="coldmvc.app.util.ParamManager" />
 	
-	<bean id="renderer" class="coldmvc.utils.Renderer">
+	<bean id="renderer" class="coldmvc.app.util.Renderer">
 		<property name="development">
 			<value>${development}</value>
 		</property>
@@ -161,45 +176,50 @@
 		</property>
 	</bean>
 	
-	<bean id="routeDispatcher" class="coldmvc.utils.RouteDispatcher">
+	<bean id="routeDispatcher" class="coldmvc.app.util.RouteDispatcher">
 		<property name="defaultLayout">
 			<value>${layout}</value>
 		</property>
 	</bean>
 	
-	<bean id="routeHandler" class="coldmvc.utils.RouteHandler">
+	<bean id="routeHandler" class="coldmvc.app.util.RouteHandler">
 		<property name="defaultController">
 			<value>${controller}</value>
 		</property>
 	</bean>
 	
-	<bean id="router" class="coldmvc.utils.Router">
+	<bean id="router" class="coldmvc.app.util.Router">
 		<property name="development">
 			<value>${development}</value>
 		</property>
 		<property name="configPaths">
 			<list>
-				<value>/config/routes.cfm</value>
-				<value>/coldmvc/config/routes.cfm</value>
+				<value>/</value>
+				<value>${plugins}</value>
+				<value>/coldmvc/</value>
 			</list>
 		</property>
 	</bean>
 	
-	<bean id="scopeManager" class="coldmvc.utils.ScopeManager">
+	<bean id="scopeManager" class="coldmvc.app.util.ScopeManager">
 		<property name="key">
 			<value>${key}</value>
 		</property>	
 	</bean>
 	
-	<bean id="tagManager" class="coldmvc.utils.TagManager">
+	<bean id="tagManager" class="coldmvc.app.util.TagManager">
 		<property name="development">
 			<value>${development}</value>
 		</property>
-		<property name="tags">
+		<property name="directories">
 			<list>
-				<value>/app/tags/</value>
-				<value>/coldmvc/tags/</value>
+				<value>/</value>
+				<value>${plugins}</value>
+				<value>/coldmvc/</value>
 			</list>
+		</property>
+		<property name="suffix">
+			<value>app/tags/</value>
 		</property>
 		<property name="tagPrefix">
 			<value>${tagPrefix}</value>
@@ -208,11 +228,12 @@
 	
 	<bean id="validator" class="hyrule.Validator" />
 	
-	<bean id="viewHelperManager" class="coldmvc.utils.ViewHelperManager">
+	<bean id="viewHelperManager" class="coldmvc.app.util.ViewHelperManager">
 		<property name="configPaths">
 			<list>
-				<value>/config/viewhelpers.cfm</value>
-				<value>/coldmvc/config/viewhelpers.cfm</value>
+				<value>/</value>
+				<value>${plugins}</value>
+				<value>/coldmvc/</value>
 			</list>
 		</property>
 	</bean>

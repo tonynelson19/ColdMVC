@@ -1,7 +1,7 @@
 <!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
 								   "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd">
 <hibernate-mapping>
-	<class entity-name="Category" lazy="true" name="cfc:blog.app.model.Category" table="Category">
+	<class entity-name="Category" lazy="true" name="cfc:app.model.Category" table="Category">
 		<id name="id" type="int">
 			<column name="ID" />
 			<generator class="identity" />
@@ -17,10 +17,10 @@
 		</property>
 		<bag cascade="all" lazy="true" name="posts" table="Post_Category">
 			<key column="Category_ID" />
-			<many-to-many class="cfc:blog.app.model.Post" column="Post_ID" />
+			<many-to-many class="cfc:app.model.Post" column="Post_ID" />
 		</bag>
 	</class>
-	<class entity-name="Comment" lazy="true" name="cfc:blog.app.model.Comment" table="Comment">
+	<class entity-name="Comment" lazy="true" name="cfc:app.model.Comment" table="Comment">
 		<id name="id" type="int">
 			<column name="ID" />
 			<generator class="identity" />
@@ -40,9 +40,9 @@
 		<property name="website" type="string">
 			<column name="Website" />
 		</property>
-		<many-to-one class="cfc:blog.app.model.Post" column="Post_ID" name="post" />
+		<many-to-one class="cfc:app.model.Post" column="Post_ID" name="post" />
 	</class>
-	<class entity-name="Post" lazy="true" name="cfc:blog.app.model.Post" table="Post">
+	<class entity-name="Post" lazy="true" name="cfc:app.model.Post" table="Post">
 		<id name="id" type="int">
 			<column name="ID" />
 			<generator class="identity" />
@@ -64,11 +64,11 @@
 		</property>
 		<bag cascade="all" lazy="true" name="categories" table="Post_Category">
 			<key column="Post_ID" />
-			<many-to-many class="cfc:blog.app.model.Category" column="Category_ID" />
+			<many-to-many class="cfc:app.model.Category" column="Category_ID" />
 		</bag>
 		<bag name="comments">
 			<key column="Post_ID" />
-			<one-to-many class="cfc:blog.app.model.Comment" />
+			<one-to-many class="cfc:app.model.Comment" />
 		</bag>
 	</class>
 </hibernate-mapping>

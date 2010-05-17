@@ -1,6 +1,6 @@
 /**
  * @accessors true
- * @extends coldmvc.utils.Template
+ * @extends coldmvc.app.util.Template
  */
 component {
 

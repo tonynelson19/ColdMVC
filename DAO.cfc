@@ -116,17 +116,17 @@ component {
 		var i = "";
 		var parameters = [];
 
-		for (i=1; i <= structCount(args); i++) {
+		for (i = 1; i <= structCount(args); i++) {
 			arrayAppend(parameters, args[i]);
 		}
 
 		arrayAppend(query.hql, select);
 
-		for (i=1; i <= arrayLen(parsed.joins); i++) {
+		for (i = 1; i <= arrayLen(parsed.joins); i++) {
 			arrayAppend(query.hql, "join #parsed.joins[i]# #replace(parsed.joins[i], '.', '_')#");
 		}
 
-		for (i=1; i <= arrayLen(parsed.parameters); i++) {
+		for (i = 1; i <= arrayLen(parsed.parameters); i++) {
 
 			if (i == 1) {
 				arrayAppend(query.hql, "where");
@@ -400,7 +400,7 @@ component {
 			var i = "";
 			var length = arrayLen(relationships);
 
-			for (i=1; i <= length; i++) {
+			for (i = 1; i <= length; i++) {
 
 				arrayAppend(query, "size(#alias#.#relationships[i].property#) > 0");
 
@@ -600,7 +600,7 @@ component {
 
 			var includes = listToArray(replace(options.include, " ", "", "all"));
 
-			for (i=1; i <= arrayLen(includes); i++) {
+			for (i = 1; i <= arrayLen(includes); i++) {
 
 				var property = $.model.name(includes[i]);
 				var related = property;
@@ -649,7 +649,7 @@ component {
 
 		do {
 
-			for (i=1; i <= arrayLen(keys); i++) {
+			for (i = 1; i <= arrayLen(keys); i++) {
 
 				var property = keys[i];
 
@@ -675,7 +675,7 @@ component {
 
 					if (method != "") {
 
-						for (j=1; j <= arrayLen(operatorArray); j++) {
+						for (j = 1; j <= arrayLen(operatorArray); j++) {
 
 							if (left(method, len(operatorArray[j])) == operatorArray[j]) {
 								parameter.operator = operators[operatorArray[j]];
@@ -685,7 +685,7 @@ component {
 
 						}
 
-						for (j=1; j <= arrayLen(conjunctions); j++) {
+						for (j = 1; j <= arrayLen(conjunctions); j++) {
 
 							if (left(method, len(conjunctions[j])) == conjunctions[j]) {
 								parameter.conjunction = conjunctions[j];
@@ -818,7 +818,7 @@ component {
 			sort = listToArray(options.sort);
 			i = "";
 
-			for (i=1; i <= arrayLen(sort); i++) {
+			for (i = 1; i <= arrayLen(sort); i++) {
 
 				value = sort[i];
 
@@ -874,7 +874,7 @@ component {
 
 			if ($.orm.isEntity(data)) {
 
-				for (i=1; i<= listLen(propertyList); i++) {
+				for (i = 1; i<= listLen(propertyList); i++) {
 
 					var property = listGetAt(propertyList, i);
 
@@ -1005,7 +1005,7 @@ component {
 			value = listToArray(value);
 		}
 
-		for (i=1; i <= arrayLen(value); i++) {
+		for (i = 1; i <= arrayLen(value); i++) {
 			arrayAppend(result, toJavaType(type, value[i]));
 		}
 

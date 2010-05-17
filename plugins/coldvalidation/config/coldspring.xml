@@ -1,0 +1,9 @@
+<beans>
+	
+	<bean id="validationService" class="coldvalidation.app.services.ValidationService">
+		<property name="configPath">
+			<value>/coldvalidation/config/rules.ini</value>
+		</property>
+	</bean>
+	
+</beans>

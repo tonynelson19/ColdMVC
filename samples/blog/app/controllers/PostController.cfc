@@ -71,7 +71,7 @@ component {
 		var result = [];
 		var i = "";
 
-		for (i=1; i <= arrayLen(categories); i++) {
+		for (i = 1; i <= arrayLen(categories); i++) {
 
 			var name = categories[i];
 			var category = _Category.findByName(name);
@@ -87,6 +87,13 @@ component {
 
 		return result;
 
+	}
+
+	/**
+	 * @validate title,body
+	 */
+	function create() {
+		params.post = _Post.new();
 	}
 
 	function save() {

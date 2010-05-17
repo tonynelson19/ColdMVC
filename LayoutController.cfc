@@ -1,5 +1,5 @@
 /**
- * @extends coldmvc.Component
+ * @extends coldmvc.Singleton
  */
 component {
 

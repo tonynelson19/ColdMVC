@@ -1,0 +1,12 @@
+<beans>
+	
+	<bean id="assetManager" class="coldassets.app.model.AssetManager">
+		<property name="configPaths">
+			<list>
+				<value>/</value>
+				<value>${plugins}</value>
+			</list>
+		</property>
+	</bean>
+	
+</beans>

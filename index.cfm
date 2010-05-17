@@ -2,6 +2,6 @@
 	<cfsetting showdebugoutput="false" />
 <cfelse>
 	<cfif $.config.get("debug")>
-		<cfinclude template="debug/index.cfm" />
+		<cfinclude template="/coldmvc/app/debug/index.cfm" />
 	</cfif>
 </cfif>

@@ -1,0 +1,1 @@
+<cfset add(name="renderValidation", bean="validationService") />

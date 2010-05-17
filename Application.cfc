@@ -10,7 +10,14 @@ component {
 
 			setupSettings();
 
-			var beanFactory = createBeanFactory();
+			var pluginManager = createPluginManager();
+
+			// add a mapping for each plugin
+			structAppend(this.mappings, pluginManager.getMappings(), false);
+
+			application.coldmvc.mappings = structCopy(this.mappings);
+
+			var beanFactory = createBeanFactory(pluginManager);
 			setBeanFactory(beanFactory);
 			beanFactory.getBean("config").setSettings(getSettings());
 
@@ -44,6 +51,9 @@ component {
 
 		}
 
+		// add a mapping for each plugin
+		structAppend(this.mappings, application.coldmvc.pluginManager.getMappings(), false);
+
 		dispatchEvent("preRequest");
 		dispatchEvent("requestStart");
 
@@ -59,18 +69,38 @@ component {
 		dispatchEvent("requestEnd");
 	}
 
-	private any function createBeanFactory() {
+	public any function createPluginManager() {
+
+		var application.coldmvc.pluginManager = new ColdMVC.app.util.PluginManager();
+		application.coldmvc.pluginManager.setConfigPath("/config/plugins.cfm");
+		application.coldmvc.pluginManager.loadPlugins();
+		return application.coldmvc.pluginManager;
+
+	}
+
+	private any function createBeanFactory(required any pluginManager) {
 
 		var beans = xmlNew();
 		beans.xmlRoot = xmlElemNew(beans, "beans");
 		beans.xmlRoot.xmlAttributes["default-autowire"] = "byName";
 
+		// load all the beans from ColdMVC
 		addBeans(beans, "/coldmvc/config/coldspring.xml");
+
+		// now loop over all the plugins and add their beans
+		var plugins = pluginManager.getPlugins();
+		var i = "";
+		for (i = 1; i <= arrayLen(plugins); i++) {
+			addBeans(beans, "/#plugins[i].name#/config/coldspring.xml");
+		}
+
+		// finally add the beans defined in our application
 		addBeans(beans, "/config/coldspring.xml");
 
 		var xml = toString(beans);
 		xml = replace(xml, "<!---->", "", "all");
 
+		// get the base settings
 		var settings = getSettings();
 
 		if (!structKeyExists(settings, "datasource")) {
@@ -80,6 +110,9 @@ component {
 		if (!structKeyExists(settings, "directory")) {
 			settings["directory"] = this.directory;
 		}
+
+		// now add any plugin data to the settings
+		settings["plugins"] = pluginManager.getPluginList();
 
 		return createObject("component", getSetting("beanFactory")).init(xml, settings);
 
@@ -101,17 +134,16 @@ component {
 				var i = "";
 				var j = "";
 
-				for (i=1; i <= arrayLen(xml.beans.xmlChildren); i++) {
+				for (i = 1; i <= arrayLen(xml.beans.xmlChildren); i++) {
 
 					var bean = xml.beans.xmlChildren[i];
-
 					var exists = xmlSearch(beans, "beans/bean[@id='#bean.xmlAttributes.id#']");
 
 					if (arrayLen(exists) == 0) {
 
 						var imported = xmlImport(beans, bean);
 
-						for (j=1; j <= arrayLen(imported); j++) {
+						for (j = 1; j <= arrayLen(imported); j++) {
 							arrayAppend(beans.xmlRoot.xmlChildren, imported[j]);
 						}
 
@@ -135,7 +167,7 @@ component {
 		node.xmlText = source.xmlText;
 		node.xmlComment = source.xmlComment;
 
-		for (i=1; i <= arrayLen(source.xmlChildren); i++) {
+		for (i = 1; i <= arrayLen(source.xmlChildren); i++) {
 			arrayAppend(node.xmlChildren, xmlImport(destination, source.xmlChildren[i]));
 		}
 
@@ -144,11 +176,11 @@ component {
 	}
 
 	private void function setBeanFactory(required any beanFactory) {
-		application.coldmvc.data.beanFactory = arguments.beanFactory;
+		application.coldmvc.beanFactory = arguments.beanFactory;
 	}
 
 	private any function getBeanFactory() {
-		return application.coldmvc.data.beanFactory;
+		return application.coldmvc.beanFactory;
 	}
 
 	private void function dispatchEvent(required string event) {
@@ -160,7 +192,7 @@ component {
 		this.sessionManagement = true;
 
 		var defaults = {
-			root = replaceNoCase(getDirectoryFromPath(expandPath("../")), "\", "/", "all"),
+			root = replace(getDirectoryFromPath(expandPath("../")), "\", "/", "all"),
 			ormEnabled = true,
 			ormSettings = {},
 			sessionTimeout = createTimeSpan(0, 2, 0, 0),
@@ -173,19 +205,20 @@ component {
 			this.directory = listLast(this.root, "/");
 		}
 
+		if (!structKeyExists(this, "name")) {
+			this.name = this.directory & "_" & hash(this.root);
+		}
+
 		defaults = {};
 		defaults["/#this.directory#"] = this.root;
 		defaults["/config"] = this.root & "config/";
+		defaults["/public"] = this.root & "public/";
 		defaults["/app"] = this.root & "app/";
 		defaults["/generated"] = this.root & ".generated/";
 		defaults["/views"] = this.root & ".generated/views/";
 		defaults["/layouts"] = this.root & ".generated/layouts/";
 
 		structAppend(this.mappings, defaults, false);
-
-		if (!structKeyExists(this, "name")) {
-			this.name = this.directory & "_" & hash(this.root);
-		}
 
 		var settings = getSettings();
 
@@ -202,15 +235,29 @@ component {
 		}
 
 		defaults = {
-			saveMapping = true,
-			flushAtRequestEnd = false,
 			dbcreate = "update",
+			eventHandler = "coldmvc.app.util.EventHandler",
 			eventHandling = true,
-			eventHandler = "coldmvc.utils.EventHandler",
-			namingStrategy = "coldmvc.utils.NamingStrategy"
+			namingStrategy = "coldmvc.app.util.NamingStrategy",
+			flushAtRequestEnd = false,
+			saveMapping = true
 		};
 
 		structAppend(this.ormSettings, defaults, false);
+
+		// if autogenmap hasn't been explicitly set already
+		if (!structKeyExists(this.ormSettings, "autogenmap")) {
+
+			// not sure why the mapping doesn't work here
+			// should also find a better way to cache this result so it's not executed each request
+			if (fileExists(this.root & "/config/hibernate.hbmxml")) {
+
+				// don't generate the mapping files if they have one
+				this.ormSettings.autogenmap = false;
+
+			}
+
+		}
 
 	}
 
@@ -238,7 +285,7 @@ component {
 
 		var defaults = {
 			"action" = "index",
-			"beanFactory" = "coldmvc.utils.SimpleBeanFactory",
+			"beanFactory" = "coldmvc.app.util.SimpleBeanFactory",
 			"controller" = "",
 			"debug" = "true",
 			"development" = "false",
@@ -293,7 +340,7 @@ component {
 			var keys = listToArray(sections[environment]);
 			var i = "";
 
-			for (i=1; i <= arrayLen(keys); i++) {
+			for (i = 1; i <= arrayLen(keys); i++) {
 				var key = keys[i];
 				variables.settings[key] = getProfileString(configPath, environment, key);
 			}

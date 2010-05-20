@@ -25,13 +25,15 @@ component {
 
 		// loop over the array of config files and include them if they exist
 		for (i = 1; i <= arrayLen(configPaths); i++) {
+			includeConfigPath(configPaths[i] & "config/routes.cfm");
+		}
 
-			var configPath = configPaths[i] & "config/routes.cfm";
+	}
 
-			if (fileExists(expandPath(configPath))) {
-				include configPath;
-			}
+	public void function includeConfigPath(required string configPath) {
 
+		if (fileExists(expandPath(configPath))) {
+			include configPath;
 		}
 
 	}
@@ -132,13 +134,17 @@ component {
 		route.components = reMatch(":.[^-?/]*", route.pattern);
 
 		// remove the : from the start of each parameter
-		route.parameters = [];
-		for (i = 1; i <= arrayLen(route.components); i++) {
-			arrayAppend(route.parameters, replace(route.components[i], ":", ""));
-		}
+        route.parameters = [];
+        var parameters = {};
+        for (i=1; i <= arrayLen(route.components); i++) {
+            var parameter = replace(route.components[i], ":", "");
+            arrayAppend(route.parameters, parameter);
+            parameters[parameter] = true;
+        }
 
-		// create a list of parameters to check against when generating routes
-		route.parameterList = createParameterList(route.parameters);
+        // create a list of parameters to check against when generating routes
+        var combinedParameters = combineParameters(parameters, route);
+        route.parameterList = createParameterList(combinedParameters);
 
 		// build out a regex to match again the path
 		route.expression = route.pattern;

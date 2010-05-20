@@ -4,6 +4,7 @@
 
 <style type="text/css">
 	div#coldmvc_debug {
+		background-color: #fff;
 		color: #555;
 		font-size: 14px;
 		margin-top: 30px;

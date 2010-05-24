@@ -120,9 +120,7 @@ component {
 
 	private any function addBeans(required xml beans, required string configPath) {
 
-		if (!fileExists(configPath)) {
-			configPath = expandPath(configPath);
-		}
+		configPath = expandPath(configPath);
 
 		if (fileExists(configPath)) {
 
@@ -192,7 +190,7 @@ component {
 		this.sessionManagement = true;
 
 		var defaults = {
-			root = replace(getDirectoryFromPath(expandPath("../")), "\", "/", "all"),
+			root = getDirectoryFromPath(expandPath("../")),
 			ormEnabled = true,
 			ormSettings = {},
 			sessionTimeout = createTimeSpan(0, 2, 0, 0),
@@ -202,7 +200,7 @@ component {
 		structAppend(this, defaults, false);
 
 		if (!structKeyExists(this, "directory")) {
-			this.directory = listLast(this.root, "/");
+			this.directory = listLast(replace(this.root, "\", "/", "all"), "/");
 		}
 
 		if (!structKeyExists(this, "name")) {
@@ -211,12 +209,12 @@ component {
 
 		defaults = {};
 		defaults["/#this.directory#"] = this.root;
-		defaults["/config"] = this.root & "config/";
-		defaults["/public"] = this.root & "public/";
-		defaults["/app"] = this.root & "app/";
-		defaults["/generated"] = this.root & ".generated/";
-		defaults["/views"] = this.root & ".generated/views/";
-		defaults["/layouts"] = this.root & ".generated/layouts/";
+		defaults["/config"] = this.root & "config\";
+		defaults["\public"] = this.root & "public\";
+		defaults["/app"] = this.root & "app\";
+		defaults["/generated"] = this.root & ".generated\";
+		defaults["/views"] = this.root & ".generated\views\";
+		defaults["/layouts"] = this.root & ".generated\layouts\";
 
 		structAppend(this.mappings, defaults, false);
 

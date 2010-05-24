@@ -12,7 +12,9 @@ component {
 	}
 
 	public void function loadPlugins() {
-		include configPath;
+		if (fileExists(expandPath(configPath))) {
+			include configPath;
+		}
 	}
 
 	public void function add(required string name, required string path) {

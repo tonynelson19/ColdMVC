@@ -24,7 +24,7 @@
 	<cfset queryString = queryString & "&" & reloadString />
 </cfif>
 
-<cfset reload = "#cgi.script_name##cgi.path_info#?#queryString#" />
+<cfset reload = $.config.get("urlPath") & "?" & queryString />
 </cfsilent>
 
 <cfoutput>

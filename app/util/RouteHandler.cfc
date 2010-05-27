@@ -116,11 +116,13 @@ component {
 	private string function getBaseURL() {
 
 		// check for ssl
+		var path = cgi.server_name & $.config.get("urlPath");
+
 		if (cgi.https == "off" || cgi.https == "") {
-			var address = "http://#cgi.server_name##cgi.script_name#";
+			var address = "http://#path#";
 		}
 		else {
-			var address = "https://#cgi.server_name##cgi.script_name#";
+			var address = "https://#path#";
 		}
 
 		// if sesURLs are enabled

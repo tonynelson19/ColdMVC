@@ -151,7 +151,7 @@ component {
 	}
 
 	public string function renderLayout(required string layout) {
-		return renderTemplate("layouts", layout, "coldmvc.Layout");
+		return renderTemplate("layouts", layout, "coldmvc.app.util.Layout");
 	}
 
 	public string function renderView(required string view) {

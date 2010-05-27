@@ -49,7 +49,7 @@ component {
 	}
 
 	private string function getBaseURL() {
-		return replaceNoCase(cgi.script_name, "index.cfm", "");
+		return replaceNoCase($.config.get("urlPath"), "index.cfm", "");
 	}
 
 	private string function getVersion() {

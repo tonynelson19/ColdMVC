@@ -5,7 +5,6 @@ component {
 
 	property config;
 	property router;
-	property routeDispatcher;
 	property defaultController;
 
 	public void function handleRequest(string event) {
@@ -43,8 +42,12 @@ component {
 			var action = $.controller.action(controller);
 		}
 
-		// dispatch the current request
-		routeDispatcher.dispatch(controller, action, parameters);
+		// set the values into the request
+		$.event.controller(controller);
+		$.event.action(action);
+		$.event.view($.controller.view(controller, action));
+
+		structAppend(params, parameters);
 
 	}
 

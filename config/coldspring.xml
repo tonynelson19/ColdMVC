@@ -81,10 +81,6 @@
 				<entry key="preRequest">
 					<list>
 						<value>metaDataObserver.findObservers</value>
-					</list>
-				</entry>
-				<entry key="requestStart">
-					<list>
 						<value>modelInjector.clearCache</value>
 						<value>scopeManager.addScopes</value>
 						<value>helperManager.addHelpers</value>
@@ -96,7 +92,12 @@
 						<value>routeHandler.handleRequest</value>
 					</list>
 				</entry>
-				<entry key="requestEnd">
+				<entry key="request">
+					<list>
+						<value>routeDispatcher.dispatchRoute</value>
+					</list>
+				</entry>
+				<entry key="postRequest">
 					<list>
 						<value>flashManager.endRequest</value>
 					</list>

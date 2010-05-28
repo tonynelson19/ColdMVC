@@ -56,7 +56,7 @@ component {
 
 		dispatchEvent("preRequest");
 		dispatchEvent("requestStart");
-
+		dispatchEvent("request");
 	}
 
 	private void function reload() {
@@ -67,6 +67,7 @@ component {
 
 	public any function onRequestEnd() {
 		dispatchEvent("requestEnd");
+		dispatchEvent("postRequest");
 	}
 
 	public any function createPluginManager() {

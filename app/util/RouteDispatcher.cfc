@@ -8,14 +8,10 @@ component {
 	property defaultLayout;
 	property renderer;
 
-	public void function dispatch(required string controller, required string action, required struct parameters) {
+	public void function dispatchRoute() {
 
-		// set the values into the request
-		$.event.controller(controller);
-		$.event.action(action);
-		$.event.view($.controller.view(controller, action));
-
-		structAppend(params, parameters);
+		var controller = $.event.controller();
+		var action = $.event.action();
 
 		// if the controller is empty, publish the event
 		if (controller == "" ) {
@@ -88,11 +84,21 @@ component {
 		// event => preAction
 		eventDispatcher.dispatchEvent("pre#type#");
 
-		// event => pre:UserController
-		eventDispatcher.dispatchEvent("pre#type#:#beanName#");
+		if (type == "Action") {
 
-		// event => pre:UserController.list
-		eventDispatcher.dispatchEvent("pre#type#:#beanName#.#action#");
+			// event => preAction:UserController
+			eventDispatcher.dispatchEvent("preAction:#beanName#");
+
+			// event => preAction:UserController.list
+			eventDispatcher.dispatchEvent("preAction:#beanName#.#action#");
+
+		}
+		else {
+
+			// event => preLayout:index
+			eventDispatcher.dispatchEvent("preLayout:#action#");
+
+		}
 
 		// userController.pre()
 		callMethod(beanName, "pre");
@@ -109,11 +115,21 @@ component {
 		// userController.post()
 		callMethod(beanName, "post");
 
-		// event => post:UserController.list
-		eventDispatcher.dispatchEvent("post#type#:#beanName#.#action#");
+		if (type == "Action") {
 
-		// event => post:UserController
-		eventDispatcher.dispatchEvent("post#type#:#beanName#");
+			// event => postAction:UserController.list
+			eventDispatcher.dispatchEvent("postAction:#beanName#.#action#");
+
+			// event => postAction:UserController
+			eventDispatcher.dispatchEvent("postAction:#beanName#");
+
+		}
+		else {
+
+			// event => postLayout:index
+			eventDispatcher.dispatchEvent("postLayout:#action#");
+
+		}
 
 		// event => postAction
 		eventDispatcher.dispatchEvent("post#type#");

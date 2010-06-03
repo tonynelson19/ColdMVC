@@ -85,8 +85,8 @@ component {
 		beans.xmlRoot = xmlElemNew(beans, "beans");
 		beans.xmlRoot.xmlAttributes["default-autowire"] = "byName";
 
-		// load all the beans from ColdMVC
-		addBeans(beans, "/coldmvc/config/coldspring.xml");
+		// add the beans defined in our application
+		addBeans(beans, "/config/coldspring.xml");
 
 		// now loop over all the plugins and add their beans
 		var plugins = pluginManager.getPlugins();
@@ -95,8 +95,8 @@ component {
 			addBeans(beans, "/#plugins[i].name#/config/coldspring.xml");
 		}
 
-		// finally add the beans defined in our application
-		addBeans(beans, "/config/coldspring.xml");
+		// finally load all the beans from ColdMVC
+		addBeans(beans, "/coldmvc/config/coldspring.xml");
 
 		var xml = toString(beans);
 		xml = replace(xml, "<!---->", "", "all");

@@ -210,12 +210,27 @@ component {
 
 				// now check for any computed parameters
 				var computed = {};
+				var computedKeys = {};
 
-				for (j = 1; j <= arrayLen(route.computed); j++) {
+				if (isStruct(route.computed)) {
+					var computedKeys = route.computed;
+				}
+				else  {
+					for (j = 1; j <= arrayLen(route.computed); j++) {
+						if (isStruct(route.computed[j])) {
+							computedKeys[route.computed[j].key] = route.computed[j].value;
+						}
+						else {
+							computedKeys[route.computed[j][1]] = route.computed[j][2];
+						}
+					}
+				}
 
-					// computed = [[parameter, value]]
-					var parameter = route.computed[j][1];
-					var value = route.computed[j][2];
+				var parameter = "";
+
+				for (parameter in computedKeys) {
+
+					var value = computedKeys[parameter];
 
 					// replace any components (:component) with the actual value of the parameter
 					var k = "";

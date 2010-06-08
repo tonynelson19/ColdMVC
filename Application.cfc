@@ -304,6 +304,10 @@ component {
 
 		structAppend(variables.settings, defaults, false);
 
+		if (!structKeyExists(variables.settings, "assetPath")) {
+			variables.settings["assetPath"] = replaceNoCase(variables.settings["urlPath"], "index.cfm", "");
+		}
+
 		application["coldmvc"] = {};
 		application["coldmvc"].settings = variables.settings;
 

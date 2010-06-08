@@ -49,7 +49,7 @@ component {
 	}
 
 	private string function getBaseURL() {
-		return replaceNoCase($.config.get("urlPath"), "index.cfm", "");
+		return $.config.get("assetPath");
 	}
 
 	private string function getVersion() {

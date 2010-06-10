@@ -298,8 +298,7 @@ component {
 			"reloadPassword" = "",
 			"sesURLs" = "false",
 			"tagPrefix" = "c",
-			"urlPath" = cgi.script_name,
-			"view" = "index"
+			"urlPath" = cgi.script_name
 		};
 
 		structAppend(variables.settings, defaults, false);

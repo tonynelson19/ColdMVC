@@ -97,7 +97,7 @@ component {
 		var defaultOptions = {
 			defaults = {},
 			requirements = {},
-			computed = [],
+			computed = {},
 			model = "",
 			generates = ""
 		};
@@ -136,7 +136,7 @@ component {
 		// remove the : from the start of each parameter
         route.parameters = [];
         var parameters = {};
-        for (i=1; i <= arrayLen(route.components); i++) {
+        for (i = 1; i <= arrayLen(route.components); i++) {
             var parameter = replace(route.components[i], ":", "");
             arrayAppend(route.parameters, parameter);
             parameters[parameter] = true;
@@ -164,6 +164,28 @@ component {
 		}
 
 		route.expression = "^#route.expression#(\..*)?$";
+
+		// if computed values is an array, convert it to a struct
+		if (isArray(route.computed)) {
+
+			var computed = {};
+
+			for (i = 1; i <= arrayLen(route.computed); i++) {
+
+				// it's an array of structs with key/value pairs
+				if (isStruct(route.computed[i])) {
+					computed[route.computed[i].key] = route.computed[i].value;
+				}
+				// it's an array of arrays
+				else {
+					computed[route.computed[i][1]] = route.computed[i][2];
+				}
+
+			}
+
+			route.computed = computed;
+
+		}
 
 		// create an array of all the models for quicker generation lookups
 		if (!structKeyExists(models, route.model)) {
@@ -210,33 +232,16 @@ component {
 
 				// now check for any computed parameters
 				var computed = {};
-				var computedKeys = {};
-
-				if (isStruct(route.computed)) {
-					var computedKeys = route.computed;
-				}
-				else  {
-					for (j = 1; j <= arrayLen(route.computed); j++) {
-						if (isStruct(route.computed[j])) {
-							computedKeys[route.computed[j].key] = route.computed[j].value;
-						}
-						else {
-							computedKeys[route.computed[j][1]] = route.computed[j][2];
-						}
-					}
-				}
-
 				var parameter = "";
 
-				for (parameter in computedKeys) {
+				for (parameter in route.computed) {
 
-					var value = computedKeys[parameter];
+					var value = route.computed[parameter];
 
 					// replace any components (:component) with the actual value of the parameter
-					var k = "";
-					for (k = 1; k <= arrayLen(route.components); k++) {
-						parameter = replaceNoCase(parameter, route.components[k], parameters[route.parameters[k]], "all");
-						value = replaceNoCase(value, route.components[k], parameters[route.parameters[k]], "all");
+					for (j = 1; j <= arrayLen(route.components); j++) {
+						parameter = replaceNoCase(parameter, route.components[j], parameters[route.parameters[j]], "all");
+						value = replaceNoCase(value, route.components[j], parameters[route.parameters[j]], "all");
 					}
 
 					// add the newly created parameter to the struct of computed parameters
@@ -437,8 +442,8 @@ component {
 
 			// build an array of all the values you'll need to replace
 			arrayAppend(replacements, {
-				substring=":#substring#",
-				value=value
+				substring = ":#substring#",
+				value = value
 			});
 
 			// remove the substring from the remaining string

@@ -272,7 +272,7 @@ component {
 
 			loadSettings(configPath, "default");
 
-			var environmentPath = expandPath("/config/environment.txt");
+			var environmentPath = "#this.root#config/environment.txt";
 
 			if (fileExists(environmentPath)) {
 				var environment = fileRead(environmentPath);

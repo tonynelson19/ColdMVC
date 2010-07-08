@@ -81,7 +81,7 @@
 				<entry key="preRequest">
 					<list>
 						<value>metaDataObserver.findObservers</value>
-						<value>modelInjector.clearCache</value>
+						<value>modelFactory.clearCache</value>
 						<value>scopeManager.addScopes</value>
 						<value>helperManager.addHelpers</value>
 						<value>tagManager.generateTags</value>
@@ -146,6 +146,12 @@
 	</bean>
 	
 	<bean id="metaDataObserver" class="coldmvc.app.util.MetaDataObserver">
+		<property name="development">
+			<value>${development}</value>
+		</property>
+	</bean>
+	
+	<bean id="modelFactory" class="coldmvc.app.util.ModelFactory">
 		<property name="development">
 			<value>${development}</value>
 		</property>

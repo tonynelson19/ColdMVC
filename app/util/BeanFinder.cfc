@@ -29,7 +29,7 @@ component {
 
 		for (i = 1; i <= arrayLen(directories); i++) {
 
-			var directory = expandPath(directories[i]);
+			var directory = replace(expandPath(directories[i]), "\", "/", "all");
 			var classPath = getClassPath(directories[i]);
 
 			if (directoryExists(directory)) {
@@ -37,7 +37,8 @@ component {
 				var components = directoryList(directory, true, "query", "*.cfc");
 
 				for (j = 1; j <= components.recordCount; j++) {
-
+					
+					var component_directory = replace(components.directory[j], "\", "/", "all");
 				 	var name = listFirst(components.name[j], ".");
 					beanName = lcase(left(name, 1)) & replace(name, left(name, 1), "");
 
@@ -47,7 +48,7 @@ component {
 					// make sure this bean isn't already explicitly defined inside a coldspring.xml file
 					if (!beanFactory.containsBean(bean.id)) {
 
-						var folder = replaceNoCase(components.directory[j] & "\", directory, "");
+						var folder = replaceNoCase(component_directory & "/", directory, "");
 
 						folder = getClassPath(folder);
 

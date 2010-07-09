@@ -210,12 +210,12 @@ component {
 
 		defaults = {};
 		defaults["/#this.directory#"] = this.root;
-		defaults["/config"] = this.root & "config\";
-		defaults["/public"] = this.root & "public\";
-		defaults["/app"] = this.root & "app\";
-		defaults["/generated"] = this.root & ".generated\";
-		defaults["/views"] = this.root & ".generated\views\";
-		defaults["/layouts"] = this.root & ".generated\layouts\";
+		defaults["/config"] = this.root & "config/";
+		defaults["/public"] = this.root & "public/";
+		defaults["/app"] = this.root & "app/";
+		defaults["/generated"] = this.root & ".generated/";
+		defaults["/views"] = this.root & ".generated/views/";
+		defaults["/layouts"] = this.root & ".generated/layouts/";
 
 		structAppend(this.mappings, defaults, false);
 

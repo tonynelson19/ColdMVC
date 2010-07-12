@@ -40,8 +40,8 @@ component {
 
 				for (i in classes) {
 					entities[i] = {
-						name=i,
-						metaData=classes[i]
+						name = i,
+						metaData = classes[i]
 					};
 				}
 
@@ -84,9 +84,10 @@ component {
 			var propertyTypes = classMetaData.getPropertyTypes();
 
 			var property = {
-				name=entityMetaData.identifier,
-				column=classMetaData.getPropertyColumnNames(entityMetaData.identifier)[1],
-				type=classMetaData.getIdentifierType().getName()
+				name = entityMetaData.identifier,
+				column = classMetaData.getPropertyColumnNames(entityMetaData.identifier)[1],
+				type = classMetaData.getIdentifierType().getName(),
+				relationship = ""
 			};
 
 			property.javatype = getJavaType(property.type);
@@ -100,9 +101,10 @@ component {
 			for (i = 1; i <= arrayLen(propertyNames); i++) {
 
 				property = {
-					name=propertyNames[i],
-					column=classMetaData.getPropertyColumnNames(propertyNames[i])[1],
-					type=propertyTypes[i].getName()
+					name = propertyNames[i],
+					column = classMetaData.getPropertyColumnNames(propertyNames[i])[1],
+					type = propertyTypes[i].getName(),
+					relationship = ""
 				};
 
 				property.javatype = getJavaType(property.type);
@@ -136,6 +138,10 @@ component {
 						}
 						else {
 							relationship.type = "";
+						}
+
+						if (structKeyExists(entityMetaData.properties, relationship.property)) {
+							entityMetaData.properties[relationship.property].relationship = relationship.entity;
 						}
 
 					}

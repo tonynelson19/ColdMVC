@@ -5,6 +5,7 @@
 component {
 
 	property beanInjector;
+	property modelFactory;
 	property development;
 	property logQueries;
 	property debugManager;
@@ -868,6 +869,7 @@ component {
 		var i = "";
 
 		var properties = $.model.properties(model);
+		var relationships = $.model.relationships(model);
 		var type = $.data.type(data);
 
 		if (type == "object") {
@@ -899,7 +901,7 @@ component {
 						}
 					}
 
-					populateStruct(model, struct, propertyList, properties);
+					populateStruct(model, struct, propertyList, properties, relationships);
 
 				}
 
@@ -907,17 +909,24 @@ component {
 
 		}
 		else if (type == "struct") {
-			populateStruct(model, data, propertyList, properties);
+			populateStruct(model, data, propertyList, properties, relationships);
 		}
 
 		return model;
 
 	}
 
-	private void function populateProperty(required any model, required any data, required struct properties, required string property) {
+	private void function populateProperty(required any model, required any data, required struct properties, required string property, required struct relationships) {
 
 		if (structKeyExists(properties, property)) {
-			model._set(property, data[property]);
+
+			if (isSimpleValue(data[property]) && properties[property].relationship != "") {
+				model._set(property, getAll(properties[property].relationship, data[property], {}));
+			}
+			else {
+				model._set(property, data[property]);
+			}
+
 		}
 		else {
 
@@ -953,13 +962,13 @@ component {
 
 	}
 
-	private void function populateStruct(required any model, required any data, required string propertyList, required struct properties) {
+	private void function populateStruct(required any model, required any data, required string propertyList, required struct properties, required struct relationships) {
 
 		var key = "";
 
 		for (key in data) {
 			if (propertyList == "" or structKeyExists(propertyList, key)) {
-				populateProperty(model, data, properties, key);
+				populateProperty(model, data, properties, key, relationships);
 			}
 		}
 

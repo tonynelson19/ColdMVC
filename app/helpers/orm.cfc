@@ -87,7 +87,7 @@ component {
 				name = entityMetaData.identifier,
 				column = classMetaData.getPropertyColumnNames(entityMetaData.identifier)[1],
 				type = classMetaData.getIdentifierType().getName(),
-				relationship = ""
+				relationship = {}
 			};
 
 			property.javatype = getJavaType(property.type);
@@ -104,7 +104,7 @@ component {
 					name = propertyNames[i],
 					column = classMetaData.getPropertyColumnNames(propertyNames[i])[1],
 					type = propertyTypes[i].getName(),
-					relationship = ""
+					relationship = {}
 				};
 
 				property.javatype = getJavaType(property.type);
@@ -140,10 +140,6 @@ component {
 							relationship.type = "";
 						}
 
-						if (structKeyExists(entityMetaData.properties, relationship.property)) {
-							entityMetaData.properties[relationship.property].relationship = relationship.entity;
-						}
-
 					}
 					else {
 
@@ -157,6 +153,10 @@ component {
 						relationship.param = relationship.property & "ID";
 						relationship.type = "ManyToOne";
 
+					}
+
+					if (structKeyExists(entityMetaData.properties, relationship.property)) {
+						entityMetaData.properties[relationship.property].relationship = relationship;
 					}
 
 					entityMetaData.relationships[relationship.name] = relationship;

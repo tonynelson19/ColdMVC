@@ -920,8 +920,15 @@ component {
 
 		if (structKeyExists(properties, property)) {
 
-			if (isSimpleValue(data[property]) && properties[property].relationship != "") {
-				model._set(property, getAll(properties[property].relationship, data[property], {}));
+			if (isSimpleValue(data[property]) && !structIsEmpty(properties[property].relationship)) {
+
+				if (properties[property].relationship.type == "ManyToOne") {
+					model._set(property, get(properties[property].relationship.entity, data[property], {}));
+				}
+				else {
+					model._set(property, getAll(properties[property].relationship.entity, data[property], {}));
+				}
+
 			}
 			else {
 				model._set(property, data[property]);

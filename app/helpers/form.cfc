@@ -219,7 +219,7 @@
 					<option value="#htmlEditFormat(arguments.blankKey)#" title="#htmlEditFormat(arguments.blankTitle)#">#htmlEditFormat(arguments.blankValue)#</option>
 				</cfif>
 				<cfloop array="#arguments.options#" index="option">
-					<option value="#htmlEditFormat(option.id)#" title="#htmlEditFormat(option.title)#">#htmlEditFormat(option.name)#</option>
+					<option value="#htmlEditFormat(option.id)#" title="#htmlEditFormat(option.title)#" <cfif arguments.value eq htmlEditFormat(option.id)>selected</cfif>>#htmlEditFormat(option.name)#</option>
 				</cfloop>
 			</select>
 		</cfsavecontent>

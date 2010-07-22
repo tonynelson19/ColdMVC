@@ -270,6 +270,8 @@
 
 		<cfif isSimpleValue(value)>
 			<cfset value = trim(value) />
+		<cfelseif isObject(value)>
+			<cfset value = value.id() />
 		</cfif>
 
 		<cfreturn value />

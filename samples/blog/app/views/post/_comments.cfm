@@ -27,7 +27,7 @@
 
 <a name="comment"></a>
 <c:form action="addComment" bind="comment" label="Add a Comment">
-	<c:hidden name="postID" value="#post.id()#" />
+	<c:hidden name="post" value="#post.id()#" />
 	<c:input name="author" />
 	<c:input name="email" />
 	<c:input name="website" />

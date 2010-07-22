@@ -923,7 +923,15 @@ component {
 			if (isSimpleValue(data[property]) && !structIsEmpty(properties[property].relationship)) {
 
 				if (properties[property].relationship.type == "ManyToOne") {
-					model._set(property, get(properties[property].relationship.entity, data[property], {}));
+
+					// get the related entity
+					var related = get(properties[property].relationship.entity, data[property], {});
+
+					// don't populate new models
+					if (related.exists()) {
+						model._set(property, related);
+					}
+
 				}
 				else {
 					model._set(property, getAll(properties[property].relationship.entity, data[property], {}));

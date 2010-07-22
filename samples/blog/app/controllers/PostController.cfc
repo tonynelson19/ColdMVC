@@ -10,14 +10,13 @@ component {
 
 	function addComment() {
 
-		var post = _Post.get(params.comment.postID);
-
 		var comment = _Comment.new(params.comment);
+
 		comment.save();
 
 		flash.message = "Comment added successfully";
 
-		redirect({action="show", id=post}, "###arrayLen(post.comments())#");
+		redirect({action="show", id=comment.post}, "###arrayLen(comment.post.comments())#");
 
 	}
 
@@ -98,9 +97,10 @@ component {
 
 	function save() {
 
-		var post = _Post.new();
 		params.post.categories = parseCategories(params.post.categories);
-		post.populate(params.post);
+
+		var post = _Post.new(params.post);
+
 		post.save();
 
 		redirect({action="show", id=post});
@@ -109,9 +109,10 @@ component {
 
 	function update() {
 
-		var post = _Post.get(params.post.id);
 		params.post.categories = parseCategories(params.post.categories);
-		post.populate(params.post);
+
+		var post = _Post.get(params.post.id, params.post);
+
 		post.save();
 
 		redirect({action="show", id=post});

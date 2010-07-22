@@ -60,6 +60,9 @@ component {
 
 		if (!structKeyExists(cache, entityName)) {
 
+			var i = "";
+			var j = "";
+
 			if (isObject(data)) {
 				var metaData = getMetaData(data);
 			}
@@ -68,7 +71,6 @@ component {
 			}
 
 			var classMetaData = ormGetSessionFactory().getClassMetaData(entityName);
-			var i = "";
 
 			var entityMetaData = {};
 			entityMetaData.name = classMetaData.getEntityName();
@@ -157,6 +159,14 @@ component {
 
 					if (structKeyExists(entityMetaData.properties, relationship.property)) {
 						entityMetaData.properties[relationship.property].relationship = relationship;
+					}
+					else {
+						for (j in entityMetaData.properties) {
+							if (entityMetaData.properties[j].type == relationship.name) {
+								entityMetaData.properties[j].relationship = relationship;
+								break;
+							}
+						}
 					}
 
 					entityMetaData.relationships[relationship.name] = relationship;

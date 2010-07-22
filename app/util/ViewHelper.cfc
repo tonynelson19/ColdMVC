@@ -38,7 +38,12 @@
 
 		<cfset args.common = [] />
 
-		<cfloop list="name,id,title,class" index="i">
+		<cfset var common = "name,id,title,class" />
+		<cfif listFindNoCase("form", args.tag)>
+			<cfset common  = "name,id,class" />
+		</cfif>
+
+		<cfloop list="#common#" index="i">
 			<cfif args[i] neq "">
 				<cfset arrayAppend(args.common, '#i#="#htmlEditFormat(args[i])#"') />
 			</cfif>

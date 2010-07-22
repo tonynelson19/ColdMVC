@@ -26,15 +26,13 @@
 </cfoutput>
 
 <a name="comment"></a>
-<c:fieldset label="Add a Comment">
-	<c:form action="addComment" bind="comment">
-		<c:hidden name="postID" value="#post.id()#" />
-		<c:input name="author" />
-		<c:input name="email" />
-		<c:input name="website" />
-		<c:textarea name="body" label="Comment" />
-		<c:buttons>
-			<c:submit label="Add Comment" />
-		</c:buttons>
-	</c:form>
-</c:fieldset>
+<c:form action="addComment" bind="comment" label="Add a Comment">
+	<c:hidden name="postID" value="#post.id()#" />
+	<c:input name="author" />
+	<c:input name="email" />
+	<c:input name="website" />
+	<c:textarea name="body" label="Comment" />
+	<c:buttons>
+		<c:submit label="Add Comment" />
+	</c:buttons>
+</c:form>

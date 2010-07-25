@@ -1,4 +1,4 @@
-<cfcomponent extends="coldmvc.app.util.FormHelper">
+<cfcomponent extends="coldmvc.app.util.HTMLHelper">
 
 	<!------>
 

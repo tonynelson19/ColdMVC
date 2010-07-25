@@ -20,6 +20,7 @@
 		<cfset args.binding = getKey(args, "binding", args.allowBinding) />
 		<cfset args.bind = getKey(args, "bind") />
 		<cfset args.name = getKey(args, "name") />
+		<cfset args.originalName = args.name />
 		<cfset args.label = getLabel(args) />
 		<cfset args.value = getValue(args, "value") />
 		<cfset args.name = getName(args) />
@@ -77,7 +78,13 @@
 		<cfset var i = "" />
 
 		<cfif not structKeyExists(args, "options")>
-			<cfset args.options = "" />
+			<cfif $.params.has(args.originalName)>
+				<cfset args.options = $.params.get(args.originalName) />
+			<cfelseif $.params.has($.string.pluralize(args.originalName))>
+				<cfset args.options = $.params.get($.string.pluralize(args.originalName)) />
+			<cfelse>
+				<cfset args.options = "" />
+			</cfif>
 		</cfif>
 
 		<cfif not structKeyExists(args, "optionKey")>
@@ -272,6 +279,26 @@
 			<cfset value = trim(value) />
 		<cfelseif isObject(value)>
 			<cfset value = value.id() />
+		<cfelseif isArray(value)>
+
+			<cfset var array = value />
+			<cfset var item = "" />
+			<cfset value = [] />
+
+			<cfloop array="#array#" index="item">
+
+				<cfif isSimpleValue(item)>
+					<cfset arrayAppend(value, item) />
+				<cfelseif isObject(item)>
+					<cfset arrayAppend(value, item._get("id")) />
+				<cfelseif isStruct(item)>
+					<cfset arrayAppend(value, item.id) />
+				</cfif>
+
+			</cfloop>
+
+			<cfset value = arrayToList(value) />
+
 		</cfif>
 
 		<cfreturn value />

@@ -20,4 +20,8 @@ component {
 		return getOrSet("layout", arguments);
 	}
 
+	public any function path() {
+		return getOrSet("path", arguments);
+	}
+
 }

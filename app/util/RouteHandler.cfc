@@ -46,6 +46,7 @@ component {
 		$.event.controller(controller);
 		$.event.action(action);
 		$.event.view($.controller.view(controller, action));
+		$.event.path(path);
 
 		structAppend(params, parameters);
 

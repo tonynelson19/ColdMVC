@@ -136,25 +136,17 @@
 
 				<cfelse>
 
-					<cfif args.optionKey neq "id" or args.optionValue neq "name" or args.optionTitle neq "name" or args.optionValue neq args.optionTitle>
+					<cfloop array="#args.options#" index="option">
 
-						<cfloop array="#args.options#" index="option">
+						<cfset var item = {
+							id = option[args.optionKey],
+							name = option[args.optionValue],
+							title = option[args.optionTitle]
+						} />
 
-							<cfset var item = {
-								id = option[args.optionKey],
-								name = option[args.optionValue],
-								title = option[args.optionTitle]
-							} />
+						<cfset arrayAppend(array, item) />
 
-							<cfset arrayAppend(array, item) />
-
-						</cfloop>
-
-					<cfelse>
-
-						<cfset array = args.options />
-
-					</cfif>
+					</cfloop>
 
 				</cfif>
 

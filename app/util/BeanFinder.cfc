@@ -4,27 +4,15 @@
 component {
 
 	property directories;
-	property suffix;
 
 	public function setDirectories(required array directories) {
 		variables.directories = listToArray(arrayToList(arguments.directories));
 	}
 
-	private void function appendSuffix() {
-
-		var i = "";
-		for (i = 1; i <= arrayLen(directories); i++) {
-			directories[i] = directories[i] & suffix;
-		}
-
-	}
-
 	public void function postProcessBeanFactory(required any beanFactory) {
 
-		appendSuffix();
 		var i = "";
 		var j = "";
-
 		var beans = {};
 
 		for (i = 1; i <= arrayLen(directories); i++) {
@@ -37,7 +25,7 @@ component {
 				var components = directoryList(directory, true, "query", "*.cfc");
 
 				for (j = 1; j <= components.recordCount; j++) {
-					
+
 					var component_directory = replace(components.directory[j], "\", "/", "all");
 				 	var name = listFirst(components.name[j], ".");
 					beanName = lcase(left(name, 1)) & replace(name, left(name, 1), "");

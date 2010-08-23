@@ -57,4 +57,17 @@ component {
 
 	}
 
+	public array function getPluginPaths() {
+
+		var paths = [];
+		var i = "";
+
+		for (i = 1; i <= arrayLen(plugins); i++) {
+			arrayAppend(paths, plugins[i].path);
+		}
+
+		return paths;
+
+	}
+
 }

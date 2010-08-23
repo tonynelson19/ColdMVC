@@ -10,7 +10,7 @@ component {
 
 	public void function findObservers(string event) {
 
-		if (event == "preApplicationStart" || development) {
+		if (event == "preApplication" || development) {
 
 			eventDispatcher.clearCustomObservers();
 

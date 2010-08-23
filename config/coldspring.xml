@@ -5,12 +5,9 @@
 	<bean id="beanFinder" class="coldmvc.app.util.BeanFinder">
 		<property name="directories">
 			<list>
-				<value>/${directory}/</value>
+				<value>/${directory}/app/</value>
 				<value>${plugins}</value>
 			</list>
-		</property>
-		<property name="suffix">
-			<value>app/</value>
 		</property>
 	</bean>
 	

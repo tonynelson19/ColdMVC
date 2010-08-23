@@ -115,7 +115,11 @@ component {
 		// now add any plugin data to the settings
 		settings["plugins"] = pluginManager.getPluginList();
 
-		return createObject("component", getSetting("beanFactory")).init(xml, settings);
+		var beanFactory = createObject("component", getSetting("beanFactory")).init(xml, settings, {
+			"pluginManager" = pluginManager
+		});
+
+		return beanFactory;
 
 	}
 
@@ -284,7 +288,7 @@ component {
 
 		var defaults = {
 			"action" = "index",
-			"beanFactory" = "coldmvc.app.util.SimpleBeanFactory",
+			"beanFactory" = "coldmvc.app.util.BeanFactory",
 			"controller" = "",
 			"debug" = "true",
 			"development" = "false",
@@ -316,7 +320,7 @@ component {
 
 	private struct function getSettings() {
 
-		if (!isDefined('application') || !structKeyExists(application, "coldmvc") || !structKeyExists(application.coldmvc, "settings")) {
+		if (!isDefined("application") || !structKeyExists(application, "coldmvc") || !structKeyExists(application.coldmvc, "settings")) {
 			return setupSettings();
 		}
 

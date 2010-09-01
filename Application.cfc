@@ -137,9 +137,11 @@ component {
 				var i = "";
 				var j = "";
 
-				for (i = 1; i <= arrayLen(xml.beans.xmlChildren); i++) {
+				var beanDefs = xmlSearch(xml, "/beans/bean");
 
-					var bean = xml.beans.xmlChildren[i];
+				for (i = 1; i <= arrayLen(beanDefs); i++) {
+
+					var bean = beanDefs[i];
 					var exists = xmlSearch(beans, "beans/bean[@id='#bean.xmlAttributes.id#']");
 
 					if (arrayLen(exists) == 0) {
@@ -152,6 +154,12 @@ component {
 
 					}
 
+				}
+
+				var imports = xmlSearch(xml, "/beans/import");
+
+				for (i = 1; i <= arrayLen(imports); i++) {
+					addBeans(beans, imports[i].xmlAttributes.resource);
 				}
 
 			}

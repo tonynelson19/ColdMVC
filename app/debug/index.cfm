@@ -12,11 +12,14 @@
 		line-height: 20px;
 		font-family: Arial, Verdana, Helvetica, sans-serif;
 		border-top: 1px solid #666;
+		text-align: left;
 	}
 
 	div#coldmvc_debug * {
 		padding: 0;
 		margin: 0;
+		text-align: left;
+		color: #555;
 	}
 
 	div#coldmvc_debug h2 {

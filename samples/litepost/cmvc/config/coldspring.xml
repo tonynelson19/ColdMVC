@@ -1,0 +1,67 @@
+<beans>
+	
+	<bean id="sessionService" class="net.litepost.component.session.SessionService" />
+	<bean id="securityService" class="net.litepost.component.security.SecurityService" />
+	<bean id="userService" class="net.litepost.component.user.UserService" />
+	<bean id="userDAO" class="net.litepost.component.user.UserDAO">
+ 		<property name="dsn">
+			<value>litepost</value>
+		</property>
+	</bean>
+	<bean id="userGateway" class="net.litepost.component.user.UserGateway">
+ 		<property name="dsn">
+			<value>litepost</value>
+		 </property>
+	</bean>
+	
+	<bean id="entryService" class="net.litepost.component.entry.EntryService" />
+	<bean id="entryDAO" class="net.litepost.component.entry.EntryDAO">
+ 		<property name="dsn">
+			<value>litepost</value>
+		</property>
+	</bean>
+	<bean id="entryGateway" class="net.litepost.component.entry.EntryGateway">
+ 		<property name="dsn">
+			<value>litepost</value>
+		</property>
+	</bean>
+	
+	<bean id="commentService" class="net.litepost.component.comment.CommentService" />
+	<bean id="commentDAO" class="net.litepost.component.comment.CommentDAO">
+ 		<property name="dsn">
+			<value>litepost</value>
+		</property>
+	</bean>
+	<bean id="commentGateway" class="net.litepost.component.comment.CommentGateway">
+ 		<property name="dsn">
+			<value>litepost</value>
+		</property>
+	</bean>
+	
+	<bean id="categoryService" class="net.litepost.component.category.CategoryService" />
+	<bean id="categoryDAO" class="net.litepost.component.category.CategoryDAO">
+ 		<property name="dsn">
+			<value>litepost</value>
+		</property>
+	</bean>
+	<bean id="categoryGateway" class="net.litepost.component.category.CategoryGateway">
+ 		<property name="dsn">
+			<value>litepost</value>
+		</property>
+	</bean>
+
+	<bean id="bookmarkService" class="net.litepost.component.bookmark.BookmarkService" />
+	<bean id="bookmarkDAO" class="net.litepost.component.bookmark.BookmarkDAO">
+ 		<property name="dsn">
+			<value>litepost</value>
+		 </property>
+	</bean>
+	<bean id="bookmarkGateway" class="net.litepost.component.bookmark.BookmarkGateway">
+ 		<property name="dsn">
+			<value>litepost</value>
+		 </property>
+	</bean>
+	
+	<bean id="rssService" class="net.litepost.component.rss.RSSService" />
+
+</beans>

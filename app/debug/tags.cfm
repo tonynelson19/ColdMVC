@@ -9,7 +9,7 @@
 		<tbody>
 			<cfloop list="#listSort(structKeyList(tags), 'textnocase')#" index="tag">
 				<tr>
-					<td class="coldmvc_label">#tags[tag].name#:</td>
+					<td class="coldmvc_label">#listFirst(tags[tag].name, ".")#:</td>
 					<td class="coldmvc_field">#tags[tag].path#</td>
 				</tr>
 			</cfloop>

@@ -69,7 +69,6 @@
 				</entry>
 				<entry key="applicationStart">
 					<list>
-						<value>scopeManager.addScopes</value>
 						<value>helperManager.addHelpers</value>
 						<value>modelInjector.injectModels</value>
 						<value>router.addNamedRouteViewHelpers</value>
@@ -79,7 +78,6 @@
 					<list>
 						<value>metaDataObserver.findObservers</value>
 						<value>modelFactory.clearCache</value>
-						<value>scopeManager.addScopes</value>
 						<value>helperManager.addHelpers</value>
 						<value>tagManager.generateTags</value>
 						<value>renderer.generateTemplates</value>
@@ -107,7 +105,6 @@
 		<property name="postProcessors">
 			<list>
 				<value>beanFinder</value>
-				<value>scopeManager</value>
 				<value>helperManager</value>
 			</list>
 		</property>
@@ -203,12 +200,6 @@
 				<value>/coldmvc/</value>
 			</list>
 		</property>
-	</bean>
-	
-	<bean id="scopeManager" class="coldmvc.app.util.ScopeManager">
-		<property name="key">
-			<value>${key}</value>
-		</property>	
 	</bean>
 	
 	<bean id="tagManager" class="coldmvc.app.util.TagManager">

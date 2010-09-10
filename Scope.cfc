@@ -96,6 +96,18 @@ component {
 				data = request;
 				break;
 			}
+			case "cgi": {
+				data = cgi;
+				break;
+			}
+			case "server": {
+				data = server;
+				break;
+			}
+		}
+		
+		if (key == "") {
+			return data;
 		}
 
 		if (!structKeyExists(data, key)) {

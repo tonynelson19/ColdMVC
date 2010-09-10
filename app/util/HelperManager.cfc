@@ -70,12 +70,26 @@ component {
 
 				for (j = 1; j <= files.recordCount; j++) {
 
-					var helper = {};
+					var helper = {};					
 					helper.name = listFirst(files.name[j], ".");
+					helper.classPath = getClassPath(directories[i], helper.name);
+					
+					var metaData = getComponentMetaData(helper.classPath);
+					
+					while (structKeyExists(metaData, "extends")) {
+
+						if (structKeyExists(metaData, "helper")) {
+							helper.name = metaData.helper;
+							break;
+						}
+			
+						metaData = metaData.extends;
+			
+					}
 
 					if (!structKeyExists(helpers, helper.name)) {
 
-						helper.classPath = getClassPath(directories[i], helper.name);
+						
 						helper.path = directories[i] & files.name[j];
 						helper.object = createObject("component", helper.classPath);
 

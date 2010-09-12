@@ -126,7 +126,7 @@ component {
 
 	}
 
-	private struct function getAll() {
+	public struct function getAll() {
 
 		if (!structKeyExists(variables, "controllers")) {
 			variables.controllers = loadControllers();

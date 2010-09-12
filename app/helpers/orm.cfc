@@ -54,7 +54,7 @@ component {
 		return variables.entities;
 	}
 
-	public any function getEntityMetaData(required any data) {
+	public struct function getEntityMetaData(required any data) {
 
 		var entityName = getEntityName(data);
 

@@ -7,6 +7,26 @@ component {
 	property router;
 	property defaultController;
 
+	public any function init() {
+		variables.aliases = {};
+		var controllers = $.controller.getAll();
+		var key = "";
+
+		for (key in controllers) {
+			aliases["/#key#/#controllers[key].action#"] = "/#key#";
+		}
+	}
+
+	public void function setDefaultController(required string defaultController) {
+		variables.defaultController = arguments.defaultController;
+
+		var action = $.controller.action(defaultController);
+
+		aliases["/#defaultController#"] = "";
+		aliases["/#defaultController#/#action#"] = "";
+
+	}
+
 	public void function handleRequest(string event) {
 
 		// parse the path info from the script
@@ -73,7 +93,7 @@ component {
 
 		// if the querystring is like "/post/show/5", consider it a manually created url and simply prepend the base url
 		if (left(querystring, 1) == "/") {
-			return getBaseURL() & querystring;
+			return getBaseURL() & checkAlias(querystring);
 		}
 
 		// generate a path for the given arguments
@@ -98,7 +118,7 @@ component {
 		}
 
 		// add the base URL to the generated path
-		path = getBaseURL() & path;
+		path = getBaseURL() & checkAlias(path);
 
 		// if the querystring wasn't empty, append it to the path
 		if (querystring != "") {
@@ -137,6 +157,17 @@ component {
 		}
 
 		return address;
+
+	}
+
+	private string function checkAlias(required string path) {
+
+		if (structKeyExists(aliases, path)) {
+			return aliases[path];
+		}
+		else {
+			return path;
+		}
 
 	}
 

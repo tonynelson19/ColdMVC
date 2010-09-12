@@ -47,6 +47,7 @@
 				<value>/coldmvc/app/debug/viewhelpers.cfm</value>
 				<value>/coldmvc/app/debug/config.cfm</value>
 				<value>/coldmvc/app/debug/beans.cfm</value>
+				<value>/coldmvc/app/debug/entities.cfm</value>
 				<value>/coldmvc/app/debug/events.cfm</value>
 				<value>/coldmvc/app/debug/params.cfm</value>
 			</list>

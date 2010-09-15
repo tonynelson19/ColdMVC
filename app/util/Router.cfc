@@ -97,6 +97,7 @@ component {
 		var defaultOptions = {
 			defaults = {},
 			requirements = {},
+			required = {},
 			computed = {},
 			model = "",
 			generates = ""
@@ -104,6 +105,8 @@ component {
 
 		// add the default options
 		structAppend(options, defaultOptions, false);
+		structAppend(options.defaults, options.required, false);
+		structAppend(options.requirements, options.required, false);
 
 		// set the options to the route for better readability
 		var route = options;

@@ -176,6 +176,12 @@ component {
 
 			var type = coldmvc.model.javatype(parameter.model, parameter.property);
 
+			if (type == "bit") {
+				writeDump(value);
+				writeDump(value);
+				abort;
+			}
+
 			if (parameter.operator.operator == "in" || parameter.operator.operator == "not in") {
 				arrayAppend(query.hql, "(:#parameter.property#)");
 				query.parameters[parameter.property] = toJavaArray(type, value);
@@ -1012,6 +1018,10 @@ component {
 			}
 
 			case "int": {
+				value = javaCast(type, value);
+			}
+
+			case "boolean": {
 				value = javaCast(type, value);
 			}
 

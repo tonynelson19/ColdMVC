@@ -74,7 +74,7 @@ component {
 
 			var entityMetaData = {};
 			entityMetaData.name = classMetaData.getEntityName();
-			entityMetaData.alias = $.string.camelize(entityMetaData.name);
+			entityMetaData.alias = coldmvc.string.camelize(entityMetaData.name);
 			entityMetaData.table = classMetaData.getTableName();
 			entityMetaData.path = metaData.path;
 			entityMetaData.class = metaData.fullName;
@@ -130,7 +130,7 @@ component {
 						relationship.entity = collectionMetaData.getCollectionType().getAssociatedEntityName(ormGetSessionFactory());
 						relationship.table = collectionMetaData.getTableName();
 						relationship.property = listLast(relationship.name, ".");
-						relationship.param = $.string.camelize(relationship.entity) & "ID";
+						relationship.param = coldmvc.string.camelize(relationship.entity) & "ID";
 
 						if (collectionMetaData.isManyToMany()) {
 							relationship.type = "ManyToMany";
@@ -151,7 +151,7 @@ component {
 
 						relationship.entity = associationMetaData.getEntityName();
 						relationship.table = associationMetaData.getTableName();
-						relationship.property = $.string.camelize(relationship.entity);
+						relationship.property = coldmvc.string.camelize(relationship.entity);
 						relationship.param = relationship.property & "ID";
 						relationship.type = "ManyToOne";
 

@@ -78,10 +78,10 @@
 		<cfset var i = "" />
 
 		<cfif not structKeyExists(args, "options")>
-			<cfif $.params.has(args.originalName)>
-				<cfset args.options = $.params.get(args.originalName) />
-			<cfelseif $.params.has($.string.pluralize(args.originalName))>
-				<cfset args.options = $.params.get($.string.pluralize(args.originalName)) />
+			<cfif coldmvc.params.has(args.originalName)>
+				<cfset args.options = coldmvc.params.get(args.originalName) />
+			<cfelseif coldmvc.params.has(coldmvc.string.pluralize(args.originalName))>
+				<cfset args.options = coldmvc.params.get(coldmvc.string.pluralize(args.originalName)) />
 			<cfelse>
 				<cfset args.options = "" />
 			</cfif>
@@ -207,11 +207,11 @@
 
 		<cfif args.binding>
 
-			<cfset var binding = $.bind.get("form") />
+			<cfset var binding = coldmvc.bind.get("form") />
 
 			<cfif binding neq "">
 
-				<cfset name = $.string.camelize(binding) & "." & args.name />
+				<cfset name = coldmvc.string.camelize(binding) & "." & args.name />
 
 			</cfif>
 
@@ -253,12 +253,12 @@
 
 			<cfif args.binding>
 
-				<cfset var binding = $.bind.get("form") />
+				<cfset var binding = coldmvc.bind.get("form") />
 
 				<cfif binding neq "">
 
-					<cfif structKeyExists(params, binding)>
-						<cfset value = params[binding]._get(args.name) />
+					<cfif coldmvc.params.has(binding)>
+						<cfset value = coldmvc.params.get(binding)._get(args.name) />
 					</cfif>
 
 				</cfif>
@@ -329,7 +329,7 @@
 		<cfif structKeyExists(args, key)>
 			<cfset value = args[key] />
 		<cfelse>
-			<cfset value =  $.event.get(key) />
+			<cfset value =  coldmvc.event.get(key) />
 		</cfif>
 
 		<cfif isSimpleValue(value)>
@@ -349,9 +349,9 @@
 
 		<cfif not structKeyExists(args, "label")>
 
-			<cfset args.label = $.string.underscore(args.name) />
+			<cfset args.label = coldmvc.string.underscore(args.name) />
 
-			<cfset args.label = $.string.humanize(args.label) />
+			<cfset args.label = coldmvc.string.humanize(args.label) />
 
 			<cfif right(args.label, 3) eq " ID">
 				<cfset args.label = left(args.label, len(args.label)-3) />
@@ -374,12 +374,12 @@
 
 			<cfif not structKeyExists(args, "parameters")>
 
-				<cfset args.parameters.controller = getKey(args, "controller", $.event.controller()) />
-				<cfset args.parameters.action = getKey(args, "action", $.event.action()) />
+				<cfset args.parameters.controller = getKey(args, "controller", coldmvc.event.controller()) />
+				<cfset args.parameters.action = getKey(args, "action", coldmvc.event.action()) />
 
 			</cfif>
 
-			<cfset args.url = $.link.to(args.parameters, args.querystring) />
+			<cfset args.url = coldmvc.link.to(args.parameters, args.querystring) />
 
 		</cfif>
 

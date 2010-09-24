@@ -1,5 +1,5 @@
 <cfsilent>
-<cfset beans = $.factory.definitions() />
+<cfset beans = coldmvc.factory.definitions() />
 </cfsilent>
 
 <cfoutput>

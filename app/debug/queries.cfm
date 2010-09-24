@@ -1,5 +1,5 @@
 <cfsilent>
-<cfset debugManager = $.factory.get("debugManager") />
+<cfset debugManager = coldmvc.factory.get("debugManager") />
 <cfset queries = debugManager.getQueries() />
 </cfsilent>
 

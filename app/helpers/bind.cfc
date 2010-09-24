@@ -41,11 +41,11 @@ component {
 	}
 
 	public any function set(string key, any value) {
-		return $.request.set("bind[#key#]", value);
+		return coldmvc.request.set("bind[#key#]", value);
 	}
 
 	public array function getAll(string key) {
-		return $.request.get("bind[#key#]", []);
+		return coldmvc.request.get("bind[#key#]", []);
 	}
 
 }

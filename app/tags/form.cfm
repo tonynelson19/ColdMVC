@@ -1,10 +1,10 @@
 <cfif thisTag.executionMode eq "start">
 
 	<cfif structKeyExists(attributes, "bind")>
-		<cfset $.bind.start("form", attributes.bind) />
+		<cfset coldmvc.bind.start("form", attributes.bind) />
 	</cfif>
 
-	<cfset html = $.form.form(argumentCollection=attributes) />
+	<cfset html = coldmvc.form.form(argumentCollection=attributes) />
 
 	<!--- if a label was passed in, wrap the form in a fieldset --->
 
@@ -23,7 +23,7 @@
 	</form>
 
 	<cfif structKeyExists(attributes, "bind")>
-		<cfset $.bind.stop("form", attributes.bind) />
+		<cfset coldmvc.bind.stop("form", attributes.bind) />
 	</cfif>
 
 </cfif>

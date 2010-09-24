@@ -1,5 +1,5 @@
 <cfsilent>
-<cfset tags = $.factory.get("tagManager").getTemplates() />
+<cfset tags = coldmvc.factory.get("tagManager").getTemplates() />
 </cfsilent>
 
 <cfoutput>

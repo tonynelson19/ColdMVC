@@ -6,7 +6,7 @@ component {
 	private void function lazyLoad() {
 
 		if (!structKeyExists(variables, "assets")) {
-			assets = $.factory.get("assetManager").getAssets();
+			assets = coldmvc.factory.get("assetManager").getAssets();
 		}
 
 	}
@@ -23,7 +23,7 @@ component {
 
 	public string function renderCSSPackage() {
 
-		var package = $.factory.get("assetManager").loadPackage("css");
+		var package = coldmvc.factory.get("assetManager").loadPackage("css");
 
 		return renderCSS(package, "all");
 
@@ -31,7 +31,7 @@ component {
 
 	public string function renderJSPackage() {
 
-		var package = $.factory.get("assetManager").loadPackage("js");
+		var package = coldmvc.factory.get("assetManager").loadPackage("js");
 
 		return renderJS(package);
 

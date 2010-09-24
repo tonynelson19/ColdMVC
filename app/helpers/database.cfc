@@ -192,21 +192,21 @@
 			</cfif>
 			
 			<cfif structKeyExists(table.fields, "created_on") and not structKeyExists(args.fields, "created_on")>
-				<cfset args.fields.created_on = $.date.get() />
+				<cfset args.fields.created_on = coldmvc.date.get() />
 			</cfif>
 			
 			<cfif structKeyExists(table.fields, "created_by") and not structKeyExists(args.fields, "created_by")>
-				<cfset args.fields.created_by = $.user.id() />
+				<cfset args.fields.created_by = coldmvc.user.id() />
 			</cfif>
 			
 		</cfif>
 		
 		<cfif structKeyExists(table.fields, "updated_on") and not structKeyExists(args.fields, "updated_on")>
-			<cfset args.fields.updated_on = $.date.get() />
+			<cfset args.fields.updated_on = coldmvc.date.get() />
 		</cfif>
 		
 		<cfif structKeyExists(table.fields, "updated_by") and not structKeyExists(args.fields, "updated_by")>
-			<cfset args.fields.updated_by = $.user.id() />
+			<cfset args.fields.updated_by = coldmvc.user.id() />
 		</cfif>
 		
 		<cfloop collection="#args.fields#" item="i">
@@ -221,7 +221,7 @@
 
 				<cfif field.type eq "datetime">
 
-					<cfif $.valid.date(field.value)>
+					<cfif coldmvc.valid.date(field.value)>
 						<cfset field.value = createODBCDateTime(field.value) />
 					<cfelse>
 						<cfset field.value = "" />
@@ -229,19 +229,19 @@
 
 				<cfelseif field.type eq "uniqueidentifier">
 
-					<cfif not $.valid.guid(field.value)>
+					<cfif not coldmvc.valid.guid(field.value)>
 						<cfset field.value = "" />
 					</cfif>
 
 				<cfelseif field.type eq "bit">
 
-					<cfif not $.valid.boolean(field.value)>
+					<cfif not coldmvc.valid.boolean(field.value)>
 						<cfset field.value = "" />
 					</cfif>
 
 				<cfelseif listFindNoCase("int,smallint", field.type)>
 
-					<cfif not $.valid.integer(field.value)>
+					<cfif not coldmvc.valid.integer(field.value)>
 						<cfset field.value = "" />
 					</cfif>
 
@@ -335,7 +335,7 @@
 
 		<cfloop query="records">
 			
-			<cfset field = $.query.toStruct(records, currentRow) />
+			<cfset field = coldmvc.query.toStruct(records, currentRow) />
 	
 			<cfset field.validate = getValidationType(type) />
 			

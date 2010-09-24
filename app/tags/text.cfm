@@ -1,5 +1,5 @@
 <cfif thisTag.executionMode eq "start">
-	<cfset html = $.form.text(argumentCollection=attributes) />
+	<cfset html = coldmvc.form.text(argumentCollection=attributes) />
 <cfelse>
 	<cfoutput>
 		#html#

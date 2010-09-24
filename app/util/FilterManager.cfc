@@ -7,7 +7,7 @@ component {
 	
 	public void function enableFilters() {
 		
-		if ($.orm.enabled()) {
+		if (coldmvc.orm.enabled()) {
 		
 			var definedFilters = ormGetSessionFactory().getDefinedFilterNames();		
 			var i = "";

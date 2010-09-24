@@ -1,5 +1,5 @@
 <cfsilent>
-<cfset helpers = $.factory.get("helperManager").getTemplates() />
+<cfset helpers = coldmvc.factory.get("helperManager").getTemplates() />
 </cfsilent>
 
 <cfoutput>

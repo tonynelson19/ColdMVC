@@ -1,8 +1,8 @@
 <cfsilent>
-<cfset debugManager = $.factory.get("debugManager") />
+<cfset debugManager = coldmvc.factory.get("debugManager") />
 
-<cfset reloadKey = $.config.get("reloadKey") />
-<cfset reloadPassword = $.config.get("reloadPassword") />
+<cfset reloadKey = coldmvc.config.get("reloadKey") />
+<cfset reloadPassword = coldmvc.config.get("reloadPassword") />
 
 <cfif reloadPassword neq "">
 	<cfset reloadString = "#reloadKey#=#reloadPassword#" />
@@ -10,7 +10,7 @@
 	<cfset reloadString = "#reloadKey#" />
 </cfif>
 
-<cfset queryString = cgi.query_string />
+<cfset queryString = coldmvc.cgi.get("query_string") />
 
 <cfif queryString eq reloadString>
 	<cfset queryString = "" />
@@ -24,7 +24,12 @@
 	<cfset queryString = queryString & "&" & reloadString />
 </cfif>
 
-<cfset reload = $.config.get("urlPath") & "?" & queryString />
+<cfset reload = coldmvc.config.get("urlPath") />
+<cfif coldmvc.event.path() neq "">
+	<cfset reload = reload & coldmvc.event.path() />
+</cfif>
+
+<cfset reload =  reload & "?" & queryString />
 </cfsilent>
 
 <cfoutput>

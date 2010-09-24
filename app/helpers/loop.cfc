@@ -12,11 +12,11 @@ component {
 		}
 
 		if (structKeyExists(attributes, "key")) {
-			caller[attributes.key] = $.data.key(attributes.in, attributes.start, attributes.delimeter);
+			caller[attributes.key] = coldmvc.data.key(attributes.in, attributes.start, attributes.delimeter);
 		}
 
 		if (structKeyExists(attributes, "value")) {
-			caller[attributes.value] = $.data.value(attributes.in, attributes.start, attributes.delimeter);
+			caller[attributes.value] = coldmvc.data.value(attributes.in, attributes.start, attributes.delimeter);
 		}
 
 		if (structKeyExists(attributes, "count")) {

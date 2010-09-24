@@ -1,5 +1,5 @@
 <cfsilent>
-<cfset entities = $.orm.getEntities() />
+<cfset entities = coldmvc.orm.getEntities() />
 </cfsilent>
 
 <cfoutput>
@@ -10,7 +10,7 @@
 			<cfloop list="#listSort(structKeyList(entities), 'textnocase')#" index="entity">
 				<tr>
 					<td class="coldmvc_label">#entity#:</td>
-					<td class="coldmvc_field">#$.orm.getEntityMetaData(entity).class#</td>
+					<td class="coldmvc_field">#coldmvc.orm.getEntityMetaData(entity).class#</td>
 				</tr>
 			</cfloop>
 			<cfif structIsEmpty(entities)>

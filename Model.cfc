@@ -135,7 +135,7 @@ component {
 
 	public boolean function has(required string property) {
 		var value = _get(property);
-		return $.data.count(value) > 0;
+		return coldmvc.data.count(value) > 0;
 	}
 
 	public boolean function hasErrors() {

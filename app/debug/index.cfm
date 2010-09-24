@@ -1,5 +1,5 @@
 <cfsilent>
-<cfset templates = $.factory.get("debugManager").getTemplates() />
+<cfset templates = coldmvc.factory.get("debugManager").getTemplates() />
 </cfsilent>
 
 <style type="text/css">

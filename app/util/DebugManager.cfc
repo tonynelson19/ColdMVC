@@ -119,39 +119,39 @@ component {
 	}
 
 	public string function getAction() {
-		return $.event.action();
+		return coldmvc.event.action();
 	}
 
 	public string function getController() {
-		return $.event.controller();
+		return coldmvc.event.controller();
 	}
 
 	public string function getDevelopment() {
-		return $.config.get("development");
+		return coldmvc.config.get("development");
 	}
 
 	public array function getEvents() {
-		return $.debug.get("events", []);
+		return coldmvc.debug.get("events", []);
 	}
 
 	public string function getLayout() {
-		return $.event.layout();
+		return coldmvc.event.layout();
 	}
 
 	public array function getQueries() {
-		return $.debug.get("queries", []);
+		return coldmvc.debug.get("queries", []);
 	}
 
 	public string function getRoute() {
-		return $.debug.get("route", "");
+		return coldmvc.debug.get("route", "");
 	}
 
 	public string function getView() {
-		return $.event.view();
+		return coldmvc.event.view();
 	}
 
 	public void function setRoute(required string route) {
-		$.debug.set("route", route);
+		coldmvc.debug.set("route", route);
 	}
 
 	private void function append(required string key, required struct collection) {

@@ -10,8 +10,8 @@ component {
 
 	public void function dispatchRoute() {
 
-		var controller = $.event.controller();
-		var action = $.event.action();
+		var controller = coldmvc.event.controller();
+		var action = coldmvc.event.action();
 
 		// if the controller is empty, publish the event
 		if (controller == "" ) {
@@ -19,7 +19,7 @@ component {
 		}
 
 		// use the values from the event rather than the route in case missingController changed them
-		controller = $.controller.name($.event.controller());
+		controller = coldmvc.controller.name(coldmvc.event.controller());
 
 		// check to make sure the factory has the requested controller
 		if (!beanFactory.containsBean(controller)) {
@@ -27,18 +27,18 @@ component {
 		}
 
 		// check to see if the controller has the specified action
-		if (!$.controller.has($.event.controller(), $.event.action())) {
+		if (!coldmvc.controller.has(coldmvc.event.controller(), coldmvc.event.action())) {
 			eventDispatcher.dispatchEvent("invalidAction");
 		}
 
 		// use the values from the event rather than the route in case invalidController/invalidAction changed them
-		controller = $.controller.name($.event.controller());
+		controller = coldmvc.controller.name(coldmvc.event.controller());
 
 		// call the action
 		callMethods(controller, "Action");
 
 		// find the layout for the controller and action
-		var layout = $.controller.layout($.event.controller(), $.event.action());
+		var layout = coldmvc.controller.layout(coldmvc.event.controller(), coldmvc.event.action());
 
 		// it couldn't determine the layout, so set it to the default layout
 		if (layout == "") {
@@ -46,7 +46,7 @@ component {
 		}
 
 		// set the layout back into the event
-		$.event.layout(layout);
+		coldmvc.event.layout(layout);
 
 		// if a layout was specified, call it
 		if (layout != "") {
@@ -54,7 +54,7 @@ component {
 		}
 
 		// get the view from the event
-		var view = $.event.view();
+		var view = coldmvc.event.view();
 		var output = "";
 
 		// if the layout exists, render it
@@ -79,7 +79,7 @@ component {
 			depending on the changes, this method could maybe use some heavy refactoring...
 		*/
 
-		var action = $.event.get(type);
+		var action = coldmvc.event.get(type);
 
 		// event => preAction
 		eventDispatcher.dispatchEvent("pre#type#");

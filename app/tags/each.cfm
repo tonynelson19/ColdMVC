@@ -5,14 +5,14 @@
 	<cfparam name="attributes.start" default="1" />
 	<cfparam name="attributes.delimeter" default="," />
 
-	<cfset attributes.length = $.data.count(attributes.in, attributes.delimeter) />
+	<cfset attributes.length = coldmvc.data.count(attributes.in, attributes.delimeter) />
 
 	<cfif not structKeyExists(attributes, "end")>
 		<cfset attributes.end = attributes.length />
 	</cfif>
 
 	<cfif attributes.length>
-		<cfset result = $.loop.each(attributes) />
+		<cfset result = coldmvc.loop.each(attributes) />
 		<cfset structAppend(caller, result) />
 	<cfelse>
 		<cfexit method="exittag" />
@@ -29,7 +29,7 @@
 	<cfset attributes.start++ />
 
 	<cfif attributes.start lte attributes.end>
-		<cfset result = $.loop.each(attributes) />
+		<cfset result = coldmvc.loop.each(attributes) />
 		<cfset structAppend(caller, result) />
 		<cfexit method="loop" />
 	</cfif>

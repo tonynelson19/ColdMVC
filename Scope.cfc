@@ -29,9 +29,9 @@ component {
 
 	}
 
-	public void function append(required string key, required any value) {
-		var data = get(key, []);
-		arrayAppend(data, value);
+	public void function append(required struct values, boolean overwrite=true) {
+		var data = getScope();
+		structAppend(data, values, overwrite);
 	}
 
 	public void function clear(any key) {
@@ -105,7 +105,7 @@ component {
 				break;
 			}
 		}
-		
+
 		if (key == "") {
 			return data;
 		}

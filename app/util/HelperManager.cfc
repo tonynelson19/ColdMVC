@@ -7,6 +7,7 @@ component {
 	property config;
 	property directories;
 	property suffix;
+	property helperPrefix;
 
 	public any function init() {
 		templates = {};
@@ -33,14 +34,24 @@ component {
 
 	public void function addHelpers() {
 
-		var helpers = getHelpers();
-		var container = getPageContext().getFusionContext().hiddenScope;
+		addScope("coldmvc");
+		addScope(variables.helperPrefix);
 
-		if (!structKeyExists(container, "$")) {
-			container["$"] = {};
+	}
+
+	private void function addScope(required string scope) {
+
+		if (arguments.scope != "") {
+
+			var container = getPageContext().getFusionContext().hiddenScope;
+
+			if (!structKeyExists(container, arguments.scope)) {
+				container[arguments.scope] = {};
+			}
+
+			structAppend(container[arguments.scope], getHelpers());
+
 		}
-
-		structAppend(container["$"], helpers);
 
 	}
 
@@ -70,26 +81,26 @@ component {
 
 				for (j = 1; j <= files.recordCount; j++) {
 
-					var helper = {};					
+					var helper = {};
 					helper.name = listFirst(files.name[j], ".");
 					helper.classPath = getClassPath(directories[i], helper.name);
-					
+
 					var metaData = getComponentMetaData(helper.classPath);
-					
+
 					while (structKeyExists(metaData, "extends")) {
 
 						if (structKeyExists(metaData, "helper")) {
 							helper.name = metaData.helper;
 							break;
 						}
-			
+
 						metaData = metaData.extends;
-			
+
 					}
 
 					if (!structKeyExists(helpers, helper.name)) {
 
-						
+
 						helper.path = directories[i] & files.name[j];
 						helper.object = createObject("component", helper.classPath);
 

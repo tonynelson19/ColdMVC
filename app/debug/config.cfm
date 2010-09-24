@@ -1,5 +1,5 @@
 <cfsilent>
-<cfset config = $.config.get() />
+<cfset config = coldmvc.config.get() />
 </cfsilent>
 
 <cfoutput>

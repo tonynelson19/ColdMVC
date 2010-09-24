@@ -1,5 +1,5 @@
 <cfif thisTag.executionMode eq "start">
-	<cfset html = $.form.textarea(argumentCollection=attributes) />
+	<cfset html = coldmvc.form.textarea(argumentCollection=attributes) />
 <cfelse>
 	<cfoutput>
 		#html#

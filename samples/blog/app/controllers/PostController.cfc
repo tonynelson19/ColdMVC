@@ -11,12 +11,13 @@ component {
 	function addComment() {
 
 		var comment = _Comment.new(params.comment);
-
 		comment.save();
+
+		var post = _Post.get(params.comment.post);
 
 		flash.message = "Comment added successfully";
 
-		redirect({action="show", id=comment.post}, "###arrayLen(comment.post.comments())#");
+		redirect({action="show", id=post}, "###arrayLen(post.comments())#");
 
 	}
 

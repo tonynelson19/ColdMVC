@@ -6,25 +6,25 @@ component {
 	private string function buildLink(required string querystring, required string pars) {
 
 		var args = {};
-		args.controller = $.event.controller();
-		args.action = $.event.action();
+		args.controller = coldmvc.event.controller();
+		args.action = coldmvc.event.action();
 
 		if (querystring == "") {
-			return $.link.to(parameters=args, querystring=pars);
+			return coldmvc.link.to(parameters=args, querystring=pars);
 		}
 		else {
-			return $.link.to(parameters=args, querystring="#querystring#&#pars#");
+			return coldmvc.link.to(parameters=args, querystring="#querystring#&#pars#");
 		}
 
 	}
 
 	private string function buildQueryString(required string pars, required string key) {
 
-		pars = $.queryString.toStruct(pars);
+		pars = coldmvc.queryString.toStruct(pars);
 
 		structDelete(pars, key);
 
-		return $.struct.toQueryString(pars);
+		return coldmvc.struct.toQueryString(pars);
 
 	}
 
@@ -41,7 +41,7 @@ component {
 				value = args.records;
 			}
 			else {
-				value = $.data.count(args.records);
+				value = coldmvc.data.count(args.records);
 			}
 
 		}
@@ -52,7 +52,7 @@ component {
 
 	public numeric function max() {
 
-		var _max = $.cookie.get("max", 10);
+		var _max = coldmvc.cookie.get("max", 10);
 
 		return validateMax(_max);
 
@@ -86,7 +86,7 @@ component {
 
 	public string function page() {
 
-		var value = $.params.get("page", 1);
+		var value = coldmvc.params.get("page", 1);
 
 		return validatePage(value);
 
@@ -107,7 +107,7 @@ component {
 
 	}
 
-	public string function render(any records, string params="") {
+	public string function render(any records, string parameters="") {
 
 		var html = [];
 		var i = "";
@@ -120,8 +120,8 @@ component {
 		options.pages = this.pages(options.count, options.max);
 		options.start = this.start(options.page, options.max);
 		options.end = this.end(options.start, options.count, options.max);
-		options.page_link = buildQueryString(params, "page");
-		options.max_link = buildQueryString(params, "max");
+		options.page_link = buildQueryString(parameters, "page");
+		options.max_link = buildQueryString(parameters, "max");
 
 		arrayAppend(html, '<div class="paging">');
 		arrayAppend(html, '<ul>');

@@ -9,7 +9,7 @@ component {
 
 	public any function init() {
 		variables.aliases = {};
-		var controllers = $.controller.getAll();
+		var controllers = coldmvc.controller.getAll();
 		var key = "";
 
 		for (key in controllers) {
@@ -20,7 +20,7 @@ component {
 	public void function setDefaultController(required string defaultController) {
 		variables.defaultController = arguments.defaultController;
 
-		var action = $.controller.action(defaultController);
+		var action = coldmvc.controller.action(defaultController);
 
 		aliases["/#defaultController#"] = "";
 		aliases["/#defaultController#/#action#"] = "";
@@ -35,7 +35,7 @@ component {
 		if (path == "/") {
 			var parameters = {};
 			parameters.controller = defaultController;
-			parameters.action = $.controller.action(parameters.controller);
+			parameters.action = coldmvc.controller.action(parameters.controller);
 		}
 		else {
 			// build the parameters from the path
@@ -59,24 +59,24 @@ component {
 		}
 		// if an action wasn't returned, use the default action for the controller
 		else {
-			var action = $.controller.action(controller);
+			var action = coldmvc.controller.action(controller);
 		}
 
 		// set the values into the request
-		$.event.controller(controller);
-		$.event.action(action);
-		$.event.view($.controller.view(controller, action));
-		$.event.path(path);
+		coldmvc.event.controller(controller);
+		coldmvc.event.action(action);
+		coldmvc.event.view(coldmvc.controller.view(controller, action));
+		coldmvc.event.path(path);
 
-		structAppend(params, parameters);
+		coldmvc.params.append(parameters);
 
 	}
 
 	private string function parseURL() {
 
 		// converts /blog/index.cfm/posts/list to /posts/list
-		var address = cgi.path_info;
-		var scriptName = cgi.script_name;
+		var address = coldmvc.cgi.get("path_info");
+		var scriptName = coldmvc.cgi.get("script_name");
 
 		if (len(address) > len(scriptName) && left(address, len(scriptName)) == scriptName) {
 			address = right(address, len(address) - len(scriptName));
@@ -104,12 +104,12 @@ component {
 
 			// if a controller wasn't already specified, add the current controller
 			if (!structKeyExists(parameters, "controller")) {
-				parameters.controller = $.event.controller();
+				parameters.controller = coldmvc.event.controller();
 			}
 
 			// if an action wasn't already specified, add the current action
 			if (!structKeyExists(parameters, "action")) {
-				parameters.action = $.event.action();
+				parameters.action = coldmvc.event.action();
 			}
 
 			// generate a new path with the added parameters
@@ -140,9 +140,9 @@ component {
 	private string function getBaseURL() {
 
 		// check for ssl
-		var path = cgi.server_name & $.config.get("urlPath");
+		var path = coldmvc.cgi.get("server_name") & coldmvc.config.get("urlPath");
 
-		if (cgi.https == "off" || cgi.https == "") {
+		if (coldmvc.cgi.get("https") == "off" || coldmvc.cgi.get("https") == "") {
 			var address = "http://#path#";
 		}
 		else {

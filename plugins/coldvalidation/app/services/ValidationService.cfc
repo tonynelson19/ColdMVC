@@ -27,13 +27,13 @@ component {
 	 */
 	function addValidation() {
 
-		if (!structKeyExists(params, "validation")) {
+		if (!coldmvc.params.has("validation")) {
 
 			var result = {};
-			var controller = $.event.controller();
-			var action = $.event.action();
-			var model = $.model.metaData(controller);
-			var class = $.controller.class(controller);
+			var controller = coldmvc.event.controller();
+			var action = coldmvc.event.action();
+			var model = coldmvc.model.metaData(controller);
+			var class = coldmvc.controller.class(controller);
 			var metaData = metaDataFlattener.flattenMetaData(class);
 			var key = "";
 

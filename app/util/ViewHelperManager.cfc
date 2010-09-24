@@ -57,7 +57,7 @@ component {
 	public any function callViewHelper() {
 
 		var method = getFunctionCalledName();
-		var viewHelpers = $.factory.get("viewHelperManager").getViewHelpers();
+		var viewHelpers = coldmvc.factory.get("viewHelperManager").getViewHelpers();
 
 		if (structKeyExists(viewHelpers, method)) {
 
@@ -74,10 +74,10 @@ component {
 			}
 
 			if (viewHelper.helper != "") {
-				return evaluate("$.#viewHelper.helper#.#viewHelper.method#(argumentCollection=args)");
+				return evaluate("coldmvc.#viewHelper.helper#.#viewHelper.method#(argumentCollection=args)");
 			}
 			else if (viewHelper.beanName != "") {
-				var bean = $.factory.get(viewHelper.beanName);
+				var bean = coldmvc.factory.get(viewHelper.beanName);
 				return evaluate("bean.#viewHelper.method#(argumentCollection=args)");
 			}
 

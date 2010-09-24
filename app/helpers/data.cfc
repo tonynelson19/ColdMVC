@@ -157,7 +157,7 @@ component {
 		// lowercase all the keys	
 		for (key in data) {			
 			
-			if ($.string.isUpper(key)) {
+			if (coldmvc.string.isUpper(key)) {
 				key = lcase(key);
 			}
 			

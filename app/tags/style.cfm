@@ -1,5 +1,5 @@
 <cfif thisTag.executionMode eq "start">
-	<cfset html = $.asset.renderCSS(argumentCollection=attributes) />
+	<cfset html = coldmvc.asset.renderCSS(argumentCollection=attributes) />
 <cfelse>
 	<cfoutput>
 		#html#

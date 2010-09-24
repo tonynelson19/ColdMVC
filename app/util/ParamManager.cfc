@@ -7,7 +7,7 @@ component {
 
 	public void function populateParams(string event) {		
 		var collection = getCollection();
-		$.params.set(collection);		
+		coldmvc.params.set(collection);		
 	}
 	
 	private struct function getCollection() {

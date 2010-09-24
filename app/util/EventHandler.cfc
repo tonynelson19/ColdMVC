@@ -6,7 +6,7 @@
 component {
 
 	public void function preLoad(any entity) {
-    	$.factory.autowire(entity);
+    	coldmvc.factory.autowire(entity);
 	}
 
 	public void function postLoad(any entity) {
@@ -14,10 +14,10 @@ component {
 
 	public void function preInsert(any entity) {
 
-		set(entity, "createdOn", $.date.get());
-		set(entity, "createdBy", $.user.id());
-		set(entity, "updatedOn", $.date.get());
-		set(entity, "updatedBy", $.user.id());
+		set(entity, "createdOn", coldmvc.date.get());
+		set(entity, "createdBy", coldmvc.user.id());
+		set(entity, "updatedOn", coldmvc.date.get());
+		set(entity, "updatedBy", coldmvc.user.id());
 
 	}
 
@@ -26,8 +26,8 @@ component {
 
 	public void function preUpdate(any entity, struct oldData) {
 
-		set(entity, "updatedOn", $.date.get());
-		set(entity, "updatedBy", $.user.id());
+		set(entity, "updatedOn", coldmvc.date.get());
+		set(entity, "updatedBy", coldmvc.user.id());
 
 	}
 
@@ -42,7 +42,7 @@ component {
 
 	private void function set(required any model, required string property, required string value) {
 
-		if ($.model.has(model, property)) {
+		if (coldmvc.model.has(model, property)) {
 			model._set(property, value);
 		}
 

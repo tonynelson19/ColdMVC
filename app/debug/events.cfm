@@ -1,5 +1,5 @@
 <cfsilent>
-<cfset events = $.factory.get("debugManager").getEvents() />
+<cfset events = coldmvc.factory.get("debugManager").getEvents() />
 </cfsilent>
 
 <cfoutput>

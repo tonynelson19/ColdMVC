@@ -1,5 +1,5 @@
 <cfsilent>
-<cfset viewHelpers = $.factory.get("viewHelperManager").getViewHelpers() />
+<cfset viewHelpers = coldmvc.factory.get("viewHelperManager").getViewHelpers() />
 </cfsilent>
 
 <cfoutput>
@@ -15,7 +15,7 @@
 						<cfif viewHelper.beanName neq "">
 							#viewHelper.beanName#.#viewHelper.method#()
 						<cfelse>
-							$.#viewHelper.helper#.#viewHelper.method#()
+							coldmvc.#viewHelper.helper#.#viewHelper.method#()
 						</cfif>
 					</td>
 				</tr>

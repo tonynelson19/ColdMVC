@@ -5,7 +5,7 @@ component {
 
 	public string function toQueryString(required struct data) {
 		
-		return $.data.toQueryString(data);
+		return coldmvc.data.toQueryString(data);
 		
 	}
 	

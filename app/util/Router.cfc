@@ -66,7 +66,7 @@ component {
 			parseViewHelperParameter(viewHelper, parameters[2]);
 		}
 
-		return $.link.to(name=namedRoute, parameters=viewHelper.parameters, querystring=viewHelper.querystring);
+		return coldmvc.link.to(name=namedRoute, parameters=viewHelper.parameters, querystring=viewHelper.querystring);
 
 	}
 
@@ -283,7 +283,7 @@ component {
 			if (structKeyExists(parameters, "id") && isObject(parameters.id)) {
 
 				// get the name of the model
-				var model = $.model.name(parameters.id);
+				var model = coldmvc.model.name(parameters.id);
 
 				// check to see if there are any routes defined for this model
 				if (structKeyExists(models, model)) {

@@ -1,5 +1,5 @@
 <cfif thisTag.executionMode eq "start">
-	<cfset html = $.paging.render(argumentCollection=attributes) />
+	<cfset html = coldmvc.paging.render(argumentCollection=attributes) />
 <cfelse>
 	<cfoutput>
 		#html#

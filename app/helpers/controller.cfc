@@ -65,11 +65,11 @@ component {
 	public string function view(string controller, string action) {
 
 		if (isNull(controller)) {
-			controller = $.event.get("controller");
+			controller = coldmvc.event.get("controller");
 		}
 
 		if (isNull(action)) {
-			action = $.event.get("action");
+			action = coldmvc.event.get("action");
 		}
 
 		var controllers = getAll();
@@ -108,7 +108,7 @@ component {
 
 		var _name = name(controller);
 
-		return $.factory.get(_name);
+		return coldmvc.factory.get(_name);
 
 	}
 
@@ -139,7 +139,7 @@ component {
 	private struct function loadControllers() {
 
 		var controllers = {};
-		var beanDefinitions = $.factory.definitions();
+		var beanDefinitions = coldmvc.factory.definitions();
 		var beanDef = "";
 		var length = len("Controller");
 
@@ -152,7 +152,7 @@ component {
 				controller.class = beanDefinitions[beanDef];
 				controller.name = beanDef;
 
-				var metaData = $.factory.get("metaDataFlattener").flattenMetaData(controller.class);
+				var metaData = coldmvc.factory.get("metaDataFlattener").flattenMetaData(controller.class);
 
 				if (structKeyExists(metaData, "controller")) {
 					controller.key = metaData.controller;
@@ -160,7 +160,7 @@ component {
 				else {
 					controller.key = left(beanDef, len(beanDef)-length);
 					controller.key = controller.key;
-					controller.key = $.string.underscore(controller.key);
+					controller.key = coldmvc.string.underscore(controller.key);
 				}
 
 				// check for a default action for the controller
@@ -168,7 +168,7 @@ component {
 					controller.action = metaData.action;
 				}
 				else {
-					controller.action = $.config.get("action");
+					controller.action = coldmvc.config.get("action");
 				}
 
 				// get the directory where the views should live
@@ -226,7 +226,7 @@ component {
 			return layoutController.methods[controller].layout;
 		}
 
-		if ($.factory.get("renderer").layoutExists(controller)) {
+		if (coldmvc.factory.get("renderer").layoutExists(controller)) {
 			return controller;
 		}
 
@@ -238,19 +238,19 @@ component {
 
 		if (!structKeyExists(variables, "layoutController")) {
 
-			if ($.factory.has("layoutController")) {
+			if (coldmvc.factory.has("layoutController")) {
 
-				var obj = $.factory.get("layoutController");
+				var obj = coldmvc.factory.get("layoutController");
 
 				var result = {};
 
-				var metaData = $.factory.get("metaDataFlattener").flattenMetaData(obj);
+				var metaData = coldmvc.factory.get("metaDataFlattener").flattenMetaData(obj);
 
 				if (structKeyExists(metaData, "layout")) {
 					result.layout = metaData.layout;
 				}
 				else {
-					result.layout = $.config.get("layout");
+					result.layout = coldmvc.config.get("layout");
 				}
 
 				result.methods = getMethodsForLayoutController(metaData);

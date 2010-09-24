@@ -5,36 +5,36 @@
 component {
 
 	function create() {
-		params[__singular] = __Model.new();
+		coldmvc.params.set(__singular, __Model.new());
 	}
 
 	function delete() {
 
-		var id = $.params.get("#__singular#id");
+		var id = coldmvc.params.get("#__singular#id");
 
 		var model = __Model.get(id);
 		model.delete();
 
-		flash.message = $.string.capitalize(__singular) & " deleted successfully";
+		coldmvc.flash.set("message", coldmvc.string.capitalize(__singular) & " deleted successfully");
 		redirect({action="list"});
 
 	}
 
 	function edit() {
 
-		var id = $.params.get("#__singular#id");
+		var id = coldmvc.params.get("#__singular#id");
 
-		params[__singular] = __Model.get(id);
+		coldmvc.params.set(__singular, __Model.get(id));
 
 	}
 
 	function list() {
-		params[__plural] = __Model.list();
+		coldmvc.params.set(__plural, __Model.list());
 	}
 
 	function redirect(any parameters, string querystring) {
 
-		$.factory.get("eventDispatcher").dispatchEvent("requestEnd");
+		coldmvc.factory.get("eventDispatcher").dispatchEvent("requestEnd");
 
 		if (isSimpleValue(arguments.parameters)) {
 			arguments.querystring = arguments.parameters;
@@ -49,17 +49,17 @@ component {
 			arguments.querystring = "";
 		}
 
-		location($.link.to(parameters=arguments.parameters, querystring=arguments.querystring), false);
+		location(coldmvc.link.to(parameters=arguments.parameters, querystring=arguments.querystring), false);
 
 	}
 
 	function save() {
 
 		var model = __Model.new();
-		model.populate(params[__singular]);
+		model.populate(coldmvc.params.get(__singular));
 		model.save();
 
-		flash.message = $.string.capitalize(__singular) & " added successfully";
+		coldmvc.flash.set("message", coldmvc.string.capitalize(__singular) & " added successfully");
 
 		redirect({action="show", id=model});
 
@@ -67,32 +67,31 @@ component {
 
 	function show() {
 
-		var id = $.params.get("#__singular#id");
+		var id = coldmvc.params.get("#__singular#id");
 
-		params[__singular] = __Model.get(id);
+		coldmvc.params.set(__singular, __Model.get(id));
 
 	}
 
 	function update() {
 
 		// userid
-		var id = $.params.get("#__singular#id");
+		var id = coldmvc.params.get("#__singular#id");
 
 		// check for user.id with binding
-		if (structKeyExists(params, __singular)) {
-			if (isStruct(params[__singular])) {
-				if (structKeyExists(params[__singular], "id")) {
-					id = params[__singular].id;
-				}
+		if (coldmvc.params.has(__singular)) {
+			var value = coldmvc.params.get(__singular);
+			if (isStruct(value) && structKeyExists(value, "id")) {
+				id = value.id;
 			}
 
 		}
 
 		var model = __Model.get(id);
-		model.populate(params[__singular]);
+		model.populate(coldmvc.params.get(__singular));
 		model.save();
 
-		flash.message = $.string.capitalize(__singular) & " saved successfully";
+		coldmvc.flash.set("message", coldmvc.string.capitalize(__singular) & " saved successfully");
 
 		redirect({action="show", id=model});
 

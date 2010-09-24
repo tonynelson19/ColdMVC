@@ -132,6 +132,9 @@
 		<property name="suffix">
 			<value>app/helpers/</value>
 		</property>
+		<property name="helperPrefix">
+			<value>${helperPrefix}</value>
+		</property>
 	</bean>
 	
 	<bean id="metaDataFlattener" class="coldmvc.app.util.MetaDataFlattener">

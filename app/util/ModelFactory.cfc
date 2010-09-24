@@ -27,7 +27,7 @@ component {
 			beanInjector.autowire(entity);
 			cache[model] = entity;
 			// used to pre-populate the cache to do lookups by entity name without knowing the full class path (hack)
-			$.orm.getEntityMetaData(entity);
+			coldmvc.orm.getEntityMetaData(entity);
 		}
 
 		return cache[model];

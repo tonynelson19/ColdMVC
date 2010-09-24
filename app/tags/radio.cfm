@@ -1,5 +1,5 @@
 <cfif thisTag.executionMode eq "start">
-	<cfset html = $.form.radio(argumentCollection=attributes) />
+	<cfset html = coldmvc.form.radio(argumentCollection=attributes) />
 <cfelse>
 	<cfoutput>
 		#html#

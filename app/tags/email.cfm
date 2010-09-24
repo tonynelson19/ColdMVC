@@ -1,5 +1,5 @@
 <cfif thisTag.executionMode eq "start">
-	<cfset html = $.form.email(argumentCollection=attributes) />
+	<cfset html = coldmvc.form.email(argumentCollection=attributes) />
 <cfelse>
 	<cfoutput>
 		#html#

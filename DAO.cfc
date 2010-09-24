@@ -33,7 +33,7 @@ component {
 		operators["in"] = { operator="in", value="${value}" };
 		operators["notIn"] = { operator="not in", value="${value}" };
 
-		operatorArray = listToArray($.list.sortByLen(structKeyList(operators)));
+		operatorArray = listToArray(coldmvc.list.sortByLen(structKeyList(operators)));
 
 		return this;
 
@@ -41,7 +41,7 @@ component {
 
 	public any function add(required any model, required string to, required any object) {
 
-		var property = $.string.pluralize(to);
+		var property = coldmvc.string.pluralize(to);
 		var array = model._get(property);
 
 		if (!isArray(array)) {
@@ -58,7 +58,7 @@ component {
 	public any function addTo(required any model, required string method, required struct args) {
 
 		var to = replaceNoCase(method, "addTo", "");
-		to = $.model.name(to);
+		to = coldmvc.model.name(to);
 		return add(model, to, args[1]);
 
 	}
@@ -70,8 +70,8 @@ component {
 		query.parameters = {};
 		query.options = options;
 
-		var name = $.model.name(model);
-		var alias = $.model.alias(model);
+		var name = coldmvc.model.name(model);
+		var alias = coldmvc.model.alias(model);
 		var joins = parseInclude(model, options);
 		var i = "";
 		var counter = 0;
@@ -174,7 +174,7 @@ component {
 				var value = parameters[1];
 			}
 
-			var type = $.model.javatype(parameter.model, parameter.property);
+			var type = coldmvc.model.javatype(parameter.model, parameter.property);
 
 			if (parameter.operator.operator == "in" || parameter.operator.operator == "not in") {
 				arrayAppend(query.hql, "(:#parameter.property#)");
@@ -205,7 +205,7 @@ component {
 
 	public numeric function count(required any model) {
 
-		var name = $.model.name(model);
+		var name = coldmvc.model.name(model);
 
 		return execute("select count(*) from #name#", {}, true, {});
 
@@ -215,8 +215,8 @@ component {
 
 		method = replaceNoCase(method, "countBy", "");
 
-		var name = $.model.name(model);
-		var alias = $.model.alias(model);
+		var name = coldmvc.model.name(model);
+		var alias = coldmvc.model.alias(model);
 
 		var query = buildDynamicQuery(model, method, args, "select count(*) from #name# #alias#");
 
@@ -226,8 +226,8 @@ component {
 
 	public numeric function countWhere(required any model, required struct parameters) {
 
-		var name = $.model.name(model);
-		var alias = $.model.alias(model);
+		var name = coldmvc.model.name(model);
+		var alias = coldmvc.model.alias(model);
 
 		var query = buildQuery(model, parameters, {}, "select count(*) from #name# #alias#");
 
@@ -237,7 +237,7 @@ component {
 
 	public void function delete(required any model, required boolean flush) {
 
-		if ($.model.has(model, "isDeleted")) {
+		if (coldmvc.model.has(model, "isDeleted")) {
 			model._set("isDeleted", 1);
 			entitySave(model);
 		}
@@ -319,7 +319,7 @@ component {
 		// User.exists(1)
 		if (!isNull(id)) {
 
-			var name = $.model.name(model);
+			var name = coldmvc.model.name(model);
 			var result = get(name, id);
 
 			if (isNull(result)) {
@@ -389,8 +389,8 @@ component {
 
 	private array function findAllWith(required any model, required array relationships, required struct options) {
 
-		var name = $.model.name(model);
-		var alias = $.model.alias(name);
+		var name = coldmvc.model.name(model);
+		var alias = coldmvc.model.alias(name);
 		var query = [];
 		arrayAppend(query, "select #alias# from #name# #alias#");
 
@@ -438,8 +438,8 @@ component {
 
 		method = replaceNoCase(method, prefix, "");
 
-		var name = $.model.name(model);
-		var alias = $.model.alias(model);
+		var name = coldmvc.model.name(model);
+		var alias = coldmvc.model.alias(model);
 
 		var query = buildDynamicQuery(model, method, args, "select #alias# from #name# #alias#");
 
@@ -454,8 +454,8 @@ component {
 
 	private any function _findWhere(required any model, required struct parameters, required struct options) {
 
-		var name = $.model.name(model);
-		var alias = $.model.alias(model);
+		var name = coldmvc.model.name(model);
+		var alias = coldmvc.model.alias(model);
 
 		var query = buildQuery(model, parameters, options, "select #alias# from #name# #alias#");
 
@@ -477,7 +477,7 @@ component {
 
 	public any function get(required any model, required string id) {
 
-		var name = $.model.name(model);
+		var name = coldmvc.model.name(model);
 
 		if (id == "") {
 			var obj = new(name);
@@ -498,12 +498,12 @@ component {
 
 	public array function getAll(required any model, required string ids, required struct options) {
 
-		var name = $.model.name(model);
-		var alias = $.model.alias(model);
-		var pk = $.model.id(model);
+		var name = coldmvc.model.name(model);
+		var alias = coldmvc.model.alias(model);
+		var pk = coldmvc.model.id(model);
 		var joins = parseInclude(model, options);
 		var query = [];
-		var type = $.model.javatype(name, pk);
+		var type = coldmvc.model.javatype(name, pk);
 
 		ids = toJavaArray(type, ids);
 
@@ -519,8 +519,8 @@ component {
 
 	public array function list(required any model, required struct options) {
 
-		var name = $.model.name(model);
-		var alias = $.model.alias(model);
+		var name = coldmvc.model.name(model);
+		var alias = coldmvc.model.alias(model);
 		var joins = parseInclude(model, options);
 		var query = [];
 
@@ -536,10 +536,10 @@ component {
 	private any function load(required any model, required string id) {
 
 		// possible bug with entityLoadByPK, so use hql instead
-		var name = $.model.name(model);
-		var alias = $.model.alias(model);
-		var pk = $.model.id(model);
-		var type = $.model.javatype(name, pk);
+		var name = coldmvc.model.name(model);
+		var alias = coldmvc.model.alias(model);
+		var pk = coldmvc.model.id(model);
+		var type = coldmvc.model.javatype(name, pk);
 
 		id = toJavaType(type, id);
 
@@ -576,9 +576,9 @@ component {
 
 	public any function new(required any model) {
 
-		var name = $.model.name(model);
+		var name = coldmvc.model.name(model);
 		var obj = entityNew(name);
-		var relationships = $.model.relationships(model);
+		var relationships = coldmvc.model.relationships(model);
 		var i = "";
 
 		for (i in relationships) {
@@ -595,7 +595,7 @@ component {
 
 		if (structKeyExists(options, "include")) {
 
-			var alias = $.model.alias(model);
+			var alias = coldmvc.model.alias(model);
 			var joins = [];
 			var i = "";
 
@@ -603,14 +603,14 @@ component {
 
 			for (i = 1; i <= arrayLen(includes); i++) {
 
-				var property = $.model.name(includes[i]);
+				var property = coldmvc.model.name(includes[i]);
 				var related = property;
 
-				if (!$.model.exists(related)) {
-					related = $.string.singularize(related);
+				if (!coldmvc.model.exists(related)) {
+					related = coldmvc.string.singularize(related);
 				}
 
-				var propertyAlias = $.model.alias(related);
+				var propertyAlias = coldmvc.model.alias(related);
 
 				arrayAppend(joins, "join #alias#.#property# as #propertyAlias#");
 
@@ -633,10 +633,10 @@ component {
 		result.parameters = [];
 		result.joins = [];
 
-		var name = $.model.name(model);
-		var alias = $.model.alias(model);
-		var properties = $.model.properties(model);
-		var relationships = $.model.relationships(model);
+		var name = coldmvc.model.name(model);
+		var alias = coldmvc.model.alias(model);
+		var properties = coldmvc.model.properties(model);
+		var relationships = coldmvc.model.relationships(model);
 		var keys = structKeyList(properties);
 		var related = {};
 
@@ -645,7 +645,7 @@ component {
 		}
 
 		keys = listAppend(keys, structKeyList(related));
-		keys = $.list.sortByLen(keys);
+		keys = coldmvc.list.sortByLen(keys);
 		keys = listToArray(keys);
 
 		do {
@@ -712,8 +712,8 @@ component {
 
 	private struct function parseParameters(required any model, required struct parameters) {
 
-		var alias = $.model.alias(model);
-		var properties = $.model.properties(model);
+		var alias = coldmvc.model.alias(model);
+		var properties = coldmvc.model.properties(model);
 		var result = {};
 		var property = "";
 
@@ -731,8 +731,8 @@ component {
 				var len = arrayLen(prop);
 
 				// { "foo.bar" = "baz" }
-				parameter.model = $.model.alias(prop[len-1]);
-				parameter.property = $.model.property(parameter.model, prop[len]);
+				parameter.model = coldmvc.model.alias(prop[len-1]);
+				parameter.property = coldmvc.model.property(parameter.model, prop[len]);
 				parameter.alias = parameter.model & "." & parameter.property;
 
 				// if the parameter belongs to a different model
@@ -815,7 +815,7 @@ component {
 
 		if (structKeyExists(options, "sort")) {
 
-			alias = $.model.alias(model);
+			alias = coldmvc.model.alias(model);
 			sort = listToArray(options.sort);
 			i = "";
 
@@ -824,12 +824,12 @@ component {
 				value = sort[i];
 
 				if (find(".", value)) {
-					sortAlias = $.model.alias(listFirst(value, "."));
-					sortProperty = $.model.property(sortAlias, listLast(value, "."));
+					sortAlias = coldmvc.model.alias(listFirst(value, "."));
+					sortProperty = coldmvc.model.property(sortAlias, listLast(value, "."));
 				}
 				else {
 					sortAlias = alias;
-					sortProperty = $.model.property(sortAlias, value);
+					sortProperty = coldmvc.model.property(sortAlias, value);
 				}
 
 				sort[i] = sortAlias & "." & sortProperty;
@@ -868,13 +868,13 @@ component {
 		var key = "";
 		var i = "";
 
-		var properties = $.model.properties(model);
-		var relationships = $.model.relationships(model);
-		var type = $.data.type(data);
+		var properties = coldmvc.model.properties(model);
+		var relationships = coldmvc.model.relationships(model);
+		var type = coldmvc.data.type(data);
 
 		if (type == "object") {
 
-			if ($.orm.isEntity(data)) {
+			if (coldmvc.orm.isEntity(data)) {
 
 				for (i = 1; i<= listLen(propertyList); i++) {
 
@@ -956,7 +956,7 @@ component {
 
 					name = left(property, len(property)-2);
 					name = replace(name, "_", "", "all");
-					name = $.model.name(name);
+					name = coldmvc.model.name(name);
 
 					if (name != "") {
 

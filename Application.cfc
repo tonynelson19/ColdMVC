@@ -300,6 +300,7 @@ component {
 			"controller" = "",
 			"debug" = "true",
 			"development" = "false",
+			"helperPrefix" = "$",
 			"key" = "coldmvc",
 			"layout" = "index",
 			"logEvents" = "false",

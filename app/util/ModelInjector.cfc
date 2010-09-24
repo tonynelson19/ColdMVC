@@ -70,11 +70,11 @@ component {
 					var model = left(beanName, len(beanName)-len(suffix));
 				}
 
-				if ($.model.exists(model)) {
+				if (coldmvc.model.exists(model)) {
 
 					var object = modelFactory.get(model);
-					var singular = $.string.camelize(model);
-					var plural = $.string.camelize($.string.pluralize(model));
+					var singular = coldmvc.string.camelize(model);
+					var plural = coldmvc.string.camelize(coldmvc.string.pluralize(model));
 
 					var arg = {
 						"#modelPrefix##singular#" = object,

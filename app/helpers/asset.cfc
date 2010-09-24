@@ -49,16 +49,16 @@ component {
 	}
 
 	private string function getBaseURL() {
-		return $.config.get("assetPath");
+		return coldmvc.config.get("assetPath");
 	}
 
 	private string function getVersion() {
 
-		if ($.config.get("development")) {
+		if (coldmvc.config.get("development")) {
 			var timestamp = now();
 		}
 		else {
-			var timestamp = $.application.get("timestamp", now());
+			var timestamp = coldmvc.application.get("timestamp", now());
 		}
 
 		return dateFormat(timestamp, "mmddyyyy") & timeFormat(timestamp, "hhmmss");
@@ -81,7 +81,7 @@ component {
 	}
 
 	private struct function getAssetCache(required string type) {
-		return $.request.get("helpers.asset.#type#", {});
+		return coldmvc.request.get("helpers.asset.#type#", {});
 	}
 
 }

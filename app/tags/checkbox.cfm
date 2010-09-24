@@ -1,5 +1,5 @@
 <cfif thisTag.executionMode eq "start">
-	<cfset html = $.form.checkbox(argumentCollection=attributes) />
+	<cfset html = coldmvc.form.checkbox(argumentCollection=attributes) />
 <cfelse>
 	<cfoutput>
 		#html#

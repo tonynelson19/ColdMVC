@@ -895,9 +895,9 @@ component {
 			}
 			else {
 
-				var dataMetaData = getMetaData(data);
+				var metaData = getMetaData(data);
 
-				if (!structKeyExists(dataMetaData, "functions")) {
+				if (!structKeyExists(metaData, "functions")) {
 
 					var struct = {};
 

@@ -28,26 +28,30 @@ component {
 		customObservers = {};
 	}
 
-	public void function addObserver(required struct observers, required struct collection) {
+	public void function addObserver(required struct observers, required struct data) {
 
-		if (!structKeyExists(observers, collection.event)) {
-			observers[collection.event] = [];
+		if (!structKeyExists(observers, data.event)) {
+			observers[data.event] = [];
 		}
 
-		arrayAppend(observers[collection.event], {
-			beanName = collection.beanName,
-			method = collection.method,
-			string = collection.beanName & "." & collection.method
+		arrayAppend(observers[data.event], {
+			beanName = data.beanName,
+			method = data.method,
+			string = data.beanName & "." & data.method
 		});
 
 	}
 
-	public void function dispatchEvent(required string event) {
+	public void function dispatchEvent(required string event, struct data) {
 
 		var listeners = getListeners(event);
 		var i = "";
 
-		logEvent(event, listeners);
+		if (!structKeyExists(arguments, "data")) {
+			arguments.data = {};
+		}
+
+		logEvent(arguments.event, listeners);
 
 		for (i = 1; i <= arrayLen(listeners); i++) {
 
@@ -56,7 +60,7 @@ component {
 			var bean = getBeanFactory().getBean(beanName);
 
 			var start = getTickCount();
-			evaluate("bean.#method#(event)");
+			evaluate("bean.#method#(event=arguments.event, data=arguments.data)");
 			var end = getTickCount();
 
 			logListener(beanName, method, start, end);

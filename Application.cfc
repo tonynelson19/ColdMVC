@@ -50,6 +50,9 @@ component {
 			}
 
 		}
+		else if (getSetting("autoReload")) {
+			reload();
+		}
 
 		// add a mapping for each plugin
 		structAppend(this.mappings, application.coldmvc.pluginManager.getMappings(), false);
@@ -63,6 +66,7 @@ component {
 		ormReload();
 		onApplicationStart();
 		dispatchEvent("postReload");
+		coldmvc.debug.set("reloaded", true);
 	}
 
 	public any function onRequestEnd() {
@@ -296,6 +300,7 @@ component {
 
 		var defaults = {
 			"action" = "index",
+			"autoReload" = "false",
 			"beanFactory" = "coldmvc.app.util.BeanFactory",
 			"controller" = "",
 			"debug" = "true",
@@ -306,6 +311,7 @@ component {
 			"logEvents" = "false",
 			"logQueries" = "false",
 			"logTemplateGeneration" = "false",
+			"modelEvents" = "false",
 			"modelPrefix" = "_",
 			"reloadKey" = "init",
 			"reloadPassword" = "",

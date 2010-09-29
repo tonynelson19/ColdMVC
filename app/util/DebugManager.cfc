@@ -154,15 +154,15 @@ component {
 		coldmvc.debug.set("route", route);
 	}
 
-	private void function append(required string key, required struct collection) {
+	private void function append(required string key, required struct data) {
 
-		var data = structGet("request.coldmvc.debug");
+		var cache = structGet("request.coldmvc.debug");
 
-		if (!structKeyExists(data, key)) {
-			data[key] = [];
+		if (!structKeyExists(cache, key)) {
+			cache[key] = [];
 		}
 
-		arrayAppend(data[key], collection);
+		arrayAppend(cache[key], data);
 
 	}
 

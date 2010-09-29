@@ -96,8 +96,8 @@ component {
 
 	}
 
-	private string function setAndReturn(required struct collection, required string key, required any value) {
-		collection[key] = value;
+	private string function setAndReturn(required struct data, required string key, required any value) {
+		data[key] = value;
 		return value;
 	}
 

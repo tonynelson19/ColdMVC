@@ -61,6 +61,10 @@
 				<td class="coldmvc_label">Development:</td>
 				<td class="coldmvc_field">#debugManager.getDevelopment()# (<a href="#reload#">reload</a>)</td>
 			</tr>
+			<tr>
+				<td class="coldmvc_label">Reloaded:</td>
+				<td class="coldmvc_field">#coldmvc.debug.get("reloaded", false)#</td>
+			</tr>
 		</tbody>
 	</table>
 </div>

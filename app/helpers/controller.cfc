@@ -92,15 +92,18 @@ component {
 
 		var controllers = getAll();
 
-		if (!structKeyExists(controllers, controller)) {
-			return controller;
+		if (structKeyExists(controllers, controller)) {
+
+			if (structKeyExists(controllers[controller].methods, method)) {
+				return controllers[controller].methods[method].layout;
+			}
+			else {
+				return controllers[controller].layout;
+			}
+
 		}
 
-		if (!structKeyExists(controllers[controller].methods, method)) {
-			return controller;
-		}
-
-		return controllers[controller].methods[method].layout;
+		return controller;
 
 	}
 
@@ -117,7 +120,13 @@ component {
 		// a string was passed in, so check the cache
 		if (isSimpleValue(controller)) {
 			var controllers = getAll();
-			return structKeyExists(controllers[controller].methods, method);
+			if (structKeyExists(controllers, controller)) {
+				return structKeyExists(controllers[controller].methods, method);
+			}
+			else {
+				throw (message="Invalid controller: #controller#");
+			}
+
 		}
 		// an object was passed in, so check the public functions
 		else {

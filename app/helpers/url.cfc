@@ -1,0 +1,6 @@
+/**
+ * @extends coldmvc.Helper
+ */
+component {
+
+}

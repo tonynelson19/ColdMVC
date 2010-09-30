@@ -4,14 +4,19 @@
  */
 component {
 
-	public string function renderCSS(required string name, string media="all") {
+	public string function renderCSS(required string name, string media="all", string condition="") {
 
 		if (alreadyRendered("css", name)) {
 			return "";
 		}
 		else {
 			markRendered("css", name);
-			return '<link rel="stylesheet" href="#linkToCSS(name)#?#getVersion()#" type="text/css" media="#media#" />';
+			var link = '<link rel="stylesheet" href="#linkToCSS(name)#?#getVersion()#" type="text/css" media="#media#" />';
+			if (condition != "") {
+				link = '<!--[if #condition#]>#link#<![endif]-->';
+			}
+			return link;
+
 		}
 
 	}
@@ -45,7 +50,12 @@ component {
 	}
 
 	private string function linkToAsset(required string type, required string name) {
-		return "#getBaseURL()##type#/#name#";
+		if (left(name, 4) == "http") {
+			return name;
+		}
+		else {
+			return "#getBaseURL()##type#/#name#";
+		}
 	}
 
 	private string function getBaseURL() {

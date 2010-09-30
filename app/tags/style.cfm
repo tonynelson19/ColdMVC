@@ -1,7 +1,12 @@
-<cfif thisTag.executionMode eq "start">
-	<cfset html = coldmvc.asset.renderCSS(argumentCollection=attributes) />
-<cfelse>
-	<cfoutput>
-		#html#
-	</cfoutput>
+<cfoutput>
+<cfif thisTag.executionMode eq "end">
+	<cfif structKeyExists(attributes, "name")>
+		#coldmvc.asset.renderCSS(argumentCollection=attributes)#
+	<cfelse>
+		<style type="text/css">
+			#thisTag.generatedContent#
+		</style>
+		<cfset thisTag.generatedContent = "" />
+	</cfif>
 </cfif>
+</cfoutput>

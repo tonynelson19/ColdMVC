@@ -1,3 +1,16 @@
+<!--
+1. configure the plugin inside /config/routes.cfm
+<cfset add("/coldmvc/plugins/coldtabs/") />
+
+2. define your tabs inside /config/tabs.xml
+(see below)
+
+3. render the tabs on your layouts
+<c:tabs />
+<c:tabs level="2" />
+<c:tabs group="players" />
+-->
+
 <!-- this is a sample config file -->
 <tabs>
 	<tab name="League" controller="league">

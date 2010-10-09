@@ -14,7 +14,7 @@ component {
 
 	}
 
-	public array function getTabs(numeric level=1, string key, string group) {
+	public array function getTabs(numeric level=1, string key, string group, string querystring="") {
 
 		if (!variables.loaded) {
 			variables.loaded = loadConfig();
@@ -81,35 +81,47 @@ component {
 		var i = "";
 		for (i = 1; i <= arrayLen(tabs); i++) {
 
-			var tab = {};
-			tab.name = tabs[i].name;
-			tab.title = tabs[i].title;
-			tab.target = tabs[i].target;
-			tab.url = tabs[i].url;
-			tab.active = (tabs[i].code == code) ? true : false;
-			tab.selected = (tabs[i].key == key) ? true : false;
+			if (!tabs[i].hidden) {
 
-			tab.class = [];
+				var tab = {};
+				tab.name = tabs[i].name;
+				tab.title = tabs[i].title;
+				tab.target = tabs[i].target;
+				tab.controller = tabs[i].controller;
+				tab.action = tabs[i].action;
+				tab.url = tabs[i].url;
+				tab.querystring = tabs[i].querystring;
 
-			if (tabs[i].first) {
-				arrayAppend(tab.class, "first");
+				if (querystring != "") {
+					tab.url = coldmvc.url.addQueryString(tab.url, querystring);
+				}
+
+				tab.active = (tabs[i].code == code) ? true : false;
+				tab.selected = (tabs[i].key == key) ? true : false;
+
+				tab.class = [];
+
+				if (tabs[i].first) {
+					arrayAppend(tab.class, "first");
+				}
+
+				if (tabs[i].last) {
+					arrayAppend(tab.class, "last");
+				}
+
+				if (tab.active) {
+					arrayAppend(tab.class, "active");
+				}
+
+				if (tab.selected) {
+					arrayAppend(tab.class, "selected");
+				}
+
+				tab.class = arrayToList(tab.class, " ");
+
+				arrayAppend(result, tab);
+
 			}
-
-			if (tabs[i].last) {
-				arrayAppend(tab.class, "last");
-			}
-
-			if (tab.active) {
-				arrayAppend(tab.class, "active");
-			}
-
-			if (tab.selected) {
-				arrayAppend(tab.class, "selected");
-			}
-
-			tab.class = arrayToList(tab.class, " ");
-
-			arrayAppend(result, tab);
 
 		}
 
@@ -186,6 +198,8 @@ component {
 				tab.last = (i == length) ? true : false;
 				tab.title = coldmvc.xml.get(tabXML, "title", tab.name);
 				tab.target = coldmvc.xml.get(tabXML, "target");
+				tab.querystring = coldmvc.xml.get(tabXML, "querystring");
+				tab.hidden = coldmvc.xml.get(tabXML, "hidden", false);
 				tab.controller = coldmvc.xml.get(tabXML, "controller", controller);
 
 				if (structKeyExists(tabXML.xmlAttributes, "action")) {
@@ -209,13 +223,13 @@ component {
 					tab.url = tabXML.xmlAttributes.url;
 
 					if (left(tab.url, 1) == "/") {
-						tab.url = coldmvc.link.to(tab.url);
+						tab.url = coldmvc.link.to(tab.url, tab.querystring);
 					}
 
 				}
 				else {
 
-					tab.url = coldmvc.link.to({controller=tab.controller, action=tab.action});
+					tab.url = coldmvc.link.to({controller=tab.controller, action=tab.action}, tab.querystring);
 
 				}
 

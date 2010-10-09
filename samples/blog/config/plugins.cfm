@@ -1,4 +1,5 @@
 <!---
-<cfset add(name="coldassets", path="../../../plugins/coldassets/") />
-<cfset add(name="coldvalidation", path="../../../plugins/coldvalidation/") />
+<cfset add("/coldmvc/plugins/coldtabs/") />
+<cfset add("/coldmvc/plugins/coldassets/") />
+<cfset add("/coldmvc/plugins/coldvalidation/") />
 --->

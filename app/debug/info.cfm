@@ -29,7 +29,7 @@
 	<cfset reload = reload & coldmvc.event.path() />
 </cfif>
 
-<cfset reload =  reload & "?" & queryString />
+<cfset reload =  coldmvc.url.addQueryString(reload, queryString) />
 </cfsilent>
 
 <cfoutput>

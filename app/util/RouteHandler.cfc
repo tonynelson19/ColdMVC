@@ -122,15 +122,7 @@ component {
 
 		// if the querystring wasn't empty, append it to the path
 		if (querystring != "") {
-
-			// if the querystring starts with a hash, don't add a question mark
-			if (left(querystring, 1) == "##") {
-				path = path & querystring;
-			}
-			else {
-				path = path & "?" & querystring;
-			}
-
+			path = coldmvc.url.addQueryString(path, querystring);
 		}
 
 		return path;

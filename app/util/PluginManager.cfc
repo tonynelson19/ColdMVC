@@ -17,11 +17,16 @@ component {
 		}
 	}
 
-	public void function add(required string name, required string path) {
+	public void function add(string name, string path="") {
 
 		var plugin = {};
 		plugin.name = arguments.name;
 		plugin.path = arguments.path;
+
+		if (path == "") {
+			plugin.path = plugin.name;
+			plugin.name = listLast(replace(plugin.name, "\", "/", "all"), "/");
+		}
 
 		if (!directoryExists(plugin.path)) {
 			plugin.path = expandPath(plugin.path);

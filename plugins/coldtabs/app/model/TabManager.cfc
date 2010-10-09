@@ -184,27 +184,9 @@ component {
 				tab.level = level;
 				tab.first = (i == 1) ? true : false;
 				tab.last = (i == length) ? true : false;
-
-				if (structKeyExists(tabXML.xmlAttributes, "title")) {
-					tab.title = tabXML.xmlAttributes.title;
-				}
-				else {
-					tab.title = tab.name;
-				}
-
-				if (structKeyExists(tabXML.xmlAttributes, "target")) {
-					tab.target = tabXML.xmlAttributes.target;
-				}
-				else {
-					tab.target = "";
-				}
-
-				if (structKeyExists(tabXML.xmlAttributes, "controller")) {
-					tab.controller = tabXML.xmlAttributes.controller;
-				}
-				else {
-					tab.controller = controller;
-				}
+				tab.title = coldmvc.xml.get(tabXML, "title", tab.name);
+				tab.target = coldmvc.xml.get(tabXML, "target");
+				tab.controller = coldmvc.xml.get(tabXML, "controller", controller);
 
 				if (structKeyExists(tabXML.xmlAttributes, "action")) {
 					tab.action = tabXML.xmlAttributes.action;

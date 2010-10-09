@@ -38,13 +38,13 @@
 			<tab name="Projections" />
 		</tabs>
 	</tab>
-	<tab name="Standings">
+	<tab name="Standings" controller="standing">
 		<tabs>
 			<tab name="Season Standings" action="season" />
 			<tab name="Final Standings" action="final" />
 		</tabs>
 	</tab>
-	<tab name="Scoreboard">
+	<tab name="Scoreboard" controller="scoreboard">
 		<tabs>
 			<tab name="Results" action="index" url="/scoreboard" />
 			<tab name="Playoff Bracket" url="/playoffs" />

@@ -1,7 +1,5 @@
-<cfif thisTag.executionMode eq "start">
-	<cfset html = coldmvc.form.select(argumentCollection=attributes) />
-<cfelse>
+<cfif thisTag.executionMode eq "end">
 	<cfoutput>
-		#html#
+		#coldmvc.form.select(argumentCollection=attributes)#
 	</cfoutput>
 </cfif>

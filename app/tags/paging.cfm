@@ -1,7 +1,5 @@
-<cfif thisTag.executionMode eq "start">
-	<cfset html = coldmvc.paging.render(argumentCollection=attributes) />
-<cfelse>
+<cfif thisTag.executionMode eq "end">
 	<cfoutput>
-		#html#
+		#coldmvc.paging.render(argumentCollection=attributes)#
 	</cfoutput>
 </cfif>

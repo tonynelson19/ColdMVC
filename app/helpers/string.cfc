@@ -134,7 +134,14 @@ component {
 
 		value = pascalize(value);
 
-	    value = lcase(left(value, 1)) & right(value, len(value)-1);
+		var remainder = len(value) - 1;
+
+		if (remainder > 0) {
+			value = lcase(left(value, 1)) & right(value, remainder);
+		}
+		else {
+			value = lcase(value);
+		}
 
 	    return value;
 

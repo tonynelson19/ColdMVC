@@ -1,8 +1,7 @@
-<cfif thisTag.executionMode eq "start">	
-	<cfset html = coldmvc.form.fieldset(argumentCollection=attributes) />	
+<cfif thisTag.executionMode eq "start">
 	<cfoutput>
-		#html#
-	</cfoutput>	
-<cfelse>	
+		#coldmvc.form.fieldset(argumentCollection=attributes)#
+	</cfoutput>
+<cfelse>
 	</fieldset>
 </cfif>

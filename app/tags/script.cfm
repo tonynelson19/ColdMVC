@@ -7,11 +7,17 @@
 	<cfelse>
 		<cfif attributes.condition neq "">
 			<script type="text/javascript">
-				<!--[if #attributes.condition#]>#thisTag.generatedContent#<![endif]-->
+				<!--
+				<!--[if #attributes.condition#]>
+					#thisTag.generatedContent#<![endif]
+				-->
+				//-->
 			</script>
 		<cfelse>
 			<script type="text/javascript">
+				<!--
 				#thisTag.generatedContent#
+				//-->
 			</script>
 		</cfif>
 		<cfset thisTag.generatedContent = "" />

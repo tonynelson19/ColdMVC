@@ -1,6 +1,6 @@
-<cfif thisTag.executionMode eq "start">
+<cfif thisTag.executionMode eq "end">
 
-	<cfparam name="attributes.name" default="HTML 4.01 Strict" />
+	<cfparam name="attributes.name" default="XHTML 1.0 Strict" />
 
 	<cfswitch expression="#attributes.name#">
 
@@ -33,8 +33,6 @@
 		</cfcase>
 
 	</cfswitch>
-
-<cfelse>
 
 <cfoutput>
 #result#

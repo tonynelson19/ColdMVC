@@ -73,19 +73,50 @@ component {
 		}
 
 		var controllers = getAll();
+		var view = "";
 
 		// if the controller exists and it's valid method, get the view from the metadata
-		if (structKeyExists(controllers, controller) && structKeyExists(controllers[controller].methods, action)) {
-			return controllers[controller].methods[action].view;
+		if (structKeyExists(controllers, controller)) {
+
+			if (structKeyExists(controllers[controller].methods, action)) {
+				view = controllers[controller].methods[action].view;
+			}
+			else {
+				view = controllers[controller].directory & "/" & action;
+			}
+
+		}
+		else {
+
+			// not a valid controller/action, so build it assuming it's a normal request
+			view = buildView(controller, action);
+
 		}
 
-		// not a valid controller/action, so build it assuming it's a normal request
-		return buildView(controller, action);
+		return formatView(view);
 
 	}
 
 	private string function buildView(required string controller, required string action) {
-		 return controller & "/" & action & ".cfm";
+
+		return controller & "/" & action & ".cfm";
+
+	}
+
+	private string function formatView(required string view) {
+
+		view = replace(view, "//", "/", "all");
+
+		if (left(view, 1) eq "/") {
+			view = replace(view, "/", "");
+		}
+
+		if (right(view, 4) != ".cfm") {
+			view = view & ".cfm";
+		}
+
+		return view;
+
 	}
 
 	public string function layout(string controller, string method) {

@@ -24,4 +24,8 @@ component {
 		return getOrSet("path", arguments);
 	}
 
+	public string function key() {
+		return get("controller") & "." & get("action");
+	}
+
 }

@@ -1,8 +1,7 @@
-<cfif thisTag.executionMode eq "start">	
-	<cfset html = coldmvc.html.table(argumentCollection=attributes) />	
+<cfif thisTag.executionMode eq "start">
 	<cfoutput>
-		#html#
+		#coldmvc.html.table(argumentCollection=attributes)#
 	</cfoutput>
 <cfelse>
-	</table>	
+	</table>
 </cfif>

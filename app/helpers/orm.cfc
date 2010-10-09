@@ -37,11 +37,13 @@ component {
 			if (enabled()) {
 
 				var classes = ormGetSessionFactory().getAllClassMetadata();
+				var modelFactory = coldmvc.factory.get("modelFactory");
 
 				for (i in classes) {
 					entities[i] = {
 						name = i,
-						metaData = classes[i]
+						metaData = classes[i],
+						model = modelFactory.get(i)
 					};
 				}
 

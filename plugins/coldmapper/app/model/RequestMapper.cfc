@@ -43,7 +43,7 @@ component {
 			var mapping = {};
 			mapping.controller = mappingXML.xmlAttributes.controller;
 			mapping.action = mappingXML.xmlAttributes.action;
-			mapping.map = mappingXML.xmlAttributes.map;
+			mapping.map = coldmvc.xml.get(mappingXML, "map", "index");
 			mapping.requires = coldmvc.xml.get(mappingXML, "requires", "none");
 
 			arrayAppend(config, mapping);

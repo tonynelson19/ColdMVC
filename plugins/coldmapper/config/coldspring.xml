@@ -1,0 +1,12 @@
+<beans>
+	
+	<bean id="requestMapper" class="coldmapper.app.model.RequestMapper">
+		<property name="configPaths">
+			<list>
+				<value>/${directory}/</value>
+				<value>${plugins}</value>
+			</list>
+		</property>
+	</bean>
+	
+</beans>

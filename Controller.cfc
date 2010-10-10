@@ -5,7 +5,9 @@
 component {
 
 	function create() {
+
 		coldmvc.params.set(__singular, __Model.new());
+
 	}
 
 	function delete() {
@@ -29,7 +31,9 @@ component {
 	}
 
 	function list() {
+
 		coldmvc.params.set(__plural, __Model.list());
+
 	}
 
 	function redirect(any parameters, string querystring) {

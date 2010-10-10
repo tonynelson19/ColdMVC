@@ -176,17 +176,14 @@ component {
 
 			var type = coldmvc.model.javatype(parameter.model, parameter.property);
 
-			if (type == "bit") {
-				writeDump(value);
-				writeDump(value);
-				abort;
-			}
-
 			if (parameter.operator.operator == "in" || parameter.operator.operator == "not in") {
+
 				arrayAppend(query.hql, "(:#parameter.property#)");
 				query.parameters[parameter.property] = toJavaArray(type, value);
+
 			}
 			else {
+
 				arrayAppend(query.hql, ":#parameter.property#");
 
 				// if the value is just the value, make sure it's the proper type

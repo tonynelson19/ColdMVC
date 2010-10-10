@@ -5,6 +5,7 @@
 component {
 
 	property configPath;
+	property requestMapper;
 
 	public any function init() {
 
@@ -14,16 +15,22 @@ component {
 
 	}
 
-	public array function getTabs(numeric level=1, string key, string group, string querystring="") {
+	public array function getTabs(numeric level=1, string controller, string action, string group, string querystring="") {
 
 		if (!variables.loaded) {
 			variables.loaded = loadConfig();
 		}
 
-		if (!structKeyExists(arguments, "key")) {
-			key = coldmvc.event.key();
+		if (!structKeyExists(arguments, "controller")) {
+			controller = coldmvc.event.controller();
 		}
 
+		if (!structKeyExists(arguments, "action")) {
+			action = coldmvc.event.action();
+		}
+
+		var mapping = requestMapper.getMapping(controller, action);
+		var key = mapping.key;
 		var tabs = [];
 		var code = "";
 
@@ -89,11 +96,17 @@ component {
 				tab.target = tabs[i].target;
 				tab.controller = tabs[i].controller;
 				tab.action = tabs[i].action;
+				tab.key = tabs[i].key;
 				tab.url = tabs[i].url;
 				tab.querystring = tabs[i].querystring;
 
-				if (querystring != "") {
-					tab.url = coldmvc.url.addQueryString(tab.url, querystring);
+				if (arguments.querystring != "") {
+					tab.url = coldmvc.url.addQueryString(tab.url, arguments.querystring);
+				}
+
+				// if a model was passed in, rebuild the url
+				if (structKeyExists(arguments, "model")) {
+					tab.url = coldmvc.link.to({controller=tab.controller, action=tab.action, id=arguments.model}, coldmvc.querystring.combine(tab.querystring, arguments.querystring));
 				}
 
 				tab.active = (tabs[i].code == code) ? true : false;
@@ -209,7 +222,10 @@ component {
 					tab.action = coldmvc.string.camelize(tab.name);
 				}
 
-				tab.key = tab.controller & "." & tab.action;
+				tab.key = coldmvc.xml.get(tabXML, "key", tab.controller & "." & tab.action);
+
+				var mapping = requestMapper.getMapping(tab.controller, tab.action);
+				tab.requires = mapping.requires;
 
 				if (structKeyExists(variables.config.keys, tab.parent)) {
 					tab.code = variables.config.keys[tab.parent].code & "." & i;

@@ -1,0 +1,5 @@
+<tabs>
+	<tab name="Home" controller="secure" action="index" />
+	<tab name="Widgets" controller="widget" action="list" key="widget.index" />
+	<tab name="Gadgets" controller="gadget" action="list" key="gadget.index" />
+</tabs>

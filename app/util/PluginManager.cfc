@@ -8,13 +8,16 @@ component {
 	public any function init() {
 		plugins = [];
 		mappings = {};
+		cache = {};
 		return this;
 	}
 
 	public void function loadPlugins() {
+
 		if (fileExists(expandPath(configPath))) {
 			include configPath;
 		}
+
 	}
 
 	public void function add(string name, string path="") {
@@ -25,19 +28,33 @@ component {
 
 		if (path == "") {
 			plugin.path = plugin.name;
-			plugin.name = listLast(replace(plugin.name, "\", "/", "all"), "/");
+			plugin.name = listLast(sanitize(plugin.name), "/");
 		}
 
-		if (!directoryExists(plugin.path)) {
-			plugin.path = expandPath(plugin.path);
+		if (!structKeyExists(cache, plugin.name)) {
+
+			if (!directoryExists(plugin.path)) {
+				plugin.path = expandPath(plugin.path);
+			}
+
+			plugin.path = sanitize(plugin.path);
+			plugin.exists = directoryExists(plugin.path);
+
+			arrayAppend(plugins, plugin);
+
+			mappings["/#plugin.name#"] = plugin.path;
+
+			var config = "#plugin.path#config/plugins.cfm";
+			var root = sanitize(expandPath("/coldmvc"));
+			var mapping = "/coldmvc" & replaceNoCase(config, root, "");
+
+			if (fileExists(config)) {
+				include mapping;
+			}
+
+			cache[plugin.name] = plugin.path;
+
 		}
-
-		plugin.path = replace(plugin.path, "\", "/", "all");
-		plugin.exists = directoryExists(plugin.path);
-
-		arrayAppend(plugins, plugin);
-
-		mappings["/#plugin.name#"] = plugin.path;
 
 	}
 
@@ -73,6 +90,10 @@ component {
 
 		return paths;
 
+	}
+
+	private string function sanitize(required string filePath) {
+		return replace(filePath, "\", "/", "all");
 	}
 
 }

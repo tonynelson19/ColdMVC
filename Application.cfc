@@ -250,6 +250,7 @@ component {
 		}
 
 		defaults = {
+			cfclocation = [ this.root ],
 			dbcreate = "update",
 			eventHandler = "coldmvc.app.util.EventHandler",
 			eventHandling = true,

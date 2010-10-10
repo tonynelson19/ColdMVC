@@ -6,17 +6,7 @@
 <cfif thisTag.executionMode eq "end">
 
 	<cfif not structKeyExists(attributes, "tabs")>
-
 		<cfset attributes.tabs = coldmvc.factory.get("tabManager").getTabs(argumentCollection=attributes) />
-
-		<cfif structKeyExistS(attributes, "model")>
-
-			<cfloop array="#attributes.tabs#" index="tab">
-				<cfset tab.url = coldmvc.link.to({controller=tab.controller, action=tab.action, id=attributes.model}, coldmvc.querystring.combine(tab.querystring, attributes.querystring)) />
-			</cfloop>
-
-		</cfif>
-
 	</cfif>
 
 	<ul<cfif attributes.id neq ""> id="#attributes.id#"</cfif><cfif attributes.class neq ""> class="#attributes.class#"</cfif>>

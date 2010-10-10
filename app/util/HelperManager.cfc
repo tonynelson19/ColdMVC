@@ -33,10 +33,8 @@ component {
 	}
 
 	public void function addHelpers() {
-
 		addScope("coldmvc");
 		addScope(variables.helperPrefix);
-
 	}
 
 	private void function addScope(required string scope) {

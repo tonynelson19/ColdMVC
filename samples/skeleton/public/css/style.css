@@ -1,0 +1,54 @@
+html,
+body {
+	font-family: "Trebuchet MS", Helvetica, sans-serif;
+	font-size: 1em;
+}
+
+input,
+select,
+textarea {
+	font-size: 1em;	
+}
+
+input[type="text"],
+input[type="password"],
+textarea,
+select {
+	border: 1px solid #ccc;
+	padding: 4px;
+}
+
+input[type="text"]:focus,
+input[type="password"]:focus,
+textarea:focus,
+select:focus {
+	border: 1px solid #aaa;
+}
+
+#navigation {
+	position: absolute;
+	top: 8px;
+}
+
+#navigation li {
+	display: inline;
+	float: left;
+	list-style-type: none;
+	border: 1px solid #ddd;
+}
+
+#navigation li a {
+	display: block;
+	padding: 0 20px;
+	text-align: center;
+	line-height: 2.6em;
+	font-size: 1em;
+}
+
+#navigation li a:hover {
+	color: #d3d3d3;
+}
+
+div#content {
+	padding: 20px;
+}

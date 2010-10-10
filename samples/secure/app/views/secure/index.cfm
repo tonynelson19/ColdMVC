@@ -1,0 +1,1 @@
+This app demonstrates how you can secure resources using the ColdSecurity plugin

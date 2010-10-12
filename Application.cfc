@@ -259,6 +259,10 @@ component {
 			saveMapping = true
 		};
 
+		if (structKeyExists(settings, "ormDialect")) {
+			this.ormSettings.dialect = settings.ormDialect;
+		}
+
 		structAppend(this.ormSettings, defaults, false);
 
 		// if autogenmap hasn't been explicitly set already

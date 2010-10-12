@@ -8,9 +8,9 @@ component  {
 	property firstName;
 	property lastName;
 	property email;
-	
+
 	function getName() {
 		return firstName & " " & lastName;
 	}
-	
+
 }

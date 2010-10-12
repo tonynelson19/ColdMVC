@@ -10,7 +10,7 @@ component {
 		return this;
 	}
 
-	public any function autowire(required any object, string beanName="") {
+	public any function autowire(required any object) {
 
 		var i = "";
 
@@ -24,14 +24,14 @@ component {
 			lock name="coldmvc.app.util.BeanInjector_#local.classPath#" type="exclusive" timeout="5" throwontimeout="true" {
 
 				// double-check just to be sure
-				if (!structKeyExists(cache,local.classPath)) {
+				if (!structKeyExists(cache, local.classPath)) {
 					cache[local.classPath] = findDependencies(arguments.object);
 				}
 
 			}
 		}
 
-		autowireBeans(arguments.object, local.classPath, beanName);
+		autowireBeans(arguments.object, local.classPath);
 
 		return arguments.object;
 
@@ -40,7 +40,7 @@ component {
 	private struct function findDependencies(required any object) {
 
 		var dependencies = {};
-
+		var i = "";
 		var metaData = getMetaData(arguments.object);
 
 		// conditionally loop while the object is being extended
@@ -90,7 +90,7 @@ component {
 
 	}
 
-	private void function autowireBeans(required any object, required string classPath, required string beanName) {
+	private void function autowireBeans(required any object, required string classPath) {
 
 		var beans = cache[classPath];
 		var bean = "";

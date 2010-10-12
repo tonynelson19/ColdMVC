@@ -12,7 +12,7 @@ component {
 
 	function delete() {
 
-		var id = coldmvc.params.get("#__singular#id");
+		var id = coldmvc.params.get("#__singular#id", coldmvc.params.get("id"));
 
 		var model = __Model.get(id);
 		model.delete();
@@ -24,7 +24,7 @@ component {
 
 	function edit() {
 
-		var id = coldmvc.params.get("#__singular#id");
+		var id = coldmvc.params.get("#__singular#id", coldmvc.params.get("id"));
 
 		coldmvc.params.set(__singular, __Model.get(id));
 
@@ -71,7 +71,7 @@ component {
 
 	function show() {
 
-		var id = coldmvc.params.get("#__singular#id");
+		var id = coldmvc.params.get("#__singular#id", coldmvc.params.get("id"));
 
 		coldmvc.params.set(__singular, __Model.get(id));
 

@@ -5,7 +5,7 @@
 component {
 
 	property configPath;
-	property requestMapper;
+	property eventMapper;
 
 	public any function init() {
 
@@ -18,7 +18,8 @@ component {
 	public array function getTabs(numeric level=1, string controller, string action, string group, string querystring="") {
 
 		if (!variables.loaded) {
-			variables.loaded = loadConfig();
+			variables.loaded = true;
+			loadConfig();
 		}
 
 		if (!structKeyExists(arguments, "controller")) {
@@ -29,8 +30,8 @@ component {
 			action = coldmvc.event.action();
 		}
 
-		var mapping = requestMapper.getMapping(controller, action);
-		var key = mapping.key;
+		var mapping = eventMapper.getMapping(controller, action);
+		var event = mapping.event;
 		var tabs = [];
 		var code = "";
 
@@ -40,16 +41,16 @@ component {
 				tabs = variables.config.groups[arguments.group];
 			}
 
-			// code = variables.config.keys[arguments.key].code;
+			// code = variables.config.events[arguments.event].code;
 
 		}
 		else {
 
 			var tabs = [];
 
-			if (structKeyExists(variables.config.parents, key)) {
+			if (structKeyExists(variables.config.parents, event)) {
 
-				var tab = variables.config.parents[key];
+				var tab = variables.config.parents[event];
 				var found = false;
 
 				while (!found) {
@@ -66,13 +67,13 @@ component {
 
 				}
 
-				if (structKeyExists(tab, "key")) {
+				if (structKeyExists(tab, "event")) {
 
-					tab = variables.config.keys[tab.key];
+					tab = variables.config.events[tab.event];
 					code = tab.code;
 
-					if (structKeyExists(variables.config.keys, tab.parent)) {
-						tabs = variables.config.keys[tab.parent].tabs;
+					if (structKeyExists(variables.config.events, tab.parent)) {
+						tabs = variables.config.events[tab.parent].tabs;
 					}
 					else {
 						tabs = variables.config.tabs;
@@ -86,6 +87,7 @@ component {
 
 		var result = [];
 		var i = "";
+
 		for (i = 1; i <= arrayLen(tabs); i++) {
 
 			if (!tabs[i].hidden) {
@@ -96,7 +98,7 @@ component {
 				tab.target = tabs[i].target;
 				tab.controller = tabs[i].controller;
 				tab.action = tabs[i].action;
-				tab.key = tabs[i].key;
+				tab.event = tabs[i].event;
 				tab.url = tabs[i].url;
 				tab.querystring = tabs[i].querystring;
 
@@ -110,17 +112,9 @@ component {
 				}
 
 				tab.active = (tabs[i].code == code) ? true : false;
-				tab.selected = (tabs[i].key == key) ? true : false;
+				tab.selected = (tabs[i].event == event) ? true : false;
 
 				tab.class = [];
-
-				if (tabs[i].first) {
-					arrayAppend(tab.class, "first");
-				}
-
-				if (tabs[i].last) {
-					arrayAppend(tab.class, "last");
-				}
 
 				if (tab.active) {
 					arrayAppend(tab.class, "active");
@@ -142,7 +136,53 @@ component {
 
 	}
 
-	private boolean function loadConfig() {
+	public string function renderTabs(required array tabs) {
+
+		var html = [];
+		var i = "";
+		var length = arrayLen(tabs);
+
+		arrayAppend(html, '<ul>');
+
+		for (i = 1; i <= length; i++) {
+
+			var tab = tabs[i];
+
+			arrayAppend(html, '<li');
+
+			var class = listToArray(tab.class, " ");
+
+			if (i == 1) {
+				arrayAppend(class, "first");
+			}
+
+			if (i == length) {
+				arrayAppend(class, "last");
+			}
+
+			class = arrayToList(class, " ");
+
+			if (class != "") {
+				arrayAppend(html, ' class="#class#"');
+			}
+
+			arrayAppend(html, '><a href="#tab.url#" title="#tab.title#"');
+
+			if (tab.target != "") {
+				arrayAppend(html, ' target="#tab.target#"');
+			}
+
+			arrayAppend(html, '><span>#tab.name#</span></a></li>');
+
+		}
+
+		arrayAppend(html, '</ul>');
+
+		return arrayToList(html, chr(10));
+
+	}
+
+	private void function loadConfig() {
 
 		if (!fileExistS(variables.configPath)) {
 			variables.configPath = expandPath(variables.configPath);
@@ -151,28 +191,26 @@ component {
 		var xml = xmlParse(fileRead(variables.configPath));
 
 		variables.config = {};
-		variables.config.keys = {};
+		variables.config.events = {};
 		variables.config.codes = {};
 		variables.config.groups = {};
 		variables.config.tabs = loadTabs(xml, 1, "", "");
-		variables.config.parents = duplicate(variables.config.keys);
+		variables.config.parents = duplicate(variables.config.events);
 
-		var key = "";
-		for (key in variables.config.keys) {
+		var event = "";
+		for (event in variables.config.events) {
 
-			var parent = variables.config.keys[key].parent;
-			structDelete(variables.config.parents[key], "tabs");
+			var parent = variables.config.events[event].parent;
+			structDelete(variables.config.parents[event], "tabs");
 
 			if (structKeyExists(variables.config.parents, parent)) {
-				variables.config.parents[key].parent = variables.config.parents[parent];
+				variables.config.parents[event].parent = variables.config.parents[parent];
 			}
 			else {
-				variables.config.parents[key].parent = {};
+				variables.config.parents[event].parent = {};
 			}
 
 		}
-
-		return true;
 
 	}
 
@@ -197,9 +235,8 @@ component {
 				controller = coldmvc.config.get("controller");
 			}
 
-			var length = arrayLen(xml.tabs.xmlChildren);
 			var i = "";
-			for (i = 1; i <= length; i++) {
+			for (i = 1; i <= arrayLen(xml.tabs.xmlChildren); i++) {
 
 				var tabXML = xml.tabs.xmlChildren[i];
 
@@ -207,8 +244,6 @@ component {
 				tab.name = tabXML.xmlAttributes.name;
 				tab.parent = parent;
 				tab.level = level;
-				tab.first = (i == 1) ? true : false;
-				tab.last = (i == length) ? true : false;
 				tab.title = coldmvc.xml.get(tabXML, "title", tab.name);
 				tab.target = coldmvc.xml.get(tabXML, "target");
 				tab.querystring = coldmvc.xml.get(tabXML, "querystring");
@@ -222,13 +257,17 @@ component {
 					tab.action = coldmvc.string.camelize(tab.name);
 				}
 
-				tab.key = coldmvc.xml.get(tabXML, "key", tab.controller & "." & tab.action);
+				tab.event = coldmvc.xml.get(tabXML, "event", tab.controller & "." & tab.action);
 
-				var mapping = requestMapper.getMapping(tab.controller, tab.action);
+				if (!find(".", tab.event)) {
+					tab.event = tab.controller & "." & tab.event;
+				}
+
+				var mapping = eventMapper.getMapping(tab.controller, tab.action);
 				tab.requires = mapping.requires;
 
-				if (structKeyExists(variables.config.keys, tab.parent)) {
-					tab.code = variables.config.keys[tab.parent].code & "." & i;
+				if (structKeyExists(variables.config.events, tab.parent)) {
+					tab.code = variables.config.events[tab.parent].code & "." & i;
 				}
 				else {
 					tab.code = i;
@@ -249,10 +288,10 @@ component {
 
 				}
 
-				variables.config.keys[tab.key] = tab;
-				variables.config.codes[tab.code] = tab.key;
+				variables.config.events[tab.event] = tab;
+				variables.config.codes[tab.code] = tab.event;
 
-				tab.tabs = loadTabs(tabXML, tab.level+1, tab.controller, tab.key);
+				tab.tabs = loadTabs(tabXML, tab.level+1, tab.controller, tab.event);
 
 				arrayAppend(tabs, tab);
 

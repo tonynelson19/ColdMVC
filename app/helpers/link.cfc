@@ -6,20 +6,26 @@ component {
 
 	property beanFactory;
 
+	private void function configure(args) {
+
+		if (isSimpleValue(args.parameters)) {
+			args.querystring = args.parameters;
+			args.parameters = {};
+		}
+
+		if (!structKeyExists(args, "parameters")) {
+			args.parameters = {};
+		}
+
+		if (!structKeyExists(args, "querystring")) {
+			args.querystring = "";
+		}
+
+	}
+
 	public string function to(any parameters, string querystring, string name="") {
 
-		if (isSimpleValue(arguments.parameters)) {
-			arguments.querystring = arguments.parameters;
-			arguments.parameters = {};
-		}
-
-		if (!structKeyExists(arguments, "parameters")) {
-			arguments.parameters = {};
-		}
-
-		if (!structKeyExists(arguments, "querystring")) {
-			arguments.querystring = "";
-		}
+		configure(arguments);
 
 		return beanFactory.getBean("routeHandler").buildURL(name=arguments.name, parameters=arguments.parameters, querystring=arguments.querystring);
 

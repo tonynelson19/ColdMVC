@@ -5,6 +5,7 @@ component {
 
  	property beanFactory;
 	property modelFactory;
+	property metaDataFlattener;
 	property modelPrefix;
 	property suffixes;
 	property development;
@@ -49,7 +50,25 @@ component {
 
 	public void function inject(required string beanName, any bean) {
 
+		var beanDefinitions = beanFactory.getBeanDefinitions();
+		var classPath = beanDefinitions[beanName];
+		var metaData = metaDataFlattener.flattenMetaData(classPath);
+		var model = "";
 		var i = "";
+
+		for (model in models) {
+
+			if (structKeyExists(metaData.functions, "set#modelPrefix##model#")) {
+
+				if (!structKeyExists(arguments, "bean")) {
+					bean = beanFactory.getBean(beanName);
+				}
+
+				evaluate("bean.set#modelPrefix##model#(modelFactory.get(model))");
+
+			}
+
+		}
 
 		for (i = 1; i <= arrayLen(suffixes); i++) {
 
@@ -85,12 +104,6 @@ component {
 
 					bean.set__Model(arg);
 
-				}
-
-				for (model in models) {
-					if (structKeyExists(bean, "set#modelPrefix##model#")) {
-						evaluate("bean.set#modelPrefix##model#(modelFactory.get(model))");
-					}
 				}
 
 			}

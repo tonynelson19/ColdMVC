@@ -4,7 +4,7 @@
  */
 component {
 
-	public RequestMapper function init() {
+	public EventMapper function init() {
 
 		variables.mappings = {};
 		variables.config = [];
@@ -35,8 +35,8 @@ component {
 	private void function loadXML(required string filePath) {
 
 		var xml = xmlParse(fileRead(filePath));
-
 		var i = "";
+
 		for (i = 1; i <= arrayLen(xml.mappings.xmlChildren); i++) {
 
 			var mappingXML = xml.mappings.xmlChildren[i];
@@ -54,37 +54,33 @@ component {
 
 	public struct function getMapping(required string controller, required string action) {
 
-		var key = controller & "." & action;
+		var event = controller & "." & action;
 
-		if (!structKeyExists(mappings, key)) {
+		if (!structKeyExists(mappings, event)) {
 
 			var i = "";
 			for (i = 1; i <= arrayLen(variables.config); i++) {
 
 				var mapping = variables.config[i];
 
-				if (reFindNoCase("^#mapping.controller#$", controller)) {
+				if (reFindNoCase("^#mapping.controller#$", controller) && reFindNoCase("^#mapping.action#$", action)) {
 
-					if (reFindNoCase("^#mapping.action#$", action)) {
+					var result = {};
+					result.requires = mapping.requires;
 
-						var result = {};
-						result.requires = mapping.requires;
-
-						if (find(".", mapping.map)) {
-							result.controller = listFirst(mapping.map, ".");
-							result.action = listLast(mapping.map, ".");
-						}
-						else {
-							result.controller = controller;
-							result.action = mapping.map;
-						}
-
-						result.key = result.controller & "." & result.action;
-
-						mappings[key] = result;
-						break;
-
+					if (find(".", mapping.map)) {
+						result.controller = listFirst(mapping.map, ".");
+						result.action = listLast(mapping.map, ".");
 					}
+					else {
+						result.controller = controller;
+						result.action = mapping.map;
+					}
+
+					result.event = result.controller & "." & result.action;
+
+					mappings[event] = result;
+					break;
 
 				}
 
@@ -92,7 +88,7 @@ component {
 
 		}
 
-		return mappings[key];
+		return mappings[event];
 
 	}
 

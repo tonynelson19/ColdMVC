@@ -1,0 +1,4 @@
+<mappings>
+	<mapping controller="secure" action="index" requires="none" />
+	<mapping controller="(widget|gadget)" action="list" requires="view" />
+</mappings>

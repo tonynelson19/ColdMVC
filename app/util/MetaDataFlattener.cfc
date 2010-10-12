@@ -3,27 +3,9 @@
  */
 component {
 
-	property methodAnnotations;
-
 	public any function init() {
 		cache = {};
-		methodAnnotations = {};
 		return this;
-	}
-
-	public void function setMethodAnnotations(required string methodAnnotations) {
-		listToStruct("methodAnnotations", methodAnnotations);
-	}
-
-	private void function listToStruct(required string variable, required string list) {
-
-		var i = "";
-
-		for (i = 1; i <= listLen(list); i++) {
-			var key = listGetAt(list, i);
-			variables[variable][key] = "";
-		}
-
 	}
 
 	public struct function flattenMetaData(required any object) {
@@ -72,18 +54,12 @@ component {
 
 				for (i = 1; i <= arrayLen(metaData.functions); i++) {
 
-					// need to duplicate since metadata references are stored across applications
-					var func = duplicate(metaData.functions[i]);
+					var name = metaData.functions[i].name;
 
-					if (!structKeyExists(result.functions, func.name)) {
+					if (!structKeyExists(result.functions, name)) {
 
-						for (key in methodAnnotations) {
-							if (!structKeyExists(func, key)) {
-								func[key] = methodAnnotations[key];
-							}
-						}
-
-						result.functions[func.name] = func;
+						// need to duplicate since metadata references are stored across applications
+						result.functions[name] =  duplicate(metaData.functions[i]);
 
 					}
 
@@ -95,10 +71,10 @@ component {
 
 				for (i = 1; i <= arrayLen(metaData.properties); i++) {
 
-					var property = duplicate(metaData.properties[i]);
+					var name = metaData.properties[i].name;
 
-					if (!structKeyExists(result.properties, property.name)) {
-						result.properties[property.name] = property;
+					if (!structKeyExists(result.properties, name)) {
+						result.properties[name] = duplicate(metaData.properties[i]);
 					}
 
 				}

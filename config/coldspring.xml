@@ -137,11 +137,7 @@
 		</property>
 	</bean>
 	
-	<bean id="metaDataFlattener" class="coldmvc.app.util.MetaDataFlattener">
-		<property name="methodAnnotations">
-			<value>events</value>
-		</property>
-	</bean>
+	<bean id="metaDataFlattener" class="coldmvc.app.util.MetaDataFlattener" />
 	
 	<bean id="metaDataObserver" class="coldmvc.app.util.MetaDataObserver">
 		<property name="development">

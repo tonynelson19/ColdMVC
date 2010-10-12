@@ -10,7 +10,7 @@ component {
 
 	public void function findObservers(string event) {
 
-		if (event == "preApplication" || development) {
+		if (event == "preApplication") {
 
 			eventDispatcher.clearCustomObservers();
 
@@ -24,7 +24,7 @@ component {
 				var metaData = metaDataFlattener.flattenMetaData(classPath);
 
 				for (method in metaData.functions) {
-					addCustomObservers(beanName, metaData.functions[method]);
+					addObservers(beanName, metaData.functions[method]);
 				}
 
 			}
@@ -33,13 +33,17 @@ component {
 
 	}
 
-	public void function addCustomObservers(required string beanName, required struct method) {
+	public void function addObservers(required string beanName, required struct method) {
 
-		var events = listToArray(replace(method.events, " ", "", "all"));
-		var i = "";
+		if (structKeyExists(method, "events")) {
 
-		for (i = 1; i <= arrayLen(events); i++) {
-			eventDispatcher.addCustomObserver(events[i], beanName, method.name);
+			var events = listToArray(replace(method.events, " ", "", "all"));
+			var i = "";
+
+			for (i = 1; i <= arrayLen(events); i++) {
+				eventDispatcher.addObserver(events[i], beanName, method.name);
+			}
+
 		}
 
 	}

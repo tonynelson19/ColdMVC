@@ -4,8 +4,12 @@
  */
 component {
 
-	public any function id() {		
-		return getOrSet("id", arguments);		
+	public any function id() {
+		return getOrSet("id", arguments);
+	}
+
+	public void function clearID() {
+		clear("id");
 	}
 
 }

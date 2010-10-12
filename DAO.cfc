@@ -4,6 +4,7 @@
  */
 component {
 
+	property eventDispatcher;
 	property beanInjector;
 	property modelFactory;
 	property development;
@@ -588,9 +589,23 @@ component {
 			obj._set(relationships[i].property, []);
 		}
 
-		beanInjector.autowire(obj);
+		dispatchEvent("preLoad", name, obj);
+    	coldmvc.factory.autowire(obj);
+		dispatchEvent("postLoad", name, obj);
 
 		return obj;
+
+	}
+
+	private void function dispatchEvent(required string event, required string name, required any model) {
+
+		var data = {
+			name = name,
+			model = model
+		};
+
+		eventDispatcher.dispatchEvent(arguments.event, data);
+		eventDispatcher.dispatchEvent(arguments.event & ":" & arguments.name, data);
 
 	}
 

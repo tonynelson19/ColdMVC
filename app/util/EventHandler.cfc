@@ -52,18 +52,14 @@ component {
 
 	private void function dispatchEvent(required string event, required any model) {
 
-		if (coldmvc.config.has("events:#arguments.event#", "true")) {
-
-			var name = coldmvc.model.name(model);
-			var eventDispatcher = coldmvc.factory.get("eventDispatcher");
-			var data = {
-				name = name,
-				model = model
-			};
-			eventDispatcher.dispatchEvent(arguments.event, data);
-			eventDispatcher.dispatchEvent(arguments.event & ":" & name, data);
-
-		}
+		var name = coldmvc.model.name(model);
+		var eventDispatcher = coldmvc.factory.get("eventDispatcher");
+		var data = {
+			name = name,
+			model = model
+		};
+		eventDispatcher.dispatchEvent(arguments.event, data);
+		eventDispatcher.dispatchEvent(arguments.event & ":" & name, data);
 
 	}
 

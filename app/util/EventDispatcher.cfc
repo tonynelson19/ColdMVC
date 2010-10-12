@@ -17,18 +17,18 @@ component {
 	}
 
 	public void function addSystemObserver(required string event, required string beanName, required string method) {
-		addObserver(systemObservers, arguments);
+		add(systemObservers, arguments);
 	}
 
-	public void function addCustomObserver(required string event, required string beanName, required string method) {
-		addObserver(customObservers, arguments);
+	public void function addObserver(required string event, required string beanName, required string method) {
+		add(customObservers, arguments);
 	}
 
 	public void function clearCustomObservers() {
 		customObservers = {};
 	}
 
-	public void function addObserver(required struct observers, required struct data) {
+	private void function add(required struct observers, required struct data) {
 
 		if (!structKeyExists(observers, data.event)) {
 			observers[data.event] = [];

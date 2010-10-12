@@ -2,5 +2,5 @@
  * @extends coldmvc.Application
  */
 component {
-	
+
 }

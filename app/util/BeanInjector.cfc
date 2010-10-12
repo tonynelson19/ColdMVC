@@ -15,25 +15,25 @@ component {
 		var i = "";
 
 		// get the name of the component for caching purposes
-		local.classPath = getMetaData(arguments.object).name;
+		var classPath = getMetaData(object).name;
 
 		// if the cache isn't already aware of the dependencies
-		if (!structKeyExists(cache, local.classPath)) {
+		if (!structKeyExists(cache, classPath)) {
 
 			// prevent race conditions
-			lock name="coldmvc.app.util.BeanInjector_#local.classPath#" type="exclusive" timeout="5" throwontimeout="true" {
+			lock name="coldmvc.app.util.BeanInjector_#classPath#" type="exclusive" timeout="5" throwontimeout="true" {
 
 				// double-check just to be sure
-				if (!structKeyExists(cache, local.classPath)) {
-					cache[local.classPath] = findDependencies(arguments.object);
+				if (!structKeyExists(cache, classPath)) {
+					cache[classPath] = findDependencies(object);
 				}
 
 			}
 		}
 
-		autowireBeans(arguments.object, local.classPath);
+		autowireBeans(object, classPath);
 
-		return arguments.object;
+		return object;
 
 	}
 
@@ -41,7 +41,7 @@ component {
 
 		var dependencies = {};
 		var i = "";
-		var metaData = getMetaData(arguments.object);
+		var metaData = getMetaData(object);
 
 		// conditionally loop while the object is being extended
 		while (structKeyExists(metaData, "extends")) {

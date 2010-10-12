@@ -263,6 +263,14 @@ component {
 			this.ormSettings.dialect = settings.ormDialect;
 		}
 
+		if (structKeyExists(settings, "ormDBCreate")) {
+			this.ormSettings.dbcreate = settings.ormDBCreate;
+		}
+
+		if (structKeyExists(settings, "ormSaveMapping")) {
+			this.ormSettings.saveMapping = settings.ormSaveMapping;
+		}
+
 		structAppend(this.ormSettings, defaults, false);
 
 		// if autogenmap hasn't been explicitly set already

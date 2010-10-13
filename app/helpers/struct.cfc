@@ -4,9 +4,16 @@
 component {
 
 	public string function toQueryString(required struct data) {
-		
-		return coldmvc.data.toQueryString(data);
-		
+
+		var array = [];
+		var key = "";
+
+		for (key in data) {
+			arrayAppend(array, "#key#=#urlEncodedFormat(data[key])#");
+		}
+
+		return arrayToList(array, "&");
+
 	}
-	
+
 }

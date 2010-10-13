@@ -12,10 +12,7 @@ component {
 
 	function delete() {
 
-		var id = coldmvc.params.get("#__singular#id", coldmvc.params.get("id"));
-
-		var model = __Model.get(id);
-		model.delete();
+		__Model.get(coldmvc.params.get("id")).delete();
 
 		coldmvc.flash.set("message", coldmvc.string.capitalize(__singular) & " deleted successfully");
 		redirect({action="list"});
@@ -24,9 +21,7 @@ component {
 
 	function edit() {
 
-		var id = coldmvc.params.get("#__singular#id", coldmvc.params.get("id"));
-
-		coldmvc.params.set(__singular, __Model.get(id));
+		coldmvc.params.set(__singular, __Model.get(coldmvc.params.get("id")));
 
 	}
 
@@ -64,23 +59,19 @@ component {
 		model.save();
 
 		coldmvc.flash.set("message", coldmvc.string.capitalize(__singular) & " added successfully");
-
 		redirect({action="show", id=model});
 
 	}
 
 	function show() {
 
-		var id = coldmvc.params.get("#__singular#id", coldmvc.params.get("id"));
-
-		coldmvc.params.set(__singular, __Model.get(id));
+		coldmvc.params.set(__singular, __Model.get(coldmvc.params.get("id")));
 
 	}
 
 	function update() {
 
-		// userid
-		var id = coldmvc.params.get("#__singular#id");
+		var id = coldmvc.params.get("id");
 
 		// check for user.id with binding
 		if (coldmvc.params.has(__singular)) {

@@ -39,6 +39,18 @@ component {
 		structDelete(data, key);
 	}
 
+	private struct function createScope(required string scope) {
+
+		var container = getPageContext().getFusionContext().hiddenScope;
+
+		if (!structKeyExists(container, scope)) {
+			container[scope] = {};
+		}
+
+		return container[scope];
+
+	}
+
 	public any function get(string key, any def="") {
 
 		var data = getScope();
@@ -126,24 +138,17 @@ component {
 
 	}
 
-	private struct function createScope(required string scope) {
-
-		var container = getPageContext().getFusionContext().hiddenScope;
-
-		if (!structKeyExists(container, scope)) {
-			container[scope] = {};
-		}
-
-		return container[scope];
-
-	}
-
 	private struct function getScopes() {
 		return getPageContext().getFusionContext().hiddenScope;
 	}
 
 	public boolean function has(required string key) {
 		return structKeyExists(getScope(), key);
+	}
+
+	public boolean function isEmpty() {
+		var data = getScope();
+		return structIsEmpty(data);
 	}
 
 	public void function set(required any key, any value) {

@@ -66,6 +66,7 @@
 				<entry key="preApplication">
 					<list>
 						<value>metaDataObserver.findObservers</value>
+						<value>paramManager.populateParams</value>
 					</list>
 				</entry>
 				<entry key="applicationStart">

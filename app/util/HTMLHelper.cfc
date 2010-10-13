@@ -64,6 +64,13 @@
 			</cfif>
 		</cfloop>
 
+		<cfloop list="size,maxlength,rows,cols" index="i">
+			<cfset var value = getKey(args, i) />
+			<cfif isNumeric(value)>
+				<cfset arrayAppend(args.common, '#i#="#value#"') />
+			</cfif>
+		</cfloop>
+
 		<cfset args.common = arrayToList(args.common, " ") />
 
 	</cffunction>

@@ -13,30 +13,6 @@ component {
 		var controller = coldmvc.event.controller();
 		var action = coldmvc.event.action();
 
-		// if the controller is empty, publish the event
-		if (controller == "" ) {
-			eventDispatcher.dispatchEvent("missingController");
-		}
-
-		// use the values from the event rather than the route in case missingController changed them
-		controller = coldmvc.controller.name(coldmvc.event.controller());
-
-		// check to make sure the factory has the requested controller
-		if (!beanFactory.containsBean(controller)) {
-			eventDispatcher.dispatchEvent("invalidController");
-		}
-
-		// check to see if the controller has the specified action
-		if (!coldmvc.controller.has(coldmvc.event.controller(), coldmvc.event.action())) {
-			eventDispatcher.dispatchEvent("invalidAction");
-		}
-
-		// use the values from the event rather than the route in case invalidController/invalidAction changed them
-		controller = coldmvc.controller.name(coldmvc.event.controller());
-
-		// call the action
-		callMethods(controller, "Action");
-
 		// find the layout for the controller and action
 		var layout = coldmvc.controller.layout(coldmvc.event.controller(), coldmvc.event.action());
 
@@ -45,8 +21,55 @@ component {
 			layout = defaultLayout;
 		}
 
-		// set the layout back into the event
+		// set the layout into the event
 		coldmvc.event.layout(layout);
+
+		var resetLayout = false;
+
+		// if the controller is empty, publish the event
+		if (controller == "" ) {
+			eventDispatcher.dispatchEvent("missingController");
+			resetLayout = true;
+		}
+
+		// use the values from the event rather than the route in case missingController changed them
+		controller = coldmvc.controller.name(coldmvc.event.controller());
+
+		// check to make sure the factory has the requested controller
+		if (!beanFactory.containsBean(controller)) {
+			eventDispatcher.dispatchEvent("invalidController");
+			resetLayout = true;
+		}
+
+		// check to see if the controller has the specified action
+		if (!coldmvc.controller.has(coldmvc.event.controller(), coldmvc.event.action())) {
+			eventDispatcher.dispatchEvent("invalidAction");
+			resetLayout = true;
+		}
+
+		// use the values from the event rather than the route in case invalidController/invalidAction changed them
+		controller = coldmvc.controller.name(coldmvc.event.controller());
+
+		// if something was missing, reset the layout back to the one specified for the controller/action
+		if (resetLayout) {
+
+			// find the layout for the controller and action
+			layout = coldmvc.controller.layout(coldmvc.event.controller(), coldmvc.event.action());
+
+			// it couldn't determine the layout, so set it to the default layout
+			if (layout == "") {
+				layout = defaultLayout;
+			}
+
+			// set the layout into the event
+			coldmvc.event.layout(layout);
+
+		}
+
+		// call the action
+		callMethods(controller, "Action");
+
+		var layout = coldmvc.event.layout();
 
 		// if a layout was specified, call it
 		if (layout != "") {

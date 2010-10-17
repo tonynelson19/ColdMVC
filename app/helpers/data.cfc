@@ -54,7 +54,7 @@ component {
 			}
 
 			case "struct": {
-				return listGetAt(listSort(structKeyList(data), "text"), index);
+				return coldmvc.struct.sortKeys(data)[index];
 			}
 
 			case "query": {
@@ -78,7 +78,7 @@ component {
 			}
 
 			case "struct": {
-				return data[listGetAt(listSort(structKeyList(data), "text"), index)];
+				return data[coldmvc.struct.sortKeys(data)[index]];
 			}
 
 			case "query": {
@@ -129,25 +129,6 @@ component {
 		}
 
 		return arrayToList(result, "&");
-
-	}
-
-	public string function toJSON(any data) {
-
-		var result = {};
-		var key = "";
-
-		// lowercase all the keys
-		for (key in data) {
-
-			if (coldmvc.string.isUpper(key)) {
-				key = lcase(key);
-			}
-
-			result[key] = data[key];
-		}
-
-		return serializeJSON(result);
 
 	}
 

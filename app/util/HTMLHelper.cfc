@@ -1,7 +1,23 @@
 <cfcomponent extends="coldmvc.Helper">
+	
+	<!--- to add to this list, use setAllowBinding("mytag") --->
+	<cfset this.bindTags = "checkbox,date,email,hidden,input,password,radio,select,text,textarea,upload,url" />
 
-	<cfset this.bindTags = "checkbox,email,hidden,input,radio,select,textarea,upload" />
-
+	<!------>
+	
+	<cffunction name="append" access="private" output="false" returntype="void">
+		<cfargument name="args" required="true" type="struct" />
+		<cfargument name="attribute" required="true" type="string" />
+		<cfargument name="value" required="true" type="string" />
+		
+		<cfif structKeyExists(args, attribute)>
+			<cfset args[attribute] = args[attribute] & " " & value />
+		<cfelse>
+			<cfset args[attribute] = value />
+		</cfif>
+		
+	</cffunction>
+	
 	<!------>
 
 	<cffunction name="configure" access="private" output="false" returntype="void">
@@ -31,7 +47,6 @@
 		<cfset args.readonly = getKey(args, "readonly", false) />
 		<cfset args.disabled = getKey(args, "disabled", false) />
 		<cfset args.visible = getKey(args, "visible", true) />
-		<cfset args.url = getURL(args) />
 
 		<cfloop list="class,style,instructions" index="i">
 			<cfset args[i] = getKey(args, i) />
@@ -39,12 +54,7 @@
 
 		<cfset args.common = [] />
 
-		<cfset var common = "name,id,title,class" />
-		<cfif listFindNoCase("form", args.tag)>
-			<cfset common  = "name,id,class" />
-		</cfif>
-
-		<cfloop list="#common#" index="i">
+		<cfloop list="name,id,title,class" index="i">
 			<cfif args[i] neq "">
 				<cfset arrayAppend(args.common, '#i#="#htmlEditFormat(args[i])#"') />
 			</cfif>
@@ -191,6 +201,17 @@
 		</cfif>
 
 	</cffunction>
+	
+	<!------>
+	
+	<cffunction name="setAllowBinding" access="private" output="false" returntype="void">
+		<cfargument name="tag" required="true" type="string" />
+		
+		<cfif not listFindNoCase(this.bindTags, tag)>
+			<cfset this.bindTags = listAppend(this.bindTags, tag) />
+		</cfif>
+		
+	</cffunction>
 
 	<!------>
 
@@ -259,15 +280,25 @@
 		<cfelse>
 
 			<cfif args.binding>
-
+				
+				<!--- if there's a param with the same name --->
+				<cfif coldmvc.params.has(args.name)>
+					<cfset value = coldmvc.params.get(args.name) />
+				</cfif>
+				
+				<!--- if you're currently inside a form that's bound to a param --->
 				<cfset var binding = coldmvc.bind.get("form") />
 
 				<cfif binding neq "">
-
+					
+					<!--- check to see if the binding exists (aka params.user) --->
 					<cfif coldmvc.params.has(binding)>
+						
+						<!--- get the value off the binding --->
 						<cfset value = coldmvc.params.get(binding)._get(args.name) />
+					
 					</cfif>
-
+				
 				</cfif>
 
 			</cfif>

@@ -5,14 +5,10 @@
 	<cffunction name="button" access="public" output="false" returntype="string">
 
 		<cfset arguments.tag = "button" />
-
-		<cfif structKeyExists(arguments, "class")>
-			<cfset arguments.class = arguments.class & " button" />
-		<cfelse>
-			<cfset arguments.class = "button" />
-		</cfif>
-
+		
+		<cfset append(arguments, "class", "button") />
 		<cfset configure(arguments) />
+		<cfset arguments.url = getURL(arguments) />
 
 		<cfoutput>
 		<cfsavecontent variable="arguments.field">
@@ -33,6 +29,25 @@
 		<cfreturn radioOrCheckbox(arguments, "checkbox") />
 
 	</cffunction>
+	
+	<!------>
+
+	<cffunction name="date" access="public" output="false" returntype="string">
+
+		<cfset arguments.tag = "date" />
+		
+		<cfset append(arguments, "class", "date") />
+		<cfset configure(arguments) />
+
+		<cfoutput>
+		<cfsavecontent variable="arguments.field">
+			<input type="date" #arguments.common# value="#htmlEditFormat(arguments.value)#" />
+		</cfsavecontent>
+		</cfoutput>
+
+		<cfreturn this.field(argumentCollection=arguments) />
+
+	</cffunction>
 
 	<!------>
 
@@ -40,6 +55,7 @@
 
 		<cfset arguments.tag = "email" />
 
+		<cfset append(arguments, "class", "email") />
 		<cfset configure(arguments) />
 
 		<cfoutput>
@@ -81,8 +97,11 @@
 		<cfargument name="method" required="false" default="post" />
 
 		<cfset arguments.tag = "form" />
+		<!--- prevent the form tag from having a title --->
+		<cfset arguments.title = "" />
 
 		<cfset configure(arguments) />
+		<cfset arguments.url = getURL(arguments) />
 
 		<cfreturn '<form action="#arguments.url#" method="#arguments.method#" enctype="multipart/form-data" #arguments.common#>' />
 
@@ -130,6 +149,7 @@
 
 		<cfset arguments.tag = "password" />
 
+		<cfset append(arguments, "class", "password") />
 		<cfset configure(arguments) />
 
 		<cfoutput>
@@ -235,12 +255,7 @@
 		<cfargument name="name" required="false" default="save" />
 
 		<cfset arguments.tag = "submit" />
-
-		<cfif structKeyExists(arguments, "class")>
-			<cfset arguments.class = arguments.class & " button" />
-		<cfelse>
-			<cfset arguments.class = "button" />
-		</cfif>
+		<cfset append(arguments, "class", "button") />
 
 		<cfset configure(arguments) />
 
@@ -303,6 +318,25 @@
 		<cfoutput>
 		<cfsavecontent variable="arguments.field">
 			<input type="file" #arguments.common# />
+		</cfsavecontent>
+		</cfoutput>
+
+		<cfreturn this.field(argumentCollection=arguments) />
+
+	</cffunction>
+
+	<!------>
+	
+	<cffunction name="url" access="public" output="false" returntype="string">
+
+		<cfset arguments.tag = "url" />
+		
+		<cfset append(arguments, "class", "url") />
+		<cfset configure(arguments) />
+
+		<cfoutput>
+		<cfsavecontent variable="arguments.field">
+			<input type="url" #arguments.common# value="#htmlEditFormat(arguments.value)#" />
 		</cfsavecontent>
 		</cfoutput>
 

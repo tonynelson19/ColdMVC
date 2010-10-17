@@ -1,4 +1,9 @@
 <cfif thisTag.executionMode eq "start">
+	
+	<!--- alias --->
+	<cfif structKeyExists(attributes, "do")>
+		<cfset attributes.value = attributes.do />
+	</cfif>
 
 	<cfparam name="attributes.value" default="it" />
 	<cfparam name="attributes.in" default="" />

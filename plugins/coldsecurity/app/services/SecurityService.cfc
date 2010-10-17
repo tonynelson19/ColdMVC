@@ -9,7 +9,6 @@ component {
 	property eventDispatcher;
 	property configPath;
 	property eventMapper;
-	property modelObserver;
 
 	public any function init() {
 

@@ -205,6 +205,7 @@ component {
 	private void function setupApplication() {
 
 		this.sessionManagement = true;
+		this.serverSideFormValidation = false;
 
 		var defaults = {
 			root = getDirectoryFromPath(expandPath("../")),

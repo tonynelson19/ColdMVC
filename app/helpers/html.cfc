@@ -12,13 +12,7 @@
 			<cfif arguments.label neq "">
 				<div class="header">#arguments.label#</div>
 			</cfif>
-			<cfif arguments.class eq "grid">
-				<table width="100%" cellspacing="1" class="grid" />
-			<cfelseif arguments.class eq "plain">
-				<table cellspacing="0" class="plain" />
-			<cfelse>
-				<table width="100%" cellspacing="0" class="#arguments.class#" />
-			</cfif>
+			<table width="100%" cellspacing="0" class="#arguments.class#" />
 		</cfsavecontent>
 		</cfoutput>
 

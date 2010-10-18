@@ -2,25 +2,25 @@
  * @extends coldmvc.Helper
  */
 component {
-	
-	public boolean function date(any value) {		
-		return isDate(value);	
+
+	public boolean function boolean(required any value) {
+		isBoolean(value);
 	}
-	
-	public boolean function guid(any value) {		
+
+	public boolean function date(required any value) {
+		return isDate(value);
+	}
+
+	public boolean function guid(required any value) {
 		return isValid("guid", value);
 	}
-	
-	public boolean function number(any value) {		
+
+	public boolean function integer(required any value) {
+		return isNumeric(value) && value == round(value);
+	}
+
+	public boolean function number(required any value) {
 		return isNumeric(value);
 	}
-	
-	public boolean function integer(any value) {		
-		return isNumeric(value) and value eq round(value);
-	}
-	
-	public boolean function boolean(any value) {
-		isValid("boolean", value);
-	}
-	
+
 }

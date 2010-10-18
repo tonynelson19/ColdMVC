@@ -20,6 +20,8 @@ component  {
 	property categories;
 	property comments;
 
+	property modelSerializer;
+
 	function preInsert() {
 		setDate(now());
 		setLink(createLink());

@@ -1,18 +1,18 @@
 <cfcomponent output="false" extends="coldmvc.Helper">
 
 	<!------>
-	
+
 	<cffunction name="init" access="public" output="false" returntype="any">
-		
+
 		<cfset variables.tables = {} />
-		
+
 		<cfreturn this />
-		
+
 	</cffunction>
 
 	<!------>
 
-	<cffunction name="save" access="public" output="false" returntype="string">		
+	<cffunction name="save" access="public" output="false" returntype="string">
 		<cfargument name="table" requried="true" type="string" />
 		<cfargument name="fields" required="false" type="struct" />
 
@@ -102,7 +102,7 @@
 					</cfloop>
 				where #data.key# = <cfqueryparam value="#data.id#" cfsqltype="#data.validate#" />
 			</cfquery>
-			
+
 			<cfif result.recordCount eq 0>
 
 				<cfquery name="query">
@@ -146,24 +146,24 @@
 		<cfargument name="id" required="true" type="string" />
 
 		<cfif arguments.id neq "">
-			
+
 			<cfset table = getTable(table) />
-			
+
 			<cfif structKeyExists(table.fields, "is_deleted")>
-				
+
 				<cfset var record = {} />
 				<cfset record[table.id] = id />
 				<cfset record["is_deleted"] = 1 />
-				
+
 				<cfset save(table, record) />
-				
+
 			<cfelse>
-				
+
 				<cfquery>
 					delete from [#table.name#]
 					where #table.id# = <cfqueryparam value="#arguments.id#" cfsqltype="#table.validate#" />
 				</cfquery>
-				
+
 			</cfif>
 
 		</cfif>
@@ -171,10 +171,10 @@
 	</cffunction>
 
 	<!------>
-	
+
 	<cffunction name="parseArguments" access="private" output="false" returntype="struct">
 		<cfargument name="args" required="true" type="struct" />
-		
+
 		<cfset var i = "" />
 
 		<cfset var table = getTable(args.table) />
@@ -184,35 +184,35 @@
 		</cfif>
 
 		<cfset var fields = {} />
-		
+
 		<cfif primary_key eq "">
-			
+
 			<cfif structKeyExists(table.fields, "is_deleted") and not structKeyExists(args.fields, "is_deleted")>
 				<cfset args.fields.is_deleted = 0 />
 			</cfif>
-			
+
 			<cfif structKeyExists(table.fields, "created_on") and not structKeyExists(args.fields, "created_on")>
 				<cfset args.fields.created_on = coldmvc.date.get() />
 			</cfif>
-			
+
 			<cfif structKeyExists(table.fields, "created_by") and not structKeyExists(args.fields, "created_by")>
 				<cfset args.fields.created_by = coldmvc.user.id() />
 			</cfif>
-			
+
 		</cfif>
-		
+
 		<cfif structKeyExists(table.fields, "updated_on") and not structKeyExists(args.fields, "updated_on")>
 			<cfset args.fields.updated_on = coldmvc.date.get() />
 		</cfif>
-		
+
 		<cfif structKeyExists(table.fields, "updated_by") and not structKeyExists(args.fields, "updated_by")>
 			<cfset args.fields.updated_by = coldmvc.user.id() />
 		</cfif>
-		
+
 		<cfloop collection="#args.fields#" item="i">
 
 			<cfif structKeyExists(table.fields, i) and i neq table.id>
-				
+
 				<cfset var field = {} />
 				<cfset field.name = table.fields[i].name />
 				<cfset field.type = table.fields[i].type />
@@ -265,9 +265,9 @@
 		<cfreturn result />
 
 	</cffunction>
-	
+
 	<!------>
-	
+
 	<cffunction name="getTable" access="private" output="false" returntype="struct">
 		<cfargument name="name" required="true" type="string" />
 
@@ -291,7 +291,7 @@
 	</cffunction>
 
 	<!------>
-	
+
 	<cffunction name="getPrimaryKey" access="private" output="false" returntype="query">
 		<cfargument name="table" required="true" type="string" />
 
@@ -313,7 +313,7 @@
 	</cffunction>
 
 	<!------>
-	
+
 	<cffunction name="getFields" access="private" output="false" returntype="struct">
 		<cfargument name="table" required="true" />
 
@@ -334,24 +334,24 @@
 		</cfquery>
 
 		<cfloop query="records">
-			
+
 			<cfset field = coldmvc.query.toStruct(records, currentRow) />
-	
+
 			<cfset field.validate = getValidationType(type) />
-			
+
 			<cfset fields[field.name] = field />
-		
+
 		</cfloop>
 
 		<cfreturn fields />
 
 	</cffunction>
-	
+
 	<!------>
-	
+
 	<cffunction name="getValidationType" access="private" output="false" returntype="string">
 		<cfargument name="type" required="true" type="string" />
-		
+
 		<cfif type eq "datetime">
 			<cfreturn "cf_sql_timestamp" />
 		<cfelseif type eq "uniqueidentifier">
@@ -361,11 +361,11 @@
 		<cfelseif listFindNoCase("int,smallint", type)>
 			<cfreturn "cf_sql_integer" />
 		</cfif>
-		
+
 		<cfreturn "cf_sql_varchar" />
-		
+
 	</cffunction>
 
 	<!------>
-	
+
 </cfcomponent>

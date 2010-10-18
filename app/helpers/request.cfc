@@ -5,11 +5,19 @@
  */
 component {
 
-	public boolean function isAjax() {
+	public struct function getHeaders() {
 
 		var httpRequestData = getHTTPRequestData();
 
-		if (structKeyExists(httpRequestData.headers, "X-Requested-With") and httpRequestData.headers["X-Requested-With"] eq "XMLHttpRequest") {
+		return httpRequestData.headers;
+
+	}
+
+	public boolean function isAjax() {
+
+		var headers = getHeaders();
+
+		if (structKeyExists(headers, "X-Requested-With") && headers["X-Requested-With"] == "XMLHttpRequest") {
 			return true;
 		}
 

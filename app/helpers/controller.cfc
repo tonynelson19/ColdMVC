@@ -107,7 +107,7 @@ component {
 
 		view = replace(view, "//", "/", "all");
 
-		if (left(view, 1) eq "/") {
+		if (left(view, 1) == "/") {
 			view = replace(view, "/", "");
 		}
 

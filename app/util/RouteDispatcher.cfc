@@ -95,12 +95,10 @@ component {
 
 	private void function callMethods(required string beanName, required string type) {
 
-		/*
-			possible TODO: after publishing each event,
-			check to see if the current event's controller and action have changed,
-			which could have happened if applying security filtering.
-			depending on the changes, this method could maybe use some heavy refactoring...
-		*/
+		// possible TODO: after publishing each event,
+		// check to see if the current event's controller and action have changed,
+		// which could have happened if applying security filtering.
+		// depending on the changes, this method could maybe use some heavy refactoring...
 
 		var action = coldmvc.event.get(type);
 

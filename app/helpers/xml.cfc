@@ -50,7 +50,7 @@ component {
 
 		}
 
-		if (len(elem.xmlText) or (structKeyExists(elem, "xmlChildren") and arrayLen(elem.xmlChildren) > 0)) {
+		if (len(elem.xmlText) or (structKeyExists(elem, "xmlChildren") && arrayLen(elem.xmlChildren) > 0)) {
 
 			result = "#result#>"; //Add a carriage return for text/nested elements
 
@@ -61,7 +61,7 @@ component {
 				result = "#cr##result##cr#";
 			}
 
-			if (structKeyExists(elem, "xmlChildren") and arrayLen(elem.xmlChildren) > 0) {
+			if (structKeyExists(elem, "xmlChildren") && arrayLen(elem.xmlChildren) > 0) {
 
 				for (i = 1; i <= arrayLen(elem.xmlChildren); i++) {
 					temp = trim(format(elem.xmlChildren[i]));

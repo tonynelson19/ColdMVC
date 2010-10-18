@@ -219,7 +219,7 @@ component {
 			var matches = reFind(route.expression, path, 1, true);
 
 			// if the path matches the pattern
-			if (arrayLen(matches.len) gt 1) {
+			if (arrayLen(matches.len) > 1) {
 
 				// populate the parameters from the path
 				var parameters = {};

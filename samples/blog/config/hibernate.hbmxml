@@ -12,9 +12,6 @@
 		<property name="link" type="string">
 			<column name="Link" />
 		</property>
-		<property name="url" type="string">
-			<column name="URL" />
-		</property>
 		<bag cascade="all" lazy="true" name="posts" table="Post_Category">
 			<key column="Category_ID" />
 			<many-to-many class="cfc:blog.app.model.Post" column="Post_ID" />
@@ -58,9 +55,6 @@
 		</property>
 		<property name="link" type="string">
 			<column name="Link" />
-		</property>
-		<property name="url" type="string">
-			<column name="URL" />
 		</property>
 		<bag cascade="all" lazy="true" name="categories" table="Post_Category">
 			<key column="Post_ID" />

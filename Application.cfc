@@ -208,7 +208,7 @@ component {
 		this.serverSideFormValidation = false;
 
 		var defaults = {
-			root = getDirectoryFromPath(expandPath("../")),
+			rootPath = getDirectoryFromPath(expandPath("../")),
 			ormEnabled = true,
 			ormSettings = {},
 			sessionTimeout = createTimeSpan(0, 2, 0, 0),
@@ -218,21 +218,21 @@ component {
 		structAppend(this, defaults, false);
 
 		if (!structKeyExists(this, "directory")) {
-			this.directory = listLast(replace(this.root, "\", "/", "all"), "/");
+			this.directory = listLast(replace(this.rootPath, "\", "/", "all"), "/");
 		}
 
 		if (!structKeyExists(this, "name")) {
-			this.name = this.directory & "_" & hash(this.root);
+			this.name = this.directory & "_" & hash(this.rootPath);
 		}
 
 		defaults = {};
-		defaults["/#this.directory#"] = this.root;
-		defaults["/config"] = this.root & "config/";
-		defaults["/public"] = this.root & "public/";
-		defaults["/app"] = this.root & "app/";
-		defaults["/generated"] = this.root & ".generated/";
-		defaults["/views"] = this.root & ".generated/views/";
-		defaults["/layouts"] = this.root & ".generated/layouts/";
+		defaults["/#this.directory#"] = this.rootPath;
+		defaults["/config"] = this.rootPath & "config/";
+		defaults["/public"] = this.rootPath & "public/";
+		defaults["/app"] = this.rootPath & "app/";
+		defaults["/generated"] = this.rootPath & ".generated/";
+		defaults["/views"] = this.rootPath & ".generated/views/";
+		defaults["/layouts"] = this.rootPath & ".generated/layouts/";
 
 		structAppend(this.mappings, defaults, false);
 
@@ -251,7 +251,7 @@ component {
 		}
 
 		defaults = {
-			cfclocation = [ this.root ],
+			cfclocation = [ this.rootPath ],
 			dbcreate = "update",
 			eventHandler = "coldmvc.app.util.EventHandler",
 			eventHandling = true,
@@ -279,7 +279,7 @@ component {
 
 			// not sure why the mapping doesn't work here
 			// should also find a better way to cache this result so it's not executed each request
-			if (fileExists(this.root & "/config/hibernate.hbmxml")) {
+			if (fileExists(this.rootPath & "/config/hibernate.hbmxml")) {
 
 				// don't generate the mapping files if they have one
 				this.ormSettings.autogenmap = false;
@@ -296,13 +296,13 @@ component {
 			variables.settings = {};
 		}
 
-		var configPath = "#this.root#config/config.ini";
+		var configPath = "#this.rootPath#config/config.ini";
 
 		if (fileExists(configPath)) {
 
 			loadSettings(configPath, "default");
 
-			var environmentPath = "#this.root#config/environment.txt";
+			var environmentPath = "#this.rootPath#config/environment.txt";
 
 			if (fileExists(environmentPath)) {
 				var environment = fileRead(environmentPath);
@@ -329,6 +329,7 @@ component {
 			"modelPrefix" = "_",
 			"reloadKey" = "init",
 			"reloadPassword" = "",
+			"rootPath" = this.rootPath,
 			"sesURLs" = "false",
 			"tagPrefix" = "c",
 			"urlPath" = cgi.script_name

@@ -24,6 +24,7 @@ component {
 
 	public void function autowire(any entity) {
 		get("beanInjector").autowire(entity);
+		get("modelInjector").autowire(entity);
 	}
 
 	private any function getBeanFactory() {

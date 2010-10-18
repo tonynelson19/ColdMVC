@@ -208,7 +208,7 @@ component {
 		this.serverSideFormValidation = false;
 
 		var defaults = {
-			rootPath = getDirectoryFromPath(expandPath("../")),
+			rootPath = replace(getDirectoryFromPath(expandPath("../")), "\", "/", "all"),
 			ormEnabled = true,
 			ormSettings = {},
 			sessionTimeout = createTimeSpan(0, 2, 0, 0),
@@ -218,7 +218,7 @@ component {
 		structAppend(this, defaults, false);
 
 		if (!structKeyExists(this, "directory")) {
-			this.directory = listLast(replace(this.rootPath, "\", "/", "all"), "/");
+			this.directory = listLast(this.rootPath, "/");
 		}
 
 		if (!structKeyExists(this, "name")) {

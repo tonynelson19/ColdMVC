@@ -33,7 +33,7 @@ component {
 		
 		var i = "";
 		
-		injectModels(bean);
+		autowire(bean);
 
 		for (i = 1; i <= arrayLen(suffixes); i++) {
 
@@ -73,22 +73,7 @@ component {
 
 	}
 	
-	/**
-	 * @events applicationStart
-	 */
-	public void function observe() {
-
-		eventDispatcher.addObserver("postLoad", beanName, "delegate");
-
-	}
-	
-	public void function delegate(required string event, required struct data) {
-		
-		injectModels(data.model);
-		
-	}
-	
-	public void function injectModels(required any model) {
+	public void function autowire(required any model) {
 		
 		var key = "";
 		

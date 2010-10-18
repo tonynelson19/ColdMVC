@@ -72,7 +72,6 @@
 				<entry key="applicationStart">
 					<list>
 						<value>helperManager.addHelpers</value>
-						<value>modelInjector.injectModels</value>
 						<value>router.addNamedRouteViewHelpers</value>
 					</list>
 				</entry>

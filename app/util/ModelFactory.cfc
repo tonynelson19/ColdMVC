@@ -5,6 +5,7 @@ component {
 
 	property development;
 	property beanInjector;
+	property modelInjector;
 
 	public any function init() {
 		cache = {};
@@ -20,23 +21,26 @@ component {
 
 	}
 
-	public any function get(required string model) {
+	public any function get(required string name) {
 
-		if (!structKeyExists(cache, model)) {
+		if (!structKeyExists(cache, name)) {
 
-			var entity = entityNew(model);
-			beanInjector.autowire(entity);
+			var model = entityNew(name);
+			beanInjector.autowire(model);
 
-			// this needs to go first since the orm helper calls the modelFactory
-			cache[model] = entity;
+			// put it into the cache now to avoid circular dependencies
+			cache[name] = model;
+			
+			// inject any other models into this model
+			modelInjector.injectModels(model);
 
 			// used to pre-populate the cache to do lookups by entity name without knowing the full class path (hack)
-			coldmvc.orm.getEntityMetaData(entity);
+			coldmvc.orm.getEntityMetaData(model);
 
 
 		}
 
-		return cache[model];
+		return cache[name];
 
 	}
 

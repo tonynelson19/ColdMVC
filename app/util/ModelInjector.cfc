@@ -4,81 +4,42 @@
 component {
 
  	property beanFactory;
+	property beanName;
 	property modelFactory;
 	property metaDataFlattener;
 	property modelPrefix;
 	property suffixes;
 	property development;
+	property eventDispatcher;
 
 	public any function init() {
+		
 		cache = {};
+		
 		var appSettings = application.getApplicationSettings();
+		
 		if (structKeyExists(appSettings, "ormEnabled") and appSettings.ormEnabled) {
 			models = ormGetSessionFactory().getAllClassMetaData();
 		}
 		else {
 			models = {};
 		}
+		
 		return this;
 
 	}
 
-	public void function injectModels(required string event) {
-
-		// if you're not in development mode, then inject the models now during applicationStart
-		if (!development) {
-
-			var beanDefinitions = beanFactory.getBeanDefinitions();
-			var beanName = "";
-
-			for (beanName in beanDefinitions) {
-				inject(beanName);
-			}
-
-		}
-
-	}
-
 	public void function postProcessAfterInitialization(required any bean, required string beanName) {
-
-		// if you're in development mode, inject the models after the bean is created
-		if (development) {
-			inject(beanName, bean);
-		}
-
-	}
-
-	public void function inject(required string beanName, any bean) {
-
-		var beanDefinitions = beanFactory.getBeanDefinitions();
-		var classPath = beanDefinitions[beanName];
-		var metaData = metaDataFlattener.flattenMetaData(classPath);
-		var model = "";
+		
 		var i = "";
-
-		for (model in models) {
-
-			if (structKeyExists(metaData.functions, "set#modelPrefix##model#")) {
-
-				if (!structKeyExists(arguments, "bean")) {
-					bean = beanFactory.getBean(beanName);
-				}
-
-				evaluate("bean.set#modelPrefix##model#(modelFactory.get(model))");
-
-			}
-
-		}
+		
+		injectModels(bean);
 
 		for (i = 1; i <= arrayLen(suffixes); i++) {
 
 			var suffix = suffixes[i];
 
-			if (right(beanName, len(suffix)) == suffix) {
-
-				if (!structKeyExists(arguments, "bean")) {
-					bean = beanFactory.getBean(beanName);
-				}
+			if (right(arguments.beanName, len(suffix)) == suffix) {
 
 				var metaData = getMetaData(bean);
 
@@ -86,7 +47,7 @@ component {
 					var model = metaData.model;
 				}
 				else {
-					var model = left(beanName, len(beanName)-len(suffix));
+					var model = left(arguments.beanName, len(arguments.beanName)-len(suffix));
 				}
 
 				if (coldmvc.model.exists(model)) {
@@ -110,6 +71,35 @@ component {
 
 		}
 
+	}
+	
+	/**
+	 * @events applicationStart
+	 */
+	public void function observe() {
+
+		eventDispatcher.addObserver("postLoad", beanName, "delegate");
+
+	}
+	
+	public void function delegate(required string event, required struct data) {
+		
+		injectModels(data.model);
+		
+	}
+	
+	public void function injectModels(required any model) {
+		
+		var key = "";
+		
+		for (key in models) {
+
+			if (structKeyExists(model, "set#modelPrefix##key#")) {
+				evaluate("model.set#modelPrefix##key#(modelFactory.get(key))");
+			}
+
+		}
+	
 	}
 
 }

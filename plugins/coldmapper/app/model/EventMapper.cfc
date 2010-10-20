@@ -43,7 +43,7 @@ component {
 			var mapping = {};
 			mapping.controller = mappingXML.xmlAttributes.controller;
 			mapping.action = mappingXML.xmlAttributes.action;
-			mapping.map = coldmvc.xml.get(mappingXML, "map", "index");
+			mapping.event = coldmvc.xml.get(mappingXML, "event", "index");
 			mapping.requires = coldmvc.xml.get(mappingXML, "requires", "none");
 
 			arrayAppend(config, mapping);
@@ -68,13 +68,13 @@ component {
 					var result = {};
 					result.requires = mapping.requires;
 
-					if (find(".", mapping.map)) {
-						result.controller = listFirst(mapping.map, ".");
-						result.action = listLast(mapping.map, ".");
+					if (find(".", mapping.event)) {
+						result.controller = listFirst(mapping.event, ".");
+						result.action = listLast(mapping.event, ".");
 					}
 					else {
 						result.controller = controller;
-						result.action = mapping.map;
+						result.action = mapping.event;
 					}
 
 					result.event = result.controller & "." & result.action;

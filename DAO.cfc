@@ -243,6 +243,8 @@ component {
 
 		if (coldmvc.model.has(model, "isDeleted")) {
 			model._set("isDeleted", 1);
+			model._set("deletedOn", coldmvc.date.get());
+			model._set("deletedBy", coldmvc.user.id());
 			entitySave(model);
 		}
 		else {

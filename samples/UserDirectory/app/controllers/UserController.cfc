@@ -5,6 +5,14 @@
  */
 component {
 
+	property validator;
+
+	function index() {
+
+		params.rule = validator.getRules();
+
+	}
+
 	function list() {
 
 		var paging = $.paging.options();

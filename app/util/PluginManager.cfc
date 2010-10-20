@@ -38,11 +38,12 @@ component {
 			}
 
 			plugin.path = sanitize(plugin.path);
+			plugin.mapping = "/#plugin.name#";
 			plugin.exists = directoryExists(plugin.path);
 
 			arrayAppend(plugins, plugin);
 
-			mappings["/#plugin.name#"] = plugin.path;
+			mappings[plugin.mapping] = plugin.path;
 
 			var config = "#plugin.path#config/plugins.cfm";
 			var root = sanitize(expandPath("/coldmvc"));

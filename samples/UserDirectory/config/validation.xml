@@ -1,0 +1,9 @@
+<validation>
+	<models>
+		<model name="User">
+			<property name="firstName">
+				<rule name="required" message="Please enter a first name" />
+			</property>
+		</model>
+	</models>
+</validation>

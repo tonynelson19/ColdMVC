@@ -58,6 +58,7 @@ component {
 			name = name,
 			model = model
 		};
+		
 		eventDispatcher.dispatchEvent(arguments.event, data);
 		eventDispatcher.dispatchEvent(arguments.event & ":" & name, data);
 

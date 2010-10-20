@@ -26,13 +26,12 @@ component {
 		if (!structKeyExists(cache, name)) {
 
 			var model = entityNew(name);
-			beanInjector.autowire(model);
 
 			// put it into the cache now to avoid circular dependencies
 			cache[name] = model;
 			
 			// inject any other models into this model
-			modelInjector.injectModels(model);
+			coldmvc.factory.autowire(model);
 
 			// used to pre-populate the cache to do lookups by entity name without knowing the full class path (hack)
 			coldmvc.orm.getEntityMetaData(model);

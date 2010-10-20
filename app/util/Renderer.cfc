@@ -180,9 +180,6 @@ component {
 			// add all the view helpers to the object
 			viewHelperManager.addViewHelpers(obj);
 
-			// now autowire the object
-			beanInjector.autowire(obj);
-
 			// now call the object's render method
 			output = obj._render(template);
 

@@ -1,0 +1,31 @@
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+								   "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd">
+<hibernate-mapping>
+	<class entity-name="Gadget" lazy="true" name="cfc:tabs.app.model.Gadget" table="Gadget">
+		<id name="id" type="int">
+			<column name="ID" />
+			<generator class="identity" />
+		</id>
+		<property name="name" type="string">
+			<column name="Name" />
+		</property>
+	</class>
+	<class entity-name="Thingy" lazy="true" name="cfc:tabs.app.model.Thingy" table="Thingy">
+		<id name="id" type="int">
+			<column name="ID" />
+			<generator class="identity" />
+		</id>
+		<property name="name" type="string">
+			<column name="Name" />
+		</property>
+	</class>
+	<class entity-name="Widget" lazy="true" name="cfc:tabs.app.model.Widget" table="Widget">
+		<id name="id" type="int">
+			<column name="ID" />
+			<generator class="identity" />
+		</id>
+		<property name="name" type="string">
+			<column name="Name" />
+		</property>
+	</class>
+</hibernate-mapping>

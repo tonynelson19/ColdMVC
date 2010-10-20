@@ -147,8 +147,9 @@ component {
 		for (i = 1; i <= length; i++) {
 
 			var tab = tabs[i];
+			var tabHTML = [];
 
-			arrayAppend(html, '<li');
+			arrayAppend(tabHTML, '<li');
 
 			var class = listToArray(tab.class, " ");
 
@@ -163,16 +164,18 @@ component {
 			class = arrayToList(class, " ");
 
 			if (class != "") {
-				arrayAppend(html, ' class="#class#"');
+				arrayAppend(tabHTML, ' class="#class#"');
 			}
 
-			arrayAppend(html, '><a href="#tab.url#" title="#tab.title#"');
+			arrayAppend(tabHTML, '><a href="#tab.url#" title="#tab.title#"');
 
 			if (tab.target != "") {
-				arrayAppend(html, ' target="#tab.target#"');
+				arrayAppend(tabHTML, ' target="#tab.target#"');
 			}
 
-			arrayAppend(html, '><span>#tab.name#</span></a></li>');
+			arrayAppend(tabHTML, '><span>#tab.name#</span></a></li>');
+			
+			arrayAppend(html, arrayToList(tabHTML, ""));
 
 		}
 

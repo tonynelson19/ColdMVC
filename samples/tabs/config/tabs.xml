@@ -1,0 +1,6 @@
+<tabs>
+	<tab name="Home" controller="tab" action="index" />
+	<tab name="Gadgets" controller="gadget" action="list" />
+	<tab name="Thingies" controller="thingy" action="list" />
+	<tab name="Widgets" controller="widget" action="list" />
+</tabs>

@@ -121,24 +121,24 @@ component {
 	}
 
 	public string function pascalize(required string string) {
-		
+
 		string = replace(string, "_", " ", "all");
-		
+
 		if (find(" ", string)) {
-			
+
 			var array = listToArray(string, " ");
-		
-			for (i = 1; i <= arrayLen(array); i++) {			
-				array[i] = upperfirst(array[i]);			
+
+			for (i = 1; i <= arrayLen(array); i++) {
+				array[i] = upperfirst(array[i]);
 			}
-			
+
 			string = arrayToList(array, "");
-			
+
 		}
 		else {
-			string = upperfirst(string);	
+			string = upperfirst(string);
 		}
-		
+
 	    return string;
 
 	}
@@ -148,9 +148,9 @@ component {
 		return lowerfirst(pascalize(string));
 
 	}
-	
+
 	public string function upperfirst(required string string) {
-		
+
 		var remainder = len(string) - 1;
 
 		if (remainder > 0) {
@@ -159,13 +159,13 @@ component {
 		else {
 			string = ucase(string);
 		}
-		
+
 		return string;
-		
+
 	}
-	
+
 	public string function lowerfirst(required string string) {
-		
+
 		var remainder = len(string) - 1;
 
 		if (remainder > 0) {
@@ -174,9 +174,9 @@ component {
 		else {
 			string = lcase(string);
 		}
-		
+
 		return string;
-		
+
 	}
 
 	public string function capitalize(required string string) {
@@ -428,7 +428,7 @@ component {
 
 		patterns = [];
 
-		addPattern("(.*)fe?", "$1ves");
+		addPattern("(.*)fe?$", "$1ves");
 		addPattern("(.*)man$", "$1men");
 		addPattern("(.+[aeiou]y)$", "$1s");
 		addPattern("(.+[^aeiou])y$", "$1ies");

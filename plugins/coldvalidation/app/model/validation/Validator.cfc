@@ -99,11 +99,23 @@ component {
 
 			}
 
+			if (structKeyExists(xml.validation, "models")) {
+
+				writeDump(xml.validation.models);
+				abort;
+
+			}
+
 		}
 
 	}
 
-	public array function getRules() {
+	public struct function getRules() {
+
+		writeDump(config.rules);
+		abort;
+
+		return config.rules;
 
 	}
 

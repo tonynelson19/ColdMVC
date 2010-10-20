@@ -1,6 +1,6 @@
 /**
  * @accessors true
- * @action list
+ * @action index
  * @extends coldmvc.Controller
  */
 component {

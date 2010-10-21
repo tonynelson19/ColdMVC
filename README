@@ -7,16 +7,12 @@ I've written everything using Windows 7, although things should work fine on a M
 ColdFusion Server
 ColdMVC was written specifically for Adobe ColdFusion 9. I don't believe it will work on any other platforms without full support for Hibernate ORM.
 
-Dependencies
-Hyrule (http://hyrule.riaforge.org/)
-
 Installation
 	1. Download ColdMVC
-	2. Download Hyrule
-	3. Create server mappings in ColdFusion administrator for ColdMVC and Hyrule or put them in your server's webroot
-	4. Create a new ColdFusion project
-	5. Create a new datasource in ColdFusion administrator with the same name as your project
-	6. Start building your applications
+	2. Create a server mapping in ColdFusion administrator for ColdMVC or put it your server's webroot
+	3. Create a new ColdFusion project
+	4. Create a new datasource in ColdFusion administrator with the same name as your project
+	5. Start building your applications
 
 For further guidance, check out the sample applications inside /coldmvc/samples/.
 

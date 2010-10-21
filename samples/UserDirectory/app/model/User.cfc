@@ -8,6 +8,7 @@ component  {
 	property firstName;
 	property lastName;
 	property email;
+	property birthDate;
 
 	function getName() {
 		return firstName & " " & lastName;

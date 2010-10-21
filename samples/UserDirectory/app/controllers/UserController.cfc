@@ -8,8 +8,15 @@ component {
 	property validator;
 
 	function index() {
-
-		params.rule = validator.getRules();
+	
+		var user = _User.new({
+			firstName = "Tony",
+			lastName = "Nelson"
+		});
+		var result = user.validate();
+		
+		writeDump(result);
+		abort;
 
 	}
 

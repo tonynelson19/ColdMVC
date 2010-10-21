@@ -36,8 +36,12 @@ component {
 
 
 	public void function endRequest() {
-		coldmvc.flash.setCurrentRequest(flash);
-		coldmvc.flash.clearOldRequests();
+		
+		if (isDefined('flash')) {		
+			coldmvc.flash.setCurrentRequest(flash);
+			coldmvc.flash.clearOldRequests();		
+		}
+		
 	}
 
 }

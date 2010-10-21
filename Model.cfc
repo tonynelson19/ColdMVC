@@ -5,7 +5,6 @@
 component {
 
 	property DAO;
-	property validator;
 	property createdOn;
 	property createdBy;
 	property updatedOn;
@@ -128,19 +127,9 @@ component {
 
 	}
 
-	public array function getErrors() {
-		var result = validator.validate(this);
-		return result.getErrors();
-	}
-
 	public boolean function has(required string property) {
 		var value = _get(property);
 		return coldmvc.data.count(value) > 0;
-	}
-
-	public boolean function hasErrors() {
-		var result = validator.validate(this);
-		return result.hasErrors();
 	}
 
 	public array function list(struct options) {
@@ -188,11 +177,6 @@ component {
 
 		return this;
 
-	}
-
-	public boolean function validate() {
-		var result = validator.validate(this);
-		return result.hasErrors();
 	}
 
 	public any function onMissingMethod(required string missingMethodName, required struct missingMethodArguments) {

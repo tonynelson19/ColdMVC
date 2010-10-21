@@ -221,8 +221,6 @@
 		</property>
 	</bean>
 	
-	<bean id="validator" class="hyrule.Validator" />
-	
 	<bean id="viewHelperManager" class="coldmvc.app.util.ViewHelperManager">
 		<property name="configPaths">
 			<list>

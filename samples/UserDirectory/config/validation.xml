@@ -4,6 +4,16 @@
 			<property name="firstName">
 				<rule name="required" message="Please enter a first name" />
 			</property>
+			<property name="lastName">
+				<rule name="required" />
+			</property>
+			<property name="email">
+				<rule name="required" />
+				<rule name="email" />
+			</property>
+			<property name="birthDate">
+				<rule name="date" />
+			</property>
 		</model>
 	</models>
 </validation>

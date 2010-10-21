@@ -387,9 +387,7 @@
 
 		<cfif not structKeyExists(args, "label")>
 
-			<cfset args.label = coldmvc.string.underscore(args.name) />
-
-			<cfset args.label = coldmvc.string.humanize(args.label) />
+			<cfset args.label = coldmvc.string.uncamelize(args.name) />
 
 			<cfif right(args.label, 3) eq " ID">
 				<cfset args.label = left(args.label, len(args.label)-3) />

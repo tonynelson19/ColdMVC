@@ -15,5 +15,8 @@
         <property name="email" type="string">
              <column name="Email" length="200" />
         </property>
+		<property name="birthDate" type="date">
+			<column name="Birth_Date" />
+		</property>
     </class>
 </hibernate-mapping>

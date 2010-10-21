@@ -1,5 +1,0 @@
-<beans>
-	
-	<bean id="validator" class="coldvalidation.app.model.validation.Validator" />
-	
-</beans>

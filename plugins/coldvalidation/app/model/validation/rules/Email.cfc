@@ -6,7 +6,7 @@ component {
 			return true;
 		}
 
-		if (isDate(value)) {
+		if (isValid("email", value)){
 			return true;
 		}
 		

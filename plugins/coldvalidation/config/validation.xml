@@ -1,10 +1,13 @@
 <validation>
 	<rules>
+		<rule name="date" message="{Property} must be a valid date">
+			<server class="coldmvc.plugins.coldvalidation.app.model.validation.rules.Date" />
+		</rule>
+		<rule name="email" message="{Property} must be a valid email address">
+			<server class="coldmvc.plugins.coldvalidation.app.model.validation.rules.Email" />
+		</rule>
 		<rule name="required" message="{Property} is required">
 			<server class="coldmvc.plugins.coldvalidation.app.model.validation.rules.Required" />
-		</rule>
-		<rule name="date" message="{Property} must be a valid date">
-			<server class="coldmvc.validation.rules.Date" />
 		</rule>
 	</rules>
 </validation>

@@ -97,11 +97,11 @@ component {
 	}
 
 	private string function setAndReturn(required struct data, required string key, required any string) {
-		
+
 		data[key] = string;
-		
+
 		return string;
-	
+
 	}
 
 	public string function capitalize(required string string) {
@@ -184,9 +184,13 @@ component {
 
 	public string function humanize(required string string) {
 
-		string = capitalize(string);
+		if (string != "") {
 
-		string = left(string, 1) & lcase(right(string, len(string)-1));
+			string = capitalize(string);
+
+			string = left(string, 1) & lcase(right(string, len(string)-1));
+
+		}
 
 		return string;
 
@@ -238,23 +242,23 @@ component {
   		return trim(lcase(name));
 
 	}
-	
-	public string function uncamelize(required string string) {		
-		
-		return humanize(underscore(string));		
-	
+
+	public string function uncamelize(required string string) {
+
+		return humanize(underscore(string));
+
 	}
 
 	public string function isLower(required string string) {
-		
+
 		return compare(string, lcase(string)) == 0;
-	
+
 	}
 
 	public string function isUpper(required string string) {
-		
+
 		return compare(string, ucase(string)) == 0;
-	
+
 	}
 
 	public array function toArray(required string string, string delimeter=",") {

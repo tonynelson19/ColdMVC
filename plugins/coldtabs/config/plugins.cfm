@@ -1,1 +1,0 @@
-<cfset add("/coldmvc/plugins/coldmapper/") />

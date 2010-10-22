@@ -34,32 +34,44 @@ component {
 	}
 
 	public string function renderImage(required string name) {
+
 		return '<img src="#linkToImage(name)#" alt="" />';
+
 	}
 
 	public string function linkToCSS(required string name) {
+
 		return linkToAsset("css", name);
+
 	}
 
 	public string function linkToJS(required string name) {
+
 		return linkToAsset("js", name);
+
 	}
 
 	public string function linkToImage(required string name) {
+
 		return "#getBaseURL()#images/#name#";
+
 	}
 
 	private string function linkToAsset(required string type, required string name) {
+
 		if (left(name, 4) == "http") {
 			return name;
 		}
 		else {
 			return "#getBaseURL()##type#/#name#";
 		}
+
 	}
 
 	private string function getBaseURL() {
+
 		return coldmvc.config.get("assetPath");
+
 	}
 
 	private string function getVersion() {
@@ -91,7 +103,9 @@ component {
 	}
 
 	private struct function getAssetCache(required string type) {
+
 		return coldmvc.request.get("helpers.asset.#type#", {});
+
 	}
 
 }

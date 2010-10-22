@@ -1,4 +1,12 @@
 <validation>
+	<contexts>
+		<context controller="user" action="edit">
+			<model name="User">
+				<property name="firstName" />
+				<property name="lastName" />
+			</model>
+		</context>
+	</contexts>
 	<models>
 		<model name="User">
 			<property name="firstName">

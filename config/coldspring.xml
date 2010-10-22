@@ -2,14 +2,7 @@
 	
 	<bean id="beanInjector" class="coldmvc.app.util.BeanInjector" />
 	
-	<bean id="beanFinder" class="coldmvc.app.util.BeanFinder">
-		<property name="directories">
-			<list>
-				<value>/${directory}/app/</value>
-				<value>${plugins}</value>
-			</list>
-		</property>
-	</bean>
+	<bean id="beanFinder" class="coldmvc.app.util.BeanFinder" />
 	
 	<bean id="beanPostProcessor" class="coldmvc.app.util.BeanPostProcessor" bean-post-processor="true">
 		<property name="postProcessors">
@@ -122,16 +115,6 @@
 	</bean>
 	
 	<bean id="helperManager" class="coldmvc.app.util.HelperManager">
-		<property name="directories">
-			<list>
-				<value>/${directory}/</value>
-				<value>${plugins}</value>
-				<value>/coldmvc/</value>
-			</list>
-		</property>
-		<property name="suffix">
-			<value>app/helpers/</value>
-		</property>
 		<property name="helperPrefix">
 			<value>${helperPrefix}</value>
 		</property>
@@ -193,42 +176,17 @@
 		<property name="development">
 			<value>${development}</value>
 		</property>
-		<property name="configPaths">
-			<list>
-				<value>/${directory}/</value>
-				<value>${plugins}</value>
-				<value>/coldmvc/</value>
-			</list>
-		</property>
 	</bean>
 	
 	<bean id="tagManager" class="coldmvc.app.util.TagManager">
 		<property name="development">
 			<value>${development}</value>
 		</property>
-		<property name="directories">
-			<list>
-				<value>/${directory}/</value>
-				<value>${plugins}</value>
-				<value>/coldmvc/</value>
-			</list>
-		</property>
-		<property name="suffix">
-			<value>app/tags/</value>
-		</property>
 		<property name="tagPrefix">
 			<value>${tagPrefix}</value>
 		</property>
 	</bean>
 	
-	<bean id="viewHelperManager" class="coldmvc.app.util.ViewHelperManager">
-		<property name="configPaths">
-			<list>
-				<value>/${directory}/</value>
-				<value>${plugins}</value>
-				<value>/coldmvc/</value>
-			</list>
-		</property>
-	</bean>
+	<bean id="viewHelperManager" class="coldmvc.app.util.ViewHelperManager" />
 	
 </beans>

@@ -5,11 +5,14 @@ component {
 
 	property configPath;
 
-	public any function init() {
+	public PluginManager function init() {
+
 		plugins = [];
 		mappings = {};
 		cache = {};
+
 		return this;
+
 	}
 
 	public void function loadPlugins() {
@@ -20,7 +23,7 @@ component {
 
 	}
 
-	public void function add(string name, string path="") {
+	public void function add(string name, string path="", string mapping="") {
 
 		var plugin = {};
 		plugin.name = arguments.name;
@@ -38,19 +41,26 @@ component {
 			}
 
 			plugin.path = sanitize(plugin.path);
-			plugin.mapping = "/#plugin.name#";
+
+			if (mapping != "") {
+				plugin.mapping = mapping;
+			}
+			else {
+				plugin.mapping = "/plugins/#plugin.name#";
+			}
+
 			plugin.exists = directoryExists(plugin.path);
 
 			arrayAppend(plugins, plugin);
 
 			mappings[plugin.mapping] = plugin.path;
 
-			var config = "#plugin.path#config/plugins.cfm";
+			var config = "#plugin.path#/config/plugins.cfm";
 			var root = sanitize(expandPath("/coldmvc"));
-			var mapping = "/coldmvc" & replaceNoCase(config, root, "");
+			var mappedPlugins = "/coldmvc" & replaceNoCase(config, root, "");
 
 			if (fileExists(config)) {
-				include mapping;
+				include mappedPlugins;
 			}
 
 			cache[plugin.name] = plugin.path;

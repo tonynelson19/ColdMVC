@@ -1,24 +1,9 @@
 /**
  * @accessors true
- * @action index
+ * @action list
  * @extends coldmvc.Controller
  */
 component {
-
-	property validator;
-
-	function index() {
-	
-		var user = _User.new({
-			firstName = "Tony",
-			lastName = "Nelson"
-		});
-		var result = user.validate();
-		
-		writeDump(result);
-		abort;
-
-	}
 
 	function list() {
 

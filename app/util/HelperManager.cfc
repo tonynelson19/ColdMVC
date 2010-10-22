@@ -5,30 +5,35 @@ component {
 
 	property beanFactory;
 	property config;
-	property directories;
-	property suffix;
 	property helperPrefix;
+	property pluginManager;
 
-	public any function init() {
+	public HelperManager function init() {
+
 		templates = {};
+		directories = [];
+
 		return this;
+
 	}
 
-	public function setDirectories(required array directories) {
-		variables.directories = listToArray(arrayToList(arguments.directories));
-	}
+	public void function setPluginManager(required any pluginManager) {
 
-	private void function appendSuffix() {
-
+		var plugins = pluginManager.getPlugins();
 		var i = "";
-		for (i = 1; i <= arrayLen(directories); i++) {
-			directories[i] = directories[i] & suffix;
+		var path = "/app/helpers/";
+
+		arrayAppend(directories, path);
+
+		for (i = 1; i <= arrayLen(plugins); i++) {
+			arrayAppend(directories, plugins[i].mapping & path);
 		}
+
+		arrayAppend(directories, "/coldmvc" & path);
 
 	}
 
 	public void function postProcessBeanFactory(any beanFactory) {
-		appendSuffix();
 		addHelpers();
 	}
 

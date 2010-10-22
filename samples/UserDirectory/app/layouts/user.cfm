@@ -4,9 +4,8 @@
 	<head>
 		<title>User Directory</title>
 		<meta http-equiv="content-type" content="text/html; charset=utf-8" />
-		#renderCSS("reset.css")#
-		#renderCSS("style.css")#
-		#renderJS("jquery.1.4.2.js")#
+		<c:package />
+		<c:validation />
 	</head>
 	<body>
 		<cfif structKeyExists(params, "message")>

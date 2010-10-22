@@ -4,21 +4,36 @@
 component {
 
 	property development;
-	property suffix;
-	property directories;
+	property pluginManager;
 	property tagPrefix;
 	property templatePrefix;
 
-	public any function init() {
+	public TagManager function init() {
+
 		folder = "/generated/tags/";
 		directory = expandPath(folder);
+		directories = [];
 		templatePrefix = "";
 		loaded = false;
+
 		return this;
+
 	}
 
-	public function setDirectories(required array directories) {
-		variables.directories = listToArray(arrayToList(arguments.directories));
+	public void function setPluginManager(required any pluginManager) {
+
+		var plugins = pluginManager.getPlugins();
+		var i = "";
+		var path = "/app/tags/";
+
+		arrayAppend(directories, path);
+
+		for (i = 1; i <= arrayLen(plugins); i++) {
+			arrayAppend(directories, plugins[i].mapping & path);
+		}
+
+		arrayAppend(directories, "/coldmvc" & path);
+
 	}
 
 	private void function generateFiles() {
@@ -55,25 +70,18 @@ component {
 	}
 
 	public string function getContent() {
+
 		return config.content;
-	}
-
-	private void function appendSuffix() {
-
-		var i = "";
-		for (i = 1; i <= arrayLen(directories); i++) {
-			directories[i] = directories[i] & suffix;
-		}
 
 	}
 
 	private void function loadConfig() {
 
-		appendSuffix();
 		var result = {};
+		var i = "";
 		result.templates = {};
 
-		for (var i=1; i <= arrayLen(directories); i++) {
+		for (i = 1; i <= arrayLen(directories); i++) {
 
 			var library = {};
 			library.path = replace(directories[i], "\", "/", "all");
@@ -82,11 +90,11 @@ component {
 			if (directoryExists(library.directory)) {
 
 				var templates = directoryList(library.directory, true, "path", "*.cfm");
-
-				for (var k=1; k <= arrayLen(templates); k++) {
+				var j = "";
+				for (j = 1; j <= arrayLen(templates); j++) {
 
 					var template = {};
-					template.name = getFileFromPath(templates[k]);
+					template.name = getFileFromPath(templates[j]);
 					template.path = library.path & template.name;
 					template.file = expandPath(folder & templatePrefix & template.name);
 
@@ -105,7 +113,9 @@ component {
 	}
 
 	public struct function getTemplates() {
+
 		return config.templates;
+
 	}
 
 }

@@ -96,7 +96,7 @@ component {
 		var plugins = pluginManager.getPlugins();
 		var i = "";
 		for (i = 1; i <= arrayLen(plugins); i++) {
-			addBeans(beans, "/#plugins[i].name#/config/coldspring.xml");
+			addBeans(beans, "/#plugins[i].mapping#/config/coldspring.xml");
 		}
 
 		// finally load all the beans from ColdMVC
@@ -115,9 +115,6 @@ component {
 		if (!structKeyExists(settings, "directory")) {
 			settings["directory"] = this.directory;
 		}
-
-		// now add any plugin data to the settings
-		settings["plugins"] = pluginManager.getPluginList();
 
 		var beanFactory = createObject("component", getSetting("beanFactory")).init(xml, settings, {
 			"pluginManager" = pluginManager

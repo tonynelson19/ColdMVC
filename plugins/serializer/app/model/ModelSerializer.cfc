@@ -52,9 +52,9 @@ component {
 
 	}
 
-	public struct function _toStruct() {
+	public struct function _toStruct(numeric max=2, numeric level=1, boolean recurse=true) {
 
-		return modelSerializer.toStruct(this);
+		return modelSerializer.toStruct(this, max, level, recurse);
 
 	}
 
@@ -132,7 +132,7 @@ component {
 					if (recurse && level < max) {
 
 						for (i = 1; i <= arrayLen(value); i++) {
-							arrayAppend(array, toStruct(value[i], max, level+1, recurse));
+							arrayAppend(array, value[i].toStruct(max, level+1, recurse));
 						}
 
 					}
@@ -150,7 +150,7 @@ component {
 				else if (isObject(value)) {
 
 					if (recurse && level < max) {
-						value = toStruct(value, max, level+1, recurse);
+						value = value.toStruct(max, level+1, recurse);
 					}
 					else {
 						value = value._get("id");

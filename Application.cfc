@@ -251,7 +251,7 @@ component {
 		}
 
 		defaults = {
-			cfclocation = [ this.rootPath ],
+			cfclocation = [ getDirectoryFromPath(expandPath("../")) ],
 			dbcreate = "update",
 			eventHandler = "coldmvc.app.util.EventHandler",
 			eventHandling = true,

@@ -4,28 +4,73 @@
 component {
 
 	property beanFactory;
-	property observers;
-	property logEvents;
-	property development;
 	property debugManager;
+	property development;
+	property logEvents;
+	property observers;
+	property pluginManager;
 
 	public any function init() {
+
 		systemObservers = {};
 		customObservers = {};
 		cache = {};
+
 		return this;
+
+	}
+
+	public void function setPluginManager(required any pluginManager) {
+
+		var plugins = pluginManager.getPlugins();
+		var path = "/config/events.xml";
+		var i = "";
+
+		loadXML(path);
+
+		for (i = 1; i <= arrayLen(plugins); i++) {
+			loadXML(plugins[i].mapping & path);
+		}
+
+
+	}
+
+	public void function loadXML(required string filePath) {
+
+		if (!fileExists(filePath)) {
+			filePath = expandPath(filePath);
+		}
+
+		if (fileExists(filePath)) {
+
+			var xml = xmlParse(fileRead(filePath));
+			var i = "";
+			for (i = 1; i <= arrayLen(xml.events.xmlChildren); i++) {
+
+				var eventXML = xml.events.xmlChildren[i];
+
+				addObserver(
+					eventXML.xmlAttributes.name,
+					eventXML.xmlAttributes.bean,
+					eventXML.xmlAttributes.method
+				);
+
+			}
+
+		}
+
 	}
 
 	public void function addSystemObserver(required string event, required string beanName, required string method) {
+
 		add(systemObservers, arguments);
+
 	}
 
 	public void function addObserver(required string event, required string beanName, required string method) {
-		add(customObservers, arguments);
-	}
 
-	public void function clearCustomObservers() {
-		customObservers = {};
+		add(customObservers, arguments);
+
 	}
 
 	private void function add(required struct observers, required struct data) {

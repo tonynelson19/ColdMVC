@@ -96,7 +96,7 @@ component {
 		var plugins = pluginManager.getPlugins();
 		var i = "";
 		for (i = 1; i <= arrayLen(plugins); i++) {
-			addBeans(beans, "/#plugins[i].mapping#/config/coldspring.xml");
+			addBeans(beans, "#plugins[i].path#/config/coldspring.xml");
 		}
 
 		// finally load all the beans from ColdMVC
@@ -126,7 +126,9 @@ component {
 
 	private any function addBeans(required xml beans, required string configPath) {
 
-		configPath = expandPath(configPath);
+		if (!fileExists(configPath)) {
+			configPath = expandPath(configPath);
+		}
 
 		if (fileExists(configPath)) {
 

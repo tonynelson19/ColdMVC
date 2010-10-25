@@ -104,7 +104,15 @@ component {
 	}
 
 	private string function sanitize(required string filePath) {
-		return replace(filePath, "\", "/", "all");
+
+		filePath = replace(filePath, "\", "/", "all");
+
+		if (right(filePath, 1) == "/") {
+			filePath = left(filePath, len(filePath) - 1);
+		}
+
+		return filePath;
+
 	}
 
 }

@@ -12,8 +12,6 @@ component {
 
 		if (event == "preApplication") {
 
-			eventDispatcher.clearCustomObservers();
-
 			var beanDefinitions = beanFactory.getBeanDefinitions();
 			var beanName = "";
 			var method = "";

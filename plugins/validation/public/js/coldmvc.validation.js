@@ -4,9 +4,8 @@ ColdMVC.validation = {
 	
 	getValidator: function(form){
 	
-		if (!ColdMVC.structKeyExists(this.validators, form)) {		
-			var validator = new ColdMVC.validation.validator(form);
-			this.validators[form] = validator;			
+		if (!(form in this.validators)) {		
+			this.validators[form] = new ColdMVC.validation.validator(form, this);
 		}
 		
 		return this.validators[form];
@@ -15,44 +14,50 @@ ColdMVC.validation = {
 	
 	rules: {
 
-		NotEmpty: function(value) {
-			return !this.optional(value);
+		required: function(value) {
+			return !ColdMVC.validation.optional(value);
 		},
 		
-		Min: function(value, data) {
-			return this.optional(value) || value.length >= data.value;
+		min: function(value, data) {
+			return ColdMVC.validation.optional(value) || value.length >= data.value;
 		},
 		
-		Max: function(value, data) {
-			return this.optional(value) || value.length <= data.value;
+		max: function(value, data) {
+			return ColdMVC.validation.optional(value) || value.length <= data.value;
 		},
 		
-		Date: function(value) {
-			return this.optional(value) || !/Invalid|NaN/.test(new Date(value));
+		date: function(value) {
+			return ColdMVC.validation.optional(value) || !/Invalid|NaN/.test(new Date(value));
 		}
 
 	},
 	
-	addRule: function(name, method) {
-		
-		if (!ColdMVC.structKeyExists(this.rules, name)) {
-			this.rules[name] = method;
-		}
-	
+	hasRule: function(name) {
+		return name in this.rules;
 	},
 	
-	optional: function(value) {
-		return value == '';
+	setRule: function(name, method) {				
+		this.rules[name] = method;	
+	},
+	
+	getRule: function(name) {
+		return this.rules[name];
+	},
+	
+	optional: function(value) {	
+		return value == '';	
 	}
 
 }
 
-ColdMVC.validation.validator = function(form) {
+ColdMVC.validation.validator = function(form, validation) {
 	
 	this.form = form;
+	this.validation = validation;
+	
 	var instance = this;
 	
-	if ($('#'+form).length) {
+	if ($('#' + form).length) {
 		instance.init();
 	}
 	else {
@@ -75,7 +80,7 @@ $.extend(ColdMVC.validation.validator.prototype, {
 	init: function() {
 
 		var instance = this;
-		var formObj = $('#'+this.form).get(0);		
+		var formObj = $('#' + this.form).get(0);		
 		var fn = formObj.onsubmit;
 
 		if (typeof(fn) == 'function') {
@@ -99,11 +104,11 @@ $.extend(ColdMVC.validation.validator.prototype, {
 				html = ColdMVC.arrayToList(html, '<br />');
 
 				// make more dynamic
-				if (!$('#validation').length) {
-					$('#'+instance.form).before('<div id="validation"></div>');
+				if (!$('#validation_'+this.form).length) {
+					$('#' + instance.form).before('<div id="validation_'+this.form+'" class="validation"></div>');
 				}
 				
-				$('#validation').html(html);
+				$('#validation_'+this.form).html(html);
 				
 				return false;
 				
@@ -124,17 +129,21 @@ $.extend(ColdMVC.validation.validator.prototype, {
 			var rule = this.rules[i];
 			var value = '';
 			
-			if (ColdMVC.structKeyExists(data, rule.property)) {
+			if (rule.property in data) {
 				value = data[rule.property];
 			}
 			
-			if (!rule.method(value, rule.data)) {
-				this.addError(rule.property, rule.message);
+			if (this.validation.hasRule(rule.rule)) {
+			
+				var method = this.validation.getRule(rule.rule);
+				
+				if (!method(value, rule.data)) {
+					this.addError(rule.property, rule.message);
+				}
+				
 			}
 			
 		}
-		
-		// loop over custom functions?
 		
 	},
 	
@@ -160,17 +169,18 @@ $.extend(ColdMVC.validation.validator.prototype, {
 	},		
 	
 	addRule: function(rule) {
-		
+	
 		var defaults = {
 			property: '',
+			rule: $.noop,
 			message: '',
-			method: $.noop,
 			data: {}
 		}
 		
 		rule = $.extend(defaults, rule);
-			
-		this.rules.push(rule);		
+		
+		this.rules.push(rule);
+	
 	},
 	
 	addFunction: function(fn) {
@@ -178,7 +188,7 @@ $.extend(ColdMVC.validation.validator.prototype, {
 	},
 	
 	getData: function() {
-		return ColdMVC.serializeForm('#'+this.form);
+		return ColdMVC.serializeForm('#' + this.form);
 	}
 
 });

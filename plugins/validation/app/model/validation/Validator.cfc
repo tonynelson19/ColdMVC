@@ -21,6 +21,7 @@ component {
 		};
 
 		validationUtil = new ValidationUtil();
+		validationUtil.setValidator(this);
 
 		return this;
 
@@ -148,6 +149,8 @@ component {
 
 		var model = {};
 		model.name = xml.xmlAttributes.name;
+		model.camelcase = coldmvc.string.camelize(model.name);
+		model.bind = coldmvc.xml.get(xml, "bind", true);
 		model.properties = {};
 		model.properties.array = [];
 		model.properties.struct = {};
@@ -158,6 +161,13 @@ component {
 			var propertyXML = xml.xmlChildren[i];
 			var property = {};
 			property.name = propertyXML.xmlAttributes.name;
+
+			if (model.bind) {
+				property.field = model.camelcase & "." & property.name;
+			}
+			else {
+				property.field = property.name;
+			}
 
 			if (!structKeyExists(model.properties.struct, property.name)) {
 
@@ -325,6 +335,7 @@ component {
 
 					var property = {};
 					property.name = prop.name;
+					property.field = prop.field;
 
 					if (structKeyExists(arguments, "formID")) {
 						property.form = formID;

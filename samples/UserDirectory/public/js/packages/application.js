@@ -1,24 +1,6 @@
 /* coldmvc.js: /coldmvc/public/js/coldmvc.js */
 ColdMVC = {
 	
-	arrayAppend: function(array, value) {
-		
-		return array.push(value);		
-	
-	},
-	
-	arrayLen: function(array) {
-		
-		return array.length;
-		
-	},
-		
-	arrayPrepend: function(array, value) {
-		
-		return array.unshift(value);		
-	
-	},
-	
 	arrayToList: function(array) {
 		
 		var delimiter = this.getArgument(arguments, 2, ',');		
@@ -39,89 +21,6 @@ ColdMVC = {
 			
 		return (list != '') ? list + delimiter + value : value;
 
-	},
-	
-	listGetAt: function(list, position) {
-		
-		var delimiter = this.getArgument(arguments, 3, ',');
-		
-		var array = this.listToArray(list, delimiter);
-		
-		return array[position - 1];
-		
-	},
-	
-	listLen: function(list) {
-		
-		if (list == '') {
-			return 0;
-		}
-		
-		var delimiter = this.getArgument(arguments, 3, ',');
-		var array = this.listToArray(list, delimiter);
-		return array.length;
-
-	},
-	
-	listFind: function(list, value) {
-		
-		var delimiter = this.getArgument(arguments, 3, ',');
-		var array = this.listToArray(list, delimiter);
-		
-		for (var i in array) {
-			
-			if (array[i] == value) {
-				return i + 1;
-			}
-	
-		}
-
-		return 0;
-		
-	},
-	
-	listFindNoCase: function(list, value) {
-		
-		value = value.toLowerCase();
-		var delimiter = this.getArgument(arguments, 3, ',');
-		var array = this.listToArray(list, delimiter);
-		
-		for (var i in array) {
-			
-			if (array[i].toLowerCase() == value) {
-				return i + 1;
-			}
-	
-		}
-
-		return 0;
-		
-	},
-	
-	listFirst: function(list) {
-		
-		var delimiter = this.getArgument(arguments, 2, ',');
-			
-		var array = this.listToArray(list, delimiter);
-		
-		return (array.length > 0) ? array[0] : '';
-		
-	},
-	
-	listPrepend: function(list, value) {
-		
-		var delimiter = this.getArgument(arguments, 3, ',');
-		
-		return (list != '') ? value + delimiter + list : value;
-
-	},
-	
-	listToArray: function(list) {
-		
-		var delimiter = this.getArgument(arguments, 2, ',');		
-		
-		return list.split(delimiter);
-		
 	},
 	
 	serializeForm: function(form) {
@@ -145,63 +44,8 @@ ColdMVC = {
 		
 		return data;
 		
-	},
-	
-	getFormElementTypes: function(form) {
-		
-		var elements = {};
-		
-		$('#' + form + ' input, #' + form + ' select, #' + form + ' textarea').each(function() {
-			
-			if (this.name != '') {
-			
-				var name = this.name;
-				var type = ColdMVC.listFirst(this.type.toLowerCase(), '-');
-				
-				if (name in elements) {
-					if (!ColdMVC.listFind(elements[name], type)) {
-						elements[name] = ColdMVC.listAppend(elements[name], type);
-					}
-				}
-				else {
-					elements[name] = type;
-				}
-				
-			}
-		
-		});
-		
-		return elements;
-		
-	},
-	
-	getFormElementType: function(form, name) {
-		
-		var elements = this.getFormElementTypes(form);
-		
-		return elements[name];
-		
-	},
-	
-	structKeyList: function(struct) {
-		
-		var delimiter = this.getArgument(arguments, 2, ',');		
-		var list = '';
-		
-		for (var i in struct) {
-			list = this.listAppend(list, i, delimiter);
-		}
-		
-		return list;
-		
-	},
-	
-	structKeyExists: function(struct, key) {
-		
-		return key in struct;
-
 	}
-
+	
 }
 
 /* coldmvc.validation.js: /plugins/validation/public/js/coldmvc.validation.js */
@@ -211,9 +55,8 @@ ColdMVC.validation = {
 	
 	getValidator: function(form){
 	
-		if (!ColdMVC.structKeyExists(this.validators, form)) {		
-			var validator = new ColdMVC.validation.validator(form);
-			this.validators[form] = validator;			
+		if (!(form in this.validators)) {		
+			this.validators[form] = new ColdMVC.validation.validator(form, this);
 		}
 		
 		return this.validators[form];
@@ -222,44 +65,50 @@ ColdMVC.validation = {
 	
 	rules: {
 
-		NotEmpty: function(value) {
-			return !this.optional(value);
+		required: function(value) {
+			return !ColdMVC.validation.optional(value);
 		},
 		
-		Min: function(value, data) {
-			return this.optional(value) || value.length >= data.value;
+		min: function(value, data) {
+			return ColdMVC.validation.optional(value) || value.length >= data.value;
 		},
 		
-		Max: function(value, data) {
-			return this.optional(value) || value.length <= data.value;
+		max: function(value, data) {
+			return ColdMVC.validation.optional(value) || value.length <= data.value;
 		},
 		
-		Date: function(value) {
-			return this.optional(value) || !/Invalid|NaN/.test(new Date(value));
+		date: function(value) {
+			return ColdMVC.validation.optional(value) || !/Invalid|NaN/.test(new Date(value));
 		}
 
 	},
 	
-	addRule: function(name, method) {
-		
-		if (!ColdMVC.structKeyExists(this.rules, name)) {
-			this.rules[name] = method;
-		}
-	
+	hasRule: function(name) {
+		return name in this.rules;
 	},
 	
-	optional: function(value) {
-		return value == '';
+	setRule: function(name, method) {				
+		this.rules[name] = method;	
+	},
+	
+	getRule: function(name) {
+		return this.rules[name];
+	},
+	
+	optional: function(value) {	
+		return value == '';	
 	}
 
 }
 
-ColdMVC.validation.validator = function(form) {
+ColdMVC.validation.validator = function(form, validation) {
 	
 	this.form = form;
+	this.validation = validation;
+	
 	var instance = this;
 	
-	if ($('#'+form).length) {
+	if ($('#' + form).length) {
 		instance.init();
 	}
 	else {
@@ -282,7 +131,7 @@ $.extend(ColdMVC.validation.validator.prototype, {
 	init: function() {
 
 		var instance = this;
-		var formObj = $('#'+this.form).get(0);		
+		var formObj = $('#' + this.form).get(0);		
 		var fn = formObj.onsubmit;
 
 		if (typeof(fn) == 'function') {
@@ -306,11 +155,11 @@ $.extend(ColdMVC.validation.validator.prototype, {
 				html = ColdMVC.arrayToList(html, '<br />');
 
 				// make more dynamic
-				if (!$('#validation').length) {
-					$('#'+instance.form).before('<div id="validation"></div>');
+				if (!$('#validation_'+this.form).length) {
+					$('#' + instance.form).before('<div id="validation_'+this.form+'" class="validation"></div>');
 				}
 				
-				$('#validation').html(html);
+				$('#validation_'+this.form).html(html);
 				
 				return false;
 				
@@ -331,17 +180,21 @@ $.extend(ColdMVC.validation.validator.prototype, {
 			var rule = this.rules[i];
 			var value = '';
 			
-			if (ColdMVC.structKeyExists(data, rule.property)) {
+			if (rule.property in data) {
 				value = data[rule.property];
 			}
 			
-			if (!rule.method(value, rule.data)) {
-				this.addError(rule.property, rule.message);
+			if (this.validation.hasRule(rule.rule)) {
+			
+				var method = this.validation.getRule(rule.rule);
+				
+				if (!method(value, rule.data)) {
+					this.addError(rule.property, rule.message);
+				}
+				
 			}
 			
 		}
-		
-		// loop over custom functions?
 		
 	},
 	
@@ -367,17 +220,18 @@ $.extend(ColdMVC.validation.validator.prototype, {
 	},		
 	
 	addRule: function(rule) {
-		
+	
 		var defaults = {
 			property: '',
+			rule: $.noop,
 			message: '',
-			method: $.noop,
 			data: {}
 		}
 		
 		rule = $.extend(defaults, rule);
-			
-		this.rules.push(rule);		
+		
+		this.rules.push(rule);
+	
 	},
 	
 	addFunction: function(fn) {
@@ -385,7 +239,7 @@ $.extend(ColdMVC.validation.validator.prototype, {
 	},
 	
 	getData: function() {
-		return ColdMVC.serializeForm('#'+this.form);
+		return ColdMVC.serializeForm('#' + this.form);
 	}
 
 });

@@ -3,10 +3,25 @@
  */
 component {
 
-	property directories;
+	property pluginManager;
 
-	public function setDirectories(required array directories) {
-		variables.directories = listToArray(arrayToList(arguments.directories));
+	public BeanFinder function init() {
+
+		directories = [ "/app" ];
+
+		return this;
+
+	}
+
+	public void function setPluginManager(required any pluginManager) {
+
+		var plugins = pluginManager.getPlugins();
+		var i = "";
+
+		for (i = 1; i <= arrayLen(plugins); i++) {
+			arrayAppend(directories, plugins[i].mapping);
+		}
+
 	}
 
 	public void function postProcessBeanFactory(required any beanFactory) {

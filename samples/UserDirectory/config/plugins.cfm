@@ -1,1 +1,1 @@
-<cfset add("/coldmvc/plugins/coldvalidation") />
+<cfset add("/coldmvc/plugins/validation") />

@@ -3,28 +3,36 @@
  */
 component {
 
-	property configPaths;
+	property pluginManager;
 
-	public any function init() {
+	public ViewHelperManager function init() {
+
 		viewHelpers = {};
+
 		return this;
+
 	}
 
-	public void function setConfigPaths(required array configPaths) {
+	public void function setPluginManager(required any pluginManager) {
 
+		var plugins = pluginManager.getPlugins();
 		var i = "";
+		var path = "/config/viewhelpers.cfm";
 
-		arguments.configPaths = listToArray(arrayToList(arguments.configPaths));
+		includeConfigPath(path);
 
-		// loop over the array of config files and include them if they exist
-		for (i = 1; i <= arrayLen(configPaths); i++) {
+		for (i = 1; i <= arrayLen(plugins); i++) {
+			includeConfigPath(plugins[i].mapping & path);
+		}
 
-			var configPath = configPaths[i] & "config/viewhelpers.cfm";
+		includeConfigPath("/coldmvc" & path);
 
-			if (fileExists(expandPath(configPath))) {
-				include configPath;
-			}
+	}
 
+	public void function includeConfigPath(required string configPath) {
+
+		if (fileExists(expandPath(configPath))) {
+			include configPath;
 		}
 
 	}

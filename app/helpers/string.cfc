@@ -188,7 +188,9 @@ component {
 
 			string = capitalize(string);
 
-			string = left(string, 1) & lcase(right(string, len(string)-1));
+			if (len(string) > 1) {
+				string = left(string, 1) & lcase(right(string, len(string)-1));
+			}
 
 		}
 

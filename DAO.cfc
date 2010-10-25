@@ -789,6 +789,13 @@ component {
 				}
 
 			}
+			else if (isObject(value)) {
+
+				parameter.alias = parameter.alias & ".id";
+				parameter.value = value._get("id");
+
+			}
+
 			else if (isStruct(value)) {
 
 				if (structKeyExists(value, "operator")) {

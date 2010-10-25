@@ -1,0 +1,53 @@
+<!--
+1. configure the plugin inside /config/routes.cfm
+<cfset add("/coldmvc/plugins/tabs/") />
+
+2. define your tabs inside /config/tabs.xml
+(see below)
+
+3. render the tabs on your layouts
+<c:tabs />
+<c:tabs level="2" />
+<c:tabs group="players" />
+-->
+
+<!-- this is a sample config file -->
+<tabs>
+	<tab name="League" controller="league">
+		<tabs>
+			<tab name="Home" />
+			<tab name="Settings" controller="league" action="settings" />
+			<tab name="Members" />
+			<tab name="Rosters" />
+			<tab name="Schedule" />
+			<tab name="Google" url="http://www.google.com/" target="_blank" />
+		</tabs>
+	</tab>
+	<tab name="My Team" controller="team">
+		<tabs>
+			<tab name="Add Player" />
+			<tab name="Drop Players" action="dropPlayers" />
+			<tab name="Manage DL" />
+		</tabs>
+	</tab>
+	<tab name="Players" controller="player">
+		<tabs group="players">
+			<tab name="Free Agents" action="available" />
+			<tab name="Player Rater" controller="player" action="rater" />
+			<tab name="Daily Leaders" action="leaders" />
+			<tab name="Projections" />
+		</tabs>
+	</tab>
+	<tab name="Standings" controller="standing">
+		<tabs>
+			<tab name="Season Standings" action="season" />
+			<tab name="Final Standings" action="final" />
+		</tabs>
+	</tab>
+	<tab name="Scoreboard" controller="scoreboard">
+		<tabs>
+			<tab name="Results" action="index" url="/scoreboard" />
+			<tab name="Playoff Bracket" url="/playoffs" />
+		</tabs>
+	</tab>
+</tabs>

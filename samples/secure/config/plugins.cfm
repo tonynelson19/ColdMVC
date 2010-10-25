@@ -1,2 +1,2 @@
-<cfset add("/coldmvc/plugins/coldsecurity/") />
-<cfset add("/coldmvc/plugins/coldtabs/") />
+<cfset add("/coldmvc/plugins/security/") />
+<cfset add("/coldmvc/plugins/tabs/") />

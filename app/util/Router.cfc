@@ -3,30 +3,36 @@
  */
 component {
 
-	property configPaths;
 	property beanName;
 	property viewHelperManager;
 	property development;
 	property debugManager;
 	property beanFactory;
+	property pluginManager;
 
-	public any function init() {
+	public Router function init() {
+
 		routes = [];
 		namedRoutes = {};
 		models = {};
+
 		return this;
+
 	}
 
-	public void function setConfigPaths(required array configPaths) {
+	public void function setPluginManager(required any pluginManager) {
 
+		var plugins = pluginManager.getPlugins();
 		var i = "";
+		var path = "/config/routes.cfm";
 
-		arguments.configPaths = listToArray(arrayToList(arguments.configPaths));
+		includeConfigPath(path);
 
-		// loop over the array of config files and include them if they exist
-		for (i = 1; i <= arrayLen(configPaths); i++) {
-			includeConfigPath(configPaths[i] & "config/routes.cfm");
+		for (i = 1; i <= arrayLen(plugins); i++) {
+			includeConfigPath(plugins[i].mapping & path);
 		}
+
+		includeConfigPath("/coldmvc" & path);
 
 	}
 

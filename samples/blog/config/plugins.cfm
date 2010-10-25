@@ -1,6 +1,6 @@
 <!---
-<cfset add("/coldmvc/plugins/coldserializer/") />
-<cfset add("/coldmvc/plugins/coldtabs/") />
-<cfset add("/coldmvc/plugins/coldassets/") />
-<cfset add("/coldmvc/plugins/coldvalidation/") />
+<cfset add("/coldmvc/plugins/serializer/") />
+<cfset add("/coldmvc/plugins/tabs/") />
+<cfset add("/coldmvc/plugins/assets/") />
+<cfset add("/coldmvc/plugins/validation/") />
 --->

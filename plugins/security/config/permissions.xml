@@ -1,6 +1,0 @@
-<roles>
-	<role name="Admin">
-		<permission controller="widget" action="edit" access="view" />
-		<permission controller="*" action="*" access="edit" />
-	</role>
-</roles>

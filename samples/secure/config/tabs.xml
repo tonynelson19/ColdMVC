@@ -1,5 +1,0 @@
-<tabs>
-	<tab name="Home" controller="secure" action="index" />
-	<tab name="Widgets" controller="widget" action="list" event="index" requires="view" />
-	<tab name="Gadgets" controller="gadget" action="list" event="index" requires="view" />
-</tabs>

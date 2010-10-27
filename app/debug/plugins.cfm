@@ -1,5 +1,7 @@
 <cfsilent>
-<cfset plugins = application.coldmvc.pluginManager.getPlugins() />
+<cfset pluginManager = coldmvc.factory.get("pluginManager") />
+<cfset plugins = pluginManager.getPlugins() />
+<cfset missing = pluginManager.getMissingPlugins() />
 </cfsilent>
 
 <cfoutput>
@@ -22,4 +24,19 @@
 		</tbody>
 	</table>
 </div>
+<cfif not arrayIsEmpty(missing)>
+	<h2>Missing Plugins</h2>
+	<div class="coldmvc_debug_section">
+		<table>
+			<tbody>
+				<cfloop array="#missing#" index="plugin">
+					<tr>
+						<td class="coldmvc_label">#plugin#:</td>
+						<td class="coldmvc_field">&nbsp;</td>
+					</tr>
+				</cfloop>
+			</tbody>
+		</table>
+	</div>
+</cfif>
 </cfoutput>

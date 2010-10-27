@@ -1,5 +1,0 @@
-<mappings>
-	<mapping controller="*" action="(create|save|edit|update|delete)" requires="edit" />
-	<mapping controller="*" action="login" requires="none" />
-	<mapping controller="*" action="*" requires="view" />
-</mappings>

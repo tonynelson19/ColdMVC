@@ -9,7 +9,10 @@ component {
 
 		plugins = [];
 		mappings = {};
-		cache = {};
+		cache = {
+			plugins = {},
+			requires = {}
+		};
 
 		return this;
 
@@ -34,10 +37,24 @@ component {
 			plugin.name = listLast(sanitize(plugin.name), "/");
 		}
 
-		if (!structKeyExists(cache, plugin.name)) {
+		if (!structKeyExists(cache.plugins, plugin.name)) {
+
+			var original = plugin.path;
 
 			if (!directoryExists(plugin.path)) {
 				plugin.path = expandPath(plugin.path);
+			}
+
+			if (!directoryExists(plugin.path)) {
+				plugin.path = expandPath("/plugins/" & original);
+			}
+
+			if (!directoryExists(plugin.path)) {
+				plugin.path = expandPath("/coldmvc" & original);
+			}
+
+			if (!directoryExists(plugin.path)) {
+				throw("Invalid plugin path: #original#");
 			}
 
 			plugin.path = sanitize(plugin.path);
@@ -49,32 +66,66 @@ component {
 				plugin.mapping = "/plugins/#plugin.name#";
 			}
 
-			plugin.exists = directoryExists(plugin.path);
-
 			arrayAppend(plugins, plugin);
 
 			mappings[plugin.mapping] = plugin.path;
 
 			var config = "#plugin.path#/config/plugins.cfm";
-			var root = sanitize(expandPath("/coldmvc"));
-			var mappedPlugins = "/coldmvc" & replaceNoCase(config, root, "");
+			var rootPath = sanitize(expandPath("/plugins"));
+
+			var mappedPlugins = "/plugins" & replaceNoCase(config, rootPath, "");
 
 			if (fileExists(config)) {
 				include mappedPlugins;
 			}
 
-			cache[plugin.name] = plugin.path;
+			cache.plugins[plugin.name] = plugin.path;
 
 		}
 
 	}
 
+	public void function requires(required string name) {
+
+		cache.requires[arguments.name] = true;
+
+	}
+
+	public array function getRequiredPlugins() {
+
+		return listToArray(listSort(structKeyList(cache.requires), "textnocase"));
+
+	}
+
+	public array function getMissingPlugins() {
+
+		var missing = [];
+		var required = getRequiredPlugins();
+		var i = "";
+
+		for (i = 1; i <= arrayLen(required); i++) {
+
+			if (!structKeyExists(cache.plugins, required[i])) {
+				arrayAppend(missing, required[i]);
+			}
+
+		}
+
+		return missing;
+
+
+	}
+
 	public array function getPlugins() {
+
 		return plugins;
+
 	}
 
 	public struct function getMappings() {
+
 		return mappings;
+
 	}
 
 	public string function getPluginList() {

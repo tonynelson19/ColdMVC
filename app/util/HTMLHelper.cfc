@@ -95,13 +95,44 @@
 		<cfset var i = "" />
 
 		<cfif not structKeyExists(args, "options")>
-			<cfif coldmvc.params.has(args.originalName)>
-				<cfset args.options = coldmvc.params.get(args.originalName) />
-			<cfelseif coldmvc.params.has(coldmvc.string.pluralize(args.originalName))>
-				<cfset args.options = coldmvc.params.get(coldmvc.string.pluralize(args.originalName)) />
+
+			<cfif structKeyExists(args, "optionValues")>
+
+				<cfif not structKeyExists(args, "optionKeys")>
+					<cfset args.optionKeys = args.optionValues />
+				</cfif>
+
+				<cfif not structKeyExists(args, "optionTitles")>
+					<cfset args.optionTitles = args.optionValues />
+				</cfif>
+
+				<cfset args.options = [] />
+
+				<cfloop from="1" to="#listLen(args.optionValues)#" index="i">
+
+					<cfset var option = {
+						id = listGetAt(args.optionKeys, i),
+						name = listGetAt(args.optionValues, i),
+						title = listGetAt(args.optionTitles, i)
+					} />
+
+					<cfset arrayAppend(args.options, option) />
+
+				</cfloop>
+
+
 			<cfelse>
-				<cfset args.options = "" />
+
+				<cfif coldmvc.params.has(args.originalName)>
+					<cfset args.options = coldmvc.params.get(args.originalName) />
+				<cfelseif coldmvc.params.has(coldmvc.string.pluralize(args.originalName))>
+					<cfset args.options = coldmvc.params.get(coldmvc.string.pluralize(args.originalName)) />
+				<cfelse>
+					<cfset args.options = "" />
+				</cfif>
+
 			</cfif>
+
 		</cfif>
 
 		<cfif not structKeyExists(args, "optionKey")>

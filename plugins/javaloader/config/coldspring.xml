@@ -1,5 +1,0 @@
-<beans>
-	
-	<bean id="javaLoader" class="coldmvc.plugins.javaloader.JavaLoader" />
-	
-</beans>

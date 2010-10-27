@@ -1,5 +1,0 @@
-<beans>
-	
-	<bean id="eventMapper" class="coldmvc.plugins.mapper.app.model.EventMapper" />
-	
-</beans>

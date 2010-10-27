@@ -1,3 +1,0 @@
-<mappings>
-	<mapping controller="(gadget|widget|thingy)" action="*" event="list" />
-</mappings>

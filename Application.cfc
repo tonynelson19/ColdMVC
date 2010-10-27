@@ -29,12 +29,15 @@ component {
 	}
 
 	public any function onSessionStart() {
+
 		dispatchEvent("sessionStart");
 
 	}
 
 	public any function onSessionEnd() {
+
 		dispatchEvent("sessionEnd");
+
 	}
 
 	public any function onRequestStart() {
@@ -63,15 +66,19 @@ component {
 	}
 
 	private void function reload() {
+
 		ormReload();
 		onApplicationStart();
 		dispatchEvent("postReload");
 		coldmvc.debug.set("reloaded", true);
+
 	}
 
 	public any function onRequestEnd() {
+
 		dispatchEvent("requestEnd");
 		dispatchEvent("postRequest");
+
 	}
 
 	public any function createPluginManager() {
@@ -190,15 +197,21 @@ component {
 	}
 
 	private void function setBeanFactory(required any beanFactory) {
+
 		application.coldmvc.beanFactory = arguments.beanFactory;
+
 	}
 
 	private any function getBeanFactory() {
+
 		return application.coldmvc.beanFactory;
+
 	}
 
 	private void function dispatchEvent(required string event) {
+
 		getBeanFactory().getBean("eventDispatcher").dispatchEvent(event);
+
 	}
 
 	private void function setupApplication() {
@@ -207,7 +220,7 @@ component {
 		this.serverSideFormValidation = false;
 
 		var defaults = {
-			rootPath = replace(getDirectoryFromPath(expandPath("../")), "\", "/", "all"),
+			rootPath = sanitizeFilePath(getDirectoryFromPath(expandPath("../"))),
 			ormEnabled = true,
 			ormSettings = {},
 			sessionTimeout = createTimeSpan(0, 2, 0, 0),
@@ -232,6 +245,13 @@ component {
 		defaults["/generated"] = this.rootPath & ".generated/";
 		defaults["/views"] = this.rootPath & ".generated/views/";
 		defaults["/layouts"] = this.rootPath & ".generated/layouts/";
+
+		if (directoryExists(expandPath("/plugins"))) {
+			defaults["/plugins"] = sanitizeFilePath(expandPath("/plugins"));
+		}
+		else {
+			defaults["/plugins"] = this.rootPath & "plugins/";
+		}
 
 		structAppend(this.mappings, defaults, false);
 
@@ -319,6 +339,7 @@ component {
 			"debug" = "true",
 			"development" = "false",
 			"helperPrefix" = "$",
+			"https" = "auto",
 			"key" = "coldmvc",
 			"layout" = "index",
 			"logEvents" = "false",
@@ -382,6 +403,12 @@ component {
 			}
 
 		}
+
+	}
+
+	private string function sanitizeFilePath(required string filePath) {
+
+		return replace(arguments.filePath, "\", "/", "all");
 
 	}
 

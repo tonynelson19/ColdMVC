@@ -134,11 +134,23 @@ component {
 		// check for ssl
 		var path = coldmvc.cgi.get("server_name") & coldmvc.config.get("urlPath");
 
-		if (coldmvc.cgi.get("https") == "off" || coldmvc.cgi.get("https") == "") {
-			var address = "http://#path#";
+		var https = coldmvc.config.get("https");
+
+		if (https == "auto") {
+
+			if (coldmvc.cgi.get("https") == "off" || coldmvc.cgi.get("https") == "") {
+				var address = "http://#path#";
+			}
+			else {
+				var address = "https://#path#";
+			}
+
+		}
+		else if (https == "true") {
+			var address = "https://#path#";
 		}
 		else {
-			var address = "https://#path#";
+			var address = "http://#path#";
 		}
 
 		// if sesURLs are enabled

@@ -1,7 +1,0 @@
-<packages>
-	<package>
-		<script name="jquery.js" url="http://ajax.googleapis.com/ajax/libs/jquery/1.4.3/jquery.min.js" />
-		<script name="coldmvc.js" path="/coldmvc/public/js/coldmvc.js" />
-		<script name="coldmvc.validation.js" path="/plugins/validation/public/js/coldmvc.validation.js" />
-	</package>
-</packages>

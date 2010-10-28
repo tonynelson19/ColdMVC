@@ -12,7 +12,7 @@
 			<cfif arguments.label neq "">
 				<div class="header">#arguments.label#</div>
 			</cfif>
-			<table width="100%" cellspacing="0" class="#arguments.class#" />
+			<table width="100%" cellspacing="0" class="#arguments.class#">
 		</cfsavecontent>
 		</cfoutput>
 

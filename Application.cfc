@@ -239,6 +239,7 @@ component {
 
 		defaults = {};
 		defaults["/#this.directory#"] = this.rootPath;
+		defaults["/root"] = this.rootPath;
 		defaults["/config"] = this.rootPath & "config/";
 		defaults["/public"] = this.rootPath & "public/";
 		defaults["/app"] = this.rootPath & "app/";

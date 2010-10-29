@@ -160,15 +160,37 @@ component {
 					}
 
 					if (structKeyExists(entityMetaData.properties, relationship.property)) {
+
 						entityMetaData.properties[relationship.property].relationship = relationship;
+
 					}
 					else {
+
 						for (j in entityMetaData.properties) {
-							if (entityMetaData.properties[j].type == relationship.name) {
-								entityMetaData.properties[j].relationship = relationship;
-								break;
+
+							var property = entityMetaData.properties[j];
+
+							// do this in case you're joining on the same entity multiple times with different properties
+							if (property.type == relationship.name) {
+
+								var name = coldmvc.string.pascalize(property.name);
+
+								if (!structKeyExists(entityMetaData.relationships, name)) {
+
+									relationship.name = name;
+									relationship.param = property.name & "ID";
+									relationship.property = property.name;
+
+									property.relationship = relationship;
+
+									break;
+
+								}
+
 							}
+
 						}
+
 					}
 
 					entityMetaData.relationships[relationship.name] = relationship;

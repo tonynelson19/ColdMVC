@@ -573,6 +573,7 @@ component {
 
 		if (structKeyExists(args, 1)) {
 			model._set(method, args[1]);
+			return model;
 		}
 		else {
 			return model._get(method);

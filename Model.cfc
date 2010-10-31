@@ -117,7 +117,7 @@ component {
 
 	}
 
-	public array function getAll(required string ids, struct options) {
+	public array function getAll(required any ids, struct options) {
 
 		if (isNull(options)) {
 			arguments.options = {};

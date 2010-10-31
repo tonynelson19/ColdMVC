@@ -16,23 +16,26 @@ component {
 		conjunctions = ["and", "or"];
 
 		operators = {};
-		operators["equal"] = { operator="=", value="${value}" };
-		operators["notEqual"] = { operator="!=", value="${value}" };
-		operators["like"] = { operator="like", value="%${value}%" };
-		operators["startsWith"] = { operator="like", value="${value}%" };
-		operators["endsWith"] = { operator="like", value="%${value}" };
-		operators["isNull"] = { operator="is null", value="" };
-		operators["isNotNull"] = { operator="is not null", value="" };
-		operators["greaterThan"] = { operator=">", value="${value}" };
-		operators["greaterThanEquals"] = { operator=">=", value="${value}" };
-		operators["lessThan"] = { operator="<", value="${value}" };
-		operators["lessThanEquals"] = { operator="<=", value="${value}" };
-		operators["before"] = { operator="<", value="${value}" };
-		operators["after"] = { operator=">", value="${value}" };
-		operators["onOrBefore"] = { operator="<=", value="${value}" };
-		operators["onOrAfter"] = { operator=">=", value="${value}" };
-		operators["in"] = { operator="in", value="${value}" };
-		operators["notIn"] = { operator="not in", value="${value}" };
+		operators["equal"] = { operator="=", value="${value}", ignorecase="true" };
+		operators["notEqual"] = { operator="!=", value="${value}", ignorecase="true" };
+		operators["like"] = { operator="like", value="%${value}%", ignorecase="true" };
+		operators["notLike"] = { operator="not like", value="%${value}%", ignorecase="true" };
+		operators["in"] = { operator="in", value="${value}", ignorecase="true" };
+		operators["notIn"] = { operator="not in", value="${value}", ignorecase="true" };
+		operators["startsWith"] = { operator="like", value="${value}%", ignorecase="true" };
+		operators["notStartsWith"] = { operator="not like", value="${value}%", ignorecase="true" };
+		operators["endsWith"] = { operator="like", value="%${value}", ignorecase="true" };
+		operators["notEndsWith"] = { operator="not like", value="%${value}", ignorecase="true" };
+		operators["isNull"] = { operator="is null", value="", ignorecase="false" };
+		operators["isNotNull"] = { operator="is not null", value="", ignorecase="false" };
+		operators["greaterThan"] = { operator=">", value="${value}", ignorecase="false" };
+		operators["greaterThanEquals"] = { operator=">=", value="${value}", ignorecase="false" };
+		operators["lessThan"] = { operator="<", value="${value}", ignorecase="false" };
+		operators["lessThanEquals"] = { operator="<=", value="${value}", ignorecase="false" };
+		operators["before"] = { operator="<", value="${value}", ignorecase="false" };
+		operators["after"] = { operator=">", value="${value}", ignorecase="false" };
+		operators["onOrBefore"] = { operator="<=", value="${value}", ignorecase="false" };
+		operators["onOrAfter"] = { operator=">=", value="${value}", ignorecase="false" };
 
 		operatorArray = listToArray(coldmvc.list.sortByLen(structKeyList(operators)));
 
@@ -163,10 +166,14 @@ component {
 			arguments.parameters = [];
 		}
 
-		arrayAppend(query.hql, parameter.alias);
-		arrayAppend(query.hql, parameter.operator.operator);
-
 		if (parameter.operator.value != "") {
+
+			if (parameter.operator.ignorecase) {
+				var alias = "lower(#parameter.alias#)";
+			}
+			else {
+				var alias = parameter.alias;
+			}
 
 			if (structKeyExists(parameter, "value")) {
 				var value = parameter.value;
@@ -175,25 +182,68 @@ component {
 				var value = parameters[1];
 			}
 
+			var values = [];
 			var type = coldmvc.model.javatype(parameter.model, parameter.property);
 
 			if (parameter.operator.operator == "in" || parameter.operator.operator == "not in") {
 
+				arrayAppend(query.hql, alias);
+				arrayAppend(query.hql, parameter.operator.operator);
 				arrayAppend(query.hql, "(:#parameter.property#)");
 				query.parameters[parameter.property] = toJavaArray(type, value);
 
 			}
 			else {
 
-				arrayAppend(query.hql, ":#parameter.property#");
+				if (!isArray(value)) {
+					value = [ value ];
+				}
 
-				// if the value is just the value, make sure it's the proper type
-				if (parameter.operator.value == "${value}") {
-					query.parameters[parameter.property] = toJavaType(type, value);
+				var i = "";
+
+				for (i = 1; i <= arrayLen(value); i++) {
+
+					// if the value is just the value, make sure it's the proper type
+					if (parameter.operator.value == "${value}") {
+						arrayAppend(values, toJavaType(type, value[i]));
+					}
+					else {
+						arrayAppend(values, replaceNoCase(parameter.operator.value, "${value}", toJavaType(type, value[i])));
+					}
+
+				}
+
+				if (arrayLen(values) == 1) {
+
+					arrayAppend(query.hql, alias);
+					arrayAppend(query.hql, parameter.operator.operator);
+					arrayAppend(query.hql, ":#parameter.property#");
+					query.parameters[parameter.property] = values[1];
+
 				}
 				else {
-					query.parameters[parameter.property] = replaceNoCase(parameter.operator.value, "${value}", toJavaType(type, value));
+
+					var hql = [];
+
+					for (i = 1; i <= arrayLen(values); i++) {
+
+						var value = values[i];
+						var property = parameter.property & i;
+						query.parameters[property] = value;
+						arrayAppend(hql, alias & " " & parameter.operator.operator & " :" & property);
+
+					}
+
+					// not like, not equal
+					if (left(parameter.operator.operator, 4) == "not ") {
+						arrayAppend(query.hql, "(" & arrayToList(hql, " and ") & ")");
+					}
+					else {
+						arrayAppend(query.hql, "(" & arrayToList(hql, " or ") & ")");
+					}
+
 				}
+
 
 			}
 
@@ -502,7 +552,7 @@ component {
 
 	}
 
-	public array function getAll(required any model, required string ids, required struct options) {
+	public array function getAll(required any model, required any ids, required struct options) {
 
 		var name = coldmvc.model.name(model);
 		var alias = coldmvc.model.alias(model);
@@ -515,7 +565,7 @@ component {
 
 		arrayAppend(query, "select #alias# from #name# #alias#");
 		arrayAppend(query, joins);
-		arrayAppend(query, "where #alias#.#pk# in (:id)");
+		arrayAppend(query, "where lower(#alias#.#pk#) in (:id)");
 
 		query = arrayToList(query, " ");
 
@@ -549,7 +599,7 @@ component {
 
 		id = toJavaType(type, id);
 
-		return execute("select #alias# from #name# #alias# where #pk# = :id", {"id"=id}, true, {});
+		return execute("select #alias# from #name# #alias# where lower(#alias#.#pk#) = :id", {"id"=id}, true, {});
 
 	}
 
@@ -1030,6 +1080,10 @@ component {
 	}
 
 	private any function toJavaType(required string type, required any value) {
+
+		if (isSimpleValue(value)) {
+			value = lcase(value);
+		}
 
 		switch(type) {
 

@@ -14,7 +14,7 @@
 					<cfif not structIsEmpty(query.parameters)>
 						<h4>Parameters</h4>
 						<ul>
-							<cfloop collection="#query.parameters#" item="parameter">
+							<cfloop list="#listSort(structKeyList(query.parameters), 'textnocase')#" index="parameter">
 								<cfset value = query.parameters[parameter] />
 								<li><span>#parameter#:</span> <cfif isSimpleValue(value)>#value#<cfelse>#serializeJSON(value)#</cfif></li>
 							</cfloop>

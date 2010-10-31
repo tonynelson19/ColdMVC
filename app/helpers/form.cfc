@@ -5,15 +5,32 @@
 	<cffunction name="button" access="public" output="false" returntype="string">
 
 		<cfset arguments.tag = "button" />
-		
+
 		<cfset append(arguments, "class", "button") />
+
+		<cfif structKeyExists(arguments, "parameters")
+			or structKeyExists(arguments, "controller")
+			or structKeyExists(arguments, "action")
+			or structKeyExists(arguments, "querystring")>
+
+			<cfset arguments.url = getURL(arguments) />
+
+		<cfelse>
+
+			<cfset arguments.url = "" />
+
+		</cfif>
+
+		<cfif arguments.url neq "">
+			<cfset arguments.onclick = "window.location='#htmlEditFormat(arguments.url)#';" />
+		</cfif>
+
 		<cfset configure(arguments) />
-		<cfset arguments.url = getURL(arguments) />
 
 		<cfoutput>
 		<cfsavecontent variable="arguments.field">
 			<span class="button">
-				<input type="button" #arguments.common# value="#htmlEditFormat(arguments.label)#" onclick="window.location='#htmlEditFormat(arguments.url)#';" />
+				<input type="button" #arguments.common# value="#htmlEditFormat(arguments.label)#" />
 			</span>
 		</cfsavecontent>
 		</cfoutput>
@@ -29,13 +46,13 @@
 		<cfreturn radioOrCheckbox(arguments, "checkbox") />
 
 	</cffunction>
-	
+
 	<!------>
 
 	<cffunction name="date" access="public" output="false" returntype="string">
 
 		<cfset arguments.tag = "date" />
-		
+
 		<cfset append(arguments, "class", "date") />
 		<cfset configure(arguments) />
 
@@ -326,11 +343,11 @@
 	</cffunction>
 
 	<!------>
-	
+
 	<cffunction name="url" access="public" output="false" returntype="string">
 
 		<cfset arguments.tag = "url" />
-		
+
 		<cfset append(arguments, "class", "url") />
 		<cfset configure(arguments) />
 

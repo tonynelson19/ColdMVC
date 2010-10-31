@@ -172,6 +172,8 @@
 		</property>
 	</bean>
 	
+	<bean id="routeSerializer" class="coldmvc.app.util.RouteSerializer" />
+	
 	<bean id="router" class="coldmvc.app.util.Router">
 		<property name="development">
 			<value>${development}</value>

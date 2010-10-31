@@ -7,22 +7,32 @@ component {
 	property beanFactory;
 	property defaultLayout;
 	property renderer;
+	property routeSerializer;
 
 	public void function dispatchRoute() {
 
 		var controller = coldmvc.event.controller();
 		var action = coldmvc.event.action();
+		var ajax = coldmvc.request.isAjax();
 
-		// find the layout for the controller and action
-		var layout = coldmvc.controller.layout(coldmvc.event.controller(), coldmvc.event.action());
-
-		// it couldn't determine the layout, so set it to the default layout
-		if (layout == "") {
-			layout = defaultLayout;
+		if (coldmvc.params.has("format")) {
+			coldmvc.event.format(coldmvc.params.get("format"));
 		}
 
-		// set the layout into the event
-		coldmvc.event.layout(layout);
+		if (!ajax) {
+
+			// find the layout for the controller and action
+			var layout = coldmvc.controller.layout(coldmvc.event.controller(), coldmvc.event.action());
+
+			// it couldn't determine the layout, so set it to the default layout
+			if (layout == "") {
+				layout = defaultLayout;
+			}
+
+			// set the layout into the event
+			coldmvc.event.layout(layout);
+
+		}
 
 		var resetLayout = false;
 
@@ -51,7 +61,7 @@ component {
 		controller = coldmvc.controller.name(coldmvc.event.controller());
 
 		// if something was missing, reset the layout back to the one specified for the controller/action
-		if (resetLayout) {
+		if (resetLayout && !ajax) {
 
 			// find the layout for the controller and action
 			layout = coldmvc.controller.layout(coldmvc.event.controller(), coldmvc.event.action());
@@ -69,27 +79,74 @@ component {
 		// call the action
 		callMethods(controller, "Action");
 
-		var layout = coldmvc.event.layout();
+		if (ajax) {
 
-		// if a layout was specified, call it
-		if (layout != "") {
-			callMethods("layoutController", "Layout");
+			var layout = "";
+
+		}
+		else {
+
+			var layout = coldmvc.event.layout();
+
+			// if a layout was specified, call it
+			if (layout != "") {
+				callMethods("layoutController", "Layout");
+			}
+
 		}
 
-		// get the view from the event
-		var view = coldmvc.event.view();
 		var output = "";
 
-		// if the layout exists, render it
-		if (renderer.layoutExists(layout)) {
-			output = renderer.renderLayout(layout);
+		if (ajax) {
+
+			output = handleAjaxRequest();
+
 		}
-		// the layout didn't exists, so try to render the view
 		else {
-			output = renderer.renderView(view);
+
+			// get the view from the event
+			var view = coldmvc.event.view();
+
+			// if the layout exists, render it
+			if (layout != "" && renderer.layoutExists(layout)) {
+				output = renderer.renderLayout(layout);
+			}
+			// the layout didn't exists, so try to render the view
+			else {
+				output = renderer.renderView(view);
+			}
+
 		}
 
 		writeOutput(output);
+
+	}
+
+	private string function handleAjaxRequest() {
+
+		var format = coldmvc.event.format();
+		var output = "";
+
+		switch(format) {
+
+			case "html": {
+				output = renderer.renderView(coldmvc.event.view());
+				break;
+			}
+
+			case "js": {
+				output = routeSerializer.toJSON(params);
+				break;
+			}
+
+			case "xml": {
+				output = routeSerializer.toXML(params);
+				break;
+			}
+
+		}
+
+		return output;
 
 	}
 

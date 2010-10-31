@@ -8,6 +8,7 @@ component {
 	property defaultController;
 
 	public any function init() {
+
 		variables.aliases = {};
 		var controllers = coldmvc.controller.getAll();
 		var key = "";
@@ -15,9 +16,11 @@ component {
 		for (key in controllers) {
 			aliases["/#key#/#controllers[key].action#"] = "/#key#";
 		}
+
 	}
 
 	public void function setDefaultController(required string defaultController) {
+
 		variables.defaultController = arguments.defaultController;
 
 		var action = coldmvc.controller.action(defaultController);
@@ -62,9 +65,18 @@ component {
 			var action = coldmvc.controller.action(controller);
 		}
 
+		if (structKeyExists(parameters, "format")) {
+			var format = parameters.format;
+			structDelete(parameters, "format");
+		}
+		else {
+			var format = "html";
+		}
+
 		// set the values into the request
 		coldmvc.event.controller(controller);
 		coldmvc.event.action(action);
+		coldmvc.event.format(format);
 		coldmvc.event.view(coldmvc.controller.view(controller, action));
 		coldmvc.event.path(path);
 

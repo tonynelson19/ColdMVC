@@ -29,7 +29,7 @@ component {
 
 	}
 
-	public void function includeConfigPath(required string configPath) {
+	private void function includeConfigPath(required string configPath) {
 
 		if (fileExists(expandPath(configPath))) {
 			include configPath;
@@ -59,7 +59,9 @@ component {
 	}
 
 	public struct function getViewHelpers() {
+
 		return viewHelpers;
+
 	}
 
 	public any function callViewHelper() {

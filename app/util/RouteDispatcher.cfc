@@ -139,6 +139,11 @@ component {
 				break;
 			}
 
+			case "json": {
+				output = routeSerializer.toJSON(params);
+				break;
+			}
+
 			case "xml": {
 				output = routeSerializer.toXML(params);
 				break;

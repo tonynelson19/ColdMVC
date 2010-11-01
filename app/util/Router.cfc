@@ -140,7 +140,7 @@ component {
 		}
 
 		// find all the components in the route (:component)
-		route.components = reMatch(":.[^-?(/|.)]*", route.pattern);
+		route.components = reMatch(":.([\w*-]*)*", route.pattern);
 
 		// remove the : from the start of each parameter
         route.parameters = [];
@@ -167,7 +167,7 @@ component {
 			}
 			// look for any word characters or dashes
 			else {
-				route.expression = replace(route.expression, route.components[i], "([\w*-]*?[^\.])");
+				route.expression = replace(route.expression, route.components[i], "([\w*-]*)");
 			}
 
 		}
@@ -221,8 +221,6 @@ component {
 		if (right(path, 1) == "/") {
 			path = left(path, len(path) - 1);
 		}
-
-		var debug = structKeyExists(arguments, "debug");
 
 		// loop over all the routes
 		for (i = 1; i <= arrayLen(routes); i++) {

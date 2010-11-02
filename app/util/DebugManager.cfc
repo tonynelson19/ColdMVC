@@ -138,6 +138,10 @@ component {
 		return coldmvc.event.layout();
 	}
 
+	public string function getFormat() {
+		return coldmvc.event.format();
+	}
+
 	public array function getQueries() {
 		return coldmvc.debug.get("queries", []);
 	}

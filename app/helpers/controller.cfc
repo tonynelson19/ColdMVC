@@ -64,12 +64,12 @@ component {
 
 	public string function view(string controller, string action) {
 
-		if (isNull(controller)) {
-			controller = coldmvc.event.get("controller");
+		if (!structKeyExists(arguments, "controller")) {
+			controller = coldmvc.event.controller();
 		}
 
-		if (isNull(action)) {
-			action = coldmvc.event.get("action");
+		if (!structKeyExists(arguments, "action")) {
+			action = coldmvc.event.action();
 		}
 
 		var controllers = getAll();
@@ -97,6 +97,26 @@ component {
 
 	}
 
+	public string function respondsTo(string controller, string action, string format) {
+
+		if (!structKeyExists(arguments, "controller")) {
+			controller = coldmvc.event.controller();
+		}
+
+		if (!structKeyExists(arguments, "action")) {
+			action = coldmvc.event.action();
+		}
+
+		if (!structKeyExists(arguments, "format")) {
+			format = coldmvc.event.format();
+		}
+
+		var allowed = formats(controller, action);
+
+		return listFindNoCase(allowed, format);
+
+	}
+
 	private string function buildView(required string controller, required string action) {
 
 		return controller & "/" & action & ".cfm";
@@ -119,7 +139,7 @@ component {
 
 	}
 
-	public string function layout(string controller, string method) {
+	public string function layout(required string controller, required string method) {
 
 		var controllers = getAll();
 
@@ -135,6 +155,33 @@ component {
 		}
 
 		return controller;
+
+	}
+
+	public string function formats(string controller, string action) {
+
+		if (!structKeyExists(arguments, "controller")) {
+			controller = coldmvc.event.controller();
+		}
+
+		if (!structKeyExists(arguments, "action")) {
+			action = coldmvc.event.action();
+		}
+
+		var controllers = getAll();
+
+		if (structKeyExists(controllers, controller)) {
+
+			if (structKeyExists(controllers[controller].methods, action)) {
+				return controllers[controller].methods[action].formats;
+			}
+			else {
+				return controllers[controller].formats;
+			}
+
+		}
+
+		return "html";
 
 	}
 
@@ -189,38 +236,48 @@ component {
 
 				var controller = {};
 
-				controller.class = beanDefinitions[beanDef];
-				controller.name = beanDef;
+				controller["class"] = beanDefinitions[beanDef];
+				controller["name"] = beanDef;
 
 				var metaData = coldmvc.factory.get("metaDataFlattener").flattenMetaData(controller.class);
 
 				if (structKeyExists(metaData, "controller")) {
-					controller.key = metaData.controller;
+					controller["key"] = metaData.controller;
 				}
 				else {
-					controller.key = left(beanDef, len(beanDef)-length);
-					controller.key = controller.key;
-					controller.key = coldmvc.string.underscore(controller.key);
+					controller["key"] = left(beanDef, len(beanDef)-length);
+					controller["key"] = controller.key;
+					controller["key"] = coldmvc.string.underscore(controller.key);
 				}
 
 				// check for a default action for the controller
 				if (structKeyExists(metaData, "action")) {
-					controller.action = metaData.action;
+					controller["action"] = metaData.action;
 				}
 				else {
-					controller.action = coldmvc.config.get("action");
+					controller["action"] = coldmvc.config.get("action");
 				}
 
 				// get the directory where the views should live
 				if (structKeyExists(metaData, "directory")) {
-					controller.directory = metaData.directory;
+					controller["directory"] = metaData.directory;
 				}
 				else {
-					controller.directory = controller.key;
+					controller["directory"] = controller.key;
 				}
 
-				controller.layout = getLayout(controller.key, metaData);
-				controller.methods = getMethods(controller.directory, controller.layout, metaData);
+				controller["layout"] = getLayout(controller.key, metaData);
+
+				if (structKeyExists(metaData, "formats")) {
+					controller["formats"] = metaData.formats;
+				}
+				else {
+					controller["formats"] = "html";
+				}
+
+				controller["formats"] = replace(controller.formats, " ", "", "all");
+
+				controller["methods"] = getMethods(controller.directory, controller.layout, controller.formats, metaData);
 				controllers[controller.key] = controller;
 
 			}
@@ -231,7 +288,7 @@ component {
 
 	}
 
-	private struct function getMethods(required string directory, required string layout, required struct metaData) {
+	private struct function getMethods(required string directory, required string layout, required string formats, required struct metaData) {
 
 		var methods = {};
 		var i = "";
@@ -247,6 +304,12 @@ component {
 			if (!structKeyExists(method, "layout")) {
 				method["layout"] = layout;
 			}
+
+			if (!structKeyExists(method, "formats")) {
+				method["formats"] = formats;
+			}
+
+			method["formats"] = replace(method.formats, " ", "", "all");
 
 		}
 

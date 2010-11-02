@@ -54,6 +54,10 @@
 				<td class="coldmvc_field">#debugManager.getLayout()#</td>
 			</tr>
 			<tr>
+				<td class="coldmvc_label">Format:</td>
+				<td class="coldmvc_field">#debugManager.getFormat()#</td>
+			</tr>
+			<tr>
 				<td class="coldmvc_label">Route:</td>
 				<td class="coldmvc_field">#debugManager.getRoute()#</td>
 			</tr>

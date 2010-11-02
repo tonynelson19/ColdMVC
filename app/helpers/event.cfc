@@ -21,7 +21,32 @@ component {
 	}
 
 	public any function format() {
-		return getOrSet("format", arguments);
+
+		if (structIsEmpty(arguments)) {
+
+			var value = get("format");
+
+			if (value == "") {
+				value = "html";
+			}
+
+			return value;
+
+		}
+		else {
+
+			var value = arguments[1];
+
+			if (value == "js") {
+				value = "json";
+			}
+
+			set("format", value);
+
+			return get("format");
+
+		}
+
 	}
 
 	public any function path() {

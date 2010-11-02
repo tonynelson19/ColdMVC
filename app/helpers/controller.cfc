@@ -139,49 +139,52 @@ component {
 
 	}
 
-	public string function layout(required string controller, required string method) {
+	public string function ajaxLayout(string controller, string action) {
 
-		var controllers = getAll();
+		return getMethodAnnotation(arguments, "ajaxLayout", "");
 
-		if (structKeyExists(controllers, controller)) {
+	}
 
-			if (structKeyExists(controllers[controller].methods, method)) {
-				return controllers[controller].methods[method].layout;
-			}
-			else {
-				return controllers[controller].layout;
-			}
+	public string function layout(string controller, string action) {
 
+		if (!structKeyExists(arguments, "controller")) {
+			arguments.controller = coldmvc.event.controller();
 		}
 
-		return controller;
+		return getMethodAnnotation(arguments, "layout", arguments.controller);
 
 	}
 
 	public string function formats(string controller, string action) {
 
-		if (!structKeyExists(arguments, "controller")) {
-			controller = coldmvc.event.controller();
+		return getMethodAnnotation(arguments, "formats", "html");
+
+	}
+
+	private string function getMethodAnnotation(required struct args, required string key, required string def) {
+
+		if (!structKeyExists(args, "controller")) {
+			args.controller = coldmvc.event.controller();
 		}
 
-		if (!structKeyExists(arguments, "action")) {
-			action = coldmvc.event.action();
+		if (!structKeyExists(args, "action")) {
+			args.action = coldmvc.event.action();
 		}
 
 		var controllers = getAll();
 
-		if (structKeyExists(controllers, controller)) {
+		if (structKeyExists(controllers, args.controller)) {
 
-			if (structKeyExists(controllers[controller].methods, action)) {
-				return controllers[controller].methods[action].formats;
+			if (structKeyExists(controllers[args.controller].methods, args.action)) {
+				return controllers[args.controller].methods[args.action][key];
 			}
 			else {
-				return controllers[controller].formats;
+				return controllers[args.controller][key];
 			}
 
 		}
 
-		return "html";
+		return def;
 
 	}
 
@@ -268,6 +271,13 @@ component {
 
 				controller["layout"] = getLayout(controller.key, metaData);
 
+				if (structKeyExists(metaData, "ajaxLayout")) {
+					controller["ajaxLayout"] = metaData.ajaxLayout;
+				}
+				else {
+					controller["ajaxLayout"] = "";
+				}
+
 				if (structKeyExists(metaData, "formats")) {
 					controller["formats"] = metaData.formats;
 				}
@@ -277,7 +287,7 @@ component {
 
 				controller["formats"] = replace(controller.formats, " ", "", "all");
 
-				controller["methods"] = getMethods(controller.directory, controller.layout, controller.formats, metaData);
+				controller["methods"] = getMethods(controller.directory, controller.layout, controller.ajaxLayout, controller.formats, metaData);
 				controllers[controller.key] = controller;
 
 			}
@@ -288,7 +298,7 @@ component {
 
 	}
 
-	private struct function getMethods(required string directory, required string layout, required string formats, required struct metaData) {
+	private struct function getMethods(required string directory, required string layout, required string ajaxLayout, required string formats, required struct metaData) {
 
 		var methods = {};
 		var i = "";
@@ -303,6 +313,10 @@ component {
 
 			if (!structKeyExists(method, "layout")) {
 				method["layout"] = layout;
+			}
+
+			if (!structKeyExists(method, "ajaxLayout")) {
+				method["ajaxLayout"] = ajaxLayout;
 			}
 
 			if (!structKeyExists(method, "formats")) {

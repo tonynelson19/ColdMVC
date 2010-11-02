@@ -19,7 +19,7 @@ component {
 		}
 
 		// find the layout for the controller and action
-		var layout = coldmvc.controller.layout(coldmvc.event.controller(), coldmvc.event.action());
+		var layout = coldmvc.controller.layout();
 
 		// it couldn't determine the layout, so set it to the default layout
 		if (layout == "") {
@@ -73,6 +73,11 @@ component {
 
 		// call the action
 		callMethods(controller, "Action");
+
+		// if it's an ajax request, reset the layout
+		if (coldmvc.request.isAjax()) {
+			coldmvc.event.layout(coldmvc.controller.ajaxLayout());
+		}
 
 		var layout = coldmvc.event.layout();
 		var format = coldmvc.event.format();

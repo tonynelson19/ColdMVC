@@ -278,7 +278,6 @@ component {
 	public array function toArray(required string string, string delimeter=",") {
 
 		var array = listToArray(string, delimeter);
-
 		var i = "";
 
 		for (i = 1; i <= arrayLen(array); i++) {

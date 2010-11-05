@@ -263,6 +263,18 @@ component {
 
 	}
 
+	public boolean function startsWith(required string string, required string substring) {
+
+		return left(string, len(substring)) == substring;
+
+	}
+
+	public boolean function endsWith(required string string, required string substring) {
+
+		return right(string, len(substring)) == substring;
+
+	}
+
 	public array function toArray(required string string, string delimeter=",") {
 
 		var array = listToArray(string, delimeter);

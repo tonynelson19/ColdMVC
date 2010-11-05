@@ -29,7 +29,7 @@ component {
 
 			// put it into the cache now to avoid circular dependencies
 			cache[name] = model;
-			
+
 			// inject any other models into this model
 			coldmvc.factory.autowire(model);
 

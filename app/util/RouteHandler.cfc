@@ -4,26 +4,25 @@
 component {
 
 	property config;
-	property router;
+	property controllerManager;
 	property defaultController;
+	property router;
 
 	public any function init() {
-
 		variables.aliases = {};
-		var controllers = coldmvc.controller.getAll();
+		return this;
+	}
+
+	public void function loadAliases() {
+
+		var controllers = controllerManager.getControllers();
 		var key = "";
 
 		for (key in controllers) {
 			aliases["/#key#/#controllers[key].action#"] = "/#key#";
 		}
 
-	}
-
-	public void function setDefaultController(required string defaultController) {
-
-		variables.defaultController = arguments.defaultController;
-
-		var action = coldmvc.controller.action(defaultController);
+		var action = controllerManager.getAction(defaultController);
 
 		aliases["/#defaultController#"] = "";
 		aliases["/#defaultController#/#action#"] = "";
@@ -38,7 +37,7 @@ component {
 		if (path == "/") {
 			var parameters = {};
 			parameters.controller = defaultController;
-			parameters.action = coldmvc.controller.action(parameters.controller);
+			parameters.action = controllerManager.getAction(parameters.controller);
 		}
 		else {
 			// build the parameters from the path
@@ -62,7 +61,7 @@ component {
 		}
 		// if an action wasn't returned, use the default action for the controller
 		else {
-			var action = coldmvc.controller.action(controller);
+			var action = controllerManager.getAction(controller);
 		}
 
 		if (structKeyExists(parameters, "format")) {
@@ -77,7 +76,7 @@ component {
 		coldmvc.event.controller(controller);
 		coldmvc.event.action(action);
 		coldmvc.event.format(format);
-		coldmvc.event.view(coldmvc.controller.view(controller, action));
+		coldmvc.event.view(controllerManager.getView(controller, action));
 		coldmvc.event.path(path);
 
 		coldmvc.params.append(parameters);

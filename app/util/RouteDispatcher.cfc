@@ -3,9 +3,10 @@
  */
 component {
 
-	property eventDispatcher;
 	property beanFactory;
+	property controllerManager;
 	property defaultLayout;
+	property eventDispatcher;
 	property renderer;
 	property routeSerializer;
 
@@ -19,7 +20,7 @@ component {
 		}
 
 		// find the layout for the controller and action
-		var layout = coldmvc.controller.layout();
+		var layout = controllerManager.getLayout();
 
 		// it couldn't determine the layout, so set it to the default layout
 		if (layout == "") {
@@ -38,7 +39,7 @@ component {
 		}
 
 		// use the values from the event rather than the route in case missingController changed them
-		controller = coldmvc.controller.name(coldmvc.event.controller());
+		controller = controllerManager.getName(coldmvc.event.controller());
 
 		// check to make sure the factory has the requested controller
 		if (!beanFactory.containsBean(controller)) {
@@ -47,19 +48,19 @@ component {
 		}
 
 		// check to see if the controller has the specified action
-		if (!coldmvc.controller.has(coldmvc.event.controller(), coldmvc.event.action())) {
+		if (!controllerManager.hasAction(coldmvc.event.controller(), coldmvc.event.action())) {
 			eventDispatcher.dispatchEvent("invalidAction");
 			resetLayout = true;
 		}
 
 		// use the values from the event rather than the route in case invalidController/invalidAction changed them
-		controller = coldmvc.controller.name(coldmvc.event.controller());
+		controller = controllerManager.getName(coldmvc.event.controller());
 
 		// if something was missing, reset the layout back to the one specified for the controller/action
 		if (resetLayout) {
 
 			// find the layout for the controller and action
-			layout = coldmvc.controller.layout(coldmvc.event.controller(), coldmvc.event.action());
+			layout = controllerManager.getLayout(coldmvc.event.controller(), coldmvc.event.action());
 
 			// it couldn't determine the layout, so set it to the default layout
 			if (layout == "") {
@@ -76,14 +77,14 @@ component {
 
 		// if it's an ajax request, reset the layout
 		if (coldmvc.request.isAjax()) {
-			coldmvc.event.layout(coldmvc.controller.ajaxLayout());
+			coldmvc.event.layout(controllerManager.getAjaxLayout());
 		}
 
 		var layout = coldmvc.event.layout();
 		var format = coldmvc.event.format();
 		var output = "";
 
-		if (coldmvc.controller.respondsTo(coldmvc.event.controller(), coldmvc.event.action(), format)) {
+		if (controllerManager.respondsTo(coldmvc.event.controller(), coldmvc.event.action(), format)) {
 
 			if (format == "html") {
 

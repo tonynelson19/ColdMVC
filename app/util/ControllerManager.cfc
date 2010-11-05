@@ -1,14 +1,13 @@
 /**
  * @accessors true
- * @extends coldmvc.Helper
  */
 component {
 
 	property beanFactory;
 
-	public string function name(required string controller) {
+	public string function getName(required string controller) {
 
-		var controllers = getAll();
+		var controllers = getControllers();
 
 		if (structKeyExists(controllers, controller)) {
 			return controllers[controller].name;
@@ -18,33 +17,9 @@ component {
 
 	}
 
-	public boolean function exists(required string controller) {
+	public string function getAction(required string controller, string method) {
 
-		var controllers = getAll();
-
-		return structKeyExists(controllers, controller);
-
-	}
-
-	public string function key(required string controller) {
-
-		var controllers = getAll();
-
-		return controllers[controller].key;
-
-	}
-
-	public string function class(required string controller) {
-
-		var controllers = getAll();
-
-		return controllers[controller].class;
-
-	}
-
-	public string function action(required string controller, string method) {
-
-		var controllers = getAll();
+		var controllers = getControllers();
 
 		if (!structKeyExists(controllers, controller)) {
 			return "";
@@ -62,7 +37,7 @@ component {
 
 	}
 
-	public string function view(string controller, string action) {
+	public string function getView(string controller, string action) {
 
 		if (!structKeyExists(arguments, "controller")) {
 			controller = coldmvc.event.controller();
@@ -72,7 +47,7 @@ component {
 			action = coldmvc.event.action();
 		}
 
-		var controllers = getAll();
+		var controllers = getControllers();
 		var view = "";
 
 		// if the controller exists and it's valid method, get the view from the metadata
@@ -111,7 +86,7 @@ component {
 			format = coldmvc.event.format();
 		}
 
-		var allowed = formats(controller, action);
+		var allowed = getFormats(controller, action);
 
 		return listFindNoCase(allowed, format);
 
@@ -139,13 +114,13 @@ component {
 
 	}
 
-	public string function ajaxLayout(string controller, string action) {
+	public string function getAjaxLayout(string controller, string action) {
 
 		return getMethodAnnotation(arguments, "ajaxLayout", "");
 
 	}
 
-	public string function layout(string controller, string action) {
+	public string function getLayout(string controller, string action) {
 
 		if (!structKeyExists(arguments, "controller")) {
 			arguments.controller = coldmvc.event.controller();
@@ -155,7 +130,7 @@ component {
 
 	}
 
-	public string function formats(string controller, string action) {
+	public string function getFormats(string controller, string action) {
 
 		return getMethodAnnotation(arguments, "formats", "html");
 
@@ -171,7 +146,7 @@ component {
 			args.action = coldmvc.event.action();
 		}
 
-		var controllers = getAll();
+		var controllers = getControllers();
 
 		if (structKeyExists(controllers, args.controller)) {
 
@@ -188,19 +163,11 @@ component {
 
 	}
 
-	public struct function get(required string controller) {
-
-		var _name = name(controller);
-
-		return coldmvc.factory.get(_name);
-
-	}
-
-	public boolean function has(required any controller, required string method) {
+	public boolean function hasAction(required any controller, required string method) {
 
 		// a string was passed in, so check the cache
 		if (isSimpleValue(controller)) {
-			var controllers = getAll();
+			var controllers = getControllers();
 			if (structKeyExists(controllers, controller)) {
 				return structKeyExists(controllers[controller].methods, method);
 			}
@@ -216,7 +183,7 @@ component {
 
 	}
 
-	public struct function getAll() {
+	public struct function getControllers() {
 
 		if (!structKeyExists(variables, "controllers")) {
 			variables.controllers = loadControllers();
@@ -229,7 +196,7 @@ component {
 	private struct function loadControllers() {
 
 		var controllers = {};
-		var beanDefinitions = coldmvc.factory.definitions();
+		var beanDefinitions = beanFactory.getBeanDefinitions();
 		var beanDef = "";
 		var length = len("Controller");
 
@@ -242,7 +209,7 @@ component {
 				controller["class"] = beanDefinitions[beanDef];
 				controller["name"] = beanDef;
 
-				var metaData = coldmvc.factory.get("metaDataFlattener").flattenMetaData(controller.class);
+				var metaData = beanFactory.getBean("metaDataFlattener").flattenMetaData(controller.class);
 
 				if (structKeyExists(metaData, "controller")) {
 					controller["key"] = metaData.controller;
@@ -269,7 +236,7 @@ component {
 					controller["directory"] = controller.key;
 				}
 
-				controller["layout"] = getLayout(controller.key, metaData);
+				controller["layout"] = findLayout(controller.key, metaData);
 
 				if (structKeyExists(metaData, "ajaxLayout")) {
 					controller["ajaxLayout"] = metaData.ajaxLayout;
@@ -286,7 +253,6 @@ component {
 				}
 
 				controller["formats"] = replace(controller.formats, " ", "", "all");
-
 				controller["methods"] = getMethods(controller.directory, controller.layout, controller.ajaxLayout, controller.formats, metaData);
 				controllers[controller.key] = controller;
 
@@ -331,7 +297,7 @@ component {
 
 	}
 
-	private string function getLayout(required string controller, required struct metaData) {
+	private string function findLayout(required string controller, required struct metaData) {
 
 		if (structKeyExists(metaData, "layout")) {
 			return metaData.layout;
@@ -343,7 +309,7 @@ component {
 			return layoutController.methods[controller].layout;
 		}
 
-		if (coldmvc.factory.get("renderer").layoutExists(controller)) {
+		if (beanFactory.getBean("renderer").layoutExists(controller)) {
 			return controller;
 		}
 
@@ -355,13 +321,13 @@ component {
 
 		if (!structKeyExists(variables, "layoutController")) {
 
-			if (coldmvc.factory.has("layoutController")) {
+			if (beanFactory.containsBean("layoutController")) {
 
-				var obj = coldmvc.factory.get("layoutController");
+				var obj = beanFactory.getBean("layoutController");
 
 				var result = {};
 
-				var metaData = coldmvc.factory.get("metaDataFlattener").flattenMetaData(obj);
+				var metaData = beanFactory.getBean("metaDataFlattener").flattenMetaData(obj);
 
 				if (structKeyExists(metaData, "layout")) {
 					result.layout = metaData.layout;

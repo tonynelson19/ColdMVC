@@ -11,6 +11,10 @@ component {
 		return isDate(value);
 	}
 
+	public boolean function email(required any value) {
+		return isValid("email", value);
+	}
+
 	public boolean function guid(required any value) {
 		return isValid("guid", value);
 	}

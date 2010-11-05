@@ -49,6 +49,25 @@
 
 	<!------>
 
+	<cffunction name="color" access="public" output="false" returntype="string">
+
+		<cfset arguments.tag = "color" />
+
+		<cfset append(arguments, "class", "color") />
+		<cfset configure(arguments) />
+
+		<cfoutput>
+		<cfsavecontent variable="arguments.field">
+			<input type="color" #arguments.common# value="#htmlEditFormat(arguments.value)#" />
+		</cfsavecontent>
+		</cfoutput>
+
+		<cfreturn this.field(argumentCollection=arguments) />
+
+	</cffunction>
+
+	<!------>
+
 	<cffunction name="date" access="public" output="false" returntype="string">
 
 		<cfset arguments.tag = "date" />
@@ -162,6 +181,25 @@
 
 	<!------>
 
+	<cffunction name="number" access="public" output="false" returntype="string">
+
+		<cfset arguments.tag = "number" />
+
+		<cfset append(arguments, "class", "number") />
+		<cfset configure(arguments) />
+
+		<cfoutput>
+		<cfsavecontent variable="arguments.field">
+			<input type="number" #arguments.common# value="#htmlEditFormat(arguments.value)#" />
+		</cfsavecontent>
+		</cfoutput>
+
+		<cfreturn this.field(argumentCollection=arguments) />
+
+	</cffunction>
+
+	<!------>
+
 	<cffunction name="password" access="public" output="false" returntype="string">
 
 		<cfset arguments.tag = "password" />
@@ -225,6 +263,25 @@
 		</cfoutput>
 
 		<cfreturn this.field(argumentCollection=args) />
+
+	</cffunction>
+
+	<!------>
+
+	<cffunction name="search" access="public" output="false" returntype="string">
+
+		<cfset arguments.tag = "search" />
+
+		<cfset append(arguments, "class", "search") />
+		<cfset configure(arguments) />
+
+		<cfoutput>
+		<cfsavecontent variable="arguments.field">
+			<input type="search" #arguments.common# value="#htmlEditFormat(arguments.value)#" />
+		</cfsavecontent>
+		</cfoutput>
+
+		<cfreturn this.field(argumentCollection=arguments) />
 
 	</cffunction>
 
@@ -317,6 +374,25 @@
 		<cfoutput>
 		<cfsavecontent variable="arguments.field">
 			<textarea #arguments.common#>#htmlEditFormat(arguments.value)#</textarea>
+		</cfsavecontent>
+		</cfoutput>
+
+		<cfreturn this.field(argumentCollection=arguments) />
+
+	</cffunction>
+
+	<!------>
+
+	<cffunction name="time" access="public" output="false" returntype="string">
+
+		<cfset arguments.tag = "time" />
+
+		<cfset append(arguments, "class", "time") />
+		<cfset configure(arguments) />
+
+		<cfoutput>
+		<cfsavecontent variable="arguments.field">
+			<input type="time" #arguments.common# value="#htmlEditFormat(arguments.value)#" />
 		</cfsavecontent>
 		</cfoutput>
 

@@ -29,7 +29,7 @@ component {
 
 	}
 
-	private void function delete(string directory) {
+	private void function deleteDirectory(string directory) {
 
 		// delete and recreate the folder
 		directory = expandPath("/#directory#/");
@@ -44,7 +44,7 @@ component {
 
 	}
 
-	private void function generate(string directory) {
+	private void function generateDirectory(string directory) {
 
 		// if the directory exists, loop over all the files and generate the templates
 		if (directoryExists(expandPath("/app/#directory#/"))) {
@@ -65,15 +65,15 @@ component {
 
 		// delete and recreate all views and layouts
 		lock name="coldmvc.app.util.Renderer" type="exclusive" timeout="5" throwontimeout="true" {
-			delete("views");
-			delete("layouts");
-			generate("views");
-			generate("layouts");
+			deleteDirectory("views");
+			deleteDirectory("layouts");
+			generateDirectory("views");
+			generateDirectory("layouts");
 		}
 
 	}
 
-	private void function generateTemplate(required string directory, required string path) {
+	public void function generateTemplate(required string directory, required string path) {
 
 		// make the file path OS agnostic
 		path = replace(path, "\", "/", "all");
@@ -101,7 +101,7 @@ component {
 
 	}
 
-	private string function lazyGenerate(required string directory, required string path) {
+	public string function generate(required string directory, required string path) {
 
 		// build the full path to the template
 		var template = "/#directory#/#path#";
@@ -144,7 +144,7 @@ component {
 
 	private boolean function templateExists(required string directory, required string path) {
 
-		var template = lazyGenerate(directory, path);
+		var template = generate(directory, path);
 
 		return fileExists(expandPath(template));
 
@@ -170,7 +170,7 @@ component {
 
 	private string function renderTemplate(required string directory, required string path, required string class) {
 
-		var template = lazyGenerate(directory, path);
+		var template = generate(directory, path);
 		var output = "";
 
 		if (fileExists(expandPath(template))) {

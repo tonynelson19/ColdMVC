@@ -1060,7 +1060,7 @@ component {
 		var key = "";
 
 		for (key in data) {
-			if (propertyList == "" or structKeyExists(propertyList, key)) {
+			if (propertyList == "" or listFindNoCase(propertyList, key)) {
 				populateProperty(model, data, properties, key, relationships);
 			}
 		}
@@ -1089,7 +1089,7 @@ component {
 
 			case "datetime": {
 				if (isDate(value)) {
-					value = createDate(year(value), month(vaule), day(value));
+					value = createDate(year(value), month(value), day(value));
 				}
 			}
 

@@ -1110,6 +1110,7 @@ component {
 	private any function toJavaArray(required string type, required any value) {
 
 		var result = [];
+		var i = "";
 
 		if (!isArray(value)) {
 			value = listToArray(value);

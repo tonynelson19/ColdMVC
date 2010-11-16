@@ -130,7 +130,11 @@ component {
 
 		}
 
-		return template;
+		if (fileExists(expanded)) {
+			return template;
+		}
+
+		return "";
 
 	}
 

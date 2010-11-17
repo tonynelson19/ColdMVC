@@ -1105,14 +1105,20 @@ component {
 				if (isDate(value)) {
 					value = createDate(year(value), month(value), day(value));
 				}
+				break;
 			}
 
 			case "int": {
+				if (!isNumeric(value)) {
+					value = 0;
+				}
 				value = javaCast(type, value);
+				break;
 			}
 
 			case "boolean": {
 				value = javaCast(type, value);
+				break;
 			}
 
 		}

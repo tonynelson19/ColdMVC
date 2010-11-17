@@ -639,7 +639,21 @@ component {
 		var i = "";
 
 		for (i in relationships) {
-			obj._set(relationships[i].property, []);
+
+			switch(relationships[i].type) {
+
+				case "ManyToMany": {
+					obj._set(relationships[i].property, []);
+					break;
+				}
+
+				case "OneToMany": {
+					obj._set(relationships[i].property, []);
+					break;
+				}
+
+			}
+
 		}
 
 		dispatchEvent("preLoad", name, obj);

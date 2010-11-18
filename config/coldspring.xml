@@ -22,9 +22,6 @@
 		<property name="development">
 			<value>${development}</value>
 		</property>
-		<property name="logQueries">
-			<value>${logQueries}</value>
-		</property>
 	</bean>
 	
 	<bean id="debugManager" class="coldmvc.app.util.DebugManager">
@@ -42,7 +39,7 @@
 				<value>/coldmvc/app/debug/viewhelpers.cfm</value>
 				<value>/coldmvc/app/debug/config.cfm</value>
 				<value>/coldmvc/app/debug/beans.cfm</value>
-				<value>/coldmvc/app/debug/entities.cfm</value>
+				<value>/coldmvc/app/debug/models.cfm</value>
 				<value>/coldmvc/app/debug/events.cfm</value>
 				<value>/coldmvc/app/debug/params.cfm</value>
 			</list>
@@ -52,9 +49,6 @@
 	<bean id="eventDispatcher" class="coldmvc.app.util.EventDispatcher">
 		<property name="development">
 			<value>${development}</value>
-		</property>
-		<property name="logEvents">
-			<value>${logEvents}</value>
 		</property>
 		<property name="observers">
 			<map>
@@ -137,6 +131,8 @@
 		</property>
 	</bean>
 	
+	<bean id="modelManager" class="coldmvc.app.util.ModelManager" />
+	
 	<bean id="modelInjector" class="coldmvc.app.util.ModelInjector">
 		<property name="development">
 			<value>${development}</value>
@@ -157,9 +153,6 @@
 	<bean id="renderer" class="coldmvc.app.util.Renderer">
 		<property name="development">
 			<value>${development}</value>
-		</property>
-		<property name="logTemplateGeneration">
-			<value>${logTemplateGeneration}</value>
 		</property>
 	</bean>
 	

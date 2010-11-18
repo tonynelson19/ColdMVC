@@ -6,7 +6,6 @@ component {
 	property beanFactory;
 	property debugManager;
 	property development;
-	property logEvents;
 	property observers;
 	property pluginManager;
 
@@ -104,11 +103,7 @@ component {
 			var method = listeners[i].method;
 			var bean = getBeanFactory().getBean(beanName);
 
-			var start = getTickCount();
 			evaluate("bean.#method#(event=arguments.event, data=arguments.data)");
-			var end = getTickCount();
-
-			logListener(beanName, method, start, end);
 
 		}
 
@@ -153,7 +148,7 @@ component {
 
 	private void function logEvent(required string event, required array listeners) {
 
-		if (logEvents || development) {
+		if (development) {
 
 			var count = arrayLen(listeners);
 			var text = "eventDispatcher.dispatchEvent(#event#)";
@@ -177,18 +172,6 @@ component {
 				debugManager.addEvent(event, listeners);
 			}
 
-			if (logEvents) {
-				writeLog(string);
-			}
-
-		}
-
-	}
-
-	private void function logListener(required string beanName, required string method, required numeric start, required numeric end) {
-
-		if (logEvents) {
-			writeLog("#beanName#.#method#(): #end-start# ms");
 		}
 
 	}

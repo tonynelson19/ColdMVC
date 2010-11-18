@@ -6,6 +6,7 @@ component {
  	property beanFactory;
 	property beanName;
 	property modelFactory;
+	property modelManager;
 	property metaDataFlattener;
 	property modelPrefix;
 	property suffixes;
@@ -13,26 +14,26 @@ component {
 	property eventDispatcher;
 
 	public any function init() {
-		
+
 		cache = {};
-		
+
 		var appSettings = application.getApplicationSettings();
-		
+
 		if (structKeyExists(appSettings, "ormEnabled") and appSettings.ormEnabled) {
 			models = ormGetSessionFactory().getAllClassMetaData();
 		}
 		else {
 			models = {};
 		}
-		
+
 		return this;
 
 	}
 
 	public void function postProcessAfterInitialization(required any bean, required string beanName) {
-		
+
 		var i = "";
-		
+
 		autowire(bean);
 
 		for (i = 1; i <= arrayLen(suffixes); i++) {
@@ -50,7 +51,7 @@ component {
 					var model = left(arguments.beanName, len(arguments.beanName)-len(suffix));
 				}
 
-				if (coldmvc.model.exists(model)) {
+				if (modelManager.modelExists(model)) {
 
 					var object = modelFactory.get(model);
 					var singular = coldmvc.string.camelize(model);
@@ -72,11 +73,11 @@ component {
 		}
 
 	}
-	
+
 	public void function autowire(required any model) {
-		
+
 		var key = "";
-		
+
 		for (key in models) {
 
 			if (structKeyExists(model, "set#modelPrefix##key#")) {
@@ -84,7 +85,7 @@ component {
 			}
 
 		}
-	
+
 	}
 
 }

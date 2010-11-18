@@ -8,7 +8,6 @@ component {
 	property tagManager;
 	property viewHelperManager;
 	property development;
-	property logTemplateGeneration;
 
 	public any function init() {
 		loaded = false;
@@ -77,10 +76,6 @@ component {
 
 		// make the file path OS agnostic
 		path = replace(path, "\", "/", "all");
-
-		if (logTemplateGeneration) {
-			writeLog("Generating template: #path#");
-		}
 
 		// switch the path to the generated folder
 		var generated = replace(path, "/app/#directory#/", "/.generated/#directory#/");

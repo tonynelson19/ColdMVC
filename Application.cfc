@@ -332,7 +332,6 @@ component {
 		}
 
 		var defaults = {
-			"action" = "index",
 			"autoReload" = "false",
 			"beanFactory" = "coldmvc.app.util.BeanFactory",
 			"controller" = "",
@@ -340,12 +339,7 @@ component {
 			"development" = "false",
 			"helperPrefix" = "$",
 			"https" = "auto",
-			"key" = "coldmvc",
 			"layout" = "index",
-			"logEvents" = "false",
-			"logQueries" = "false",
-			"logTemplateGeneration" = "false",
-			"modelEvents" = "false",
 			"modelPrefix" = "_",
 			"reloadKey" = "init",
 			"reloadPassword" = "",

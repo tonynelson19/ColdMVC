@@ -73,7 +73,7 @@ component {
 	public string function getKey() {
 
 		if (!structKeyExists(variables, "key")) {
-			variables.key = config.get("key");
+			variables.key = "coldmvc";
 		}
 
 		return variables.key;

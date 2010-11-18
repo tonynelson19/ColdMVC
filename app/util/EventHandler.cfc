@@ -44,7 +44,7 @@ component {
 
 	private void function set(required any model, required string property, required string value) {
 
-		if (coldmvc.model.has(model, property)) {
+		if (structKeyExists(model, "set#property#")) {
 			model._set(property, value);
 		}
 
@@ -52,13 +52,14 @@ component {
 
 	private void function dispatchEvent(required string event, required any model) {
 
-		var name = coldmvc.model.name(model);
 		var eventDispatcher = coldmvc.factory.get("eventDispatcher");
+		var modelManager = coldmvc.factory.get("modelManager");
+		var name = modelManager.getName(model);
 		var data = {
 			name = name,
 			model = model
 		};
-		
+
 		eventDispatcher.dispatchEvent(arguments.event, data);
 		eventDispatcher.dispatchEvent(arguments.event & ":" & name, data);
 

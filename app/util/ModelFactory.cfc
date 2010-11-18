@@ -6,6 +6,7 @@ component {
 	property development;
 	property beanInjector;
 	property modelInjector;
+	property modelManager;
 
 	public any function init() {
 		cache = {};
@@ -34,7 +35,7 @@ component {
 			coldmvc.factory.autowire(model);
 
 			// used to pre-populate the cache to do lookups by entity name without knowing the full class path (hack)
-			coldmvc.orm.getEntityMetaData(model);
+			modelManager.getModel(model);
 
 
 		}

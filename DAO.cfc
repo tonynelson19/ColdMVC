@@ -4,12 +4,12 @@
  */
 component {
 
-	property eventDispatcher;
 	property beanInjector;
-	property modelFactory;
-	property development;
-	property logQueries;
 	property debugManager;
+	property development;
+	property eventDispatcher;
+	property modelFactory;
+	property modelManager;
 
 	public any function init() {
 
@@ -62,7 +62,7 @@ component {
 	public any function addTo(required any model, required string method, required struct args) {
 
 		var to = replaceNoCase(method, "addTo", "");
-		to = coldmvc.model.name(to);
+		to = modelManager.getName(to);
 		return add(model, to, args[1]);
 
 	}
@@ -74,8 +74,8 @@ component {
 		query.parameters = {};
 		query.options = options;
 
-		var name = coldmvc.model.name(model);
-		var alias = coldmvc.model.alias(model);
+		var name = modelManager.getName(model);
+		var alias = modelManager.getAlias(model);
 		var joins = parseInclude(model, options);
 		var i = "";
 		var counter = 0;
@@ -183,7 +183,7 @@ component {
 			}
 
 			var values = [];
-			var type = coldmvc.model.javatype(parameter.model, parameter.property);
+			var type = modelManager.getJavaType(parameter.model, parameter.property);
 
 			if (parameter.operator.operator == "in" || parameter.operator.operator == "not in") {
 
@@ -259,7 +259,7 @@ component {
 
 	public numeric function count(required any model) {
 
-		var name = coldmvc.model.name(model);
+		var name = modelManager.getName(model);
 
 		return execute("select count(*) from #name#", {}, true, {});
 
@@ -269,8 +269,8 @@ component {
 
 		method = replaceNoCase(method, "countBy", "");
 
-		var name = coldmvc.model.name(model);
-		var alias = coldmvc.model.alias(model);
+		var name = modelManager.getName(model);
+		var alias = modelManager.getAlias(model);
 
 		var query = buildDynamicQuery(model, method, args, "select count(*) from #name# #alias#");
 
@@ -280,8 +280,8 @@ component {
 
 	public numeric function countWhere(required any model, required struct parameters) {
 
-		var name = coldmvc.model.name(model);
-		var alias = coldmvc.model.alias(model);
+		var name = modelManager.getName(model);
+		var alias = modelManager.getAlias(model);
 
 		var query = buildQuery(model, parameters, {}, "select count(*) from #name# #alias#");
 
@@ -291,7 +291,7 @@ component {
 
 	public void function delete(required any model, required boolean flush) {
 
-		if (coldmvc.model.has(model, "isDeleted")) {
+		if (modelManager.hasProperty(model, "isDeleted")) {
 			model._set("isDeleted", 1);
 			model._set("deletedOn", coldmvc.date.get());
 			model._set("deletedBy", coldmvc.user.id());
@@ -311,10 +311,6 @@ component {
 		@hint Wrapper for almost all ORM queries that can be used for simple logging
 	*/
 	private any function execute(required string query, required struct parameters, required boolean unique, required struct options) {
-
-		if (logQueries) {
-			writeLog(serializeJSON(arguments));
-		}
 
 		// need to use createQuery() to handle the "in" operator with arrays...
 		// return ormExecuteQuery(query, parameters, unique, options);
@@ -375,7 +371,7 @@ component {
 		// User.exists(1)
 		if (!isNull(id)) {
 
-			var name = coldmvc.model.name(model);
+			var name = modelManager.getName(model);
 			var result = get(name, id);
 
 			if (isNull(result)) {
@@ -396,7 +392,7 @@ component {
 
 	public any function find(required any model, required string query, required struct parameters, required struct options) {
 
-		var result = _find(model, query, parameters, options);
+		var result = findDelegate(model, query, parameters, options);
 
 		if (!isNull(result) and arrayLen(result) > 0) {
 			return result[1];
@@ -408,7 +404,7 @@ component {
 
 	public array function findAll(required any model, required string query, required struct parameters, required struct options) {
 
-		var result = _find(model, query, parameters, options);
+		var result = findDelegate(model, query, parameters, options);
 
 		if (!isNull(result)) {
 			return result;
@@ -418,7 +414,7 @@ component {
 
 	}
 
-	private any function _find(required any model, required string query, required struct parameters, required struct options) {
+	private any function findDelegate(required any model, required string query, required struct parameters, required struct options) {
 
 		var unique = parseUnique(options);
 		var sortorder = parseSortOrder(model, options);
@@ -433,7 +429,7 @@ component {
 
 	public array function findAllWhere(required any model, required struct parameters, required struct options) {
 
-		var result = _findWhere(model, parameters, options);
+		var result = findStatic(model, parameters, options);
 
 		if (!isNull(result)) {
 			return result;
@@ -445,8 +441,8 @@ component {
 
 	private array function findAllWith(required any model, required array relationships, required struct options) {
 
-		var name = coldmvc.model.name(model);
-		var alias = coldmvc.model.alias(name);
+		var name = modelManager.getName(model);
+		var alias = modelManager.getAlias(name);
 		var query = [];
 		arrayAppend(query, "select #alias# from #name# #alias#");
 
@@ -475,7 +471,7 @@ component {
 
 	}
 
-	private array function _findAllWithDynamic(required any model, required string method, required struct args) {
+	private array function findAllWithDynamic(required any model, required string method, required struct args) {
 
 		method = replaceNoCase(method, "findAllWith", "");
 
@@ -490,12 +486,12 @@ component {
 
 	}
 
-	private any function _findDynamic(required any model, required string method, required struct args, required string prefix) {
+	private any function findDynamic(required any model, required string method, required struct args, required string prefix) {
 
 		method = replaceNoCase(method, prefix, "");
 
-		var name = coldmvc.model.name(model);
-		var alias = coldmvc.model.alias(model);
+		var name = modelManager.getName(model);
+		var alias = modelManager.getAlias(model);
 
 		var query = buildDynamicQuery(model, method, args, "select #alias# from #name# #alias#");
 
@@ -508,20 +504,20 @@ component {
 
 	}
 
-	private any function _findWhere(required any model, required struct parameters, required struct options) {
+	private any function findStatic(required any model, required struct parameters, required struct options) {
 
-		var name = coldmvc.model.name(model);
-		var alias = coldmvc.model.alias(model);
+		var name = modelManager.getName(model);
+		var alias = modelManager.getAlias(model);
 
 		var query = buildQuery(model, parameters, options, "select #alias# from #name# #alias#");
 
-		return _find(model, query.hql, query.parameters, query.options);
+		return findDelegate(model, query.hql, query.parameters, query.options);
 
 	}
 
 	public any function findWhere(required any model, required struct parameters, required struct options) {
 
-		var result = _findWhere(model, parameters, options);
+		var result = findStatic(model, parameters, options);
 
 		if (!isNull(result) and arrayLen(result) > 0) {
 			return result[1];
@@ -533,7 +529,7 @@ component {
 
 	public any function get(required any model, required string id) {
 
-		var name = coldmvc.model.name(model);
+		var name = modelManager.getName(model);
 
 		if (id == "") {
 			var obj = new(name);
@@ -554,12 +550,12 @@ component {
 
 	public array function getAll(required any model, required any ids, required struct options) {
 
-		var name = coldmvc.model.name(model);
-		var alias = coldmvc.model.alias(model);
-		var pk = coldmvc.model.id(model);
+		var name = modelManager.getName(model);
+		var alias = modelManager.getAlias(model);
+		var pk = modelManager.getID(model);
 		var joins = parseInclude(model, options);
 		var query = [];
-		var type = coldmvc.model.javatype(name, pk);
+		var type = modelManager.getJavaType(name, pk);
 
 		ids = toJavaArray(type, ids);
 
@@ -575,8 +571,8 @@ component {
 
 	public array function list(required any model, required struct options) {
 
-		var name = coldmvc.model.name(model);
-		var alias = coldmvc.model.alias(model);
+		var name = modelManager.getName(model);
+		var alias = modelManager.getAlias(model);
 		var joins = parseInclude(model, options);
 		var query = [];
 
@@ -592,10 +588,10 @@ component {
 	private any function load(required any model, required string id) {
 
 		// possible bug with entityLoadByPK, so use hql instead
-		var name = coldmvc.model.name(model);
-		var alias = coldmvc.model.alias(model);
-		var pk = coldmvc.model.id(model);
-		var type = coldmvc.model.javatype(name, pk);
+		var name = modelManager.getName(model);
+		var alias = modelManager.getAlias(model);
+		var pk = modelManager.getID(model);
+		var type = modelManager.getJavaType(name, pk);
 
 		id = toJavaType(type, id);
 
@@ -606,13 +602,13 @@ component {
 	public any function missingMethod(required any model, required string method, required struct args) {
 
 		if (left(method, 6) == "findBy") {
-			return _findDynamic(model, method, args, "findBy");
+			return findDynamic(model, method, args, "findBy");
 		}
 		else if (left(method, 9) == "findAllBy") {
-			return _findDynamic(model, method, args, "findAllBy");
+			return findDynamic(model, method, args, "findAllBy");
 		}
 		else if (left(method, 11) == "findAllWith") {
-			return _findAllWithDynamic(model, method, args);
+			return findAllWithDynamic(model, method, args);
 		}
 		else if (left(method, 5) == "addTo") {
 			return addTo(model, method, args);
@@ -633,9 +629,9 @@ component {
 
 	public any function new(required any model) {
 
-		var name = coldmvc.model.name(model);
+		var name = modelManager.getName(model);
 		var obj = entityNew(name);
-		var relationships = coldmvc.model.relationships(model);
+		var relationships = modelManager.getRelationships(model);
 		var i = "";
 
 		for (i in relationships) {
@@ -680,7 +676,7 @@ component {
 
 		if (structKeyExists(options, "include")) {
 
-			var alias = coldmvc.model.alias(model);
+			var alias = modelManager.getAlias(model);
 			var joins = [];
 			var i = "";
 
@@ -688,14 +684,14 @@ component {
 
 			for (i = 1; i <= arrayLen(includes); i++) {
 
-				var property = coldmvc.model.name(includes[i]);
+				var property = modelManager.getName(includes[i]);
 				var related = property;
 
-				if (!coldmvc.model.exists(related)) {
+				if (!modelManager.modelExists(related)) {
 					related = coldmvc.string.singularize(related);
 				}
 
-				var propertyAlias = coldmvc.model.alias(related);
+				var propertyAlias = modelManager.getAlias(related);
 
 				arrayAppend(joins, "join #alias#.#property# as #propertyAlias#");
 
@@ -718,10 +714,10 @@ component {
 		result.parameters = [];
 		result.joins = [];
 
-		var name = coldmvc.model.name(model);
-		var alias = coldmvc.model.alias(model);
-		var properties = coldmvc.model.properties(model);
-		var relationships = coldmvc.model.relationships(model);
+		var name = modelManager.getName(model);
+		var alias = modelManager.getAlias(model);
+		var properties = modelManager.getProperties(model);
+		var relationships = modelManager.getRelationships(model);
 		var keys = structKeyList(properties);
 		var related = {};
 
@@ -797,8 +793,8 @@ component {
 
 	private struct function parseParameters(required any model, required struct parameters) {
 
-		var alias = coldmvc.model.alias(model);
-		var properties = coldmvc.model.properties(model);
+		var alias = modelManager.getAlias(model);
+		var properties = modelManager.getProperties(model);
 		var result = {};
 		var property = "";
 
@@ -816,8 +812,8 @@ component {
 				var len = arrayLen(prop);
 
 				// { "foo.bar" = "baz" }
-				parameter.model = coldmvc.model.alias(prop[len-1]);
-				parameter.property = coldmvc.model.property(parameter.model, prop[len]);
+				parameter.model = modelManager.getAlias(prop[len-1]);
+				parameter.property = modelManager.getProperty(parameter.model, prop[len]);
 				parameter.alias = parameter.model & "." & parameter.property;
 
 				// if the parameter belongs to a different model
@@ -907,7 +903,7 @@ component {
 
 		if (structKeyExists(options, "sort")) {
 
-			alias = coldmvc.model.alias(model);
+			alias = modelManager.getAlias(model);
 			sort = listToArray(options.sort);
 			i = "";
 
@@ -916,12 +912,12 @@ component {
 				value = sort[i];
 
 				if (find(".", value)) {
-					sortAlias = coldmvc.model.alias(listFirst(value, "."));
-					sortProperty = coldmvc.model.property(sortAlias, listLast(value, "."));
+					sortAlias = modelManager.getAlias(listFirst(value, "."));
+					sortProperty = modelManager.getProperty(sortAlias, listLast(value, "."));
 				}
 				else {
 					sortAlias = alias;
-					sortProperty = coldmvc.model.property(sortAlias, value);
+					sortProperty = modelManager.getProperty(sortAlias, value);
 				}
 
 				sort[i] = sortAlias & "." & sortProperty;
@@ -960,13 +956,13 @@ component {
 		var key = "";
 		var i = "";
 
-		var properties = coldmvc.model.properties(model);
-		var relationships = coldmvc.model.relationships(model);
+		var properties = modelManager.getProperties(model);
+		var relationships = modelManager.getRelationships(model);
 		var type = coldmvc.data.type(data);
 
 		if (type == "object") {
 
-			if (coldmvc.orm.isEntity(data)) {
+			if (modelManager.modelExists(data)) {
 
 				for (i = 1; i<= listLen(propertyList); i++) {
 
@@ -1048,7 +1044,7 @@ component {
 
 					name = left(property, len(property)-2);
 					name = replace(name, "_", "", "all");
-					name = coldmvc.model.name(name);
+					name = modelManager.getName(name);
 
 					if (name != "") {
 

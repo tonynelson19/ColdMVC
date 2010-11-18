@@ -4,11 +4,12 @@
 component {
 
 	property beanName;
-	property viewHelperManager;
-	property development;
-	property debugManager;
 	property beanFactory;
+	property debugManager;
+	property development;
+	property modelManager;
 	property pluginManager;
+	property viewHelperManager;
 
 	public Router function init() {
 
@@ -293,7 +294,7 @@ component {
 			if (structKeyExists(parameters, "id") && isObject(parameters.id)) {
 
 				// get the name of the model
-				var model = coldmvc.model.name(parameters.id);
+				var model = modelManager.getName(parameters.id);
 
 				// check to see if there are any routes defined for this model
 				if (structKeyExists(models, model)) {

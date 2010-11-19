@@ -115,7 +115,7 @@ component {
 			}
 
 			case "struct": {
-				return coldmvc.struct.toQueryString(struct);
+				return coldmvc.struct.toQueryString(data);
 			}
 
 			case "string": {

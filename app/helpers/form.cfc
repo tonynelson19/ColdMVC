@@ -8,16 +8,20 @@
 
 		<cfset append(arguments, "class", "button") />
 
-		<cfif structKeyExists(arguments, "parameters")
-			or structKeyExists(arguments, "controller")
-			or structKeyExists(arguments, "action")
-			or structKeyExists(arguments, "querystring")>
+		<cfif not structKeyExists(arguments, "url")>
 
-			<cfset arguments.url = getURL(arguments) />
+			<cfif structKeyExists(arguments, "parameters")
+				or structKeyExists(arguments, "controller")
+				or structKeyExists(arguments, "action")
+				or structKeyExists(arguments, "querystring")>
 
-		<cfelse>
+				<cfset arguments.url = getURL(arguments) />
 
-			<cfset arguments.url = "" />
+			<cfelse>
+
+				<cfset arguments.url = "" />
+
+			</cfif>
 
 		</cfif>
 

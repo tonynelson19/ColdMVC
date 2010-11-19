@@ -9,7 +9,28 @@ component {
 
 		var settings = application.getApplicationSettings();
 		variables.ormEnabled = settings.ormEnabled;
+
 		return this;
+
+	}
+
+	public void function addFilter(required string filter) {
+
+		arrayAppend(filters, filter);
+
+	}
+
+	public void function enableFilter(required string filter) {
+
+		if (variables.ormEnabled) {
+
+			var definedFilters = ormGetSessionFactory().getDefinedFilterNames();
+
+			if (definedFilters.contains(filter)) {
+				ormGetSession().enableFilter(filter);
+			}
+
+		}
 
 	}
 

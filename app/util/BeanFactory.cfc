@@ -39,6 +39,7 @@ component {
 			var bean = {
 				id = xmlBean.xmlAttributes.id,
 				class = xmlBean.xmlAttributes.class,
+				initMethod = getXMLAttribute(xmlBean, "init-method", ""),
 				constructed = false,
 				autowired = false,
 				properties = {}
@@ -155,6 +156,10 @@ component {
 					for (property in beanDef.properties) {
 						var value = parseProperty(beanDef.properties[property]);
 						evaluate("beanInstance.set#property#(value)");
+					}
+
+					if (beanDef.initMethod != "") {
+						evaluate("beanInstance.#beanDef.initMethod#()");
 					}
 
 					beanDef.constructed = true;
@@ -299,7 +304,9 @@ component {
 	}
 
 	public boolean function containsBean(required string beanName) {
+
 		return structKeyExists(beanDefinitions, beanName);
+
 	}
 
 	private any function parseProperty(required xml xml, struct result) {
@@ -372,6 +379,7 @@ component {
 		beanDefinitions[id] = {
 			id = id,
 			class = class,
+			initMethod = "",
 			constructed = false,
 			autowired = false,
 			properties = {}
@@ -388,6 +396,7 @@ component {
 		beanDefinitions[id] = {
 			id = id,
 			class = getMetaData(object).name,
+			initMethod = "",
 			constructed = true,
 			autowired = true,
 			properties = {}
@@ -396,7 +405,9 @@ component {
 	}
 
 	public struct function getBeanDefinitions() {
+
 		return singletons;
+
 	}
 
 }

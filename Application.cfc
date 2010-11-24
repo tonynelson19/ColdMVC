@@ -83,6 +83,8 @@ component {
 	public any function createPluginManager() {
 
 		var application.coldmvc.pluginManager = new ColdMVC.app.util.PluginManager();
+		var fileSystemFacade = new ColdMVC.app.util.FileSystemFacade();
+		application.coldmvc.pluginManager.setFileSystemFacade(fileSystemFacade);
 		application.coldmvc.pluginManager.setConfigPath("/config/plugins.cfm");
 		application.coldmvc.pluginManager.loadPlugins();
 		return application.coldmvc.pluginManager;
@@ -132,11 +134,13 @@ component {
 
 	private any function addBeans(required xml beans, required string configPath) {
 
-		if (!fileExists(configPath)) {
+		var fileSystemFacade = new coldmvc.app.util.FileSystemFacade();
+
+		if (!fileSystemFacade.fileExists(configPath)) {
 			configPath = expandPath(configPath);
 		}
 
-		if (fileExists(configPath)) {
+		if (fileSystemFacade.fileExists(configPath)) {
 
 			var content = fileRead(configPath);
 
@@ -296,9 +300,11 @@ component {
 		// if autogenmap hasn't been explicitly set already
 		if (!structKeyExists(this.ormSettings, "autogenmap")) {
 
+			var fileSystemFacade = new coldmvc.app.util.FileSystemFacade();
+
 			// not sure why the mapping doesn't work here
 			// should also find a better way to cache this result so it's not executed each request
-			if (fileExists(this.rootPath & "/config/hibernate.hbmxml")) {
+			if (fileSystemFacade.fileExists(this.rootPath & "/config/hibernate.hbmxml")) {
 
 				// don't generate the mapping files if they have one
 				this.ormSettings.autogenmap = false;
@@ -315,15 +321,16 @@ component {
 			variables.settings = {};
 		}
 
+		var fileSystemFacade = new coldmvc.app.util.FileSystemFacade();
 		var configPath = "#this.rootPath#config/config.ini";
 
-		if (fileExists(configPath)) {
+		if (fileSystemFacade.fileExists(configPath)) {
 
 			loadSettings(configPath, "default");
 
 			var environmentPath = "#this.rootPath#config/environment.txt";
 
-			if (fileExists(environmentPath)) {
+			if (fileSystemFacade.fileExists(environmentPath)) {
 				var environment = fileRead(environmentPath);
 				loadSettings(configPath, environment);
 

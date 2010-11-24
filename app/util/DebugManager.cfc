@@ -4,6 +4,7 @@
 component {
 
 	property configPath;
+	property fileSystemFacade;
 	property templates;
 
 	public any function init() {
@@ -57,7 +58,7 @@ component {
 
 		configPath = expandPath(configPath);
 
-		if (fileExists(configPath)) {
+		if (fileSystemFacade.fileExists(configPath)) {
 
 			var sections = getProfileSections(configPath);
 

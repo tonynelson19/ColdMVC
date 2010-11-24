@@ -7,6 +7,7 @@ component {
 	property beanFactory;
 	property debugManager;
 	property development;
+	property fileSystemFacade;
 	property modelManager;
 	property pluginManager;
 	property viewHelperManager;
@@ -21,7 +22,7 @@ component {
 
 	}
 
-	public void function setPluginManager(required any pluginManager) {
+	public void function setup() {
 
 		var plugins = pluginManager.getPlugins();
 		var i = "";
@@ -39,7 +40,7 @@ component {
 
 	private void function includeConfigPath(required string configPath) {
 
-		if (fileExists(expandPath(configPath))) {
+		if (fileSystemFacade.fileExists(expandPath(configPath))) {
 			include configPath;
 		}
 

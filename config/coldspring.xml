@@ -46,7 +46,7 @@
 		</property>
 	</bean>
 	
-	<bean id="eventDispatcher" class="coldmvc.app.util.EventDispatcher">
+	<bean id="eventDispatcher" class="coldmvc.app.util.EventDispatcher" init-method="setup">
 		<property name="development">
 			<value>${development}</value>
 		</property>
@@ -102,6 +102,8 @@
 	</bean>
 	
 	<bean id="flashManager" class="coldmvc.app.util.FlashManager" />
+	
+	<bean id="fileSystemFacade" class="coldmvc.app.util.FileSystemFacade" />
 	
 	<bean id="filterManager" class="coldmvc.app.util.FilterManager">
 		<property name="filters">
@@ -170,7 +172,7 @@
 	
 	<bean id="routeSerializer" class="coldmvc.app.util.RouteSerializer" />
 	
-	<bean id="router" class="coldmvc.app.util.Router">
+	<bean id="router" class="coldmvc.app.util.Router" init-method="setup">
 		<property name="development">
 			<value>${development}</value>
 		</property>
@@ -185,6 +187,6 @@
 		</property>
 	</bean>
 	
-	<bean id="viewHelperManager" class="coldmvc.app.util.ViewHelperManager" />
+	<bean id="viewHelperManager" class="coldmvc.app.util.ViewHelperManager" init-method="setup" />
 	
 </beans>

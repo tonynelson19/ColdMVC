@@ -6,6 +6,7 @@ component {
 	property beanFactory;
 	property debugManager;
 	property development;
+	property fileSystemFacade;
 	property observers;
 	property pluginManager;
 
@@ -19,7 +20,7 @@ component {
 
 	}
 
-	public void function setPluginManager(required any pluginManager) {
+	public void function setup() {
 
 		var plugins = pluginManager.getPlugins();
 		var path = "/config/events.xml";
@@ -31,16 +32,15 @@ component {
 			loadXML(plugins[i].mapping & path);
 		}
 
-
 	}
 
 	public void function loadXML(required string filePath) {
 
-		if (!fileExists(filePath)) {
+		if (!fileSystemFacade.fileExists(filePath)) {
 			filePath = expandPath(filePath);
 		}
 
-		if (fileExists(filePath)) {
+		if (fileSystemFacade.fileExists(filePath)) {
 
 			var xml = xmlParse(fileRead(filePath));
 			var i = "";

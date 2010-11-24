@@ -3,6 +3,7 @@
  */
 component {
 
+	property fileSystemFacade;
 	property pluginManager;
 
 	public ViewHelperManager function init() {
@@ -13,7 +14,7 @@ component {
 
 	}
 
-	public void function setPluginManager(required any pluginManager) {
+	public void function setup() {
 
 		var plugins = pluginManager.getPlugins();
 		var i = "";
@@ -31,7 +32,7 @@ component {
 
 	private void function includeConfigPath(required string configPath) {
 
-		if (fileExists(expandPath(configPath))) {
+		if (fileSystemFacade.fileExists(expandPath(configPath))) {
 			include configPath;
 		}
 

@@ -4,10 +4,11 @@
 component {
 
 	property beanInjector;
+	property development;
 	property eventDispatcher;
+	property fileSystemFacade;
 	property tagManager;
 	property viewHelperManager;
-	property development;
 
 	public any function init() {
 		loaded = false;
@@ -107,7 +108,7 @@ component {
 
 		var expanded = expandPath(template);
 
-		if (!fileExists(expanded)) {
+		if (!fileSystemFacade.fileExists(expanded)) {
 
 			// make the file path OS agnostic
 			expanded = replace(expanded, "\", "/", "all");
@@ -116,7 +117,7 @@ component {
 			var original = replace(expanded, "/.generated/#directory#/", "/app/#directory#/");
 
 			// if the original file exists
-			if (fileExists(original)) {
+			if (fileSystemFacade.fileExists(original)) {
 
 				// then generate the template
 				generateTemplate(directory, original);
@@ -125,7 +126,7 @@ component {
 
 		}
 
-		if (fileExists(expanded)) {
+		if (fileSystemFacade.fileExists(expanded)) {
 			return template;
 		}
 
@@ -145,7 +146,7 @@ component {
 
 		var template = generate(directory, path);
 
-		return fileExists(expandPath(template));
+		return fileSystemFacade.fileExists(expandPath(template));
 
 	}
 
@@ -172,7 +173,7 @@ component {
 		var template = generate(directory, path);
 		var output = "";
 
-		if (fileExists(expandPath(template))) {
+		if (fileSystemFacade.fileExists(expandPath(template))) {
 
 			var obj = createObject("component", class);
 

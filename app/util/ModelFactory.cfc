@@ -34,10 +34,6 @@ component {
 			// inject any other models into this model
 			coldmvc.factory.autowire(model);
 
-			// used to pre-populate the cache to do lookups by entity name without knowing the full class path (hack)
-			modelManager.getModel(model);
-
-
 		}
 
 		return cache[name];

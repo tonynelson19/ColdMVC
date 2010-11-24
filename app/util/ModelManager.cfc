@@ -35,13 +35,11 @@ component {
 			var i = "";
 			var j = "";
 
-			if (isObject(model)) {
-				var metaData = getMetaData(model);
-			}
-			else {
-				var metaData = getComponentMetaData(model);
+			if (!isObject(model)) {
+				model = modelFactory.get(name);
 			}
 
+			var metaData = getMetaData(model);
 			var classMetaData = ormGetSessionFactory().getClassMetaData(name);
 
 			var result = {};

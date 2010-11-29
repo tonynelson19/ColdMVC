@@ -1,8 +1,11 @@
 <cfif thisTag.executionMode eq "start">
-	
-	<!--- alias --->
-	<cfif structKeyExists(attributes, "do")>
+
+	<!--- aliases --->
+	<cfif structKeyExists(attributes, "do")> <!--- ruby --->
 		<cfset attributes.value = attributes.do />
+	</cfif>
+	<cfif structKeyExists(attributes, "var")> <!--- grails --->
+		<cfset attributes.value = attributes.var />
 	</cfif>
 
 	<cfparam name="attributes.value" default="it" />

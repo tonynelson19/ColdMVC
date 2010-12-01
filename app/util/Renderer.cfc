@@ -11,10 +11,15 @@ component {
 	property viewHelperManager;
 
 	public any function init() {
+
 		loaded = false;
 		return this;
+
 	}
 
+	/**
+	 * @hint This gets called preRequest to generate the views/layouts
+	 */
 	public void function generateTemplates() {
 
 		// grab the content from the tagManager and store it locally for performance gains
@@ -81,7 +86,7 @@ component {
 		// switch the path to the generated folder
 		var generated = replace(path, "/app/#directory#/", "/.generated/#directory#/");
 
-		// get the contect from the view/layout
+		// add the tags to the content from the view/layout
 		var content = tagContent & fileRead(path);
 
 		// now get the directory for the generated template
@@ -135,11 +140,15 @@ component {
 	}
 
 	public boolean function layoutExists(required string layout) {
+
 		return templateExists("layouts", layout);
+
 	}
 
 	public boolean function viewExists(required string view) {
+
 		return templateExists("views", view);
+
 	}
 
 	private boolean function templateExists(required string directory, required string path) {
@@ -151,7 +160,9 @@ component {
 	}
 
 	public string function renderLayout(required string layout) {
+
 		return renderTemplate("layouts", layout, "coldmvc.app.util.Layout");
+
 	}
 
 	public string function renderView(required string view) {

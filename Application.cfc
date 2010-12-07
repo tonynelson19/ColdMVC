@@ -295,6 +295,10 @@ component {
 			this.ormSettings.dbcreate = settings.ormDBCreate;
 		}
 
+		if (structKeyExists(settings, "ormLogSQL")) {
+			this.ormSettings.logSQL = settings.ormLogSQL;
+		}
+
 		if (structKeyExists(settings, "ormSaveMapping")) {
 			this.ormSettings.saveMapping = settings.ormSaveMapping;
 		}

@@ -273,6 +273,10 @@ component {
 			this.datasource = this.directory;
 		}
 
+		if (structKeyExists(settings, "ormEnabled")) {
+			this.ormEnabled = settings.ormEnabled;
+		}
+
 		defaults = {
 			cfclocation = [ getDirectoryFromPath(expandPath("../")) ],
 			dbcreate = "update",

@@ -115,7 +115,11 @@ component {
 			}
 
 			case "struct": {
-				return coldmvc.struct.toQueryString(data);
+
+				arrayAppend(result, coldmvc.struct.toQueryString(data));
+
+				break;
+
 			}
 
 			case "string": {

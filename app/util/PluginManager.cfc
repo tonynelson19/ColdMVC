@@ -4,7 +4,6 @@
 component {
 
 	property configPath;
-	property fileSystemFacade;
 
 	public PluginManager function init() {
 
@@ -21,7 +20,7 @@ component {
 
 	public void function loadPlugins() {
 
-		if (fileSystemFacade.fileExists(expandPath(configPath))) {
+		if (_fileExists(expandPath(configPath))) {
 			include configPath;
 		}
 
@@ -76,7 +75,7 @@ component {
 
 			var mappedPlugins = "/plugins" & replaceNoCase(config, rootPath, "");
 
-			if (fileSystemFacade.fileExists(config)) {
+			if (_fileExists(config)) {
 				include mappedPlugins;
 			}
 
@@ -164,6 +163,20 @@ component {
 		}
 
 		return filePath;
+
+	}
+
+	private boolean function _fileExists(required string filePath) {
+
+		var result = false;
+
+		try {
+			result = fileExists(filePath);
+		}
+		catch (any e) {
+		}
+
+		return result;
 
 	}
 

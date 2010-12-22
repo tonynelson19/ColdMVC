@@ -16,10 +16,24 @@
 	<cfset attributes.length = coldmvc.data.count(attributes.in, attributes.delimeter) />
 
 	<cfif not structKeyExists(attributes, "end")>
-		<cfset attributes.end = attributes.length />
+
+		<cfif structKeyExists(attributes, "max")>
+
+			<cfif not isNumeric(attributes.max)>
+				<cfset attributes.max = 10 />
+			</cfif>
+
+			<cfset attributes.end = attributes.start + attributes.max - 1 />
+
+		<cfelse>
+
+			<cfset attributes.end = attributes.length />
+
+		</cfif>
+
 	</cfif>
 
-	<cfif attributes.length>
+	<cfif attributes.length gt 0>
 		<cfset result = coldmvc.loop.each(attributes) />
 		<cfset structAppend(caller, result) />
 	<cfelse>

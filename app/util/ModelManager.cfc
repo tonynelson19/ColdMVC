@@ -74,10 +74,18 @@ component {
 
 				property = {
 					name = propertyNames[i],
-					column = classMetaData.getPropertyColumnNames(propertyNames[i])[1],
 					type = propertyTypes[i].getName(),
 					relationship = {}
 				};
+
+				var columns = classMetaData.getPropertyColumnNames(propertyNames[i]);
+
+				// hack to support computed properties that don't have columns
+				try {property.column = columns[1];
+				}
+				catch (any e) {
+					property.column = "";
+				}
 
 				property.javatype = convertJavaType(property.type);
 

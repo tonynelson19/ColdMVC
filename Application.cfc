@@ -83,8 +83,6 @@ component {
 	public any function createPluginManager() {
 
 		var application.coldmvc.pluginManager = new ColdMVC.app.util.PluginManager();
-		var fileSystemFacade = new ColdMVC.app.util.FileSystemFacade();
-		application.coldmvc.pluginManager.setFileSystemFacade(fileSystemFacade);
 		application.coldmvc.pluginManager.setConfigPath("/config/plugins.cfm");
 		application.coldmvc.pluginManager.loadPlugins();
 		return application.coldmvc.pluginManager;
@@ -130,13 +128,11 @@ component {
 
 	private any function addBeans(required xml beans, required string configPath) {
 
-		var fileSystemFacade = new coldmvc.app.util.FileSystemFacade();
-
-		if (!fileSystemFacade.fileExists(configPath)) {
+		if (!_fileExists(configPath)) {
 			configPath = expandPath(configPath);
 		}
 
-		if (fileSystemFacade.fileExists(configPath)) {
+		if (_fileExists(configPath)) {
 
 			var content = fileRead(configPath);
 
@@ -251,6 +247,13 @@ component {
 			defaults["/plugins"] = this.rootPath & "plugins/";
 		}
 
+		if (directoryExists(this.rootPath & "coldmvc/")) {
+			defaults["/coldmvc"] = this.rootPath & "coldmvc/";
+		}
+		else if (directoryExists(expandPath("/coldmvc"))) {
+			defaults["/coldmvc"] = sanitizeFilePath(expandPath("/coldmvc"));
+		}
+
 		structAppend(this.mappings, defaults, false);
 
 		var settings = getSettings();
@@ -265,6 +268,10 @@ component {
 		}
 		else {
 			this.datasource = this.directory;
+		}
+
+		if (structKeyExists(settings, "ormEnabled")) {
+			this.ormEnabled = settings.ormEnabled;
 		}
 
 		defaults = {
@@ -285,6 +292,10 @@ component {
 			this.ormSettings.dbcreate = settings.ormDBCreate;
 		}
 
+		if (structKeyExists(settings, "ormLogSQL")) {
+			this.ormSettings.logSQL = settings.ormLogSQL;
+		}
+
 		if (structKeyExists(settings, "ormSaveMapping")) {
 			this.ormSettings.saveMapping = settings.ormSaveMapping;
 		}
@@ -294,11 +305,9 @@ component {
 		// if autogenmap hasn't been explicitly set already
 		if (!structKeyExists(this.ormSettings, "autogenmap")) {
 
-			var fileSystemFacade = new coldmvc.app.util.FileSystemFacade();
-
 			// not sure why the mapping doesn't work here
 			// should also find a better way to cache this result so it's not executed each request
-			if (fileSystemFacade.fileExists(this.rootPath & "/config/hibernate.hbmxml")) {
+			if (_fileExists(this.rootPath & "/config/hibernate.hbmxml")) {
 
 				// don't generate the mapping files if they have one
 				this.ormSettings.autogenmap = false;
@@ -315,16 +324,15 @@ component {
 			variables.settings = {};
 		}
 
-		var fileSystemFacade = new coldmvc.app.util.FileSystemFacade();
 		var configPath = "#this.rootPath#config/config.ini";
 
-		if (fileSystemFacade.fileExists(configPath)) {
+		if (_fileExists(configPath)) {
 
 			loadSettings(configPath, "default");
 
 			var environmentPath = "#this.rootPath#config/environment.txt";
 
-			if (fileSystemFacade.fileExists(environmentPath)) {
+			if (_fileExists(environmentPath)) {
 				var environment = fileRead(environmentPath);
 				loadSettings(configPath, environment);
 
@@ -400,6 +408,20 @@ component {
 	private string function sanitizeFilePath(required string filePath) {
 
 		return replace(arguments.filePath, "\", "/", "all");
+
+	}
+
+	private boolean function _fileExists(required string filePath) {
+
+		var result = false;
+
+		try {
+			result = fileExists(filePath);
+		}
+		catch (any e) {
+		}
+
+		return result;
 
 	}
 

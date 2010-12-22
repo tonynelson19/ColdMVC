@@ -63,6 +63,8 @@
 						<value>helperManager.addHelpers</value>
 						<value>viewHelperManager.findViewHelpers</value>
 						<value>router.addNamedRouteViewHelpers</value>
+						<value>tagManager.generateTags</value>
+						<value>renderer.generateTemplates</value>
 						<value>routeHandler.loadAliases</value>
 					</list>
 				</entry>

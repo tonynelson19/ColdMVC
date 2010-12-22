@@ -4,6 +4,7 @@
 component {
 
 	property beanFactory;
+	property metaDataFlattener;
 
 	public string function getName(required string controller) {
 
@@ -209,7 +210,7 @@ component {
 				controller["class"] = beanDefinitions[beanDef];
 				controller["name"] = beanDef;
 
-				var metaData = beanFactory.getBean("metaDataFlattener").flattenMetaData(controller.class);
+				var metaData = metaDataFlattener.flattenMetaData(controller.class);
 
 				if (structKeyExists(metaData, "controller")) {
 					controller["key"] = metaData.controller;
@@ -327,7 +328,7 @@ component {
 
 				var result = {};
 
-				var metaData = beanFactory.getBean("metaDataFlattener").flattenMetaData(obj);
+				var metaData = metaDataFlattener.flattenMetaData(obj);
 
 				if (structKeyExists(metaData, "layout")) {
 					result.layout = metaData.layout;

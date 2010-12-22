@@ -4,6 +4,9 @@
  */
 component {
 
+	/**
+	 * @viewHelper renderCSS
+	 */
 	public string function renderCSS(required string name, string media="all", string condition="") {
 
 		if (alreadyRendered("css", name)) {
@@ -21,6 +24,9 @@ component {
 
 	}
 
+	/**
+	 * @viewHelper renderJS
+	 */
 	public string function renderJS(required string name) {
 
 		if (alreadyRendered("js", name)) {
@@ -33,24 +39,36 @@ component {
 
 	}
 
+	/**
+	 * @viewHelper renderJS
+	 */
 	public string function renderImage(required string name) {
 
 		return '<img src="#linkToImage(name)#" alt="" />';
 
 	}
 
+	/**
+	 * @viewHelper linkToCSS
+	 */
 	public string function linkToCSS(required string name) {
 
 		return linkToAsset("css", name);
 
 	}
 
+	/**
+	 * @viewHelper linkToJS
+	 */
 	public string function linkToJS(required string name) {
 
 		return linkToAsset("js", name);
 
 	}
 
+	/**
+	 * @viewHelper linkToImage
+	 */
 	public string function linkToImage(required string name) {
 
 		return "#getBaseURL()#images/#name#";

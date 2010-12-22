@@ -5,7 +5,6 @@ component {
 
 	property development;
 	property pluginManager;
-	property tagPrefix;
 	property templatePrefix;
 
 	public TagManager function init() {
@@ -44,7 +43,7 @@ component {
 
 		directoryCreate(directory);
 
-		config.content = '<cfimport prefix="#tagPrefix#" taglib="#folder#" />' & chr(13) & chr(13);
+		config.content = '<cfimport prefix="c" taglib="#folder#" />' & chr(13) & chr(13);
 
 		var template = "";
 		for (template in config.templates) {

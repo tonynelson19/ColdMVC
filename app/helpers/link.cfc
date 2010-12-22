@@ -23,6 +23,9 @@ component {
 
 	}
 
+	/**
+	 * @viewHelper linkTo
+	 */
 	public string function to(any parameters, string querystring, string name="") {
 
 		configure(arguments);

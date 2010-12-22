@@ -61,6 +61,7 @@
 				<entry key="applicationStart">
 					<list>
 						<value>helperManager.addHelpers</value>
+						<value>viewHelperManager.findViewHelpers</value>
 						<value>router.addNamedRouteViewHelpers</value>
 						<value>routeHandler.loadAliases</value>
 					</list>
@@ -113,11 +114,7 @@
 		</property>
 	</bean>
 	
-	<bean id="helperManager" class="coldmvc.app.util.HelperManager">
-		<property name="helperPrefix">
-			<value>${helperPrefix}</value>
-		</property>
-	</bean>
+	<bean id="helperManager" class="coldmvc.app.util.HelperManager" />
 	
 	<bean id="metaDataFlattener" class="coldmvc.app.util.MetaDataFlattener" />
 	
@@ -138,9 +135,6 @@
 	<bean id="modelInjector" class="coldmvc.app.util.ModelInjector">
 		<property name="development">
 			<value>${development}</value>
-		</property>
-		<property name="modelPrefix">
-			<value>${modelPrefix}</value>
 		</property>
 		<property name="suffixes">
 			<list>
@@ -181,9 +175,6 @@
 	<bean id="tagManager" class="coldmvc.app.util.TagManager">
 		<property name="development">
 			<value>${development}</value>
-		</property>
-		<property name="tagPrefix">
-			<value>${tagPrefix}</value>
 		</property>
 	</bean>
 	

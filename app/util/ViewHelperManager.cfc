@@ -3,6 +3,8 @@
  */
 component {
 
+	property beanFactory;
+	property metaDataFlattener;
 	property fileSystemFacade;
 	property pluginManager;
 
@@ -38,6 +40,46 @@ component {
 
 	}
 
+	public void function findViewHelpers() {
+
+		var key = "";
+
+		for (key in coldmvc) {
+			parseMethods(coldmvc[key], key, false);
+		}
+
+		var beanDefinitions = beanFactory.getBeanDefinitions();
+
+		for (key in beanDefinitions) {
+			parseMethods(beanDefinitions[key], key, true);
+		}
+
+	}
+
+	private void function parseMethods(required any object, required string name, required boolean bean) {
+
+		var metaData = metaDataFlattener.flattenMetaData(object);
+		var key = "";
+
+		for (key in metaData.functions) {
+
+			var fn = metaData.functions[key];
+
+			if (structKeyExists(fn, "viewHelper")) {
+
+				if (bean) {
+					add(name=fn.viewHelper, beanName=name, method=fn.name);
+				}
+				else {
+					add(name=fn.viewHelper, helper=name, method=fn.name);
+				}
+
+			}
+
+		}
+
+	}
+
 	public void function add(required string name, string beanName="", string helper="", string method="", boolean includeMethod="false") {
 
 		if (method == "") {
@@ -53,8 +95,15 @@ component {
 	public void function addViewHelpers(required any object) {
 
 		var viewHelper = "";
+
 		for (viewHelper in viewHelpers) {
+
+			// add the view helper to the object
 			object[viewHelper] = callViewHelper;
+
+			// if a param matches the same name as the view helper, clear it out
+			coldmvc.params.clear(viewHelper);
+
 		}
 
 	}

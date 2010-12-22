@@ -8,8 +8,15 @@ component {
 	public void function populateParams(string event) {
 
 		if (coldmvc.params.isEmpty()) {
+
 			var collection = getCollection();
+
+			// remove reserved global variables
+			structDelete(collection, "$");
+			structDelete(collection, "coldmvc");
+
 			coldmvc.params.set(collection);
+
 		}
 
 	}

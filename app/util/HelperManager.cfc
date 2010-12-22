@@ -5,7 +5,6 @@ component {
 
 	property beanFactory;
 	property config;
-	property helperPrefix;
 	property pluginManager;
 
 	public HelperManager function init() {
@@ -39,7 +38,7 @@ component {
 
 	public void function addHelpers() {
 		addScope("coldmvc");
-		addScope(variables.helperPrefix);
+		addScope("$");
 	}
 
 	private void function addScope(required string scope) {

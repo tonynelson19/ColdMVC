@@ -8,7 +8,6 @@ component {
 	property modelFactory;
 	property modelManager;
 	property metaDataFlattener;
-	property modelPrefix;
 	property suffixes;
 	property development;
 	property eventDispatcher;
@@ -58,7 +57,7 @@ component {
 					var plural = coldmvc.string.camelize(coldmvc.string.pluralize(model));
 
 					var arg = {
-						"#modelPrefix##singular#" = object,
+						"_#singular#" = object,
 						"__Model" = object,
 						"__singular" = singular,
 						"__plural" = plural
@@ -80,8 +79,8 @@ component {
 
 		for (key in models) {
 
-			if (structKeyExists(model, "set#modelPrefix##key#")) {
-				evaluate("model.set#modelPrefix##key#(modelFactory.get(key))");
+			if (structKeyExists(model, "set_#key#")) {
+				evaluate("model.set_#key#(modelFactory.get(key))");
 			}
 
 		}

@@ -120,11 +120,7 @@ component {
 			settings["datasource"] = this.datasource;
 		}
 
-		if (!structKeyExists(settings, "directory")) {
-			settings["directory"] = this.directory;
-		}
-
-		var beanFactory = createObject("component", getSetting("beanFactory")).init(xml, settings, {
+		var beanFactory = createObject("component", "coldmvc.app.util.BeanFactory").init(xml, settings, {
 			"pluginManager" = pluginManager
 		});
 
@@ -232,9 +228,7 @@ component {
 
 		structAppend(this, defaults, false);
 
-		if (!structKeyExists(this, "directory")) {
-			this.directory = listLast(this.rootPath, "/");
-		}
+		this.directory = listLast(this.rootPath, "/");
 
 		if (!structKeyExists(this, "name")) {
 			this.name = this.directory & "_" & hash(this.rootPath);
@@ -340,19 +334,15 @@ component {
 
 		var defaults = {
 			"autoReload" = "false",
-			"beanFactory" = "coldmvc.app.util.BeanFactory",
 			"controller" = "",
 			"debug" = "true",
 			"development" = "false",
-			"helperPrefix" = "$",
 			"https" = "auto",
 			"layout" = "index",
-			"modelPrefix" = "_",
 			"reloadKey" = "init",
 			"reloadPassword" = "",
 			"rootPath" = this.rootPath,
 			"sesURLs" = "false",
-			"tagPrefix" = "c",
 			"urlPath" = cgi.script_name
 		};
 

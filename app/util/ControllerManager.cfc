@@ -176,7 +176,7 @@ component {
 				return structKeyExists(controllers[controller].methods, method);
 			}
 			else {
-				throw (message="Invalid controller: #controller#");
+				return false;
 			}
 
 		}

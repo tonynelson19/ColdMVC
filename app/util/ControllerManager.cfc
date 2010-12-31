@@ -168,7 +168,9 @@ component {
 
 		// a string was passed in, so check the cache
 		if (isSimpleValue(controller)) {
+
 			var controllers = getControllers();
+
 			if (structKeyExists(controllers, controller)) {
 				return structKeyExists(controllers[controller].methods, method);
 			}

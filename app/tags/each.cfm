@@ -15,6 +15,10 @@
 
 	<cfset attributes.length = coldmvc.data.count(attributes.in, attributes.delimeter) />
 
+	<cfif not isNumeric(attributes.start)>
+		<cfset attributes.start = 1 />
+	</cfif>
+
 	<cfif not structKeyExists(attributes, "end")>
 
 		<cfif structKeyExists(attributes, "max")>
@@ -31,6 +35,18 @@
 
 		</cfif>
 
+	</cfif>
+
+	<cfif not isNumeric(attributes.end)>
+		<cfset attributes.end = 10 />
+	</cfif>
+
+	<cfif attributes.start gt attributes.length>
+		<cfset attributes.start = 1 />
+	</cfif>
+
+	<cfif attributes.end gt attributes.length>
+		<cfset attributes.end = attributes.length />
 	</cfif>
 
 	<cfif attributes.length gt 0>

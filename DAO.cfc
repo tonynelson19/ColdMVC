@@ -565,7 +565,32 @@ component {
 
 		query = arrayToList(query, " ");
 
-		return findAll(model, query, {"id"=ids}, options);
+		var results = findAll(model, query, {"id"=ids}, options);
+
+		// rebuild the results in the order of the requested IDs
+		if (!structKeyExists(options, "sort")) {
+
+			var records = {};
+			var i = "";
+			for (i = 1; i <= arrayLen(results); i++) {
+				records[results[i]._get("id")] = results[i];
+			}
+
+			results = [];
+			for (i = 1; i <= arrayLen(ids); i++) {
+
+				var id = ids[i];
+
+				if (structKeyExists(records, id)) {
+					arrayAppend(results, records[id]);
+				}
+
+
+			}
+
+		}
+
+		return results;
 
 	}
 

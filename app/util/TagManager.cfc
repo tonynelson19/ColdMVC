@@ -64,7 +64,7 @@ component {
 
 		var template = "";
 		for (template in config.templates) {
-			fileWrite(config.templates[template].file, getContent() & chr(13) & chr(13) & fileRead(expandPath(config.templates[template].path)));
+			fileWrite(config.templates[template].file, getContent() & fileRead(expandPath(config.templates[template].path)));
 		}
 
 	}
@@ -96,7 +96,7 @@ component {
 				arrayAppend(array, '<cfimport prefix="#key#" taglib="#tagLibraries[key]#" />');
 			}
 
-			variables.content = arrayToList(array, chr(13));
+			variables.content = arrayToList(array, "");
 
 		}
 

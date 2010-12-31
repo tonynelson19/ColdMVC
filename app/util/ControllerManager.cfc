@@ -229,7 +229,7 @@ component {
 					controller["action"] = metaData.action;
 				}
 				else {
-					controller["action"] = coldmvc.config.get("action");
+					controller["action"] = "index";
 				}
 
 				// get the directory where the views should live

@@ -14,7 +14,7 @@ Installation
 	4. Create a new datasource in ColdFusion administrator with the same name as your project
 	5. Start building your applications
 
-For further guidance, check out the sample applications inside /coldmvc/samples/.
+For further guidance, check out the sample applications located at https://github.com/tonynelson19/ColdMVC-Samples.
 
 Documentation
 I'll try to get more documentation available when I can, but admittedly it's not a very high priority for me right now. If anyone would like to help out, I'd appreciate it.
@@ -23,7 +23,7 @@ Bugs
 If you find a bug, you can either log it on GitHub (http://github.com/tonynelson19/ColdMVC/issues) or contact me directly via email or twitter, or post a message on the Google group.
 
 Future Plans
-I'll try to update things when I can. There are still quite a few more features I'd like to add (logging, validation, security, etc...), but haven't decided on the best approach yet. I'm also open to feature requests, so feel free to contact me.
+I'll try to update things when I can. I'm open to feature requests, so feel free to contact me.
 
 Contact 
 Google Group: http://groups.google.com/group/coldmvc

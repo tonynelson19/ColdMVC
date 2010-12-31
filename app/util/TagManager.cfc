@@ -9,8 +9,11 @@ component {
 
 	public TagManager function init() {
 
-		folder = "/generated/tags/";
-		directory = expandPath(folder);
+		tagLibraries = {
+			"c" = "/tags/"
+		};
+
+		directory = expandPath("/tags/");
 		directories = [];
 		templatePrefix = "";
 		loaded = false;
@@ -35,6 +38,22 @@ component {
 
 	}
 
+	public struct function getTagLibraries() {
+
+		return tagLibraries;
+
+	}
+
+	public void function setTagLibrary(required string prefix, required string path) {
+
+		if (right(path, 1) != "/") {
+			path = path & "/";
+		}
+
+		tagLibraries[prefix] = path;
+
+	}
+
 	private void function generateFiles() {
 
 		if (directoryExists(directory)) {
@@ -43,11 +62,9 @@ component {
 
 		directoryCreate(directory);
 
-		config.content = '<cfimport prefix="c" taglib="#folder#" />' & chr(13) & chr(13);
-
 		var template = "";
 		for (template in config.templates) {
-			fileWrite(config.templates[template].file, "#config.content##fileRead(expandPath(config.templates[template].path))#");
+			fileWrite(config.templates[template].file, getContent() & chr(13) & chr(13) & fileRead(expandPath(config.templates[template].path)));
 		}
 
 	}
@@ -70,7 +87,20 @@ component {
 
 	public string function getContent() {
 
-		return config.content;
+		if (!structKeyExists(variables, "content")) {
+
+			var array = [];
+			var key = "";
+
+			for (key in tagLibraries) {
+				arrayAppend(array, '<cfimport prefix="#key#" taglib="#tagLibraries[key]#" />');
+			}
+
+			variables.content = arrayToList(array, chr(13));
+
+		}
+
+		return variables.content;
 
 	}
 
@@ -95,7 +125,7 @@ component {
 					var template = {};
 					template.name = getFileFromPath(templates[j]);
 					template.path = library.path & template.name;
-					template.file = expandPath(folder & templatePrefix & template.name);
+					template.file = expandPath("/tags/" & templatePrefix & template.name);
 
 					if (!structKeyExists(result.templates, template.name)) {
 						result.templates[template.name] = template;

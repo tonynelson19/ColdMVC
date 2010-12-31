@@ -5,6 +5,7 @@ component {
 
 	property beanFactory;
 	property metaDataFlattener;
+	property templateManager;
 
 	public string function getName(required string controller) {
 
@@ -312,7 +313,7 @@ component {
 			return layoutController.methods[controller].layout;
 		}
 
-		if (beanFactory.getBean("renderer").layoutExists(controller)) {
+		if (templateManager.layoutExists(controller)) {
 			return controller;
 		}
 

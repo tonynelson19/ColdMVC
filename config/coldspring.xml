@@ -40,6 +40,7 @@
 				<value>/coldmvc/app/debug/config.cfm</value>
 				<value>/coldmvc/app/debug/beans.cfm</value>
 				<value>/coldmvc/app/debug/models.cfm</value>
+				<value>/coldmvc/app/debug/templates.cfm</value>
 				<value>/coldmvc/app/debug/events.cfm</value>
 				<value>/coldmvc/app/debug/params.cfm</value>
 			</list>
@@ -63,8 +64,7 @@
 						<value>helperManager.addHelpers</value>
 						<value>viewHelperManager.findViewHelpers</value>
 						<value>router.addNamedRouteViewHelpers</value>
-						<value>tagManager.generateTags</value>
-						<value>renderer.generateTemplates</value>
+						<value>templateManager.loadTemplates</value>
 						<value>routeHandler.loadAliases</value>
 					</list>
 				</entry>
@@ -74,7 +74,7 @@
 						<value>modelFactory.clearCache</value>
 						<value>helperManager.addHelpers</value>
 						<value>tagManager.generateTags</value>
-						<value>renderer.generateTemplates</value>
+						<value>templateManager.generateTemplates</value>
 						<value>paramManager.populateParams</value>
 						<value>flashManager.startRequest</value>
 						<value>filterManager.enableFilters</value>
@@ -148,11 +148,7 @@
 	
 	<bean id="paramManager" class="coldmvc.app.util.ParamManager" />
 	
-	<bean id="renderer" class="coldmvc.app.util.Renderer">
-		<property name="development">
-			<value>${development}</value>
-		</property>
-	</bean>
+	<bean id="renderer" class="coldmvc.app.util.Renderer" />
 	
 	<bean id="routeDispatcher" class="coldmvc.app.util.RouteDispatcher">
 		<property name="defaultLayout">
@@ -175,6 +171,12 @@
 	</bean>
 	
 	<bean id="tagManager" class="coldmvc.app.util.TagManager">
+		<property name="development">
+			<value>${development}</value>
+		</property>
+	</bean>
+	
+	<bean id="templateManager" class="coldmvc.app.util.TemplateManager">
 		<property name="development">
 			<value>${development}</value>
 		</property>

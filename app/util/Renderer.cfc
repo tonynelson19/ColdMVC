@@ -3,159 +3,13 @@
  */
 component {
 
-	property beanInjector;
-	property development;
 	property eventDispatcher;
-	property fileSystemFacade;
-	property tagManager;
+	property templateManager;
 	property viewHelperManager;
 
-	public any function init() {
+	public Renderer function init() {
 
-		loaded = false;
 		return this;
-
-	}
-
-	/**
-	 * @hint This gets called preRequest to generate the views/layouts
-	 */
-	public void function generateTemplates() {
-
-		// grab the content from the tagManager and store it locally for performance gains
-		tagContent = tagManager.getContent();
-
-		// if the files haven't been generated yet (onApplicationStart) or you're in development mode, generate the files
-		if (!loaded || development) {
-			generateFiles();
-		}
-
-		loaded = true;
-
-	}
-
-	private void function deleteDirectory(string directory) {
-
-		// delete and recreate the folder
-		directory = expandPath("/#directory#/");
-
-		// if it exists, delete the directory
-		if (directoryExists(directory)) {
-			directoryDelete(directory, true);
-		}
-
-		// now create the empty directory
-		directoryCreate(directory);
-
-	}
-
-	private void function generateDirectory(string directory) {
-
-		// if the directory exists, loop over all the files and generate the templates
-		if (directoryExists(expandPath("/app/#directory#/"))) {
-
-			// only generate files with underscores, since those files are never accessed directory
-			var files = directoryList(expandPath("/app/#directory#/"), true, "path", "*_*.cfm");
-			var i = "";
-
-			for (i = 1; i <= arrayLen(files); i++) {
-				generateTemplate(directory, files[i]);
-			}
-
-		}
-
-	}
-
-	private void function generateFiles() {
-
-		// delete and recreate all views and layouts
-		lock name="coldmvc.app.util.Renderer" type="exclusive" timeout="5" throwontimeout="true" {
-			deleteDirectory("views");
-			deleteDirectory("layouts");
-			generateDirectory("views");
-			generateDirectory("layouts");
-		}
-
-	}
-
-	public void function generateTemplate(required string directory, required string path) {
-
-		// make the file path OS agnostic
-		path = replace(path, "\", "/", "all");
-
-		// switch the path to the generated folder
-		var generated = replace(path, "/app/#directory#/", "/.generated/#directory#/");
-
-		// add the tags to the content from the view/layout
-		var content = tagContent & fileRead(path);
-
-		// now get the directory for the generated template
-		directory = getDirectoryFromPath(generated);
-
-		// if the directory doesn't exist, create it
-		if (!directoryExists((directory))) {
-			directoryCreate(directory);
-		}
-
-		// now write the generated file to disk
-		fileWrite(generated, content);
-
-	}
-
-	public string function generate(required string directory, required string path) {
-
-		// build the full path to the template
-		var template = "/#directory#/#path#";
-
-		if (right(template, 4) != ".cfm") {
-			template = template & ".cfm";
-		}
-
-		var expanded = expandPath(template);
-
-		if (!fileSystemFacade.fileExists(expanded)) {
-
-			// make the file path OS agnostic
-			expanded = replace(expanded, "\", "/", "all");
-
-			// get the path to the ungenerated template
-			var original = replace(expanded, "/.generated/#directory#/", "/app/#directory#/");
-
-			// if the original file exists
-			if (fileSystemFacade.fileExists(original)) {
-
-				// then generate the template
-				generateTemplate(directory, original);
-
-			}
-
-		}
-
-		if (fileSystemFacade.fileExists(expanded)) {
-			return template;
-		}
-
-		return "";
-
-	}
-
-	public boolean function layoutExists(required string layout) {
-
-		return templateExists("layouts", layout);
-
-	}
-
-	public boolean function viewExists(required string view) {
-
-		return templateExists("views", view);
-
-	}
-
-	private boolean function templateExists(required string directory, required string path) {
-
-		var template = generate(directory, path);
-
-		return fileSystemFacade.fileExists(expandPath(template));
 
 	}
 
@@ -181,11 +35,11 @@ component {
 
 	private string function renderTemplate(required string directory, required string path, required string class) {
 
-		var template = generate(directory, path);
 		var output = "";
 
-		if (fileSystemFacade.fileExists(expandPath(template))) {
+		if (templateManager.templateExists(directory, path)) {
 
+			var template = templateManager.generate(directory, path);
 			var obj = createObject("component", class);
 
 			// add all the view helpers to the object

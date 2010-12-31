@@ -9,6 +9,7 @@ component {
 	property eventDispatcher;
 	property renderer;
 	property routeSerializer;
+	property templateManager;
 
 	public void function dispatchRoute() {
 
@@ -97,7 +98,7 @@ component {
 				var view = coldmvc.event.view();
 
 				// if the layout exists, render it
-				if (layout != "" && renderer.layoutExists(layout)) {
+				if (layout != "" && templateManager.layoutExists(layout)) {
 					output = renderer.renderLayout(layout);
 				}
 				// the layout didn't exists, so try to render the view

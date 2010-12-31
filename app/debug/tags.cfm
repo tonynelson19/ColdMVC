@@ -1,5 +1,7 @@
 <cfsilent>
-<cfset tags = coldmvc.factory.get("tagManager").getTemplates() />
+<cfset tagManager = coldmvc.factory.get("tagManager") />
+<cfset tags = tagManager.getTemplates() />
+<cfset tagLibraries = tagManager.getTagLibraries() />
 </cfsilent>
 
 <cfoutput>
@@ -19,6 +21,19 @@
 					<td class="coldmvc_field">&nbsp;</td>
 				</tr>
 			</cfif>
+		</tbody>
+	</table>
+</div>
+<h2>Tag Libraries</h2>
+<div class="coldmvc_debug_section">
+	<table>
+		<tbody>
+			<cfloop list="#listSort(structKeyList(tagLibraries), 'textnocase')#" index="prefix">
+				<tr>
+					<td class="coldmvc_label">#prefix#:</td>
+					<td class="coldmvc_field">#tagLibraries[prefix]#</td>
+				</tr>
+			</cfloop>
 		</tbody>
 	</table>
 </div>

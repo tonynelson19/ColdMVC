@@ -75,8 +75,13 @@ component {
 
 	public any function onRequestEnd() {
 
-		dispatchEvent("requestEnd");
-		dispatchEvent("postRequest");
+		try {
+			dispatchEvent("requestEnd");
+			dispatchEvent("postRequest");
+		}
+		catch(any e) {
+
+		}
 
 	}
 

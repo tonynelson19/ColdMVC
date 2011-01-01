@@ -374,12 +374,26 @@ component {
 
 	public void function addBean(required string id, required string class) {
 
+		var metaData = getComponentMetaData(class);
+		var initMethod = "";
+
+		while (structKeyExists(metaData, "extends")) {
+
+			if (structKeyExists(metaData, "initMethod")) {
+				initMethod = metaData.initMethod;
+				break;
+			}
+
+			metaData = metaData.extends;
+
+		}
+
 		singletons[id] = class;
 
 		beanDefinitions[id] = {
 			id = id,
 			class = class,
-			initMethod = "",
+			initMethod = initMethod,
 			constructed = false,
 			autowired = false,
 			properties = {}

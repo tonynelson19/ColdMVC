@@ -8,7 +8,20 @@ component {
 	public any function init() {
 
 		var settings = application.getApplicationSettings();
-		variables.ormEnabled = settings.ormEnabled;
+
+		ormEnabled = settings.ormEnabled;
+
+		if (ormEnabled) {
+
+			try {
+				ormGetSessionFactory();
+			}
+			catch(any e) {
+				// No entity using this datasource.
+				ormEnabled = false;
+			}
+
+		}
 
 		return this;
 

@@ -12,6 +12,18 @@ component {
 		var settings = application.getApplicationSettings();
 		ormEnabled = settings.ormEnabled;
 
+		if (ormEnabled) {
+
+			try {
+				ormGetSessionFactory();
+			}
+			catch(any e) {
+				// No entity using this datasource.
+				ormEnabled = false;
+			}
+
+		}
+
 		return this;
 
 	}

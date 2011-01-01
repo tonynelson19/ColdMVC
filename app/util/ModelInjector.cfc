@@ -15,14 +15,21 @@ component {
 	public any function init() {
 
 		cache = {};
+		models = {};
 
-		var appSettings = application.getApplicationSettings();
+		var settings = application.getApplicationSettings();
+		ormEnabled = settings.ormEnabled;
 
-		if (structKeyExists(appSettings, "ormEnabled") and appSettings.ormEnabled) {
-			models = ormGetSessionFactory().getAllClassMetaData();
-		}
-		else {
-			models = {};
+		if (structKeyExists(settings, "ormEnabled") and settings.ormEnabled) {
+
+			try {
+				models = ormGetSessionFactory().getAllClassMetaData();
+			}
+			catch(any e) {
+				// No entity using this datasource.
+				ormEnabled = false;
+			}
+
 		}
 
 		return this;
@@ -33,37 +40,41 @@ component {
 
 		var i = "";
 
-		autowire(bean);
+		if (ormEnabled) {
 
-		for (i = 1; i <= arrayLen(suffixes); i++) {
+			autowire(bean);
 
-			var suffix = suffixes[i];
+			for (i = 1; i <= arrayLen(suffixes); i++) {
 
-			if (right(arguments.beanName, len(suffix)) == suffix) {
+				var suffix = suffixes[i];
 
-				var metaData = getMetaData(bean);
+				if (right(arguments.beanName, len(suffix)) == suffix) {
 
-				if (structKeyExists(metaData, "model")) {
-					var model = metaData.model;
-				}
-				else {
-					var model = left(arguments.beanName, len(arguments.beanName)-len(suffix));
-				}
+					var metaData = getMetaData(bean);
 
-				if (modelManager.modelExists(model)) {
+					if (structKeyExists(metaData, "model")) {
+						var model = metaData.model;
+					}
+					else {
+						var model = left(arguments.beanName, len(arguments.beanName)-len(suffix));
+					}
 
-					var object = modelFactory.get(model);
-					var singular = coldmvc.string.camelize(model);
-					var plural = coldmvc.string.camelize(coldmvc.string.pluralize(model));
+					if (modelManager.modelExists(model)) {
 
-					var arg = {
-						"_#singular#" = object,
-						"__Model" = object,
-						"__singular" = singular,
-						"__plural" = plural
-					};
+						var object = modelFactory.get(model);
+						var singular = coldmvc.string.camelize(model);
+						var plural = coldmvc.string.camelize(coldmvc.string.pluralize(model));
 
-					bean.set__Model(arg);
+						var arg = {
+							"_#singular#" = object,
+							"__Model" = object,
+							"__singular" = singular,
+							"__plural" = plural
+						};
+
+						bean.set__Model(arg);
+
+					}
 
 				}
 

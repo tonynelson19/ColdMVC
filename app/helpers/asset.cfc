@@ -81,8 +81,14 @@ component {
 			return name;
 		}
 		else {
-			return "#getBaseURL()##type#/#name#";
+			return getAssetURL(type, name);
 		}
+
+	}
+
+	private string function getAssetURL(required string type, required string name) {
+
+		return getBaseURL() & type & "/" & name;
 
 	}
 

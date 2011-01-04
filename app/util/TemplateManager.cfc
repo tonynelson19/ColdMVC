@@ -10,8 +10,8 @@ component {
 	public TemplateManager function init() {
 
 		loaded = false;
-		cached = {};
-		private = [];
+		cache = {};
+		includes = [];
 		return this;
 
 	}
@@ -33,9 +33,9 @@ component {
 
 		if (development || !loaded) {
 			deleteFiles();
-			private = [];
+			includes = [];
 			loadTemplates();
-			loadPrivate();
+			generateIncludes();
 			loaded = true;
 		}
 
@@ -105,7 +105,7 @@ component {
 						cache[directory][template.name] = template;
 
 						if (left(template.file, 1) == "_") {
-							arrayAppend(private, template);
+							arrayAppend(includes, template);
 						}
 
 					}
@@ -118,11 +118,11 @@ component {
 
 	}
 
-	private void function loadPrivate() {
+	private void function generateIncludes() {
 
 		var i = "";
-		for (i = 1; i <= arrayLen(private); i++) {
-			generate(private[i].directory, private[i].name);
+		for (i = 1; i <= arrayLen(includes); i++) {
+			generate(includes[i].directory, includes[i].name);
 		}
 
 	}

@@ -1,6 +1,6 @@
 <cfif thisTag.executionMode eq "end">
 
-	<cfparam name="attributes.name" default="XHTML 1.0 Strict" />
+	<cfparam name="attributes.name" default="HTML" />
 
 	<cfswitch expression="#attributes.name#">
 
@@ -32,10 +32,16 @@
 			<cfset result = '<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN" "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">' />
 		</cfcase>
 
+		<cfcase value="HTML">
+			<cfset result = '<!DOCTYPE html>' />
+		</cfcase>
+
+		<cfdefaultcase>
+			<cfset result = '<!DOCTYPE #attributes.name#>' />
+		</cfdefaultcase>
+
 	</cfswitch>
 
-<cfoutput>
-#result#
-</cfoutput>
+	<cfset thisTag.generatedContent = result />
 
 </cfif>

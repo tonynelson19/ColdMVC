@@ -1,5 +1,3 @@
 <cfif thisTag.executionMode eq "end">
-	<cfoutput>
-		#coldmvc.form.url(argumentCollection=attributes)#
-	</cfoutput>
+	<cfset thisTag.generatedContent = coldmvc.form.url(argumentCollection=attributes) />
 </cfif>

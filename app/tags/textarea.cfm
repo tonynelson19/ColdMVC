@@ -1,5 +1,3 @@
 <cfif thisTag.executionMode eq "end">
-	<cfoutput>
-		#coldmvc.form.textarea(argumentCollection=attributes)#
-	</cfoutput>
+	<cfset thisTag.generatedContent = coldmvc.form.textarea(argumentCollection=attributes) />
 </cfif>

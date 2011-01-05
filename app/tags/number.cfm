@@ -1,5 +1,3 @@
 <cfif thisTag.executionMode eq "end">
-	<cfoutput>
-		#coldmvc.form.date(argumentCollection=attributes)#
-	</cfoutput>
+	<cfset thisTag.generatedContent = coldmvc.form.date(argumentCollection=attributes) />
 </cfif>

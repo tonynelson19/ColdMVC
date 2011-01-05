@@ -1,5 +1,3 @@
 <cfif thisTag.executionMode eq "end">
-	<cfoutput>
-		#coldmvc.form.hidden(argumentCollection=attributes)#
-	</cfoutput>
+	<cfset thisTag.generatedContent = coldmvc.form.hidden(argumentCollection=attributes) />
 </cfif>

@@ -64,7 +64,7 @@ component {
 
 		var template = "";
 		for (template in config.templates) {
-			fileWrite(config.templates[template].file, getContent() & fileRead(expandPath(config.templates[template].path)));
+			fileWrite(config.templates[template].file, addTags(fileRead(expandPath(config.templates[template].path))));
 		}
 
 	}
@@ -82,25 +82,6 @@ component {
 		}
 
 		loaded = true;
-
-	}
-
-	public string function getContent() {
-
-		if (!structKeyExists(variables, "content")) {
-
-			var array = [];
-			var key = "";
-
-			for (key in tagLibraries) {
-				arrayAppend(array, '<cfimport prefix="#key#" taglib="#tagLibraries[key]#" />');
-			}
-
-			variables.content = arrayToList(array, "");
-
-		}
-
-		return variables.content;
 
 	}
 
@@ -144,6 +125,22 @@ component {
 	public struct function getTemplates() {
 
 		return config.templates;
+
+	}
+
+	public string function addTags(required string content) {
+
+		var array = [];
+		var key = "";
+
+		// only append the library if the content is referencing it
+		for (key in tagLibraries) {
+			if (findNoCase("<#key#:", content)) {
+				arrayAppend(array, '<cfimport prefix="#key#" taglib="#tagLibraries[key]#" />');
+			}
+		}
+
+		return arrayToList(array, "") & content;
 
 	}
 

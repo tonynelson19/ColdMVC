@@ -1,6 +1,6 @@
 <cfif thisTag.executionMode eq "start">
 	<cfoutput>
-		#coldmvc.form.fieldset(argumentCollection=attributes)#
+	#coldmvc.form.fieldset(argumentCollection=attributes)#
 	</cfoutput>
 <cfelse>
 	</fieldset>

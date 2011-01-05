@@ -139,7 +139,7 @@ component {
 
 				// add the tags to the content from the view/layout
 				var templatePath = replace(expandPath(template.path), "\", "/", "all");
-				var templateContent = tagManager.getContent() & fileRead(templatePath);
+				var templateContent = tagManager.addTags(fileRead(templatePath));
 				var destinationPath = replace(expandPath("/app/#directory#/"), "\", "/", "all");
 				var generatedPath = replaceNoCase(destinationPath, "/app/#directory#/", "/.generated/#directory#/") & template.name;
 

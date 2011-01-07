@@ -77,6 +77,7 @@
 						<value>templateManager.generateTemplates</value>
 						<value>paramManager.populateParams</value>
 						<value>flashManager.startRequest</value>
+						<value>viewHelperManager.clearParams</value>
 						<value>filterManager.enableFilters</value>
 						<value>routeHandler.handleRequest</value>
 					</list>

@@ -5,7 +5,7 @@ component {
 
 	property development;
 	property pluginManager;
-	property templatePrefix;
+	property templateManager;
 
 	public TagManager function init() {
 
@@ -15,7 +15,6 @@ component {
 
 		directory = expandPath("/tags/");
 		directories = [];
-		templatePrefix = "";
 		loaded = false;
 
 		return this;
@@ -64,7 +63,7 @@ component {
 
 		var template = "";
 		for (template in config.templates) {
-			fileWrite(config.templates[template].file, addTags(fileRead(expandPath(config.templates[template].path))));
+			fileWrite(config.templates[template].file, templateManager.generateContent(fileRead(expandPath(config.templates[template].path))));
 		}
 
 	}
@@ -106,7 +105,7 @@ component {
 					var template = {};
 					template.name = getFileFromPath(templates[j]);
 					template.path = library.path & template.name;
-					template.file = expandPath("/tags/" & templatePrefix & template.name);
+					template.file = expandPath("/tags/" & template.name);
 
 					if (!structKeyExists(result.templates, template.name)) {
 						result.templates[template.name] = template;

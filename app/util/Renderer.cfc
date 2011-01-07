@@ -5,7 +5,6 @@ component {
 
 	property eventDispatcher;
 	property templateManager;
-	property viewHelperManager;
 
 	public Renderer function init() {
 
@@ -40,13 +39,8 @@ component {
 		if (templateManager.templateExists(directory, path)) {
 
 			var template = templateManager.generate(directory, path);
-			var obj = createObject("component", class);
 
-			// add all the view helpers to the object
-			viewHelperManager.addViewHelpers(obj);
-
-			// now call the object's render method
-			output = obj._render(template);
+			output = createObject("component", class).init(template);
 
 		}
 

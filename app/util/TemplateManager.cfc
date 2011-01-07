@@ -139,7 +139,7 @@ component {
 
 				// add the tags to the content from the view/layout
 				var templatePath = replace(expandPath(template.path), "\", "/", "all");
-				var templateContent = tagManager.addTags(fileRead(templatePath));
+				var templateContent = generateContent(fileRead(templatePath));
 				var destinationPath = replace(expandPath("/app/#directory#/"), "\", "/", "all");
 				var generatedPath = replaceNoCase(destinationPath, "/app/#directory#/", "/.generated/#directory#/") & template.name;
 
@@ -163,6 +163,12 @@ component {
 		}
 
 		return "";
+
+	}
+
+	public string function generateContent(required string content) {
+
+		return tagManager.addTags('<cfset coldmvc.factory.get("viewHelperManager").addViewHelpers(variables) />' & content);
 
 	}
 

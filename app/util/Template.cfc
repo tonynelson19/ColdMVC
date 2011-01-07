@@ -1,10 +1,10 @@
 component {
 
-	public string function _render(required string template) {
+	public string function init(required string template) {
 
 		structAppend(variables, this);
 		structDelete(variables, "this");
-		structDelete(variables, "_render");
+		structDelete(variables, "init");
 		structAppend(variables, coldmvc.params.get());
 
 		savecontent variable="local.html" {

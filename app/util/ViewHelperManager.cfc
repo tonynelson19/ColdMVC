@@ -92,17 +92,15 @@ component {
 
 	}
 
-	public void function addViewHelpers(required any object) {
+	public void function addViewHelpers(required any vars) {
 
 		var viewHelper = "";
 
 		for (viewHelper in viewHelpers) {
 
-			// add the view helper to the object
-			object[viewHelper] = callViewHelper;
-
-			// if a param matches the same name as the view helper, clear it out
-			coldmvc.params.clear(viewHelper);
+			if (!structKeyExists(vars, viewHelper)) {
+				vars[viewHelper] = callViewHelper;
+			}
 
 		}
 
@@ -141,6 +139,17 @@ component {
 				return evaluate("bean.#viewHelper.method#(argumentCollection=args)");
 			}
 
+		}
+
+	}
+
+	public void function clearParams() {
+
+		var viewHelper = "";
+
+		// if a param matches the same name as the view helper, clear it out
+		for (viewHelper in viewHelpers) {
+			coldmvc.params.clear(viewHelper);
 		}
 
 	}

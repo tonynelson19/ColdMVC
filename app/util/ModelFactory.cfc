@@ -9,8 +9,11 @@ component {
 	property modelManager;
 
 	public any function init() {
+
 		cache = {};
+
 		return this;
+
 	}
 
 	public void function clearCache() {
@@ -24,19 +27,19 @@ component {
 
 	public any function get(required string name) {
 
-		if (!structKeyExists(cache, name)) {
+		if (!structKeyExists(cache, arguments.name)) {
 
-			var model = entityNew(name);
+			var model = entityNew(arguments.name);
 
 			// put it into the cache now to avoid circular dependencies
-			cache[name] = model;
+			cache[arguments.name] = model;
 
 			// inject any other models into this model
 			coldmvc.factory.autowire(model);
 
 		}
 
-		return cache[name];
+		return cache[arguments.name];
 
 	}
 

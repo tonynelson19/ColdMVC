@@ -17,6 +17,9 @@ component {
 		else if (isQuery(data)) {
 			return "query";
 		}
+		else if (isXML(data)) {
+			return "xml";
+		}
 		return "string";
 
 	}
@@ -105,29 +108,20 @@ component {
 		switch(type(data)) {
 
 			case "array": {
-
 				for (i = 1; i <= arrayLen(data); i++) {
 					arrayAppend(result, toQueryString(data[i], querystring));
 				}
-
 				break;
-
 			}
 
 			case "struct": {
-
 				arrayAppend(result, coldmvc.struct.toQueryString(data));
-
 				break;
-
 			}
 
 			case "string": {
-
 				arrayAppend(result, data);
-
 				break;
-
 			}
 
 		}

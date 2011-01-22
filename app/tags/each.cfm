@@ -12,6 +12,7 @@
 	<cfparam name="attributes.in" default="" />
 	<cfparam name="attributes.start" default="1" />
 	<cfparam name="attributes.delimeter" default="," />
+	<cfparam name="attributes.class" default="" />
 
 	<cfset attributes.length = coldmvc.data.count(attributes.in, attributes.delimeter) />
 
@@ -72,8 +73,6 @@
 		<cfexit method="loop" />
 	</cfif>
 
-	<cfoutput>
-		#arrayToList(content, "")#
-	</cfoutput>
+	<cfset thisTag.generatedContent = arrayToList(content, "") />
 
 </cfif>

@@ -94,7 +94,8 @@ component {
 					callMethods("layoutController", "Layout");
 				}
 
-				// get the view from the event
+				// update the values from the event in case it changed
+				layout = coldmvc.event.layout();
 				var view = coldmvc.event.view();
 
 				// if the layout exists, render it

@@ -42,7 +42,6 @@
 				<value>/coldmvc/app/debug/models.cfm</value>
 				<value>/coldmvc/app/debug/templates.cfm</value>
 				<value>/coldmvc/app/debug/events.cfm</value>
-				<value>/coldmvc/app/debug/params.cfm</value>
 			</list>
 		</property>
 	</bean>

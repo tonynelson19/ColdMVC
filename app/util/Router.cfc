@@ -40,6 +40,12 @@ component {
 
 	private void function includeConfigPath(required string configPath) {
 
+		// in case of loops inside the config file
+		var i = "";
+		var j = "";
+		var k = "";
+		var l = "";
+
 		if (fileSystemFacade.fileExists(expandPath(configPath))) {
 			include configPath;
 		}

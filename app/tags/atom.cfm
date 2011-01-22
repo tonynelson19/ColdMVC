@@ -5,7 +5,7 @@
 	</cfif>
 
 	<cfoutput>
-	<link rel="alternate" type="application/atom+xml" href="#attributes.url#" />
+	<link rel="alternate" type="application/atom+xml" href="#attributes.url#"<cfif structKeyExists(attributes, "title")> title="#attributes.title#"</cfif> />
 	</cfoutput>
 
 </cfif>

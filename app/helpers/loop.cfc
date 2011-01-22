@@ -23,6 +23,22 @@ component {
 			caller[attributes.count] = attributes.length;
 		}
 
+		if (structKeyExists(attributes, "class")) {
+
+			var class = [];
+
+			if (attributes.start == 1) {
+				arrayAppend(class, "first");
+			}
+
+			if (attributes.start == attributes.length) {
+				arrayAppend(class, "last");
+			}
+
+			caller[attributes.class] = arrayToList(class, " ");
+
+		}
+
 		return caller;
 
 	}

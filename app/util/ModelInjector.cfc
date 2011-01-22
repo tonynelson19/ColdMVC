@@ -72,7 +72,9 @@ component {
 							"__plural" = plural
 						};
 
-						bean.set__Model(arg);
+						if (structKeyExists(bean, "set__Model")) {
+							bean.set__Model(arg);
+						}
 
 					}
 

@@ -19,6 +19,34 @@ component {
 
 	}
 
+	public string function toAttributes(required struct struct) {
+
+		var array = [];
+		var keys = sortKeys(struct);
+		var i = "";
+
+		for (i = 1; i <= arrayLen(keys); i++) {
+
+			var key = keys[i];
+			var value = struct[key];
+
+			if (isSimpleValue(value) && value != "") {
+
+				// convert data_foo to data-foo
+				key = replace(key, "_", "-", "all");
+				key = replace(key, " ", "-", "all");
+				key = lcase(key);
+
+				arrayAppend(array, "#key#=#htmlEditFormat(value)#");
+
+			}
+
+		}
+
+		return arrayToList(array, " ");
+
+	}
+
 	public string function toJSON(required struct struct) {
 
 		return serializeJSON(struct);
@@ -84,7 +112,7 @@ component {
 			var value = struct[key];
 
 			if (isSimpleValue(value)) {
-				arrayAppend(array, "#key#=#urlEncodedFormat(struct[key])#");
+				arrayAppend(array, "#key#=#urlEncodedFormat(value)#");
 			}
 
 		}

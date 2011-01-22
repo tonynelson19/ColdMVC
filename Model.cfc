@@ -11,19 +11,27 @@ component {
 	property updatedBy;
 
 	public any function add(required string to, required any object) {
-		return DAO.add(this, to, object);
+
+		return DAO.add(this, arguments.to,  arguments.object);
+
 	}
 
 	public numeric function count() {
+
 		return DAO.count(this);
+
 	}
 
 	public numeric function countWhere(required struct parameters) {
-		return DAO.countWhere(this, parameters);
+
+		return DAO.countWhere(this, arguments.parameters);
+
 	}
 
 	public void function delete(boolean flush="true") {
-		DAO.delete(this, flush);
+
+		DAO.delete(this, arguments.flush);
+
 	}
 
 	public boolean function exists(string id) {
@@ -38,22 +46,22 @@ component {
 
 	public array function findAll(required string query, struct parameters, struct options) {
 
-		if (isNull(parameters)) {
-			parameters = {};
+		if (!structKeyExists(arguments, "parameters")) {
+			 arguments.parameters = {};
 		}
 
-		if (isNull(options)) {
-			options = {};
+		if (!structKeyExists(arguments, "options")) {
+			 arguments.options = {};
 		}
 
-		return DAO.findAll(this, query, parameters, options);
+		return DAO.findAll(this, arguments.query, arguments.parameters, arguments.options);
 
 	}
 
 	public any function findWhere(required struct parameters, struct options) {
 
-		if (isNull(options)) {
-			options = {};
+		if (!structKeyExists(arguments, "options")) {
+			 arguments.options = {};
 		}
 
 		return DAO.findWhere(this, parameters, options);
@@ -62,8 +70,8 @@ component {
 
 	public array function findAllWhere(required struct parameters, struct options) {
 
-		if (isNull(options)) {
-			options = {};
+		if (!structKeyExists(arguments, "options")) {
+			 arguments.options = {};
 		}
 
 		return DAO.findAllWhere(this, parameters, options);
@@ -119,8 +127,8 @@ component {
 
 	public array function getAll(required any ids, struct options) {
 
-		if (isNull(options)) {
-			arguments.options = {};
+		if (!structKeyExists(arguments, "options")) {
+			 arguments.options = {};
 		}
 
 		return DAO.getAll(this, arguments.ids, arguments.options);
@@ -128,14 +136,17 @@ component {
 	}
 
 	public boolean function has(required string property) {
-		var value = _get(property);
+
+		var value = _get(arguments.property);
+
 		return coldmvc.data.count(value) > 0;
+
 	}
 
 	public array function list(struct options) {
 
-		if (isNull(options)) {
-			arguments.options = {};
+		if (!structKeyExists(arguments, "options")) {
+			 arguments.options = {};
 		}
 
 		return DAO.list(this, arguments.options);
@@ -147,7 +158,7 @@ component {
 		var model = DAO.new(this);
 
 		if (structKeyExists(arguments, "data")) {
-			model.populate(data, properties);
+			model.populate(arguments.data, arguments.properties);
 		}
 
 		return model;
@@ -155,11 +166,32 @@ component {
 	}
 
 	public any function populate(any data, string properties="") {
+
 		return DAO.populate(this, data, properties);
+
+	}
+
+	public any function prop(required string property, any value) {
+
+		if (structKeyExists(arguments, "value")) {
+
+			_set(arguments.property, arguments.value);
+
+			return this;
+
+		}
+		else {
+
+			return _get(arguments.property);
+
+		}
+
 	}
 
 	public any function save(boolean flush="true") {
-		return DAO.save(this, flush);
+
+		return DAO.save(this, arguments.flush);
+
 	}
 
 	public any function _set(required string property, any value) {
@@ -180,7 +212,9 @@ component {
 	}
 
 	public any function onMissingMethod(required string missingMethodName, required struct missingMethodArguments) {
-		return DAO.missingMethod(this, missingMethodName, missingMethodArguments);
+
+		return DAO.missingMethod(this, arguments.missingMethodName, arguments.missingMethodArguments);
+
 	}
 
 }

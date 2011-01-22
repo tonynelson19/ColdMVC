@@ -26,6 +26,7 @@ component {
 
 		aliases["/#defaultController#"] = "";
 		aliases["/#defaultController#/#action#"] = "";
+		aliases["/"] = "";
 
 	}
 
@@ -169,6 +170,7 @@ component {
 
 			// remove the reference to the index file
 			address = replaceNoCase(address, "/index.cfm", "");
+
 		}
 
 		return address;

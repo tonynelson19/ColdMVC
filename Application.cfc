@@ -355,14 +355,32 @@ component {
 			"reloadKey" = "init",
 			"reloadPassword" = "",
 			"rootPath" = this.rootPath,
-			"sesURLs" = "false",
-			"urlPath" = cgi.script_name
+			"sesURLs" = "false"
 		};
 
 		structAppend(variables.settings, defaults, false);
 
+		if (!structKeyExists(variables.settings, "urlPath")) {
+
+			if (variables.settings["sesURLs"]) {
+				variables.settings["urlPath"] = replaceNoCase(cgi.script_name, "/index.cfm", "");
+			}
+			else {
+				variables.settings["urlPath"] = cgi.script_name;
+			}
+
+		}
+
 		if (!structKeyExists(variables.settings, "assetPath")) {
-			variables.settings["assetPath"] = replaceNoCase(variables.settings["urlPath"], "index.cfm", "");
+
+			var assetPath = replaceNoCase(variables.settings["urlPath"], "index.cfm", "");
+
+			if (right(assetPath, 1) != "/") {
+				assetPath = assetPath & "/";
+			}
+
+			variables.settings["assetPath"] = assetPath;
+
 		}
 
 		application["coldmvc"] = {};

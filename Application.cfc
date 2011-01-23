@@ -245,11 +245,11 @@ component {
 		defaults["/layouts"] = this.rootPath & ".generated/layouts/";
 		defaults["/tags"] = this.rootPath & ".generated/tags/";
 
-		if (directoryExists(expandPath("/plugins"))) {
-			defaults["/plugins"] = sanitizeFilePath(expandPath("/plugins"));
-		}
-		else {
+		if (directoryExists(this.rootPath & "plugins/")) {
 			defaults["/plugins"] = this.rootPath & "plugins/";
+		}
+		else if (directoryExists(expandPath("/plugins"))) {
+			defaults["/plugins"] = sanitizeFilePath(expandPath("/plugins"));
 		}
 
 		if (directoryExists(this.rootPath & "coldmvc/")) {

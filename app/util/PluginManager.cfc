@@ -14,13 +14,15 @@ component {
 			requires = {}
 		};
 
+		fileSystemFacade = new coldmvc.app.util.FileSystemFacade();
+
 		return this;
 
 	}
 
 	public void function loadPlugins() {
 
-		if (_fileExists(expandPath(configPath))) {
+		if (fileSystemFacade.fileExists(expandPath(configPath))) {
 			include configPath;
 		}
 
@@ -41,19 +43,19 @@ component {
 
 			var original = plugin.path;
 
-			if (!directoryExists(plugin.path)) {
+			if (!fileSystemFacade.directoryExists(plugin.path)) {
 				plugin.path = expandPath(plugin.path);
 			}
 
-			if (!directoryExists(plugin.path)) {
+			if (!fileSystemFacade.directoryExists(plugin.path)) {
 				plugin.path = expandPath("/plugins/" & original);
 			}
 
-			if (!directoryExists(plugin.path)) {
+			if (!fileSystemFacade.directoryExists(plugin.path)) {
 				plugin.path = expandPath("/coldmvc" & original);
 			}
 
-			if (!directoryExists(plugin.path)) {
+			if (!fileSystemFacade.directoryExists(plugin.path)) {
 				throw("Invalid plugin path: #original#");
 			}
 
@@ -75,7 +77,7 @@ component {
 
 			var mappedPlugins = "/plugins" & replaceNoCase(config, rootPath, "");
 
-			if (_fileExists(config)) {
+			if (fileSystemFacade.fileExists(config)) {
 				include mappedPlugins;
 			}
 
@@ -163,20 +165,6 @@ component {
 		}
 
 		return filePath;
-
-	}
-
-	private boolean function _fileExists(required string filePath) {
-
-		var result = false;
-
-		try {
-			result = fileExists(filePath);
-		}
-		catch (any e) {
-		}
-
-		return result;
 
 	}
 

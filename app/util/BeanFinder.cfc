@@ -3,6 +3,7 @@
  */
 component {
 
+	property fileSystemFacade;
 	property pluginManager;
 
 	public BeanFinder function init() {
@@ -35,7 +36,7 @@ component {
 			var directory = replace(expandPath(directories[i]), "\", "/", "all");
 			var classPath = getClassPath(directories[i]);
 
-			if (directoryExists(directory)) {
+			if (fileSystemFacade.directoryExists(directory)) {
 
 				var components = directoryList(directory, true, "query", "*.cfc");
 

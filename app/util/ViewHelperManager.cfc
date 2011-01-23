@@ -4,8 +4,8 @@
 component {
 
 	property beanFactory;
-	property metaDataFlattener;
 	property fileSystemFacade;
+	property metaDataFlattener;
 	property pluginManager;
 
 	public ViewHelperManager function init() {

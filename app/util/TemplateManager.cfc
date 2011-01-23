@@ -4,6 +4,7 @@
 component {
 
 	property development;
+	property fileSystemFacade;
 	property pluginManager;
 	property tagManager;
 
@@ -56,7 +57,7 @@ component {
 		directory = expandPath("/#directory#/");
 
 		// if it exists, delete the directory
-		if (directoryExists(directory)) {
+		if (fileSystemFacade.directoryExists(directory)) {
 			directoryDelete(directory, true);
 		}
 
@@ -82,7 +83,7 @@ component {
 
 			var expandedDirectory = replace(expandPath(paths[i]), "\", "/", "all");
 
-			if (directoryExists(expandedDirectory)) {
+			if (fileSystemFacade.directoryExists(expandedDirectory)) {
 
 				var files = directoryList(expandedDirectory, true, "path", "*.cfm");
 
@@ -147,7 +148,7 @@ component {
 				var generatedDirectory = getDirectoryFromPath(generatedPath);
 
 				// if the directory doesn't exist, create it
-				if (!directoryExists((generatedDirectory))) {
+				if (!fileSystemFacade.directoryExists((generatedDirectory))) {
 					directoryCreate(generatedDirectory);
 				}
 

@@ -4,6 +4,7 @@
 component {
 
 	property development;
+	property fileSystemFacade;
 	property pluginManager;
 	property templateManager;
 
@@ -55,7 +56,7 @@ component {
 
 	private void function generateFiles() {
 
-		if (directoryExists(directory)) {
+		if (fileSystemFacade.directoryExists(directory)) {
 			directoryDelete(directory, true);
 		}
 
@@ -96,7 +97,7 @@ component {
 			library.path = replace(directories[i], "\", "/", "all");
 			library.directory = expandPath(library.path);
 
-			if (directoryExists(library.directory)) {
+			if (fileSystemFacade.directoryExists(library.directory)) {
 
 				var templates = directoryList(library.directory, true, "path", "*.cfm");
 				var j = "";

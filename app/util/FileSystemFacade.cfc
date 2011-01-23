@@ -1,7 +1,20 @@
 /**
- * @hint Wrapper around system functions to trap security errors on shared hosting
+ * @singleton
  */
 component {
+
+	public boolean function directoryExists(required string directoryPath) {
+
+		var result = false;
+
+		try {
+			result = directoryExists(directoryPath);
+		}
+		catch (any e) {}
+
+		return result;
+
+	}
 
 	public boolean function fileExists(required string filePath) {
 
@@ -10,8 +23,7 @@ component {
 		try {
 			result = fileExists(filePath);
 		}
-		catch (any e) {
-		}
+		catch (any e) { }
 
 		return result;
 

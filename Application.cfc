@@ -245,17 +245,17 @@ component {
 		defaults["/layouts"] = this.rootPath & ".generated/layouts/";
 		defaults["/tags"] = this.rootPath & ".generated/tags/";
 
-		if (directoryExists(this.rootPath & "plugins/")) {
+		if (_directoryExists(this.rootPath & "plugins/")) {
 			defaults["/plugins"] = this.rootPath & "plugins/";
 		}
-		else if (directoryExists(expandPath("/plugins"))) {
+		else if (_directoryExists(expandPath("/plugins"))) {
 			defaults["/plugins"] = sanitizeFilePath(expandPath("/plugins"));
 		}
 
-		if (directoryExists(this.rootPath & "coldmvc/")) {
+		if (_directoryExists(this.rootPath & "coldmvc/")) {
 			defaults["/coldmvc"] = this.rootPath & "coldmvc/";
 		}
-		else if (directoryExists(expandPath("/coldmvc"))) {
+		else if (_directoryExists(expandPath("/coldmvc"))) {
 			defaults["/coldmvc"] = sanitizeFilePath(expandPath("/coldmvc"));
 		}
 
@@ -443,6 +443,19 @@ component {
 		}
 		catch (any e) {
 		}
+
+		return result;
+
+	}
+
+	private boolean function _directoryExists(required string directoryPath) {
+
+		var result = false;
+
+		try {
+			result = directoryExists(directoryPath);
+		}
+		catch (any e) {}
 
 		return result;
 

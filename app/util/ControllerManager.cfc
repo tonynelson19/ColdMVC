@@ -220,7 +220,6 @@ component {
 				}
 				else {
 					controller["key"] = left(beanDef, len(beanDef)-length);
-					controller["key"] = controller.key;
 					controller["key"] = coldmvc.string.underscore(controller.key);
 				}
 

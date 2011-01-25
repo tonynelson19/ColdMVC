@@ -40,7 +40,7 @@ component {
 	}
 
 	/**
-	 * @viewHelper renderJS
+	 * @viewHelper renderImage
 	 */
 	public string function renderImage(required string name) {
 

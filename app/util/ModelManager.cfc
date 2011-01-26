@@ -112,21 +112,19 @@ component {
 				if (propertyTypes[i].isAssociationType()) {
 
 					var relationship = {};
+					relationship.name = propertyNames[i];
+					relationship.property = relationship.name;
 
 					if (propertyTypes[i].isCollectionType()) {
 
-						var collectionMetaData = ormGetSessionFactory().getCollectionMetaData(propertyTypes[i].getRole());
+						var relationshipMetaData = ormGetSessionFactory().getCollectionMetaData(propertyTypes[i].getRole());
 
-						relationship.name = propertyTypes[i].getRole();
-						relationship.entity = collectionMetaData.getCollectionType().getAssociatedEntityName(ormGetSessionFactory());
-						relationship.table = collectionMetaData.getTableName();
-						relationship.property = listLast(relationship.name, ".");
-						relationship.param = coldmvc.string.camelize(relationship.entity) & "ID";
+						relationship.entity = relationshipMetaData.getCollectionType().getAssociatedEntityName(ormGetSessionFactory());
 
-						if (collectionMetaData.isManyToMany()) {
+						if (relationshipMetaData.isManyToMany()) {
 							relationship.type = "ManyToMany";
 						}
-						else if (collectionMetaData.isOneToMany()) {
+						else if (relationshipMetaData.isOneToMany()) {
 							relationship.type = "OneToMany";
 						}
 						else {
@@ -136,17 +134,15 @@ component {
 					}
 					else {
 
-						relationship.name = propertyTypes[i].getName();
+						var relationshipMetaData = ormGetSessionFactory().getClassMetaData(propertyTypes[i].getName());
 
-						var associationMetaData = ormGetSessionFactory().getClassMetaData(relationship.name);
-
-						relationship.entity = associationMetaData.getEntityName();
-						relationship.table = associationMetaData.getTableName();
-						relationship.property = coldmvc.string.camelize(relationship.entity);
-						relationship.param = relationship.property & "ID";
+						relationship.entity = relationshipMetaData.getEntityName();
 						relationship.type = "ManyToOne";
 
 					}
+
+					relationship.table = relationshipMetaData.getTableName();
+					relationship.param = coldmvc.string.camelize(relationship.entity) & "ID";
 
 					if (structKeyExists(result.properties, relationship.property)) {
 

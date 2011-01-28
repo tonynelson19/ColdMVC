@@ -48,13 +48,13 @@
 		<cfset args.disabled = getKey(args, "disabled", false) />
 		<cfset args.visible = getKey(args, "visible", true) />
 
-		<cfloop list="class,style,instructions" index="i">
+		<cfloop list="class,style,instructions,placeholder" index="i">
 			<cfset args[i] = getKey(args, i) />
 		</cfloop>
 
 		<cfset args.common = [] />
 
-		<cfloop list="name,id,title,class" index="i">
+		<cfloop list="name,id,title,class,placeholder" index="i">
 			<cfif args[i] neq "">
 				<cfset arrayAppend(args.common, '#i#="#htmlEditFormat(args[i])#"') />
 			</cfif>

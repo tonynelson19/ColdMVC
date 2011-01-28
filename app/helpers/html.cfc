@@ -4,6 +4,8 @@
 
 	<cffunction name="table" access="public" output="false" returntype="string">
 		<cfargument name="class" required="false" default="list" />
+		<cfargument name="cellspacing" required="false" default="0" type="numeric" />
+		<cfargument name="width" required="false" default="100%" type="string" />
 
 		<cfset configure(arguments) />
 
@@ -12,7 +14,7 @@
 			<cfif arguments.label neq "">
 				<div class="header">#arguments.label#</div>
 			</cfif>
-			<table width="100%" cellspacing="0" class="#arguments.class#">
+			<table width="#arguments.width#" cellspacing="#arguments.cellspacing#" class="#arguments.class#">
 		</cfsavecontent>
 		</cfoutput>
 

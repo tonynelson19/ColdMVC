@@ -42,9 +42,9 @@ component {
 	/**
 	 * @viewHelper renderImage
 	 */
-	public string function renderImage(required string name) {
+	public string function renderImage(required string name, string title="", string alt="") {
 
-		return '<img src="#linkToImage(name)#" alt="" />';
+		return '<img src="#linkToImage(name)#" title="#title#" alt="#alt#" />';
 
 	}
 

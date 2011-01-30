@@ -1,7 +1,7 @@
 <cfcomponent extends="coldmvc.Helper">
 
 	<!--- to add to this list, use setAllowBinding("mytag") --->
-	<cfset this.bindTags = "checkbox,color,date,email,hidden,input,number,password,radio,search,select,text,textarea,time,upload,url" />
+	<cfset this.bindTags = "checkbox,color,date,email,hidden,input,number,password,phone,radio,range,search,select,text,textarea,time,upload,url" />
 
 	<!------>
 

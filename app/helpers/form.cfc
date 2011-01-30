@@ -223,6 +223,25 @@
 
 	<!------>
 
+	<cffunction name="phone" access="public" output="false" returntype="string">
+
+		<cfset arguments.tag = "phone" />
+
+		<cfset append(arguments, "class", "phone") />
+		<cfset configure(arguments) />
+
+		<cfoutput>
+		<cfsavecontent variable="arguments.field">
+			<input type="tel" #arguments.common# value="#htmlEditFormat(arguments.value)#" />
+		</cfsavecontent>
+		</cfoutput>
+
+		<cfreturn this.field(argumentCollection=arguments) />
+
+	</cffunction>
+
+	<!------>
+
 	<cffunction name="radio" access="public" output="false" returntype="string">
 
 		<cfreturn radioOrCheckbox(arguments, "radio") />
@@ -267,6 +286,25 @@
 		</cfoutput>
 
 		<cfreturn this.field(argumentCollection=args) />
+
+	</cffunction>
+
+	<!------>
+
+	<cffunction name="range" access="public" output="false" returntype="string">
+
+		<cfset arguments.tag = "range" />
+
+		<cfset append(arguments, "class", "range") />
+		<cfset configure(arguments) />
+
+		<cfoutput>
+		<cfsavecontent variable="arguments.field">
+			<input type="range" #arguments.common# value="#htmlEditFormat(arguments.value)#" />
+		</cfsavecontent>
+		</cfoutput>
+
+		<cfreturn this.field(argumentCollection=arguments) />
 
 	</cffunction>
 

@@ -11,12 +11,14 @@ component {
 	property modelManager;
 	property pluginManager;
 	property viewHelperManager;
+	property preventDefaults;
 
 	public Router function init() {
 
 		routes = [];
 		namedRoutes = {};
 		models = {};
+		preventDefaults = false;
 
 		return this;
 
@@ -34,7 +36,9 @@ component {
 			includeConfigPath(plugins[i].mapping & path);
 		}
 
-		includeConfigPath("/coldmvc" & path);
+		if (!preventDefaults) {
+			includeConfigPath("/coldmvc" & path);
+		}
 
 	}
 

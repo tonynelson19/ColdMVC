@@ -285,8 +285,7 @@ component {
 			eventHandler = "coldmvc.app.util.EventHandler",
 			eventHandling = true,
 			namingStrategy = "coldmvc.app.util.NamingStrategy",
-			flushAtRequestEnd = false,
-			saveMapping = true
+			flushAtRequestEnd = false
 		};
 
 		if (structKeyExists(settings, "ormDialect")) {
@@ -306,19 +305,37 @@ component {
 		}
 
 		structAppend(this.ormSettings, defaults, false);
-
-		// if autogenmap hasn't been explicitly set already
-		if (!structKeyExists(this.ormSettings, "autogenmap")) {
-
-			// not sure why the mapping doesn't work here
-			// should also find a better way to cache this result so it's not executed each request
-			if (_fileExists(this.rootPath & "/config/hibernate.hbmxml")) {
+		
+		// check to see if a hibernate mapping file exists
+		if (_fileExists(this.rootPath & "/config/hibernate.hbmxml")) {
+		
+			// if autoGenMap hasn't been explicitly set already
+			if (!structKeyExists(this.ormSettings, "autoGenMap")) {
 
 				// don't generate the mapping files if they have one
-				this.ormSettings.autogenmap = false;
+				this.ormSettings.autoGenMap = false;
+
+			}
+			
+			// if saveMapping hasn't been set already
+			if (!structKeyExists(this.ormSettings, "saveMapping")) {
+
+				// don't generate the mapping files if they have one
+				this.ormSettings.saveMapping = true;
 
 			}
 
+		}
+		else {
+			
+			// if saveMapping hasn't been set already
+			if (!structKeyExists(this.ormSettings, "saveMapping")) {
+
+				// don't generate the mapping files if they have one
+				this.ormSettings.saveMapping = false;
+
+			}
+			
 		}
 
 	}

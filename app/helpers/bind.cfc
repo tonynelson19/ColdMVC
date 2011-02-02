@@ -1,5 +1,6 @@
 /**
- * @extends coldmvc.Helper
+ * @extends coldmvc.Scope
+ * @scope request
  */
 component {
 
@@ -41,11 +42,11 @@ component {
 	}
 
 	public any function set(string key, any value) {
-		return coldmvc.request.set("bind[#key#]", value);
+		return super.set(key, value);
 	}
 
 	public array function getAll(string key) {
-		return coldmvc.request.get("bind[#key#]", []);
+		return super.get(key, []);
 	}
 
 }

@@ -38,7 +38,7 @@
 		<cfset args.name = getKey(args, "name") />
 		<cfset args.originalName = args.name />
 		<cfset args.label = getLabel(args) />
-		<cfset args.value = getValue(args, "value") />
+		<cfset args.value = getValue(args) />
 		<cfset args.name = getName(args) />
 		<cfset args.id = getID(args) />
 		<cfset args.title = getKey(args, "title", args.label) />
@@ -259,6 +259,19 @@
 
 	<!------>
 
+	<cffunction name="getBinding" access="private" output="false" returntype="string">
+		<cfargument name="args" required="true" type="struct" />
+
+		<cfif args.bind neq "">
+			<cfreturn args.bind />
+		<cfelse>
+			<cfreturn coldmvc.bind.get() />
+		</cfif>
+
+	</cffunction>
+
+	<!------>
+
 	<cffunction name="getName" access="private" output="false" returntype="string">
 		<cfargument name="args" required="true" type="struct" />
 
@@ -266,12 +279,10 @@
 
 		<cfif args.binding>
 
-			<cfset var binding = coldmvc.bind.get("form") />
+			<cfset var binding = getBinding(args) />
 
 			<cfif binding neq "">
-
 				<cfset name = coldmvc.string.camelize(binding) & "." & args.name />
-
 			</cfif>
 
 		</cfif>
@@ -299,6 +310,15 @@
 
 	<!------>
 
+	<cffunction name="cleanID" access="private" output="false" returntype="string">
+		<cfargument name="id" required="true" type="string" />
+
+		<cfreturn replace(arguments.id, ".", "_", "all") />
+
+	</cffunction>
+
+	<!------>
+
 	<cffunction name="getValue" access="private" output="false" returntype="string">
 		<cfargument name="args" required="true" type="struct" />
 
@@ -318,15 +338,27 @@
 				</cfif>
 
 				<!--- if you're currently inside a form that's bound to a param --->
-				<cfset var binding = coldmvc.bind.get("form") />
+				<cfset var binding = getBinding(args) />
 
 				<cfif binding neq "">
 
 					<!--- check to see if the binding exists (aka params.user) --->
 					<cfif coldmvc.params.has(binding)>
 
-						<!--- get the value off the binding --->
-						<cfset value = coldmvc.params.get(binding)._get(args.name) />
+						<cfset var param = coldmvc.params.get(binding) />
+						<cfset var type = coldmvc.data.type(param) />
+
+						<cfswitch expression="#type#">
+
+							<cfcase value="object">
+								<cfset value = param._get(args.name) />
+							</cfcase>
+
+							<cfcase value="struct">
+								<cfset value = param[args.name] />
+							</cfcase>
+
+						</cfswitch>
 
 					</cfif>
 
@@ -471,7 +503,7 @@
 			<cfsavecontent variable="local.string">
 				<div #_wrapper(arguments)#>
 					<div class="label">
-						<label id="label_for_#arguments.id#" for="#arguments.id#" title="#htmlEditFormat(arguments.title)#">#htmlEditFormat(arguments.label)#:</label>
+						<label id="label_for_#cleanID(arguments.id)#" for="#arguments.id#" title="#htmlEditFormat(arguments.title)#">#htmlEditFormat(arguments.label)#:</label>
 					</div>
 					<div class="field">
 						#trim(arguments.field)#
@@ -499,7 +531,7 @@ g
 		<cfset var string = 'class="wrapper"' />
 
 		<cfif args.id neq "">
-			<cfset string = string & ' id="wrapper_for_#args.id#"' />
+			<cfset string = string & ' id="wrapper_for_#cleanID(args.id)#"' />
 		</cfif>
 
 		<cfif not args.visible>

@@ -4,33 +4,35 @@
  */
 component {
 
-	public void function start(string key, string value) {
+	public void function start(required string key) {
 
-		var binds = getAll(key);
+		var binds = getAll();
 
-		arrayAppend(binds, value);
+		arrayAppend(binds, key);
 
-		set(key, binds);
+		set(binds);
 
 	}
 
-	public void function stop(string key, string value) {
+	public void function stop(required string key) {
 
-		var binds = getAll(key);
+		var binds = getAll();
 		var i = "";
 
 		for (i = arrayLen(binds); i > 0; i--) {
-			if (binds[i] == value) {
+			if (binds[i] == key) {
 				arrayDeleteAt(binds, i);
 				break;
 			}
 		}
 
+		set(binds);
+
 	}
 
-	public any function get(string key) {
+	public any function get() {
 
-		var binds = getAll(key);
+		var binds = getAll();
 		var length = arrayLen(binds);
 
 		if (length > 0) {
@@ -41,12 +43,12 @@ component {
 
 	}
 
-	public any function set(string key, any value) {
-		return super.set(key, value);
+	public any function set(any value) {
+		return super.set("bindings", value);
 	}
 
-	public array function getAll(string key) {
-		return super.get(key, []);
+	public array function getAll() {
+		return super.get("bindings", []);
 	}
 
 }

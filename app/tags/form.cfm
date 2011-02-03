@@ -2,7 +2,7 @@
 <cfif thisTag.executionMode eq "start">
 
 	<cfif structKeyExists(attributes, "bind")>
-		<cfset coldmvc.bind.start("form", attributes.bind) />
+		<cfset coldmvc.bind.start(attributes.bind) />
 	</cfif>
 
 	<cfoutput>
@@ -23,7 +23,7 @@
 	</form>
 
 	<cfif structKeyExists(attributes, "bind")>
-		<cfset coldmvc.bind.stop("form", attributes.bind) />
+		<cfset coldmvc.bind.stop(attributes.bind) />
 	</cfif>
 
 </cfif>

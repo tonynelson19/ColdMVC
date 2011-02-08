@@ -9,7 +9,6 @@ component {
 	property modelManager;
 	property metaDataFlattener;
 	property suffixes;
-	property development;
 	property eventDispatcher;
 
 	public any function init() {

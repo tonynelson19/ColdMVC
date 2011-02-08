@@ -120,11 +120,7 @@
 	
 	<bean id="metaDataFlattener" class="coldmvc.app.util.MetaDataFlattener" />
 	
-	<bean id="metaDataObserver" class="coldmvc.app.util.MetaDataObserver">
-		<property name="development">
-			<value>${development}</value>
-		</property>
-	</bean>
+	<bean id="metaDataObserver" class="coldmvc.app.util.MetaDataObserver" />
 	
 	<bean id="modelFactory" class="coldmvc.app.util.ModelFactory">
 		<property name="development">
@@ -135,9 +131,6 @@
 	<bean id="modelManager" class="coldmvc.app.util.ModelManager" />
 	
 	<bean id="modelInjector" class="coldmvc.app.util.ModelInjector">
-		<property name="development">
-			<value>${development}</value>
-		</property>
 		<property name="suffixes">
 			<list>
 				<value>Controller</value>

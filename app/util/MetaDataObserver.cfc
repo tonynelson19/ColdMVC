@@ -6,7 +6,6 @@ component {
 	property beanFactory;
 	property eventDispatcher;
 	property metaDataFlattener;
-	property development;
 
 	public void function findObservers(string event) {
 

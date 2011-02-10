@@ -32,10 +32,8 @@ component {
 
 			if (isSimpleValue(value) && value != "") {
 
-				// convert data_foo to data-foo
-				key = replace(key, "_", "-", "all");
-				key = replace(key, " ", "-", "all");
 				key = lcase(key);
+				key = replace(key, " ", "-", "all");
 
 				arrayAppend(array, '#key#="#htmlEditFormat(value)#"');
 

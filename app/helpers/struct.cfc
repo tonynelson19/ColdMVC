@@ -37,7 +37,7 @@ component {
 				key = replace(key, " ", "-", "all");
 				key = lcase(key);
 
-				arrayAppend(array, "#key#=#htmlEditFormat(value)#");
+				arrayAppend(array, '#key#="#htmlEditFormat(value)#"');
 
 			}
 

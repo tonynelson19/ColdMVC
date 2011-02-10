@@ -42,9 +42,14 @@ component {
 	/**
 	 * @viewHelper renderImage
 	 */
-	public string function renderImage(required string name, string title="", string alt="") {
-
-		return '<img src="#linkToImage(name)#" title="#title#" alt="#alt#" />';
+	public string function renderImage(required string name, string alt="") {
+		
+		var attrs = structCopy(arguments);
+		structDelete(attrs, "name");
+		structDelete(attrs, "alt");		
+		attrs = coldmvc.struct.toAttributes(attrs);
+		
+		return '<img src="#linkToImage(name)#" alt="#alt#" #attrs# />';
 
 	}
 

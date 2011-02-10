@@ -62,6 +62,7 @@ component {
 
 		dispatchEvent("preRequest");
 		dispatchEvent("requestStart");
+	
 	}
 
 	private void function reload() {

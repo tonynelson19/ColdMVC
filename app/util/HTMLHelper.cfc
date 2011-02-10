@@ -53,7 +53,7 @@
 		</cfloop>
 
 		<cfset args.common = [] />
-
+			
 		<cfloop list="name,id,title,class,placeholder" index="i">
 			<cfif args[i] neq "">
 				<cfset arrayAppend(args.common, '#i#="#htmlEditFormat(args[i])#"') />
@@ -302,18 +302,10 @@
 
 		<cfif not structKeyExists(args, "id")>
 			<cfset args.id = replace(args.name, " ", "_", "all") />
+			<cfset args.id = replace(args.id, ".", "_", "all") />
 		</cfif>
 
 		<cfreturn args.id />
-
-	</cffunction>
-
-	<!------>
-
-	<cffunction name="cleanID" access="private" output="false" returntype="string">
-		<cfargument name="id" required="true" type="string" />
-
-		<cfreturn replace(arguments.id, ".", "_", "all") />
 
 	</cffunction>
 
@@ -503,7 +495,7 @@
 			<cfsavecontent variable="local.string">
 				<div #_wrapper(arguments)#>
 					<div class="label">
-						<label id="label_for_#cleanID(arguments.id)#" for="#arguments.id#" title="#htmlEditFormat(arguments.title)#">#htmlEditFormat(arguments.label)#:</label>
+						<label id="label_for_#arguments.id#" for="#arguments.id#" title="#htmlEditFormat(arguments.title)#">#htmlEditFormat(arguments.label)#:</label>
 					</div>
 					<div class="field">
 						#trim(arguments.field)#
@@ -531,7 +523,7 @@ g
 		<cfset var string = 'class="wrapper"' />
 
 		<cfif args.id neq "">
-			<cfset string = string & ' id="wrapper_for_#cleanID(args.id)#"' />
+			<cfset string = string & ' id="wrapper_for_#args.id#"' />
 		</cfif>
 
 		<cfif not args.visible>

@@ -61,6 +61,14 @@ component {
 						// need to duplicate since metadata references are stored across applications
 						result.functions[name] =  duplicate(metaData.functions[i]);
 
+						if (!structKeyExists(result.functions[name], "access")) {
+							result.functions[name].access = "public";
+						}
+
+						if (!structKeyExists(result.functions[name], "returntype")) {
+							result.functions[name].returntype = "any";
+						}
+
 					}
 
 				}

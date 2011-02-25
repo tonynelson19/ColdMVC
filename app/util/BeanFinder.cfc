@@ -8,7 +8,7 @@ component {
 
 	public BeanFinder function init() {
 
-		directories = [ "/root/app" ];
+		directories = [ "/app" ];
 
 		return this;
 

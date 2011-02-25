@@ -4,6 +4,7 @@
 component {
 
 	property configPath;
+	property directory;
 
 	public PluginManager function init() {
 

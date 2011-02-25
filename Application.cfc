@@ -88,9 +88,11 @@ component {
 
 	public any function createPluginManager() {
 
-		var application.coldmvc.pluginManager = new ColdMVC.app.util.PluginManager();
+		application.coldmvc.pluginManager = new coldmvc.app.util.PluginManager();
+		application.coldmvc.pluginManager.setDirectory(this.directory);
 		application.coldmvc.pluginManager.setConfigPath("/config/plugins.cfm");
 		application.coldmvc.pluginManager.loadPlugins();
+		
 		return application.coldmvc.pluginManager;
 
 	}
@@ -237,8 +239,6 @@ component {
 		}
 
 		defaults = {};
-		defaults["/#this.directory#"] = this.rootPath;
-		defaults["/root"] = this.rootPath;
 		defaults["/config"] = this.rootPath & "config/";
 		defaults["/public"] = this.rootPath & "public/";
 		defaults["/app"] = this.rootPath & "app/";
@@ -368,6 +368,7 @@ component {
 			"controller" = "",
 			"debug" = "true",
 			"development" = "false",
+			"directory" = this.directory,
 			"https" = "auto",
 			"layout" = "index",
 			"reloadKey" = "init",

@@ -1,35 +1,5 @@
 <cfsilent>
 <cfset debugManager = coldmvc.factory.get("debugManager") />
-
-<cfset reloadKey = coldmvc.config.get("reloadKey") />
-<cfset reloadPassword = coldmvc.config.get("reloadPassword") />
-
-<cfif reloadPassword neq "">
-	<cfset reloadString = "#reloadKey#=#reloadPassword#" />
-<cfelse>
-	<cfset reloadString = "#reloadKey#" />
-</cfif>
-
-<cfset queryString = coldmvc.cgi.get("query_string") />
-
-<cfif queryString eq reloadString>
-	<cfset queryString = "" />
-<cfelseif right(queryString, len(reloadString)) eq reloadString>
-	<cfset queryString = left(queryString, len(queryString) - len(reloadString)) />
-</cfif>
-
-<cfif queryString eq "">
-	<cfset queryString = reloadString />
-<cfelse>
-	<cfset queryString = queryString & "&" & reloadString />
-</cfif>
-
-<cfset reload = coldmvc.config.get("urlPath") />
-<cfif coldmvc.event.path() neq "">
-	<cfset reload = reload & coldmvc.event.path() />
-</cfif>
-
-<cfset reload =  coldmvc.url.addQueryString(reload, queryString) />
 </cfsilent>
 
 <cfoutput>
@@ -62,8 +32,12 @@
 				<td class="coldmvc_field">#debugManager.getRoute()#</td>
 			</tr>
 			<tr>
+				<td class="coldmvc_label">Environment:</td>
+				<td class="coldmvc_field">#debugManager.getEnvironment()#</td>
+			</tr>
+			<tr>
 				<td class="coldmvc_label">Development:</td>
-				<td class="coldmvc_field">#debugManager.getDevelopment()# (<a href="#reload#">reload</a>)</td>
+				<td class="coldmvc_field">#debugManager.getDevelopment()# (<a href="#debugManager.getReloadURL()#">reload</a>)</td>
 			</tr>
 			<tr>
 				<td class="coldmvc_label">Reloaded:</td>

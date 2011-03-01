@@ -348,6 +348,7 @@ component {
 		}
 
 		var configPath = "#this.rootPath#config/config.ini";
+		var environment = "";
 
 		if (_fileExists(configPath)) {
 
@@ -356,7 +357,7 @@ component {
 			var environmentPath = "#this.rootPath#config/environment.txt";
 
 			if (_fileExists(environmentPath)) {
-				var environment = fileRead(environmentPath);
+				environment = fileRead(environmentPath);
 				loadSettings(configPath, environment);
 
 			}
@@ -369,6 +370,7 @@ component {
 			"debug" = "true",
 			"development" = "false",
 			"directory" = this.directory,
+			"environment" = environment,
 			"https" = "auto",
 			"layout" = "index",
 			"reloadKey" = "init",

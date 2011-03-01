@@ -131,6 +131,10 @@ component {
 		return coldmvc.config.get("development");
 	}
 
+	public string function getEnvironment() {
+		return coldmvc.config.get("environment");
+	}
+
 	public array function getEvents() {
 		return coldmvc.debug.get("events", []);
 	}
@@ -145,6 +149,44 @@ component {
 
 	public array function getQueries() {
 		return coldmvc.debug.get("queries", []);
+	}
+	
+	public string function getReloadURL() {
+		
+		var reloadKey = coldmvc.config.get("reloadKey");
+		var reloadPassword = coldmvc.config.get("reloadPassword");
+
+		if (reloadPassword != "") {
+			var reloadString = "#reloadKey#=#reloadPassword#";
+		}
+		else {
+			var reloadString = "#reloadKey#";
+		}
+
+		var queryString = coldmvc.cgi.get("query_string");
+
+		if (queryString == reloadString) {
+			queryString = "";
+		}
+		else if (right(queryString, len(reloadString)) == reloadString) {
+			queryString = left(queryString, len(queryString) - len(reloadString));
+		}
+
+		if (queryString == "") {
+			queryString = reloadString;
+		}
+		else {
+			queryString = queryString & "&" & reloadString;
+		}
+
+		var reloadURL = coldmvc.config.get("urlPath");
+		var eventPath = coldmvc.event.path();
+		if (eventPath != "") {
+			reloadURL = reloadURL & eventPath;
+		}
+
+		return coldmvc.url.addQueryString(reloadURL, queryString);
+
 	}
 
 	public string function getRoute() {

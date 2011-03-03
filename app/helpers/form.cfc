@@ -186,11 +186,14 @@
 	<!------>
 
 	<cffunction name="number" access="public" output="false" returntype="string">
+		<cfargument name="min" required="false" />
+		<cfargument name="max" required="false" />
+		<cfargument name="step" required="false" />
 
 		<cfset arguments.tag = "number" />
 
 		<cfset append(arguments, "class", "number") />
-		<cfset configure(arguments) />
+		<cfset configure(arguments, "min,max,step") />
 
 		<cfoutput>
 		<cfsavecontent variable="arguments.field">
@@ -296,7 +299,7 @@
 		<cfset arguments.tag = "range" />
 
 		<cfset append(arguments, "class", "range") />
-		<cfset configure(arguments) />
+		<cfset configure(arguments, "min,max,step") />
 
 		<cfoutput>
 		<cfsavecontent variable="arguments.field">

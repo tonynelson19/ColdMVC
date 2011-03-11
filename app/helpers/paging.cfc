@@ -28,20 +28,20 @@ component {
 
 	}
 
-	public numeric function count(required struct args) {
+	public numeric function count(required struct collection) {
 
 		var value = "";
 
-		if (structKeyExists(args, "count")) {
-			value = args.count;
+		if (structKeyExists(collection, "count")) {
+			value = collection.count;
 		}
-		else if (structKeyExists(args, "records")) {
+		else if (structKeyExists(collection, "records")) {
 
-			if (isNumeric(args.records)) {
-				value = args.records;
+			if (isNumeric(collection.records)) {
+				value = collection.records;
 			}
 			else {
-				value = coldmvc.data.count(args.records);
+				value = coldmvc.data.count(collection.records);
 			}
 
 		}
@@ -50,11 +50,19 @@ component {
 
 	}
 
-	public numeric function max() {
+	public numeric function max(struct collection) {
 
-		var _max = coldmvc.cookie.get("max", 10);
+		var value = coldmvc.cookie.get("max", 10);
 
-		return validateMax(_max);
+		if (structKeyExists(arguments, "collection")) {
+
+			if (structKeyExists(arguments.collection, "max")) {
+				value = arguments.collection.max;
+			}
+
+		}
+
+		return validateMax(value);
 
 	}
 
@@ -73,20 +81,28 @@ component {
 
 	}
 
-	public struct function options() {
+	public struct function options(required struct collection) {
 
 		var result = {};
-		result.max = this.max();
-		result.page = this.page();
+		result.max = this.max(collection);
+		result.page = this.page(collection);
 		result.offset = this.offset(result.page, result.max);
 
 		return result;
 
 	}
 
-	public string function page() {
+	public string function page(struct collection) {
 
 		var value = coldmvc.params.get("page", 1);
+
+		if (structKeyExists(arguments, "collection")) {
+
+			if (structKeyExists(arguments.collection, "page")) {
+				value = arguments.collection.page;
+			}
+
+		}
 
 		return validatePage(value);
 
@@ -97,13 +113,13 @@ component {
 		arguments.count = validateCount(arguments);
 		arguments.max = validateMax(arguments);
 
-		var _pages = 1;
+		var value = 1;
 
 		if (arguments.count > 0) {
-			_pages = (arguments.count / arguments.max);
+			value = (arguments.count / arguments.max);
 		}
 
-		return ceiling(_pages);
+		return ceiling(value);
 
 	}
 
@@ -115,7 +131,7 @@ component {
 		var onchange = "";
 		var max_options = ["10","15","20","25","50"];
 
-		var options = this.options();
+		var options = this.options(arguments);
 		options.count = this.count(arguments);
 		options.pages = this.pages(options.count, options.max);
 		options.start = this.start(options.page, options.max);

@@ -5,7 +5,6 @@
  */
 component {
 
-	property config;
 	property key;
 
 	public any function init(string scope) {
@@ -30,13 +29,17 @@ component {
 	}
 
 	public void function append(required struct values, boolean overwrite=true) {
+
 		var data = getScope();
 		structAppend(data, values, overwrite);
+
 	}
 
 	public void function clear(any key) {
+
 		var data = getScope();
 		structDelete(data, key);
+
 	}
 
 	private struct function createScope(required string scope) {
@@ -139,19 +142,25 @@ component {
 	}
 
 	private struct function getScopes() {
+
 		return getPageContext().getFusionContext().hiddenScope;
+
 	}
 
 	public boolean function has(required string key) {
+
 		return structKeyExists(getScope(), key);
+
 	}
 
 	public boolean function isEmpty() {
+
 		var data = getScope();
 		return structIsEmpty(data);
+
 	}
 
-	public void function set(required any key, any value) {
+	public any function set(required any key, any value) {
 
 		// key could be a struct to set the entire scope's value
 
@@ -168,6 +177,8 @@ component {
 				getScopes()[scope][getKey()][namespace] = key;
 			}
 		}
+
+		return this;
 
 	}
 

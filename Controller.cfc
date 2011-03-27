@@ -31,27 +31,6 @@ component {
 
 	}
 
-	function redirect(any parameters, string querystring) {
-
-		// coldmvc.factory.get("eventDispatcher").dispatchEvent("requestEnd");
-
-		if (isSimpleValue(arguments.parameters)) {
-			arguments.querystring = arguments.parameters;
-			arguments.parameters = {};
-		}
-
-		if (!structKeyExists(arguments, "parameters")) {
-			arguments.parameters = {};
-		}
-
-		if (!structKeyExists(arguments, "querystring")) {
-			arguments.querystring = "";
-		}
-
-		location(coldmvc.link.to(parameters=arguments.parameters, querystring=arguments.querystring), false);
-
-	}
-
 	function save() {
 
 		var model = __Model.new();
@@ -89,6 +68,87 @@ component {
 		coldmvc.flash.set("message", coldmvc.string.capitalize(__singular) & " saved successfully");
 
 		redirect({action="show", id=model});
+
+	}
+
+	private string function getController() {
+
+		return coldmvc.event.get("controller");
+
+	}
+
+	private any function setController(required string controller) {
+
+		return coldmvc.event.set("controller", arguments.controller);
+
+	}
+
+	private string function getAction() {
+
+		return coldmvc.event.get("action");
+
+	}
+
+	private any function setAction(required string action) {
+
+		return coldmvc.event.set("action", arguments.action);
+
+	}
+
+	private string function getView() {
+
+		return coldmvc.event.get("view");
+
+	}
+
+	private any function setView(required string view) {
+
+		return coldmvc.event.set("view", arguments.view);
+
+	}
+
+	private string function getLayout() {
+
+		return coldmvc.event.get("layout");
+
+	}
+
+	private any function setLayout(required string layout) {
+
+		return coldmvc.event.set("layout", arguments.layout);
+
+	}
+
+	private string function getFormat() {
+
+		return coldmvc.event.get("format");
+
+	}
+
+	private any function setFormat(required string format) {
+
+		return coldmvc.event.set("format", arguments.format);
+
+	}
+
+	private void function redirect(any parameters, string querystring) {
+
+		// coldmvc.factory.get("eventDispatcher").dispatchEvent("requestEnd");
+
+		if (isSimpleValue(arguments.parameters)) {
+			arguments.querystring = arguments.parameters;
+			arguments.parameters = {};
+		}
+
+		if (!structKeyExists(arguments, "parameters")) {
+			arguments.parameters = {};
+		}
+
+		if (!structKeyExists(arguments, "querystring")) {
+			arguments.querystring = "";
+		}
+
+		location(coldmvc.link.to(parameters=arguments.parameters, querystring=arguments.querystring), false);
 
 	}
 

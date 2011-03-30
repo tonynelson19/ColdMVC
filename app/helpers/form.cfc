@@ -282,7 +282,7 @@
 		<cfsavecontent variable="args.field">
 			<ul class="#type# #args.align#">
 				<cfloop from="1" to="#length#" index="i">
-					<li <cfif i eq 1>class="first"<cfelseif i eq local.length>class="last"</cfif>><input type="#type#" name="#args.name#" id="#args.name#[#i#]" value="#htmlEditFormat(args.options[i].id)#" title="#htmlEditFormat(args.options[i].title)#" <cfif listFindNoCase(args.value, args.options[i].id) or (args.value eq args.options[i].id)>checked="checked"</cfif>><label for="#args.name#[#i#]" title="#htmlEditFormat(args.options[i].title)#">#args.options[i].name#</label></li>
+					<li <cfif i eq 1>class="first"<cfelseif i eq local.length>class="last"</cfif>><input type="#type#" name="#args.name#" id="#args.name#[#i#]" value="#htmlEditFormat(args.options[i].id)#" title="#htmlEditFormat(args.options[i].title)#" <cfif listFindNoCase(args.value, args.options[i].id) or (args.value eq args.options[i].id)>checked="checked"</cfif> #args.events#><label for="#args.name#[#i#]" title="#htmlEditFormat(args.options[i].title)#">#args.options[i].name#</label></li>
 				</cfloop>
 			</ul>
 		</cfsavecontent>

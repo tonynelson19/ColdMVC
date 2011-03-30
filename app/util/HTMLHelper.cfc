@@ -54,17 +54,20 @@
 		</cfloop>
 
 		<cfset args.common = [] />
-			
+
 		<cfloop list="name,id,title,class,placeholder,#commonKeys#" index="i">
 			<cfif args[i] neq "">
 				<cfset arrayAppend(args.common, '#i#="#htmlEditFormat(args[i])#"') />
 			</cfif>
 		</cfloop>
 
+		<cfset args.events = [] />
+
 		<cfloop list="blur,change,click,dblclick,focus,keyup,keydown,keypress,submit" index="i">
 			<cfset var event = "on#i#" />
 			<cfset args[event] = getKey(args, event) />
 			<cfif args[event] neq "">
+				<cfset arrayAppend(args.events, '#event#="#args[event]#"') />
 				<cfset arrayAppend(args.common, '#event#="#args[event]#"') />
 			</cfif>
 		</cfloop>
@@ -83,6 +86,7 @@
 		</cfloop>
 
 		<cfset args.common = arrayToList(args.common, " ") />
+		<cfset args.events = arrayToList(args.events, " ") />
 
 	</cffunction>
 

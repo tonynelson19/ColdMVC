@@ -7,20 +7,17 @@ component {
 
 		if (isObject(data)) {
 			return "object";
-		}
-		else if (isArray(data)) {
+		} else if (isArray(data)) {
 			return "array";
-		}
-		else if (isStruct(data)) {
+		} else if (isStruct(data)) {
 			return "struct";
-		}
-		else if (isQuery(data)) {
+		} else if (isQuery(data)) {
 			return "query";
-		}
-		else if (isXML(data)) {
+		} else if (isXML(data)) {
 			return "xml";
+		} else {
+			return "string";
 		}
-		return "string";
 
 	}
 

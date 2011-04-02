@@ -92,11 +92,9 @@ component {
 
 		if (isSimpleValue(parameter)) {
 			viewHelper.querystring = parameter;
-		}
-		else if (isObject(parameter)) {
+		} else if (isObject(parameter)) {
 			viewHelper.parameters.id = parameter;
-		}
-		else if (isStruct(parameter)) {
+		} else if (isStruct(parameter)) {
 			viewHelper.parameters = parameter;
 		}
 
@@ -140,9 +138,9 @@ component {
 				route.name = "";
 			}
 
-		}
-		// the options contained a pattern
-		else {
+		} else {
+
+			// the options contained a pattern
 
 			// if a name wasn't passed in, consider the key to be the name of the route
 			if (!structKeyExists(route, "name")) {
@@ -176,9 +174,8 @@ component {
 			// if this component is associated with a requirement, use that requirement's regex
 			if (structKeyExists(route.requirements, route.parameters[i])) {
 				route.expression = replace(route.expression, route.components[i], "(" & route.requirements[route.parameters[i]] & ")");
-			}
-			// look for any word characters or dashes
-			else {
+			} else {
+				// look for any word characters or dashes
 				route.expression = replace(route.expression, route.components[i], "([\w*-]*)");
 			}
 
@@ -196,9 +193,8 @@ component {
 				// it's an array of structs with key/value pairs
 				if (isStruct(route.computed[i])) {
 					computed[route.computed[i].key] = route.computed[i].value;
-				}
-				// it's an array of arrays
-				else {
+				} else {
+					// it's an array of arrays
 					computed[route.computed[i][1]] = route.computed[i][2];
 				}
 
@@ -347,8 +343,7 @@ component {
 
 			}
 
-		}
-		else {
+		} else {
 
 			// loop over all the routes
 			for (i = 1; i <= arrayLen(routes); i++) {
@@ -448,7 +443,7 @@ component {
 			var start = find(":", remaining);
 
 			// strip off everything up to and including the colon
-			remaining = right(remaining, len(remaining)-start);
+			remaining = right(remaining, len(remaining) - start);
 
 			// find the next slash
 			var slash = find("/", remaining);
@@ -456,10 +451,9 @@ component {
 			// if there's not a slash, then use the rest of the string
 			if (slash == 0) {
 				substring = remaining;
-			}
-			// grab everything before the slash
-			else {
-				substring = left(remaining, slash-1);
+			} else {
+				// grab everything before the slash
+				substring = left(remaining, slash - 1);
 			}
 
 			// evaluate the parameter (:id.name())
@@ -477,8 +471,7 @@ component {
 			// if there's still a colon, keep replacing values
 			if (find(":", remaining)) {
 				continueLoop = true;
-			}
-			else {
+			} else {
 				continueLoop = false;
 			}
 
@@ -506,8 +499,7 @@ component {
 
 		if (isArray(parameters)) {
 			return listSort(arrayToList(parameters), "textnocase");
-		}
-		else {
+		} else {
 			return listSort(structKeyList(parameters), "textnocase");
 		}
 

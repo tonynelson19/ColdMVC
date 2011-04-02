@@ -39,8 +39,7 @@ component {
 			var parameters = {};
 			parameters.controller = defaultController;
 			parameters.action = controllerManager.getAction(parameters.controller);
-		}
-		else {
+		} else {
 			// build the parameters from the path
 			var parameters = router.recognize(path);
 		}
@@ -49,9 +48,8 @@ component {
 		if (structKeyExists(parameters, "controller")) {
 			var controller = parameters.controller;
 			structDelete(parameters, "controller");
-		}
-		// if a controller wasn't returned, use the default controller
-		else {
+		} else {
+			// if a controller wasn't returned, use the default controller
 			var controller = defaultController;
 		}
 
@@ -59,17 +57,15 @@ component {
 		if (structKeyExists(parameters, "action")) {
 			var action = parameters.action;
 			structDelete(parameters, "action");
-		}
-		// if an action wasn't returned, use the default action for the controller
-		else {
+		} else {
+			// if an action wasn't returned, use the default action for the controller
 			var action = controllerManager.getAction(controller);
 		}
 
 		if (structKeyExists(parameters, "format")) {
 			var format = parameters.format;
 			structDelete(parameters, "format");
-		}
-		else {
+		} else {
 			var format = "html";
 		}
 
@@ -92,8 +88,7 @@ component {
 
 		if (len(address) > len(scriptName) && left(address, len(scriptName)) == scriptName) {
 			address = right(address, len(address) - len(scriptName));
-		}
-		else if (len(address) > 0 && address == scriptName) {
+		} else if (len(address) > 0 && address == scriptName) {
 			address = "";
 		}
 
@@ -152,16 +147,13 @@ component {
 
 			if (coldmvc.cgi.get("https") == "off" || coldmvc.cgi.get("https") == "") {
 				var address = "http://#path#";
-			}
-			else {
+			} else {
 				var address = "https://#path#";
 			}
 
-		}
-		else if (https == "true") {
+		} else if (https == "true") {
 			var address = "https://#path#";
-		}
-		else {
+		} else {
 			var address = "http://#path#";
 		}
 
@@ -181,8 +173,7 @@ component {
 
 		if (structKeyExists(aliases, path)) {
 			return aliases[path];
-		}
-		else {
+		} else {
 			return path;
 		}
 

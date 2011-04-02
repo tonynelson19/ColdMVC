@@ -9,8 +9,7 @@ component {
 
 		if (structKeyExists(xml, key)) {
 			value = xml[key].xmlText;
-		}
-		else if (structKeyExists(xml, "xmlAttributes") && structKeyExists(xml.xmlAttributes, key)) {
+		} else if (structKeyExists(xml, "xmlAttributes") && structKeyExists(xml.xmlAttributes, key)) {
 			value = xml.xmlAttributes[key];
 		}
 
@@ -18,6 +17,15 @@ component {
 
 	}
 
+	/*
+	 * Formats an XML document for readability.
+	 * update by Fabio Serra to CR code
+	 *
+	 * @param XmlDoc      XML document. (Required)
+	 * @return Returns a string.
+	 * @author Steve Bryant (steve@bryantwebconsulting.com)
+	 * @version 2, March 20, 2006
+	 */
 	public string function format(required any xml) {
 
 		var elem = "";
@@ -29,20 +37,18 @@ component {
 		var cr = createObject("java", "java.lang.System").getProperty("line.separator");
 
 		if (isXmlDoc(xml)) {
-			elem = xml.xmlRoot; //If this is an XML Document, use the root element
-		}
-		else if (isXmlElem(xml)) {
-			elem = xml; //If this is an XML Document, use it as-as
-		}
-		else if (not isXmlDoc(xml)) {
+			elem = xml.xmlRoot; // If this is an XML Document, use the root element
+		} else if (isXmlElem(xml)) {
+			elem = xml; // If this is an XML Document, use it as-as
+		} else if (not isXmlDoc(xml)) {
 			xml = reReplace(xml, "^[^<]*", "", "all" );
-			xml = xmlParse(xml); //Otherwise, try to parse it as an XML string
-			elem = xml.xmlRoot; //Then use the root of the resulting document
+			xml = xmlParse(xml); // Otherwise, try to parse it as an XML string
+			elem = xml.xmlRoot; // Then use the root of the resulting document
 		}
 
-		//Now we are just working with an XML element
-		result = "<#elem.xmlName#"; //start with the element name
-		if (structKeyExists(elem, "xmlAttributes")) { //Add any attributes
+		// Now we are just working with an XML element
+		result = "<#elem.xmlName#"; // start with the element name
+		if (structKeyExists(elem, "xmlAttributes")) { // Add any attributes
 
 			for (att in elem.xmlAttributes) {
 				result = '#result# #att#="#xmlFormat(elem.xmlAttributes[att])#"';
@@ -50,14 +56,13 @@ component {
 
 		}
 
-		if (len(elem.xmlText) or (structKeyExists(elem, "xmlChildren") && arrayLen(elem.xmlChildren) > 0)) {
+		if (len(elem.xmlText) || (structKeyExists(elem, "xmlChildren") && arrayLen(elem.xmlChildren) > 0)) {
 
-			result = "#result#>"; //Add a carriage return for text/nested elements
+			result = "#result#>"; // Add a carriage return for text/nested elements
 
-			if (len(trim(elem.xmlText))) { //Add any text in this element
+			if (len(trim(elem.xmlText))) { // Add any text in this element
 				result = "#cr##result##xmlFormat(trim(elem.xmlText))#";
-			}
-			else {
+			} else {
 				result = "#cr##result##cr#";
 			}
 
@@ -65,17 +70,16 @@ component {
 
 				for (i = 1; i <= arrayLen(elem.xmlChildren); i++) {
 					temp = trim(format(elem.xmlChildren[i]));
-					temp = "#tab##ReplaceNoCase(trim(temp), cr, '#cr##tab#', 'all')#"; //indent
+					temp = "#tab##ReplaceNoCase(trim(temp), cr, '#cr##tab#', 'all')#"; // indent
 					result = "#result##temp##cr#";
 				}
-				//Add each nested-element (indented) by using recursive call
+				// Add each nested-element (indented) by using recursive call
 
 			}
 
-			result = "#result#</#elem.xmlName#>"; //Close element
-		}
-		else {
-			result = "#result# />"; //self-close if the element doesn't contain anything
+			result = "#result#</#elem.xmlName#>"; // Close element
+		} else {
+			result = "#result# />"; // self-close if the element doesn't contain anything
 		}
 
 		return trim(result);

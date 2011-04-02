@@ -64,8 +64,7 @@ component {
 
 			if (mapping != "") {
 				plugin.mapping = mapping;
-			}
-			else {
+			} else {
 				plugin.mapping = "/plugins/#plugin.name#";
 			}
 
@@ -73,10 +72,10 @@ component {
 
 			mappings[plugin.mapping] = plugin.path;
 
-			var config = "#plugin.path#/config/plugins.cfm";
-			var rootPath = sanitize(expandPath("/plugins"));
+			var config = "#plugin.path#config/plugins.cfm";
+			var rootPath = sanitize(expandPath("/plugins/"));
 
-			var mappedPlugins = "/plugins" & replaceNoCase(config, rootPath, "");
+			var mappedPlugins = "/plugins/" & replaceNoCase(config, rootPath, "");
 
 			if (fileSystemFacade.fileExists(config)) {
 				include mappedPlugins;
@@ -161,8 +160,8 @@ component {
 
 		filePath = replace(filePath, "\", "/", "all");
 
-		if (right(filePath, 1) == "/") {
-			filePath = left(filePath, len(filePath) - 1);
+		if (right(filePath, 1) != "/") {
+			filePath = filePath & "/";
 		}
 
 		return filePath;

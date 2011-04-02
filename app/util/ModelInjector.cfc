@@ -19,7 +19,7 @@ component {
 		var settings = application.getApplicationSettings();
 		ormEnabled = settings.ormEnabled;
 
-		if (structKeyExists(settings, "ormEnabled") and settings.ormEnabled) {
+		if (structKeyExists(settings, "ormEnabled") && settings.ormEnabled) {
 
 			try {
 				models = ormGetSessionFactory().getAllClassMetaData();
@@ -53,8 +53,7 @@ component {
 
 					if (structKeyExists(metaData, "model")) {
 						var model = metaData.model;
-					}
-					else {
+					} else {
 						var model = left(arguments.beanName, len(arguments.beanName)-len(suffix));
 					}
 

@@ -123,16 +123,13 @@ component {
 
 						if (relationshipMetaData.isManyToMany()) {
 							relationship.type = "ManyToMany";
-						}
-						else if (relationshipMetaData.isOneToMany()) {
+						} else if (relationshipMetaData.isOneToMany()) {
 							relationship.type = "OneToMany";
-						}
-						else {
+						} else {
 							relationship.type = "";
 						}
 
-					}
-					else {
+					} else {
 
 						var relationshipMetaData = ormGetSessionFactory().getClassMetaData(propertyTypes[i].getName());
 
@@ -148,8 +145,7 @@ component {
 
 						result.properties[relationship.property].relationship = relationship;
 
-					}
-					else {
+					} else {
 
 						for (j in result.properties) {
 

@@ -14,17 +14,15 @@ component implements="cfide.orm.INamingStrategy" {
 		var i = "";
 
 		for (i = 1; i <= len(name); i++) {
-   			
+
 			var char = mid(name, i, 1);
 
 			if (i == 1) {
     			arrayAppend(array, ucase(char));
-   			}
-   			else {
+   			} else {
     			if (reFind("[A-Z]", char)) {
      				arrayAppend(array, "_" & char);
-   				}
-    			else {
+   				} else {
      				arrayAppend(array, lcase(char));
     			}
    			}
@@ -34,13 +32,12 @@ component implements="cfide.orm.INamingStrategy" {
 
   		if (newName == "Id") {
    			newName = "ID";
-  		}
-  		else if (right(newName, 3) == "_Id") {
+  		} else if (right(newName, 3) == "_Id") {
    			newName = left(newName, len(newName)-3) & "_ID";
   		}
 
   		return newName;
-	
+
 	}
 
 }

@@ -28,7 +28,7 @@ component {
 		return this;
 
 	}
-	
+
 	private struct function parseCollection(required struct collection) {
 
 		var result = {};
@@ -37,7 +37,7 @@ component {
 		for (key in collection) {
 
 			var value = collection[key];
-			
+
 			if (isJSON(value)) {
 				value = deserializeJSON(collection[key]);
 			}
@@ -59,8 +59,7 @@ component {
 
 						container = container[array[i]];
 
-					}
-					else {
+					} else {
 
 						container[array[i]] = value;
 
@@ -68,8 +67,7 @@ component {
 
 				}
 
-			}
-			else {
+			} else {
 				result[key] = value;
 			}
 
@@ -121,8 +119,7 @@ component {
 
 		if (structKeyExists(xml.xmlAttributes, key)) {
 			return xml.xmlAttributes[key];
-		}
-		else {
+		} else {
 			return def;
 		}
 
@@ -207,17 +204,17 @@ component {
 						var value = parseProperty(beanDef.properties[property]);
 						evaluate("beanInstance.set#property#(value)");
 					}
-					
+
 					if (structKeyExists(beanProperties, beanDef.id)) {
-						
+
 						for (property in beanProperties[beanDef.id]) {
-							
+
 							if (structKeyExists(beanInstance, "set#property#")) {
 								evaluate("beanInstance.set#property#(beanProperties[beanDef.id][property])");
 							}
-							
+
 						}
-						
+
 					}
 
 					if (beanDef.initMethod != "") {
@@ -275,8 +272,7 @@ component {
 
 						if (structKeyExists(metaData.functions[i], "access")) {
 							access = metaData.functions[i].access;
-						}
-						else {
+						} else {
 							access = "public";
 						}
 

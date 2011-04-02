@@ -11,15 +11,13 @@ component {
 
 		if (alreadyRendered("css", name)) {
 			return "";
-		}
-		else {
+		} else {
 			markRendered("css", name);
 			var link = '<link rel="stylesheet" href="#linkToCSS(name)#?#getVersion()#" type="text/css" media="#media#" />';
 			if (condition != "") {
 				link = '<!--[if #condition#]>#link#<![endif]-->';
 			}
 			return link;
-
 		}
 
 	}
@@ -31,8 +29,7 @@ component {
 
 		if (alreadyRendered("js", name)) {
 			return "";
-		}
-		else {
+		} else {
 			markRendered("js", name);
 			return '<script type="text/javascript" src="#linkToJS(name)#?#getVersion()#"></script>';
 		}
@@ -43,12 +40,12 @@ component {
 	 * @viewHelper renderImage
 	 */
 	public string function renderImage(required string name, string alt="") {
-		
+
 		var attrs = structCopy(arguments);
 		structDelete(attrs, "name");
-		structDelete(attrs, "alt");		
+		structDelete(attrs, "alt");
 		attrs = coldmvc.struct.toAttributes(attrs);
-		
+
 		return '<img src="#linkToImage(name)#" alt="#alt#" #attrs# />';
 
 	}
@@ -84,8 +81,7 @@ component {
 
 		if (left(name, 4) == "http") {
 			return name;
-		}
-		else {
+		} else {
 			return getAssetURL(type, name);
 		}
 
@@ -107,8 +103,7 @@ component {
 
 		if (coldmvc.config.get("development")) {
 			var timestamp = now();
-		}
-		else {
+		} else {
 			var timestamp = coldmvc.application.get("timestamp", now());
 		}
 

@@ -87,41 +87,38 @@ component {
 
 		if (controllerManager.respondsTo(coldmvc.event.controller(), coldmvc.event.action(), format)) {
 
-			if (format == "html") {
+			switch(format) {
 
-				// if a layout was specified, call it
-				if (layout != "") {
-					callMethods("layoutController", "Layout");
-				}
+				case "html": {
 
-				// update the values from the event in case it changed
-				layout = coldmvc.event.layout();
-				var view = coldmvc.event.view();
-
-				// if the layout exists, render it
-				if (layout != "" && templateManager.layoutExists(layout)) {
-					output = renderer.renderLayout(layout);
-				}
-				// the layout didn't exists, so try to render the view
-				else {
-					output = renderer.renderView(view);
-				}
-
-			}
-			else {
-
-				switch(format) {
-
-					case "json": {
-						output = routeSerializer.toJSON(params);
-						break;
+					// if a layout was specified, call it
+					if (layout != "") {
+						callMethods("layoutController", "Layout");
 					}
 
-					case "xml": {
-						output = routeSerializer.toXML(params);
-						break;
+					// update the values from the event in case it changed
+					layout = coldmvc.event.layout();
+					var view = coldmvc.event.view();
+
+					// if the layout exists, render it
+					if (layout != "" && templateManager.layoutExists(layout)) {
+						output = renderer.renderLayout(layout);
+					} else {
+						// the layout didn't exists, so try to render the view
+						output = renderer.renderView(view);
 					}
 
+					break;
+				}
+
+				case "json": {
+					output = routeSerializer.toJSON(params);
+					break;
+				}
+
+				case "xml": {
+					output = routeSerializer.toXML(params);
+					break;
 				}
 
 			}
@@ -152,8 +149,7 @@ component {
 			// event => preAction:UserController.list
 			eventDispatcher.dispatchEvent("preAction:#beanName#.#action#");
 
-		}
-		else {
+		} else {
 
 			// event => preLayout:index
 			eventDispatcher.dispatchEvent("preLayout:#action#");
@@ -183,8 +179,7 @@ component {
 			// event => postAction:UserController
 			eventDispatcher.dispatchEvent("postAction:#beanName#");
 
-		}
-		else {
+		} else {
 
 			// event => postLayout:index
 			eventDispatcher.dispatchEvent("postLayout:#action#");

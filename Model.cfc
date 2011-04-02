@@ -84,8 +84,7 @@ component {
 
 		if (structKeyExists(this, "get#property#")) {
 			value = evaluate("get#property#()");
-		}
-		else {
+		} else {
 
 			if (right(property, 2) == "ID") {
 
@@ -179,8 +178,7 @@ component {
 
 			return this;
 
-		}
-		else {
+		} else {
 
 			return _get(arguments.property);
 
@@ -198,10 +196,9 @@ component {
 
 		if (structKeyExists(this, "set#property#")) {
 
-			if (!structKeyExists(arguments, "value") or isNull(value) or (isSimpleValue(value) and value eq "")) {
+			if (!structKeyExists(arguments, "value") || isNull(value) || (isSimpleValue(value) && value == "")) {
 				evaluate("set#property#(javaCast('null', ''))");
-			}
-			else {
+			} else {
 				evaluate("set#property#(value)");
 			}
 

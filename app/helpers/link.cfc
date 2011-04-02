@@ -16,8 +16,7 @@ component {
 
 			if (left(args.parameters, 1) == "/" && args.querystring != "") {
 				args.querystring = args.parameters & "?" & args.querystring;
-			}
-			else {
+			} else {
 				args.querystring = args.parameters;
 			}
 

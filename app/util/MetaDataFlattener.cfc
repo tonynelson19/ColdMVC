@@ -12,8 +12,7 @@ component {
 
 		if (isSimpleValue(object)) {
 			var classPath = object;
-		}
-		else {
+		} else {
 			var classPath = getMetaData(object).fullname;
 		}
 

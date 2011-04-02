@@ -57,13 +57,11 @@ component {
 
 			if (structKeyExists(controllers[controller].actions, action)) {
 				view = controllers[controller].actions[action].view;
-			}
-			else {
+			} else {
 				view = controllers[controller].directory & "/" & action;
 			}
 
-		}
-		else {
+		} else {
 
 			// not a valid controller/action, so build it assuming it's a normal request
 			view = buildView(controller, action);
@@ -154,8 +152,7 @@ component {
 
 			if (structKeyExists(controllers[args.controller].actions, args.action)) {
 				return controllers[args.controller].actions[args.action][key];
-			}
-			else {
+			} else {
 				return controllers[args.controller][key];
 			}
 
@@ -171,8 +168,7 @@ component {
 
 		if (structKeyExists(controllers, controller)) {
 			return structKeyExists(controllers[controller].actions, action);
-		}
-		else {
+		} else {
 			return false;
 		}
 
@@ -208,8 +204,7 @@ component {
 
 				if (structKeyExists(metaData, "controller")) {
 					controller["key"] = metaData.controller;
-				}
-				else {
+				} else {
 					controller["key"] = left(beanDef, len(beanDef)-length);
 					controller["key"] = coldmvc.string.underscore(controller.key);
 				}
@@ -217,16 +212,14 @@ component {
 				// check for a default action for the controller
 				if (structKeyExists(metaData, "action")) {
 					controller["action"] = metaData.action;
-				}
-				else {
+				} else {
 					controller["action"] = "index";
 				}
 
 				// get the directory where the views should live
 				if (structKeyExists(metaData, "directory")) {
 					controller["directory"] = metaData.directory;
-				}
-				else {
+				} else {
 					controller["directory"] = controller.key;
 				}
 
@@ -234,15 +227,13 @@ component {
 
 				if (structKeyExists(metaData, "ajaxLayout")) {
 					controller["ajaxLayout"] = metaData.ajaxLayout;
-				}
-				else {
+				} else {
 					controller["ajaxLayout"] = "";
 				}
 
 				if (structKeyExists(metaData, "formats")) {
 					controller["formats"] = metaData.formats;
-				}
-				else {
+				} else {
 					controller["formats"] = "html";
 				}
 
@@ -276,36 +267,31 @@ component {
 
 				if (structKeyExists(method, "action")) {
 					action["key"] = method.action;
-				}
-				else {
+				} else {
 					action["key"] = coldmvc.string.underscore(name);
 				}
 
 				if (structKeyExists(action, "view")) {
 					action["view"] = method.view;
-				}
-				else {
+				} else {
 					action["view"] = buildView(directory, action.key);
 				}
 
 				if (structKeyExists(method, "layout")) {
 					action["layout"] = method.layout;
-				}
-				else {
+				} else {
 					action["layout"] = layout;
 				}
 
 				if (structKeyExists(method, "ajaxLayout")) {
 					action["ajaxLayout"] = method.ajaxLayout;
-				}
-				else {
+				} else {
 					action["ajaxLayout"] = ajaxLayout;
 				}
 
 				if (structKeyExists(method, "formats")) {
 					action["formats"] = method.formats;
-				}
-				else {
+				} else {
 					action["formats"] = formats;
 				}
 
@@ -353,8 +339,7 @@ component {
 
 				if (structKeyExists(metaData, "layout")) {
 					result.layout = metaData.layout;
-				}
-				else {
+				} else {
 					result.layout = coldmvc.config.get("layout");
 				}
 
@@ -362,9 +347,7 @@ component {
 
 				variables.layoutController = result;
 
-			}
-
-			else {
+			} else {
 
 				 variables.layoutController = {
 				 	actions = {},
@@ -393,8 +376,7 @@ component {
 
 			if (structKeyExists(fn, "layout")) {
 				method.layout = fn.layout;
-			}
-			else {
+			} else {
 				method.layout = fn.name;
 			}
 

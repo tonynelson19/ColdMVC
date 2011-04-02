@@ -44,8 +44,7 @@ component {
 						// If tempIndex is 0, it's a Struct, otherwise an Array.
 						if (tempIndex == 0) {
 							currentElement[tempElement] = {};
-						}
-						else {
+						} else {
 							currentElement[tempElement] = [];
 						}
 					}
@@ -55,20 +54,17 @@ component {
 
 						if (tempIndex == 0) {
 							currentElement[tempElement] = collection[key];
-						}
-						else {
+						} else {
 							currentElement[tempElement][tempIndex] = collection[key];
 						}
 
 					// Otherwise, keep going through the field name looking for more structs or arrays.
-					}
-					else {
+					} else {
 
 						// If this field was a Struct, make the next element the current element for the next loop iteration.
 						if (tempIndex == 0) {
 							currentElement = currentElement[tempElement];
-						}
-						else {
+						} else {
 
 							if (arrayIsEmpty(currentElement[tempElement]) || arrayLen(currentElement[tempElement]) < tempIndex || !arrayIsDefined(currentElement[tempElement], tempIndex)) {
 								currentElement[tempElement][tempIndex] = {};
@@ -85,8 +81,7 @@ component {
 
 				}
 
-			}
-			else {
+			} else {
 				result[key] = collection[key];
 			}
 

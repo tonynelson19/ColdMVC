@@ -170,15 +170,13 @@ component {
 
 			if (parameter.operator.ignorecase) {
 				var alias = "lower(#parameter.alias#)";
-			}
-			else {
+			} else {
 				var alias = parameter.alias;
 			}
 
 			if (structKeyExists(parameter, "value")) {
 				var value = parameter.value;
-			}
-			else {
+			} else {
 				var value = parameters[1];
 			}
 
@@ -192,8 +190,7 @@ component {
 				arrayAppend(query.hql, "(:#parameter.property#)");
 				query.parameters[parameter.property] = toJavaArray(type, value);
 
-			}
-			else {
+			} else {
 
 				if (!isArray(value)) {
 					value = [ value ];
@@ -206,8 +203,7 @@ component {
 					// if the value is just the value, make sure it's the proper type
 					if (parameter.operator.value == "${value}") {
 						arrayAppend(values, toJavaType(type, value[i]));
-					}
-					else {
+					} else {
 						arrayAppend(values, replaceNoCase(parameter.operator.value, "${value}", toJavaType(type, value[i])));
 					}
 
@@ -220,8 +216,7 @@ component {
 					arrayAppend(query.hql, ":#parameter.property#");
 					query.parameters[parameter.property] = values[1];
 
-				}
-				else {
+				} else {
 
 					var hql = [];
 
@@ -237,8 +232,7 @@ component {
 					// not like, not equal
 					if (left(parameter.operator.operator, 4) == "not ") {
 						arrayAppend(query.hql, "(" & arrayToList(hql, " and ") & ")");
-					}
-					else {
+					} else {
 						arrayAppend(query.hql, "(" & arrayToList(hql, " or ") & ")");
 					}
 
@@ -296,8 +290,7 @@ component {
 			model._set("deletedOn", coldmvc.date.get());
 			model._set("deletedBy", coldmvc.user.id());
 			entitySave(model);
-		}
-		else {
+		} else {
 			entityDelete(model);
 		}
 
@@ -324,8 +317,7 @@ component {
 
 			if (isSimpleValue(value)) {
 				result.setParameter(parameter, value);
-			}
-			else {
+			} else {
 				result.setParameterList(parameter, value);
 			}
 
@@ -344,8 +336,7 @@ component {
 			var records = result.uniqueResult();
 			var end = getTickCount();
 			var count = 1;
-		}
-		else {
+		} else {
 			var start = getTickCount();
 			var records = result.list();
 			var end = getTickCount();
@@ -376,16 +367,13 @@ component {
 
 			if (isNull(result)) {
 				return false;
-			}
-			else {
+			} else {
 				return true;
 			}
 
-		}
-
-		// user.exists()
-		else {
-			return model.id() neq "";
+		} else {
+			// user.exists()
+			return model.id() != "";
 		}
 
 	}
@@ -394,7 +382,7 @@ component {
 
 		var result = findDelegate(model, query, parameters, options);
 
-		if (!isNull(result) and arrayLen(result) > 0) {
+		if (!isNull(result) && arrayLen(result) > 0) {
 			return result[1];
 		}
 
@@ -497,8 +485,7 @@ component {
 
 		if (prefix == "findBy") {
 			return this.find(model, query.hql, query.parameters, query.options);
-		}
-		else if (prefix == "findAllBy") {
+		} else if (prefix == "findAllBy") {
 			return findAll(model, query.hql, query.parameters, query.options);
 		}
 
@@ -519,7 +506,7 @@ component {
 
 		var result = findStatic(model, parameters, options);
 
-		if (!isNull(result) and arrayLen(result) > 0) {
+		if (!isNull(result) && arrayLen(result) > 0) {
 			return result[1];
 		}
 
@@ -533,8 +520,7 @@ component {
 
 		if (id == "") {
 			var obj = new(name);
-		}
-		else {
+		} else {
 
 			var obj = load(name, id);
 
@@ -628,25 +614,20 @@ component {
 
 		if (left(method, 6) == "findBy") {
 			return findDynamic(model, method, args, "findBy");
-		}
-		else if (left(method, 9) == "findAllBy") {
+		} else if (left(method, 9) == "findAllBy") {
 			return findDynamic(model, method, args, "findAllBy");
-		}
-		else if (left(method, 11) == "findAllWith") {
+		} else if (left(method, 11) == "findAllWith") {
 			return findAllWithDynamic(model, method, args);
-		}
-		else if (left(method, 5) == "addTo") {
+		} else if (left(method, 5) == "addTo") {
 			return addTo(model, method, args);
-		}
-		else if (left(method, 7) == "countBy") {
+		} else if (left(method, 7) == "countBy") {
 			return countBy(model, method, args);
 		}
 
 		if (structKeyExists(args, 1)) {
 			model._set(method, args[1]);
 			return model;
-		}
-		else {
+		} else {
 			return model._get(method);
 		}
 
@@ -724,8 +705,7 @@ component {
 
 			return arrayToList(joins, " ");
 
-		}
-		else {
+		} else {
 			return "";
 		}
 
@@ -773,8 +753,7 @@ component {
 						parameter.alias = alias & "_" & related[property].property & ".id";
 						parameter.property = "id";
 						arrayAppend(result.joins, alias & "." & related[property].property);
-					}
-					else {
+					} else {
 						parameter.alias = alias & "." & property;
 					}
 
@@ -851,8 +830,7 @@ component {
 
 				}
 
-			}
-			else {
+			} else {
 				parameter.model = alias;
 				parameter.property = properties[property].name;
 				parameter.alias = parameter.model & "." & parameter.property;
@@ -863,8 +841,7 @@ component {
 				// foo = "bar";
 				parameter.value = value;
 
-			}
-			else if (isArray(value)) {
+			} else if (isArray(value)) {
 
 				// foo = [ "isNotNull" ]
 				parameter.operator = value[1];
@@ -874,15 +851,12 @@ component {
 					parameter.value = value[2];
 				}
 
-			}
-			else if (isObject(value)) {
+			} else if (isObject(value)) {
 
 				parameter.alias = parameter.alias & ".id";
 				parameter.value = value._get("id");
 
-			}
-
-			else if (isStruct(value)) {
+			} else if (isStruct(value)) {
 
 				if (structKeyExists(value, "operator")) {
 
@@ -894,8 +868,7 @@ component {
 						parameter.value = value.value;
 					}
 
-				}
-				else if (structCount(value) == 1) {
+				} else if (structCount(value) == 1) {
 
 					// foo = { like = "bar" }
 					parameter.operator = structKeyList(value);
@@ -939,8 +912,7 @@ component {
 				if (find(".", value)) {
 					sortAlias = modelManager.getAlias(listFirst(value, "."));
 					sortProperty = modelManager.getProperty(sortAlias, listLast(value, "."));
-				}
-				else {
+				} else {
 					sortAlias = alias;
 					sortProperty = modelManager.getProperty(sortAlias, value);
 				}
@@ -953,8 +925,7 @@ component {
 
 			if (structKeyExists(options, "order")) {
 				sortorder = sortorder & " " & options.order;
-			}
-			else {
+			} else {
 				sortorder = sortorder & " asc";
 			}
 
@@ -999,8 +970,7 @@ component {
 
 				}
 
-			}
-			else {
+			} else {
 
 				var metaData = getMetaData(data);
 
@@ -1020,8 +990,7 @@ component {
 
 			}
 
-		}
-		else if (type == "struct") {
+		} else if (type == "struct") {
 			populateStruct(model, data, propertyList, properties, relationships);
 		}
 
@@ -1045,25 +1014,21 @@ component {
 						model._set(property, related);
 					}
 
-				}
-				else {
+				} else {
 					model._set(property, getAll(properties[property].relationship.entity, data[property], {}));
 				}
 
-			}
-			else {
+			} else {
 				model._set(property, data[property]);
 			}
 
-		}
-		else {
+		} else {
 
 			var name = replace(property, "_", "", "all");
 
 			if (structKeyExists(properties, name)) {
 				model._set(name, data[property]);
-			}
-			else {
+			} else {
 
 				if (right(property, 2) == "id") {
 
@@ -1075,8 +1040,7 @@ component {
 
 						if (data[property] != "") {
 							model._set(name, load(name, data[property]));
-						}
-						else {
+						} else {
 							model._set(name);
 						}
 
@@ -1095,7 +1059,7 @@ component {
 		var key = "";
 
 		for (key in data) {
-			if (propertyList == "" or listFindNoCase(propertyList, key)) {
+			if (propertyList == "" || listFindNoCase(propertyList, key)) {
 				populateProperty(model, data, properties, key, relationships);
 			}
 		}

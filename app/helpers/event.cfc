@@ -50,8 +50,7 @@ component {
 
 			return value;
 
-		}
-		else {
+		} else {
 
 			var value = arguments[1];
 

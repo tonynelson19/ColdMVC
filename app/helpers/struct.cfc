@@ -67,15 +67,13 @@ component {
 
 				if (arrayLen(value) == 0) {
 					value = "";
-				}
-				else {
+				} else {
 
 					if (isSimpleValue(value[1])) {
 
 						value = arrayToList(value);
 
-					}
-					else {
+					} else {
 
 						var temp = [];
 						for (i = 1; i <= arrayLen(value); i++) {
@@ -149,8 +147,7 @@ component {
 
 			if (isSimpleValue(value)) {
 				arrayAppend(xml, xmlFormat(value));
-			}
-			else if (isArray(value)) {
+			} else if (isArray(value)) {
 
 				var singular = coldmvc.string.singularize(key);
 
@@ -160,8 +157,7 @@ component {
 
 					if (isSimpleValue(value[j])) {
 						arrayAppend(xml, xmlFormat(value[j]));
-					}
-					else {
+					} else {
 						arrayAppend(xml, structToXML(value[j]));
 					}
 
@@ -169,8 +165,7 @@ component {
 
 				}
 
-			}
-			else if (isStruct(value)) {
+			} else if (isStruct(value)) {
 				arrayAppend(xml, structToXML(value));
 			}
 

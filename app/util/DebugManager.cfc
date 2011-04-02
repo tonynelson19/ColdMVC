@@ -150,16 +150,15 @@ component {
 	public array function getQueries() {
 		return coldmvc.debug.get("queries", []);
 	}
-	
+
 	public string function getReloadURL() {
-		
+
 		var reloadKey = coldmvc.config.get("reloadKey");
 		var reloadPassword = coldmvc.config.get("reloadPassword");
 
 		if (reloadPassword != "") {
 			var reloadString = "#reloadKey#=#reloadPassword#";
-		}
-		else {
+		} else {
 			var reloadString = "#reloadKey#";
 		}
 
@@ -167,15 +166,13 @@ component {
 
 		if (queryString == reloadString) {
 			queryString = "";
-		}
-		else if (right(queryString, len(reloadString)) == reloadString) {
+		} else if (right(queryString, len(reloadString)) == reloadString) {
 			queryString = left(queryString, len(queryString) - len(reloadString));
 		}
 
 		if (queryString == "") {
 			queryString = reloadString;
-		}
-		else {
+		} else {
 			queryString = queryString & "&" & reloadString;
 		}
 

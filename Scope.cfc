@@ -15,8 +15,7 @@ component {
 
 		if (structKeyExists(metaData, "namespace")) {
 			variables.namespace = metaData.namespace;
-		}
-		else {
+		} else {
 			variables.namespace = listLast(metaData.fullname, ".");
 		}
 
@@ -66,8 +65,7 @@ component {
 
 			return data[arguments.key];
 
-		}
-		else {
+		} else {
 			return data;
 		}
 
@@ -168,12 +166,10 @@ component {
 
 		if (structKeyExists(arguments, "value")) {
 			data[key] = value;
-		}
-		else {
+		} else {
 			if (namespace == "") {
 				getScopes()[scope] = key;
-			}
-			else {
+			} else {
 				getScopes()[scope][getKey()][namespace] = key;
 			}
 		}

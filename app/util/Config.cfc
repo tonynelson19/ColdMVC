@@ -10,8 +10,7 @@ component {
 		if (structKeyExists(arguments, "key")) {
 			if (structKeyExists(settings, key)) {
 				return settings[key];
-			}
-			else {
+			} else {
 				return def;
 			}
 		}
@@ -26,8 +25,7 @@ component {
 			if (structKeyExists(arguments, "value")) {
 				if (settings[key] == arguments.value) {
 					return true;
-				}
-				else {
+				} else {
 					return false;
 				}
 			}

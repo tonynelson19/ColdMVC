@@ -10,8 +10,7 @@ component {
 
 		if (coldmvc.params.has(key)) {
 			var value = coldmvc.params.get(key);
-		}
-		else {
+		} else {
 			var value = super.get(cookieKey, def);
 		}
 
@@ -19,8 +18,7 @@ component {
 			if (super.has(cookieKey)) {
 				super.clear(cookieKey);
 			}
-		}
-		else {
+		} else {
 			super.set(cookieKey, value);
 		}
 

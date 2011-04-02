@@ -11,8 +11,7 @@ component {
 
 		if (querystring == "") {
 			return coldmvc.link.to(parameters=args, querystring=pars);
-		}
-		else {
+		} else {
 			return coldmvc.link.to(parameters=args, querystring="#querystring#&#pars#");
 		}
 
@@ -34,13 +33,11 @@ component {
 
 		if (structKeyExists(collection, "count")) {
 			value = collection.count;
-		}
-		else if (structKeyExists(collection, "records")) {
+		} else if (structKeyExists(collection, "records")) {
 
 			if (isNumeric(collection.records)) {
 				value = collection.records;
-			}
-			else {
+			} else {
 				value = coldmvc.data.count(collection.records);
 			}
 
@@ -145,29 +142,25 @@ component {
 
 		if (options.page > 1) {
 			arrayAppend(html, '<li class="paging_first"><a href="#buildLink(options.page_link, "page=1")#" title="First">First</a></li>');
-		}
-		else {
+		} else {
 			arrayAppend(html, '<li class="paging_first">First</li>');
 		}
 
 		if (options.page > 1) {
 			arrayAppend(html, '<li class="paging_previous"><a href="#buildLink(options.page_link, "page=#options.page-1#")#" title="Previous">Previous</a></li>');
-		}
-		else {
+		} else {
 			arrayAppend(html, '<li class="paging_previous">Previous</li>');
 		}
 
 		if (options.page < options.pages) {
 			arrayAppend(html, '<li class="paging_next"><a href="#buildLink(options.page_link, "page=#options.page+1#")#" title="Next">Next</a></li>');
-		}
-		else {
+		} else {
 			arrayAppend(html, '<li class="paging_next">Next</li>');
 		}
 
 		if (options.pages > 1) {
 			arrayAppend(html, '<li class="paging_last"><a href="#buildLink(options.page_link, "page=#options.pages#")#" title="Last">Last</a></li>');
-		}
-		else {
+		} else {
 			arrayAppend(html, '<li class="paging_last">Last</li>');
 		}
 
@@ -183,8 +176,7 @@ component {
 
 				if (options.page == i) {
 					arrayAppend(html, '<option value="#i#" title="#i#" selected="true">#i#</option>');
-				}
-				else {
+				} else {
 					arrayAppend(html, '<option value="#i#" title="#i#">#i#</option>');
 				}
 
@@ -207,8 +199,7 @@ component {
 
 			if (options.max == option) {
 				arrayAppend(html, '<option value="#option#" title="#option#" selected="true">#option#</option>');
-			}
-			else {
+			} else {
 				arrayAppend(html, '<option value="#option#" title="#option#">#option#</option>');
 			}
 
@@ -228,8 +219,7 @@ component {
 
 		if (page == 1) {
 			value = page;
-		}
-		else {
+		} else {
 			value = (page - 1) * offset + 1;
 		}
 
@@ -243,8 +233,7 @@ component {
 
 		if (value <= count) {
 			return value - 1;
-		}
-		else {
+		} else {
 			return count;
 		}
 
@@ -270,8 +259,7 @@ component {
 
 			if (structKeyExists(value, "max") && isNumeric(value.max)) {
 				value = value.max;
-			}
-			else {
+			} else {
 				value = this.max();
 			}
 

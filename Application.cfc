@@ -52,8 +52,7 @@ component {
 				reload();
 			}
 
-		}
-		else if (getSetting("autoReload")) {
+		} else if (getSetting("autoReload")) {
 			reload();
 		}
 
@@ -62,7 +61,7 @@ component {
 
 		dispatchEvent("preRequest");
 		dispatchEvent("requestStart");
-	
+
 	}
 
 	private void function reload() {
@@ -92,7 +91,7 @@ component {
 		application.coldmvc.pluginManager.setDirectory(this.directory);
 		application.coldmvc.pluginManager.setConfigPath("/config/plugins.cfm");
 		application.coldmvc.pluginManager.loadPlugins();
-		
+
 		return application.coldmvc.pluginManager;
 
 	}
@@ -248,16 +247,14 @@ component {
 
 		if (_directoryExists(this.rootPath & "plugins/")) {
 			defaults["/plugins"] = this.rootPath & "plugins/";
-		}
-		else if (_directoryExists(expandPath("/plugins"))) {
+		} else if (_directoryExists(expandPath("/plugins"))) {
 			defaults["/plugins"] = sanitizeFilePath(expandPath("/plugins"));
 		}
 
 		if (_directoryExists(this.rootPath & "coldmvc/")) {
 			defaults["/coldmvc"] = this.rootPath & "coldmvc/";
-		}
-		else if (_directoryExists(expandPath("/coldmvc"))) {
-			defaults["/coldmvc"] = sanitizeFilePath(expandPath("/coldmvc"));
+		} else if (_directoryExists(expandPath("/coldmvc/"))) {
+			defaults["/coldmvc"] = sanitizeFilePath(expandPath("/coldmvc/"));
 		}
 
 		structAppend(this.mappings, defaults, false);
@@ -267,12 +264,10 @@ component {
 		if (structKeyExists(settings, "datasource")) {
 			if (settings.datasource != "") {
 				this.datasource = settings.datasource;
-			}
-			else {
+			} else {
 				this.ormEnabled = false;
 			}
-		}
-		else {
+		} else {
 			this.datasource = this.directory;
 		}
 
@@ -306,10 +301,10 @@ component {
 		}
 
 		structAppend(this.ormSettings, defaults, false);
-		
+
 		// check to see if a hibernate mapping file exists
 		if (_fileExists(this.rootPath & "/config/hibernate.hbmxml")) {
-		
+
 			// if autoGenMap hasn't been explicitly set already
 			if (!structKeyExists(this.ormSettings, "autoGenMap")) {
 
@@ -317,7 +312,7 @@ component {
 				this.ormSettings.autoGenMap = false;
 
 			}
-			
+
 			// if saveMapping hasn't been set already
 			if (!structKeyExists(this.ormSettings, "saveMapping")) {
 
@@ -326,9 +321,8 @@ component {
 
 			}
 
-		}
-		else {
-			
+		} else {
+
 			// if saveMapping hasn't been set already
 			if (!structKeyExists(this.ormSettings, "saveMapping")) {
 
@@ -336,7 +330,7 @@ component {
 				this.ormSettings.saveMapping = false;
 
 			}
-			
+
 		}
 
 	}
@@ -385,8 +379,7 @@ component {
 
 			if (variables.settings["sesURLs"]) {
 				variables.settings["urlPath"] = replaceNoCase(cgi.script_name, "/index.cfm", "");
-			}
-			else {
+			} else {
 				variables.settings["urlPath"] = cgi.script_name;
 			}
 

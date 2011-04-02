@@ -37,11 +37,11 @@
 			</tr>
 			<tr>
 				<td class="coldmvc_label">Development:</td>
-				<td class="coldmvc_field">#debugManager.getDevelopment()# (<a href="#debugManager.getReloadURL()#">reload</a>)</td>
+				<td class="coldmvc_field">#debugManager.getDevelopment()#</td>
 			</tr>
 			<tr>
 				<td class="coldmvc_label">Reloaded:</td>
-				<td class="coldmvc_field">#coldmvc.debug.get("reloaded", false)#</td>
+				<td class="coldmvc_field">#coldmvc.debug.get("reloaded", false)# (<a href="#debugManager.getReloadURL()#">reload</a>)</td>
 			</tr>
 		</tbody>
 	</table>

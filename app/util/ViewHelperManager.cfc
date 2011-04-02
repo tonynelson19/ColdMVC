@@ -69,8 +69,7 @@ component {
 
 				if (bean) {
 					add(name=fn.viewHelper, beanName=name, method=fn.name);
-				}
-				else {
+				} else {
 					add(name=fn.viewHelper, helper=name, method=fn.name);
 				}
 
@@ -126,15 +125,13 @@ component {
 			if (viewHelper.includeMethod) {
 				args.method = method;
 				args.parameters = arguments;
-			}
-			else {
+			} else {
 				args = arguments;
 			}
 
 			if (viewHelper.helper != "") {
 				return evaluate("coldmvc.#viewHelper.helper#.#viewHelper.method#(argumentCollection=args)");
-			}
-			else if (viewHelper.beanName != "") {
+			} else if (viewHelper.beanName != "") {
 				var bean = coldmvc.factory.get(viewHelper.beanName);
 				return evaluate("bean.#viewHelper.method#(argumentCollection=args)");
 			}

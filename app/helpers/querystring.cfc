@@ -17,15 +17,13 @@ component {
 
 			if (listLength == 2) {
 				var value = trim(urlDecode(listLast(pair, "=")));
-			}
-			else {
+			} else {
 				var value = "";
 			}
 
 	       	if (structKeyExists(struct, key)) {
 				struct[key] = struct[key] & "," & value;
-			}
-			else {
+			} else {
 				struct[key] = value;
 	       }
 
@@ -44,11 +42,9 @@ component {
 
 		if (querystring1 == "") {
 			result = querystring2;
-		}
-		else if (querystring2 == "") {
+		} else if (querystring2 == "") {
 			result = querystring1;
-		}
-		else {
+		} else {
 			result = querystring1 & "&" & querystring2;
 		}
 

@@ -25,14 +25,11 @@ component {
 
 			if (listFindNoCase("bies,cies,dies,fies,gies,hies,jies,kies,lies,mies,nies,pies,ries,sies,ties,vies,wies,xies,zies", right(string, 4))) {
 				return setAndReturn(plurals, string, left(string, len(string)-3) & "y");
-			}
-			else if (listFindNoCase("ches,shes", right(string, 4))) {
+			} else if (listFindNoCase("ches,shes", right(string, 4))) {
 				return setAndReturn(plurals, string, left(string, len(string)-2));
-			}
-			else if (listFindNoCase("zzes", right(string, 4))) {
+			} else if (listFindNoCase("zzes", right(string, 4))) {
 				return setAndReturn(plurals, string, left(string, len(string)-3));
-			}
-			else if (listFindNoCase("men", right(string, 3))) {
+			} else if (listFindNoCase("men", right(string, 3))) {
 				return setAndReturn(plurals, string, left(string, len(string)-3) & "man");
 			}
 
@@ -137,8 +134,7 @@ component {
 
 			string = arrayToList(array, "");
 
-		}
-		else {
+		} else {
 			string = upperfirst(string);
 		}
 
@@ -158,8 +154,7 @@ component {
 
 		if (remainder > 0) {
 			string = ucase(left(string, 1)) & right(string, remainder);
-		}
-		else {
+		} else {
 			string = ucase(string);
 		}
 
@@ -173,8 +168,7 @@ component {
 
 		if (remainder > 0) {
 			string = lcase(left(string, 1)) & right(string, remainder);
-		}
-		else {
+		} else {
 			string = lcase(string);
 		}
 
@@ -228,12 +222,10 @@ component {
 
 			if (i == 1) {
     			arrayAppend(array, ucase(char));
-   			}
-   			else {
+   			} else {
     			if (reFind("[A-Z]", char)) {
      				arrayAppend(array, "_" & char);
-   				}
-    			else {
+   				} else {
      				arrayAppend(array, lcase(char));
     			}
    			}
@@ -294,8 +286,7 @@ component {
 
 		if (listFind("11,12,13", lastTwo)) {
 			var check = lastTwo;
-		}
-		else {
+		} else {
 			var check = right(string, 1);
 		}
 

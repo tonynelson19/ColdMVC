@@ -243,6 +243,16 @@ component {
 
 	}
 
+	public string function truncate(required string string, numeric length=50) {
+
+		if (len(arguments.string) > arguments.length) {
+			return left(arguments.string, arguments.length) & "...";
+		} else {
+			return arguments.string;
+		}
+
+	}
+
 	public string function isLower(required string string) {
 
 		return compare(string, lcase(string)) == 0;

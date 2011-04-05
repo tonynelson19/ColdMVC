@@ -9,21 +9,21 @@ component {
 		args.controller = coldmvc.event.controller();
 		args.action = coldmvc.event.action();
 
-		if (querystring == "") {
-			return coldmvc.link.to(parameters=args, querystring=pars);
+		if (arguments.querystring == "") {
+			return coldmvc.link.to(parameters=args, querystring=arguments.pars);
 		} else {
-			return coldmvc.link.to(parameters=args, querystring="#querystring#&#pars#");
+			return coldmvc.link.to(parameters=args, querystring="#arguments.querystring#&#arguments.pars#");
 		}
 
 	}
 
 	private string function buildQueryString(required string pars, required string key) {
 
-		pars = coldmvc.queryString.toStruct(pars);
+		arguments.pars = coldmvc.queryString.toStruct(arguments.pars);
 
-		structDelete(pars, key);
+		structDelete(arguments.pars, arguments.key);
 
-		return coldmvc.struct.toQueryString(pars);
+		return coldmvc.struct.toQueryString(arguments.pars);
 
 	}
 
@@ -31,14 +31,14 @@ component {
 
 		var value = "";
 
-		if (structKeyExists(collection, "count")) {
-			value = collection.count;
-		} else if (structKeyExists(collection, "records")) {
+		if (structKeyExists(arguments.collection, "count")) {
+			value = arguments.collection.count;
+		} else if (structKeyExists(arguments.collection, "records")) {
 
-			if (isNumeric(collection.records)) {
-				value = collection.records;
+			if (isNumeric(arguments.collection.records)) {
+				value = arguments.collection.records;
 			} else {
-				value = coldmvc.data.count(collection.records);
+				value = coldmvc.data.count(arguments.collection.records);
 			}
 
 		}
@@ -78,11 +78,15 @@ component {
 
 	}
 
-	public struct function options(required struct collection) {
+	public struct function options(struct collection) {
+
+		if (!structKeyExists(arguments, "collection")) {
+			arguments.collection = {};
+		}
 
 		var result = {};
-		result.max = this.max(collection);
-		result.page = this.page(collection);
+		result.max = this.max(arguments.collection);
+		result.page = this.page(arguments.collection);
 		result.offset = this.offset(result.page, result.max);
 
 		return result;
@@ -126,15 +130,15 @@ component {
 		var i = "";
 		var onchange = "";
 		var onchange = "";
-		var max_options = ["10","15","20","25","50"];
+		var max_options = ["10", "15", "20", "25", "50"];
 
 		var options = this.options(arguments);
 		options.count = this.count(arguments);
 		options.pages = this.pages(options.count, options.max);
 		options.start = this.start(options.page, options.max);
 		options.end = this.end(options.start, options.count, options.max);
-		options.page_link = buildQueryString(parameters, "page");
-		options.max_link = buildQueryString(parameters, "max");
+		options.page_link = buildQueryString(arguments.parameters, "page");
+		options.max_link = buildQueryString(arguments.parameters, "max");
 
 		arrayAppend(html, '<div class="paging">');
 		arrayAppend(html, '<ul>');
@@ -217,10 +221,10 @@ component {
 
 		var value = 1;
 
-		if (page == 1) {
-			value = page;
+		if (arguments.page == 1) {
+			value = arguments.page;
 		} else {
-			value = (page - 1) * offset + 1;
+			value = (arguments.page - 1) * arguments.offset + 1;
 		}
 
 		return value;
@@ -229,61 +233,61 @@ component {
 
 	public numeric function end(required numeric start, required numeric count, required numeric max) {
 
-		var value = start + max;
+		var value = arguments.start + arguments.max;
 
-		if (value <= count) {
+		if (value <= arguments.count) {
 			return value - 1;
 		} else {
-			return count;
+			return arguments.count;
 		}
 
 	}
 
 	private numeric function validateCount(required any value) {
 
-		if (isStruct(value) && structKeyExists(value, "count")) {
-			value = value.count;
+		if (isStruct(arguments.value) && structKeyExists(arguments.value, "count")) {
+			arguments.value = arguments.value.count;
 		}
 
-		if (!isNumeric(value)) {
-			value = 0;
+		if (!isNumeric(arguments.value)) {
+			arguments.value = 0;
 		}
 
-		return value;
+		return arguments.value;
 
 	}
 
 	private numeric function validateMax(required any value) {
 
-		if (isStruct(value)) {
+		if (isStruct(arguments.value)) {
 
-			if (structKeyExists(value, "max") && isNumeric(value.max)) {
-				value = value.max;
+			if (structKeyExists(arguments.value, "max") && isNumeric(arguments.value.max)) {
+				arguments.value = arguments.value.max;
 			} else {
-				value = this.max();
+				arguments.value = this.max();
 			}
 
 		}
 
-		if (!isNumeric(value) || value == 0) {
-			value = 10;
+		if (!isNumeric(arguments.value) || arguments.value == 0) {
+			arguments.value = 10;
 		}
 
-		return value;
+		return arguments.value;
 
 	}
 
 	private numeric function validatePage(required any value) {
 
-		if (isStruct(value) && structKeyExists(value, "page")) {
-			value = value.page;
+		if (isStruct(arguments.value) && structKeyExists(arguments.value, "page")) {
+			arguments.value = arguments.value.page;
 		}
 
-		if (!isNumeric(value) || value == 0) {
-			value = 1;
+		if (!isNumeric(arguments.value) || arguments.value == 0) {
+			arguments.value = 1;
 		}
 
-		return value;
+		return arguments.value;
 
 	}
 

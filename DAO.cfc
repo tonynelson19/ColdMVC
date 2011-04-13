@@ -580,6 +580,34 @@ component {
 
 	}
 
+	public struct function getRelationship(required any model, required string property) {
+
+		var relationships = modelManager.getRelationships(model);
+		var key = "";
+
+		for (key in relationships) {
+			if (relationships[key].property == property) {
+				return relationships[key];
+			}
+		}
+
+	}
+
+	public boolean function isRelationship(required any model, required string property) {
+
+		var relationships = modelManager.getRelationships(model);
+		var key = "";
+
+		for (key in relationships) {
+			if (relationships[key].property == property) {
+				return true;
+			}
+		}
+
+		return false;
+
+	}
+
 	public array function list(required any model, required struct options) {
 
 		var name = modelManager.getName(model);
@@ -673,8 +701,8 @@ component {
 			model = model
 		};
 
-		eventDispatcher.dispatchEvent(arguments.event, data);
-		eventDispatcher.dispatchEvent(arguments.event & ":" & arguments.name, data);
+		eventDispatcher.dispatchEvent(event, data);
+		eventDispatcher.dispatchEvent(event & ":" & name, data);
 
 	}
 

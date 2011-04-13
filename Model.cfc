@@ -83,7 +83,30 @@ component {
 		var value = "";
 
 		if (structKeyExists(this, "get#property#")) {
+
 			value = evaluate("get#property#()");
+
+			if (isNull(value) && DAO.isRelationship(this, property)) {
+
+				var relationship = DAO.getRelationship(this, arguments.property);
+
+				switch(relationship.type) {
+
+					case "ManyToOne": {
+						value = DAO.new(relationship.entity, {}, "");
+						prop(property, value);
+						break;
+					}
+
+					case "OneToOne": {
+						value = DAO.new(relationship.entity, {}, "");
+						break;
+					}
+
+				}
+
+			}
+
 		} else {
 
 			if (right(property, 2) == "ID") {

@@ -1,5 +1,6 @@
 <cfsilent>
 <cfset debugManager = coldmvc.factory.get("debugManager") />
+<cfset appVersion = debugManager.getAppVersion() />
 </cfsilent>
 
 <cfoutput>
@@ -7,9 +8,15 @@
 <div class="coldmvc_debug_section">
 	<table>
 		<tbody>
+			<cfif appVersion neq "">
+				<tr>
+					<td class="coldmvc_label">App Version:</td>
+					<td class="coldmvc_field">#appVersion#</td>
+				</tr>
+			</cfif>
 			<tr>
-				<td class="coldmvc_label">Version:</td>
-				<td class="coldmvc_field">#debugManager.getVersion()#</td>
+				<td class="coldmvc_label">ColdMVC Version:</td>
+				<td class="coldmvc_field">#debugManager.getFrameworkVersion()#</td>
 			</tr>
 			<tr>
 				<td class="coldmvc_label">Controller:</td>

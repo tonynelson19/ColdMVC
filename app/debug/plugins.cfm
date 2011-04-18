@@ -12,7 +12,7 @@
 			<cfloop array="#plugins#" index="plugin">
 				<tr>
 					<td class="coldmvc_label">#plugin.name#:</td>
-					<td class="coldmvc_field">#plugin.path#</td>
+					<td class="coldmvc_field">#plugin.path#<cfif plugin.version neq ""> (#plugin.version#)</cfif></td>
 				</tr>
 			</cfloop>
 			<cfif arrayIsEmpty(plugins)>

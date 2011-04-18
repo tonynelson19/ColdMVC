@@ -72,13 +72,21 @@ component {
 
 			mappings[plugin.mapping] = plugin.path;
 
-			var config = "#plugin.path#config/plugins.cfm";
+			var config = plugin.path & "config/plugins.cfm";
 			var rootPath = sanitize(expandPath("/plugins/"));
 
 			var mappedPlugins = "/plugins/" & replaceNoCase(config, rootPath, "");
 
 			if (fileSystemFacade.fileExists(config)) {
 				include mappedPlugins;
+			}
+
+			var version = plugin.path & "version.txt";
+
+			if (fileSystemFacade.fileExists(version)) {
+				plugin.version = fileRead(version);
+			} else {
+				plugin.version = "";
 			}
 
 			cache.plugins[plugin.name] = plugin.path;

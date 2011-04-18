@@ -210,9 +210,31 @@ component {
 
 	}
 
-	public string function getVersion() {
+	public string function getAppVersion() {
 
-		return fileRead(expandPath("/coldmvc/version.txt"));
+		if (!structKeyExists(variables, "appVersion")) {
+
+			var filePath = expandPath("/app/../version.txt");
+
+			if (fileSystemFacade.fileExists(filePath)) {
+				variables.appVersion = fileRead(filePath);
+			} else {
+				variables.appVersion = "";
+			}
+
+		}
+
+		return variables.appVersion;
+
+	}
+
+	public string function getFrameworkVersion() {
+
+		if (!structKeyExists(variables, "frameworkVersion")) {
+			variables.frameworkVersion = fileRead(expandPath("/coldmvc/version.txt"));
+		}
+
+		return variables.frameworkVersion;
 
 	}
 

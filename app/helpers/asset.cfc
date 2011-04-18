@@ -73,7 +73,7 @@ component {
 	 */
 	public string function linkToImage(required string name) {
 
-		return "#getBaseURL()#images/#name#";
+		return getBaseURL() & "/images/" & name;
 
 	}
 
@@ -89,7 +89,7 @@ component {
 
 	private string function getAssetURL(required string type, required string name) {
 
-		return getBaseURL() & type & "/" & name;
+		return getBaseURL() & "/" & type & "/" & name;
 
 	}
 

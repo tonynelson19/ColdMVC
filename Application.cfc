@@ -389,8 +389,8 @@ component {
 
 			var assetPath = replaceNoCase(variables.settings["urlPath"], "index.cfm", "");
 
-			if (right(assetPath, 1) != "/") {
-				assetPath = assetPath & "/";
+			if (right(assetPath, 1) == "/") {
+				assetPath = left(assetPath, len(assetPath) - 1);
 			}
 
 			variables.settings["assetPath"] = assetPath;

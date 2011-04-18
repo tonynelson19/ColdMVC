@@ -109,7 +109,7 @@ component {
 		var plugins = pluginManager.getPlugins();
 		var i = "";
 		for (i = 1; i <= arrayLen(plugins); i++) {
-			addBeans(beans, "#plugins[i].path#/config/coldspring.xml");
+			addBeans(beans, plugins[i].path & "/config/coldspring.xml");
 		}
 
 		// finally load all the beans from ColdMVC
@@ -341,14 +341,14 @@ component {
 			variables.settings = {};
 		}
 
-		var configPath = "#this.rootPath#config/config.ini";
+		var configPath = this.rootPath & "config/config.ini";
 		var environment = "";
 
 		if (_fileExists(configPath)) {
 
 			loadSettings(configPath, "default");
 
-			var environmentPath = "#this.rootPath#config/environment.txt";
+			var environmentPath = this.rootPath & "config/environment.txt";
 
 			if (_fileExists(environmentPath)) {
 				environment = fileRead(environmentPath);
@@ -359,10 +359,10 @@ component {
 		}
 
 		var defaults = {
-			"autoReload" = "false",
-			"controller" = "",
-			"debug" = "true",
-			"development" = "false",
+			"autoReload" = false,
+			"controller" = "index",
+			"debug" = true,
+			"development" = false,
 			"directory" = this.directory,
 			"environment" = environment,
 			"https" = "auto",
@@ -370,7 +370,7 @@ component {
 			"reloadKey" = "init",
 			"reloadPassword" = "",
 			"rootPath" = this.rootPath,
-			"sesURLs" = "false"
+			"sesURLs" = false
 		};
 
 		structAppend(variables.settings, defaults, false);

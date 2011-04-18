@@ -8,6 +8,10 @@
 	<table>
 		<tbody>
 			<tr>
+				<td class="coldmvc_label">Version:</td>
+				<td class="coldmvc_field">#debugManager.getVersion()#</td>
+			</tr>
+			<tr>
 				<td class="coldmvc_label">Controller:</td>
 				<td class="coldmvc_field">#debugManager.getController()#</td>
 			</tr>

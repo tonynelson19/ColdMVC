@@ -210,4 +210,10 @@ component {
 
 	}
 
+	public string function getVersion() {
+
+		return fileRead(expandPath("/coldmvc/version.txt"));
+
+	}
+
 }

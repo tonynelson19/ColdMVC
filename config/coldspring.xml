@@ -31,13 +31,13 @@
 		<property name="templates">
 			<list>
 				<value>/coldmvc/app/debug/info.cfm</value>
-				<value>/coldmvc/app/debug/queries.cfm</value>
-				<value>/coldmvc/app/debug/plugins.cfm</value>
 				<value>/coldmvc/app/debug/mappings.cfm</value>
+				<value>/coldmvc/app/debug/plugins.cfm</value>
+				<value>/coldmvc/app/debug/config.cfm</value>
 				<value>/coldmvc/app/debug/helpers.cfm</value>
 				<value>/coldmvc/app/debug/tags.cfm</value>
 				<value>/coldmvc/app/debug/viewhelpers.cfm</value>
-				<value>/coldmvc/app/debug/config.cfm</value>
+				<value>/coldmvc/app/debug/queries.cfm</value>
 				<value>/coldmvc/app/debug/beans.cfm</value>
 				<value>/coldmvc/app/debug/models.cfm</value>
 				<value>/coldmvc/app/debug/templates.cfm</value>

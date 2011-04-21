@@ -41,4 +41,28 @@ component {
 
 	}
 
+	/**
+	 * @actionHelper redirect
+	 */
+	public void function redirect(any parameters, string querystring) {
+
+		// coldmvc.factory.get("eventDispatcher").dispatchEvent("requestEnd");
+
+		if (isSimpleValue(arguments.parameters)) {
+			arguments.querystring = arguments.parameters;
+			arguments.parameters = {};
+		}
+
+		if (!structKeyExists(arguments, "parameters")) {
+			arguments.parameters = {};
+		}
+
+		if (!structKeyExists(arguments, "querystring")) {
+			arguments.querystring = "";
+		}
+
+		location(coldmvc.link.to(parameters=arguments.parameters, querystring=arguments.querystring), false);
+
+	}
+
 }

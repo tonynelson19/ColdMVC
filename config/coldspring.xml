@@ -1,5 +1,7 @@
 <beans default-autowire="byName">
 	
+	<bean id="actionHelperManager" class="coldmvc.app.util.ActionHelperManager" />
+	
 	<bean id="beanInjector" class="coldmvc.app.util.BeanInjector" />
 	
 	<bean id="beanFinder" class="coldmvc.app.util.BeanFinder" />
@@ -8,6 +10,7 @@
 		<property name="postProcessors">
 			<list>
 				<value>modelInjector</value>
+				<value>actionHelperManager</value>
 			</list>
 		</property>
 	</bean>
@@ -36,6 +39,7 @@
 				<value>/coldmvc/app/debug/config.cfm</value>
 				<value>/coldmvc/app/debug/helpers.cfm</value>
 				<value>/coldmvc/app/debug/tags.cfm</value>
+				<value>/coldmvc/app/debug/actionhelpers.cfm</value>
 				<value>/coldmvc/app/debug/viewhelpers.cfm</value>
 				<value>/coldmvc/app/debug/queries.cfm</value>
 				<value>/coldmvc/app/debug/beans.cfm</value>
@@ -61,6 +65,7 @@
 				<entry key="applicationStart">
 					<list>
 						<value>helperManager.addHelpers</value>
+						<value>actionHelperManager.findActionHelpers</value>
 						<value>viewHelperManager.findViewHelpers</value>
 						<value>router.addNamedRouteViewHelpers</value>
 						<value>templateManager.loadTemplates</value>

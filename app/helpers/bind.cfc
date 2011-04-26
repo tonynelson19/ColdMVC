@@ -7,9 +7,7 @@ component {
 	public void function start(required string key) {
 
 		var binds = getAll();
-
 		arrayAppend(binds, key);
-
 		set(binds);
 
 	}
@@ -44,11 +42,15 @@ component {
 	}
 
 	public any function set(any value) {
+
 		return super.set("bindings", value);
+
 	}
 
 	public array function getAll() {
+
 		return super.get("bindings", []);
+
 	}
 
 }

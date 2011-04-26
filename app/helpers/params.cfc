@@ -6,14 +6,18 @@
 component {
 
 	private struct function getScope() {
+
 		return createScope("params");
+
 	}
 
 	/**
 	 * @actionHelper getParam
 	 */
 	public any function getParam(required string key, any def="") {
+
 		return get(arguments.key, arguments.def);
+
 	}
 
 	/**
@@ -29,7 +33,9 @@ component {
 	 * @actionHelper setParam
 	 */
 	public any function setParam(required any key, any value) {
+
 		return set(arguments.key, arguments.value);
+
 	}
 
 }

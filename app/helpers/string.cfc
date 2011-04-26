@@ -4,9 +4,11 @@
 component {
 
 	public any function init() {
+
 		setWords();
 		setPatterns();
 		return this;
+
 	}
 
 	public string function singularize(required string string) {
@@ -473,7 +475,9 @@ component {
 	}
 
 	private void function addPattern(string key, string string) {
+
 		arrayAppend(patterns, arguments);
+
 	}
 
 }

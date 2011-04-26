@@ -21,7 +21,7 @@ component {
 	 * Formats an XML document for readability.
 	 * update by Fabio Serra to CR code
 	 *
-	 * @param XmlDoc      XML document. (Required)
+	 * @param XmlDoc XML document. (Required)
 	 * @return Returns a string.
 	 * @author Steve Bryant (steve@bryantwebconsulting.com)
 	 * @version 2, March 20, 2006

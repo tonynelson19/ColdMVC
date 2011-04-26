@@ -46,7 +46,6 @@ component {
 
 		super.set(cookieKey, value);
 
-
 	}
 
 }

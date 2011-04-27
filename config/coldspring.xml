@@ -2,6 +2,8 @@
 	
 	<bean id="actionHelperManager" class="coldmvc.app.util.ActionHelperManager" />
 	
+	<bean id="assertionManager" class="coldmvc.app.util.AssertionManager" />
+	
 	<bean id="beanInjector" class="coldmvc.app.util.BeanInjector" />
 	
 	<bean id="beanFinder" class="coldmvc.app.util.BeanFinder" />

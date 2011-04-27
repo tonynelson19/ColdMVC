@@ -13,11 +13,11 @@ component {
 
 	public void function dispatchRoute() {
 
-		var controller = coldmvc.event.controller();
-		var action = coldmvc.event.action();
+		var controller = coldmvc.event.getController();
+		var action = coldmvc.event.getAction();
 
 		if (coldmvc.params.has("format")) {
-			coldmvc.event.format(coldmvc.params.get("format"));
+			coldmvc.event.setFormat(coldmvc.params.get("format"));
 		}
 
 		// find the layout for the controller and action
@@ -29,7 +29,7 @@ component {
 		}
 
 		// set the layout into the event
-		coldmvc.event.layout(layout);
+		coldmvc.event.setLayout(layout);
 
 		var resetLayout = false;
 
@@ -40,7 +40,7 @@ component {
 		}
 
 		// use the values from the event rather than the route in case missingController changed them
-		controller = controllerManager.getName(coldmvc.event.controller());
+		controller = controllerManager.getName(coldmvc.event.getController());
 
 		// check to make sure the factory has the requested controller
 		if (!beanFactory.containsBean(controller)) {
@@ -49,19 +49,19 @@ component {
 		}
 
 		// check to see if the controller has the specified action
-		if (!controllerManager.hasAction(coldmvc.event.controller(), coldmvc.event.action())) {
+		if (!controllerManager.hasAction(coldmvc.event.getController(), coldmvc.event.getAction())) {
 			eventDispatcher.dispatchEvent("invalidAction");
 			resetLayout = true;
 		}
 
 		// use the values from the event rather than the route in case invalidController/invalidAction changed them
-		controller = controllerManager.getName(coldmvc.event.controller());
+		controller = controllerManager.getName(coldmvc.event.getController());
 
 		// if something was missing, reset the layout back to the one specified for the controller/action
 		if (resetLayout) {
 
 			// find the layout for the controller and action
-			layout = controllerManager.getLayout(coldmvc.event.controller(), coldmvc.event.action());
+			layout = controllerManager.getLayout(coldmvc.event.getController(), coldmvc.event.getAction());
 
 			// it couldn't determine the layout, so set it to the default layout
 			if (layout == "") {
@@ -69,7 +69,7 @@ component {
 			}
 
 			// set the layout into the event
-			coldmvc.event.layout(layout);
+			coldmvc.event.setLayout(layout);
 
 		}
 
@@ -78,14 +78,14 @@ component {
 
 		// if it's an ajax request, reset the layout
 		if (coldmvc.request.isAjax()) {
-			coldmvc.event.layout(controllerManager.getAjaxLayout());
+			coldmvc.event.setLayout(controllerManager.getAjaxLayout());
 		}
 
-		var layout = coldmvc.event.layout();
-		var format = coldmvc.event.format();
+		var layout = coldmvc.event.getLayout();
+		var format = coldmvc.event.getFormat();
 		var output = "";
 
-		if (controllerManager.respondsTo(coldmvc.event.controller(), coldmvc.event.action(), format)) {
+		if (controllerManager.respondsTo(coldmvc.event.getController(), coldmvc.event.getAction(), format)) {
 
 			switch(format) {
 
@@ -97,8 +97,8 @@ component {
 					}
 
 					// update the values from the event in case it changed
-					layout = coldmvc.event.layout();
-					var view = coldmvc.event.view();
+					layout = coldmvc.event.getLayout();
+					var view = coldmvc.event.getView();
 
 					// if the layout exists, render it
 					if (layout != "" && templateManager.layoutExists(layout)) {

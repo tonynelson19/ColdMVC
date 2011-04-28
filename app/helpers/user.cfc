@@ -27,7 +27,7 @@ component {
 		if (structIsEmpty(arguments)) {
 			return getUserID();
 		} else {
-			return setUserID(argumetns[1]);
+			return setUserID(arguments[1]);
 		}
 
 	}

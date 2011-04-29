@@ -9,11 +9,12 @@ component {
 		factoryPostProcessors = [];
 		beanPostProcessors = [];
 		singletons = {};
-		beanProperties = parseCollection(variables.config);
 
 		var setting = "";
 		for (setting in config) {
-			xml = replaceNoCase(xml, "${#setting#}", config[setting], "all");
+			if (isSimpleValue(config[setting])) {
+				xml = replaceNoCase(xml, "${#setting#}", config[setting], "all");
+			}
 		}
 
 		if (structKeyExists(arguments, "beans")) {
@@ -26,54 +27,6 @@ component {
 		loadBeans(xmlParse(xml));
 
 		return this;
-
-	}
-
-	private struct function parseCollection(required struct collection) {
-
-		var result = {};
-		var key = "";
-
-		for (key in collection) {
-
-			var value = collection[key];
-
-			if (isJSON(value)) {
-				value = deserializeJSON(collection[key]);
-			}
-
-			if (find(".", key)) {
-
-				var array = listToArray(key, ".");
-				var i = "";
-				var container = result;
-				var length = arrayLen(array);
-
-				for (i = 1; i <= arrayLen(array); i++) {
-
-					if (i < length) {
-
-						if (!structKeyExists(container, array[i]) || !isStruct(container[array[i]])) {
-							container[array[i]] = {};
-						}
-
-						container = container[array[i]];
-
-					} else {
-
-						container[array[i]] = value;
-
-					}
-
-				}
-
-			} else {
-				result[key] = value;
-			}
-
-		}
-
-		return result;
 
 	}
 
@@ -205,12 +158,12 @@ component {
 						evaluate("beanInstance.set#property#(value)");
 					}
 
-					if (structKeyExists(beanProperties, beanDef.id)) {
+					if (structKeyExists(variables.config, beanDef.id)) {
 
-						for (property in beanProperties[beanDef.id]) {
+						for (property in variables.config[beanDef.id]) {
 
 							if (structKeyExists(beanInstance, "set#property#")) {
-								evaluate("beanInstance.set#property#(beanProperties[beanDef.id][property])");
+								evaluate("beanInstance.set#property#(variables.config[beanDef.id][property])");
 							}
 
 						}

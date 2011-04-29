@@ -10,7 +10,7 @@
 			<cfloop list="#listSort(structKeyList(config), 'textnocase')#" index="key">
 				<tr>
 					<td class="coldmvc_label">#key#:</td>
-					<td class="coldmvc_field">#config[key]#</td>
+					<td class="coldmvc_field"><cfif isSimpleValue(config[key])>#config[key]#<cfelse>#serializeJSON(config[key])#</cfif></td>
 				</tr>
 			</cfloop>
 		</tbody>

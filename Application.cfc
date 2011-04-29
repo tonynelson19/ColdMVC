@@ -125,7 +125,7 @@ component {
 			settings["datasource"] = this.datasource;
 		}
 
-		var beanFactory = createObject("component", "coldmvc.app.util.BeanFactory").init(xml, settings, {
+		var beanFactory = new coldmvc.app.util.BeanFactory(xml, settings, {
 			"pluginManager" = pluginManager
 		});
 
@@ -245,12 +245,14 @@ component {
 		defaults["/layouts"] = this.rootPath & ".generated/layouts/";
 		defaults["/tags"] = this.rootPath & ".generated/tags/";
 
+		// check for a local plugins directory
 		if (_directoryExists(this.rootPath & "plugins/")) {
 			defaults["/plugins"] = this.rootPath & "plugins/";
-		} else if (_directoryExists(expandPath("/plugins"))) {
+		} else if (_directoryExists(expandPath("/plugins/"))) {
 			defaults["/plugins"] = sanitizeFilePath(expandPath("/plugins"));
 		}
 
+		// check for a local coldmvc directory first
 		if (_directoryExists(this.rootPath & "coldmvc/")) {
 			defaults["/coldmvc"] = this.rootPath & "coldmvc/";
 		} else if (_directoryExists(expandPath("/coldmvc/"))) {
@@ -338,21 +340,39 @@ component {
 	private struct function setupSettings() {
 
 		if (!structKeyExists(variables, "settings")) {
+
 			variables.settings = {};
-		}
+			variables.environment = "";
 
-		var configPath = this.rootPath & "config/config.ini";
-		var environment = "";
+			var configPath = this.rootPath & "config/config.ini";
 
-		if (_fileExists(configPath)) {
+			// check to see if there's a config file
+			if (_fileExists(configPath)) {
 
-			loadSettings(configPath, "default");
+				// parse the file
+				var ini = new coldmvc.app.util.Ini(configPath);
 
-			var environmentPath = this.rootPath & "config/environment.txt";
+				// load the default section first
+				var section = ini.getSection("default");
 
-			if (_fileExists(environmentPath)) {
-				environment = fileRead(environmentPath);
-				loadSettings(configPath, environment);
+				// append the section to the settings
+				structAppend(variables.settings, section);
+
+				// check to see if there's an environment file
+				var environmentPath = this.rootPath & "config/environment.txt";
+
+				if (_fileExists(environmentPath)) {
+
+					// read the environment
+					variables.environment = fileRead(environmentPath);
+
+					// get the config settings
+					section = ini.getSection(environment);
+
+					// adding the environments settings, overriding any default settings
+					structAppend(variables.settings, section, true);
+
+				}
 
 			}
 
@@ -364,7 +384,7 @@ component {
 			"debug" = true,
 			"development" = false,
 			"directory" = this.directory,
-			"environment" = environment,
+			"environment" = variables.environment,
 			"https" = "auto",
 			"layout" = "index",
 			"reloadKey" = "init",
@@ -373,6 +393,7 @@ component {
 			"sesURLs" = false
 		};
 
+		// override any default variables
 		structAppend(variables.settings, defaults, false);
 
 		if (!structKeyExists(variables.settings, "urlPath")) {
@@ -416,29 +437,13 @@ component {
 
 	private any function getSetting(required string key) {
 
-		if (structKeyExists(application.coldmvc.settings, key)) {
-			return application.coldmvc.settings[key];
+		var settings = getSettings();
+
+		if (structKeyExists(settings, key)) {
+			return settings[key];
 		}
 
 		return "";
-
-	}
-
-	private void function loadSettings(required string configPath, required string environment) {
-
-		var sections = getProfileSections(configPath);
-
-		if (structKeyExists(sections, environment)) {
-
-			var keys = listToArray(sections[environment]);
-			var i = "";
-
-			for (i = 1; i <= arrayLen(keys); i++) {
-				var key = keys[i];
-				variables.settings[key] = getProfileString(configPath, environment, key);
-			}
-
-		}
 
 	}
 

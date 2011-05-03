@@ -222,7 +222,7 @@ component {
 		this.serverSideFormValidation = false;
 
 		var defaults = {
-			rootPath = sanitizeFilePath(getDirectoryFromPath(expandPath("../"))),
+			rootPath = sanitizePath(getDirectoryFromPath(expandPath("../"))),
 			ormEnabled = true,
 			ormSettings = {},
 			sessionTimeout = createTimeSpan(0, 2, 0, 0),
@@ -249,14 +249,14 @@ component {
 		if (_directoryExists(this.rootPath & "plugins/")) {
 			defaults["/plugins"] = this.rootPath & "plugins/";
 		} else if (_directoryExists(expandPath("/plugins/"))) {
-			defaults["/plugins"] = sanitizeFilePath(expandPath("/plugins"));
+			defaults["/plugins"] = sanitizePath(expandPath("/plugins/"));
 		}
 
 		// check for a local coldmvc directory first
 		if (_directoryExists(this.rootPath & "coldmvc/")) {
 			defaults["/coldmvc"] = this.rootPath & "coldmvc/";
 		} else if (_directoryExists(expandPath("/coldmvc/"))) {
-			defaults["/coldmvc"] = sanitizeFilePath(expandPath("/coldmvc/"));
+			defaults["/coldmvc"] = sanitizePath(expandPath("/coldmvc/"));
 		}
 
 		structAppend(this.mappings, defaults, false);
@@ -410,7 +410,9 @@ component {
 
 			var assetPath = replaceNoCase(variables.settings["urlPath"], "index.cfm", "");
 
-			if (right(assetPath, 1) == "/") {
+			if (assetPath == "/") {
+				assetPath = "";
+			} else if (right(assetPath, 1) == "/") {
 				assetPath = left(assetPath, len(assetPath) - 1);
 			}
 
@@ -447,9 +449,15 @@ component {
 
 	}
 
-	private string function sanitizeFilePath(required string filePath) {
+	private string function sanitizePath(required string filePath) {
 
-		return replace(arguments.filePath, "\", "/", "all");
+		var path = replace(arguments.filePath, "\", "/", "all");
+
+		if (right(path, 1) != "/") {
+			path = path & "/";
+		}
+
+		return path;
 
 	}
 

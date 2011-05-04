@@ -130,17 +130,25 @@ component {
 
 			writeOutput(output);
 
-		} catch (any exception) {
+		} catch (any error) {
 
 			// if you're not in the development environment and you're not in the error controller and you have an error controller
 			if (coldmvc.event.getController() != "error" && beanFactory.containsBean("errorController")) {
 
 				// add the error to the params
-				coldmvc.params.set("exception", exception);
+				coldmvc.params.set("error", error);
 
 				// if it's a valid error code, then update the response headers
-				if (isNumeric(exception.errorCode)) {
-					coldmvc.request.setStatus(exception.errorCode);
+				if (isNumeric(error.errorCode)) {
+					coldmvc.request.setStatus(error.errorCode);
+				}
+
+				// dispatch the error event
+				eventDispatcher.dispatchEvent("error");
+
+				// dispatch a status-specific error event
+				if (isNumeric(error.errorCode)) {
+					eventDispatcher.dispatchEvent("error:#error.errorCode#");
 				}
 
 				// rebuild the event object
@@ -160,7 +168,9 @@ component {
 
 			} else {
 
-				throw(object = exception);
+				// either in development mode, inside the error controller, or an error controller didn't exist, so re-throw the error
+				throw(object=error);
+
 			}
 
 		}

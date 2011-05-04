@@ -73,7 +73,10 @@ component {
 
 	private void function fail(required numeric statusCode, required string message) {
 
-		throw(arguments.statusCode & " " & coldmvc.request.getStatusText(arguments.statusCode), "coldmvc.exception.#arguments.statusCode#", arguments.message, arguments.statusCode);
+		var text = coldmvc.request.getStatusText(arguments.statusCode);
+		var type = coldmvc.string.pascalize(text);
+
+		throw(arguments.statusCode & " " & text, "coldmvc.exception.#type#", arguments.message, arguments.statusCode);
 
 	}
 

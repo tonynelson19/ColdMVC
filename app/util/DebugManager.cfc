@@ -238,4 +238,10 @@ component {
 
 	}
 
+	public string function getStatus() {
+
+		return coldmvc.request.getStatus() & " " & coldmvc.request.getStatusText();
+
+	}
+
 }

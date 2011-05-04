@@ -154,6 +154,9 @@
 		<property name="defaultLayout">
 			<value>${layout}</value>
 		</property>
+		<property name="development">
+			<value>${development}</value>
+		</property>
 	</bean>
 	
 	<bean id="routeHandler" class="coldmvc.app.util.RouteHandler">

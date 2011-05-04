@@ -43,6 +43,10 @@
 				<td class="coldmvc_field">#debugManager.getRoute()#</td>
 			</tr>
 			<tr>
+				<td class="coldmvc_label">Status:</td>
+				<td class="coldmvc_field">#debugManager.getStatus()#</td>
+			</tr>
+			<tr>
 				<td class="coldmvc_label">Environment:</td>
 				<td class="coldmvc_field">#debugManager.getEnvironment()#</td>
 			</tr>

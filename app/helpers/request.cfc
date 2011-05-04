@@ -77,6 +77,24 @@ component {
 
 	}
 
+	public boolean function isPost() {
+
+		return getMethod() == "post";
+
+	}
+
+	public boolean function isGet() {
+
+		return getMethod() == "get";
+
+	}
+
+	public string function getMethod() {
+
+		return coldmvc.cgi.get("request_method");
+
+	}
+
 	public void function setStatus(required numeric statusCode, string statusText="") {
 
 		if (arguments.statusText == "") {
@@ -93,7 +111,7 @@ component {
 
 	}
 
-	public string function getStatusText(numeric statusCode="") {
+	public string function getStatusText(any statusCode="") {
 
 		if (arguments.statusCode == "") {
 			arguments.statusCode = getStatus();

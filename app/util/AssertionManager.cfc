@@ -3,96 +3,77 @@
  */
 component {
 
-	property eventDispatcher;
+	property modelManager;
 
 	/**
 	 * @actionHelper assertAjax
 	 */
-	public boolean function assertAjax() {
+	public void function assertAjax() {
 
 		if (!coldmvc.request.isAjax()) {
-			dispatch(403);
-			return false;
+			fail(403, "Expected Ajax");
 		}
-
-		return true;
 
 	}
 
 	/**
 	 * @actionHelper assertGet
 	 */
-	public boolean function assertGet() {
+	public void function assertGet() {
 
-		if (!coldmvc.cgi.get("request_method") == "get") {
-			dispatch(405);
-			return false;
+		if (!coldmvc.request.isGet()) {
+			fail(405, "Expected GET");
 		}
-
-		return true;
 
 	}
 
 	/**
 	 * @actionHelper assertLoggedIn
 	 */
-	public boolean function assertLoggedIn() {
+	public void function assertLoggedIn() {
 
 		if (!coldmvc.user.isLoggedIn()) {
-			dispatch(401);
-			return false;
+			fail(401, "User not logged in");
 		}
-
-		return true;
 
 	}
 
 	/**
 	 * @actionHelper assertModelExists
 	 */
-	public boolean function assertModelExists(required any model) {
+	public void function assertModelExists(required any model) {
 
 		if (!arguments.model.exists()) {
-			dispatch(404);
-			return false;
+			fail(404, "#modelManager.getName(arguments.model)# does not exist");
 		}
-
-		return true;
 
 	}
 
 	/**
 	 * @actionHelper assertParamExists
 	 */
-	public boolean function assertParamExists(required string key) {
+	public void function assertParamExists(required string key) {
 
 		if (!coldmvc.params.hasParam(arguments.key)) {
-			dispatch(404);
-			return false;
+			fail(404, "Parameter '#key#' not found");
 		}
-
-		return true;
 
 	}
 
 	/**
 	 * @actionHelper assertPost
 	 */
-	public boolean function assertPost() {
+	public void function assertPost() {
 
-		if (!coldmvc.cgi.get("request_method") == "post") {
-			dispatch(405);
-			return false;
+		if (!coldmvc.request.isPost()) {
+			fail(405, "Expected POST");
 		}
-
-		return true;
 
 	}
 
-	private void function dispatch(required numeric statusCode) {
+	private void function fail(required numeric statusCode, required string message) {
 
-		coldmvc.request.setStatus(arguments.statusCode);
-		eventDispatcher.dispatchEvent(arguments.statusCode, arguments);
+		throw(arguments.statusCode & " " & coldmvc.request.getStatusText(arguments.statusCode), "coldmvc.exception.#arguments.statusCode#", arguments.message, arguments.statusCode);
 
 	}
 

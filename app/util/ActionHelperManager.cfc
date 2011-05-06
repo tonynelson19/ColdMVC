@@ -23,6 +23,8 @@ component {
 				arguments.bean.__setVariable = __setVariable;
 
 				var actionHelpers = getActionHelpers();
+				var actionHelper = "";
+
 				for (actionHelper in actionHelpers) {
 					if (!structKeyExists(bean, actionHelper)) {
 						arguments.bean.__setVariable(actionHelper, callActionHelper);
@@ -38,8 +40,10 @@ component {
 	}
 
 	public void function __setVariable(required string key, required any value) {
+
 		this[arguments.key] = arguments.value;
 		variables[arguments.key] = arguments.value;
+
 	}
 
 	public void function findActionHelpers() {
@@ -107,7 +111,6 @@ component {
 		if (structKeyExists(actionHelpers, method)) {
 
 			var actionHelper = actionHelpers[method];
-
 			var args = {};
 
 			if (actionHelper.includeMethod) {

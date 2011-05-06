@@ -68,6 +68,7 @@
 					<list>
 						<value>helperManager.addHelpers</value>
 						<value>actionHelperManager.findActionHelpers</value>
+						<value>modelHelperManager.findModelHelpers</value>
 						<value>viewHelperManager.findViewHelpers</value>
 						<value>router.addNamedRouteViewHelpers</value>
 						<value>templateManager.loadTemplates</value>
@@ -96,6 +97,11 @@
 				<entry key="postRequest">
 					<list>
 						<value>flashManager.endRequest</value>
+					</list>
+				</entry>
+				<entry key="preLoad">
+					<list>
+						<value>modelHelperManager.injectModelHelpers</value>
 					</list>
 				</entry>
 			</map>
@@ -134,6 +140,8 @@
 			<value>${development}</value>
 		</property>
 	</bean>
+	
+	<bean id="modelHelperManager" class="coldmvc.app.util.ModelHelperManager" />
 	
 	<bean id="modelManager" class="coldmvc.app.util.ModelManager" />
 	

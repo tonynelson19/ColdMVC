@@ -132,8 +132,8 @@ component {
 
 		} catch (any error) {
 
-			// if you're not in the development environment and you're not in the error controller and you have an error controller
-			if (coldmvc.event.getController() != "error" && beanFactory.containsBean("errorController")) {
+			// if you're not in the error controller
+			if (coldmvc.event.getController() != "error") {
 
 				// add the error to the params
 				coldmvc.params.set("error", error);
@@ -151,24 +151,33 @@ component {
 					eventDispatcher.dispatchEvent("error:#error.errorCode#");
 				}
 
-				// rebuild the event object
-				var controller = "error";
-				var action = controllerManager.getAction(controller);
-				var view = controllerManager.getView(controller, action);
-				var layout = controllerManager.getLayout(controller, action);
+				if (beanFactory.containsBean("errorController")) {
 
-				coldmvc.event.setController(controller);
-				coldmvc.event.setAction(action);
-				coldmvc.event.setView(view);
-				coldmvc.event.setLayout(layout);
+					// rebuild the event object
+					var controller = "error";
+					var action = controllerManager.getAction(controller);
+					var view = controllerManager.getView(controller, action);
+					var layout = controllerManager.getLayout(controller, action);
 
-				// re-dispatch the updated route
-				dispatchRoute();
+					coldmvc.event.setController(controller);
+					coldmvc.event.setAction(action);
+					coldmvc.event.setView(view);
+					coldmvc.event.setLayout(layout);
+
+					// re-dispatch the updated route
+					dispatchRoute();
+
+				} else {
+
+					// no error controller, so just throw it
+					throw(object=error);
+
+				}
 
 
 			} else {
 
-				// either in development mode, inside the error controller, or an error controller didn't exist, so re-throw the error
+				// error within the error controller
 				throw(object=error);
 
 			}

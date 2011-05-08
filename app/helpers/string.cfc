@@ -13,93 +13,92 @@ component {
 
 	public string function singularize(required string string) {
 
-		var length = len(string);
+		var length = len(arguments.string);
 
-		if (structKeyExists(plurals, string)) {
-			return plurals[string];
+		if (structKeyExists(variables.plurals, arguments.string)) {
+			return variables.plurals[arguments.string];
 		}
 
-		if (len(string) <= 2) {
-			return setAndReturn(plurals, string, string);
+		if (len(arguments.string) <= 2) {
+			return setAndReturn(variables.plurals, arguments.string, arguments.string);
 		}
 
 		if (length >= 4) {
 
-			if (listFindNoCase("bies,cies,dies,fies,gies,hies,jies,kies,lies,mies,nies,pies,ries,sies,ties,vies,wies,xies,zies", right(string, 4))) {
-				return setAndReturn(plurals, string, left(string, len(string)-3) & "y");
-			} else if (listFindNoCase("ches,shes", right(string, 4))) {
-				return setAndReturn(plurals, string, left(string, len(string)-2));
-			} else if (listFindNoCase("zzes", right(string, 4))) {
-				return setAndReturn(plurals, string, left(string, len(string)-3));
-			} else if (listFindNoCase("men", right(string, 3))) {
-				return setAndReturn(plurals, string, left(string, len(string)-3) & "man");
+			if (listFindNoCase("bies,cies,dies,fies,gies,hies,jies,kies,lies,mies,nies,pies,ries,sies,ties,vies,wies,xies,zies", right(arguments.string, 4))) {
+				return setAndReturn(variables.plurals, arguments.string, left(arguments.string, len(arguments.string)-3) & "y");
+			} else if (listFindNoCase("ches,shes", right(arguments.string, 4))) {
+				return setAndReturn(variables.plurals, arguments.string, left(arguments.string, len(arguments.string)-2));
+			} else if (listFindNoCase("zzes", right(arguments.string, 4))) {
+				return setAndReturn(variables.plurals, arguments.string, left(arguments.string, len(arguments.string)-3));
+			} else if (listFindNoCase("men", right(arguments.string, 3))) {
+				return setAndReturn(variables.plurals, arguments.string, left(arguments.string, len(arguments.string)-3) & "man");
 			}
 
 		}
 
 		if (length >= 3) {
 
-			if (listFindNoCase("ses,zes,xes", right(string, 3))) {
-				return setAndReturn(plurals, string, left(string, len(string)-2));
+			if (listFindNoCase("ses,zes,xes", right(arguments.string, 3))) {
+				return setAndReturn(variables.plurals, arguments.string, left(arguments.string, len(arguments.string)-2));
 			}
 
 		}
 
 		if (length >= 2) {
 
-			if (listFindNoCase("ae", right(string, 2))) {
-				return setAndReturn(plurals, string, left(string, len(string)-1));
+			if (listFindNoCase("ae", right(arguments.string, 2))) {
+				return setAndReturn(variables.plurals, arguments.string, left(arguments.string, len(arguments.string)-1));
 			}
 
 		}
 
-		if (right(string, 1) == "i") {
-			return setAndReturn(plurals, string, left(string, len(string)-1) & "us");
+		if (right(arguments.string, 1) == "i") {
+			return setAndReturn(variables.plurals, arguments.string, left(arguments.string, len(arguments.string)-1) & "us");
 		}
 
-		if (right(string, 1) == "s") {
-			return setAndReturn(plurals, string, left(string, len(string)-1));
+		if (right(arguments.string, 1) == "s") {
+			return setAndReturn(variables.plurals, arguments.string, left(arguments.string, len(arguments.string)-1));
 		}
 
-		return setAndReturn(plurals, string, string);
+		return setAndReturn(variables.plurals, arguments.string, arguments.string);
 
 	}
 
 	public string function pluralize(required string string, numeric count="0") {
 
+		if (arguments.count == 1) {
+			return singularize(arguments.string);
+		}
+
+		if (structKeyExists(variables.singulars, arguments.string)) {
+			return variables.singulars[arguments.string];
+		}
+
 		var i = "";
-
-		if (count == 1) {
-			return singularize(string);
-		}
-
-		if (structKeyExists(singulars, string)) {
-			return singulars[string];
-		}
 
 		for (i = 1; i <= arrayLen(patterns); i++) {
 
-			if (reFindNoCase(patterns[i].key, string)) {
+			if (reFindNoCase(patterns[i].key, arguments.string)) {
 
 				var pattern = createObject("java", "java.util.regex.Pattern").compile(javaCast("string", patterns[i].key));
+				var matcher = pattern.matcher(javaCast("string", arguments.string));
 
-				var matcher = pattern.matcher(javaCast("string", string));
-
-				return setAndReturn(singulars, string, matcher.replaceAll(patterns[i].string));
+				return setAndReturn(variables.singulars, arguments.string, matcher.replaceAll(patterns[i].string));
 
 			}
 
 		}
 
-		return setAndReturn(singulars, string, string);
+		return setAndReturn(variables.singulars, arguments.string, arguments.string);
 
 	}
 
 	private string function setAndReturn(required struct data, required string key, required any string) {
 
-		data[key] = string;
+		arguments.data[arguments.key] = arguments.string;
 
-		return string;
+		return arguments.string;
 
 	}
 
@@ -107,120 +106,127 @@ component {
 
 		var i = "";
 
-	    string = ucase(string);
-
-	    string = replace(string, "_", " ", "all");
+	    arguments.string = ucase(arguments.string);
+	    arguments.string = replace(arguments.string, "_", " ", "all");
+	    arguments.string = replace(arguments.string, "-", " ", "all");
 
 		var list = "A,AN,OF";
+		var i = "";
+
 		for (i = 1; i <= listLen(list); i++) {
-			string = replace(string," #listGetAt(list, i)# ", " #lcase(listGetAt(list, i))# ", "all");
+			arguments.string = replace(arguments.string," #listGetAt(list, i)# ", " #lcase(listGetAt(list, i))# ", "all");
 		}
 
-	    string = reReplace(string, "([[:upper:]])([[:upper:]]*)", "\1\L\2\E", "all");
+	    arguments.string = reReplace(arguments.string, "([[:upper:]])([[:upper:]]*)", "\1\L\2\E", "all");
 
-	    return trim(string);
+	    return trim(arguments.string);
 
 	}
 
 	public string function pascalize(required string string) {
 
-		string = replace(string, "_", " ", "all");
+		arguments.string = replace(arguments.string, "_", " ", "all");
+		arguments.string = replace(arguments.string, "-", " ", "all");
 
-		if (find(" ", string)) {
+		if (find(" ", arguments.string)) {
 
-			var array = listToArray(string, " ");
+			var array = listToArray(arguments.string, " ");
+			var i = "";
 
 			for (i = 1; i <= arrayLen(array); i++) {
 				array[i] = upperfirst(array[i]);
 			}
 
-			string = arrayToList(array, "");
+			arguments.string = arrayToList(array, "");
 
 		} else {
-			string = upperfirst(string);
+			arguments.string = upperfirst(arguments.string);
 		}
 
-	    return string;
+	    return arguments.string;
 
 	}
 
 	public string function camelize(required string string) {
 
-		return lowerfirst(pascalize(string));
+		return lowerfirst(pascalize(arguments.string));
 
 	}
 
 	public string function upperfirst(required string string) {
 
-		var remainder = len(string) - 1;
+		var remainder = len(arguments.string) - 1;
 
 		if (remainder > 0) {
-			string = ucase(left(string, 1)) & right(string, remainder);
+			arguments.string = ucase(left(arguments.string, 1)) & right(arguments.string, remainder);
 		} else {
-			string = ucase(string);
+			arguments.string = ucase(arguments.string);
 		}
 
-		return string;
+		return arguments.string;
 
 	}
 
 	public string function lowerfirst(required string string) {
 
-		var remainder = len(string) - 1;
+		var remainder = len(arguments.string) - 1;
 
 		if (remainder > 0) {
-			string = lcase(left(string, 1)) & right(string, remainder);
+			arguments.string = lcase(left(arguments.string, 1)) & right(arguments.string, remainder);
 		} else {
-			string = lcase(string);
+			arguments.string = lcase(arguments.string);
 		}
 
-		return string;
+		return arguments.string;
 
 	}
 
 	public string function humanize(required string string) {
 
-		if (string != "") {
+		if (arguments.string != "") {
 
-			string = capitalize(string);
+			arguments.string = capitalize(arguments.string);
 
-			if (len(string) > 1) {
-				string = left(string, 1) & lcase(right(string, len(string)-1));
+			if (len(arguments.string) > 1) {
+				arguments.string = left(arguments.string, 1) & lcase(right(arguments.string, len(arguments.string) - 1));
 			}
 
 		}
 
-		return string;
+		return arguments.string;
 
 	}
 
 	public string function slugify(required string string) {
 
-		string = lcase(trim(string));
-		string = replace(string, "'", "", "all");
-	    string = reReplace(string, "[^a-z0-9-]", "-", "all");
-	    string = reReplace(string, "-+", "-", "all");
+		arguments.string = lcase(trim(arguments.string));
+		arguments.string = replace(arguments.string, "'", "", "all");
+	    arguments.string = reReplace(arguments.string, "[^a-z0-9-]", "-", "all");
+	    arguments.string = reReplace(arguments.string, "-+", "-", "all");
 
-	    if (left(string, 1) == "-") {
-	        string = right(string, len(string)-1);
+	    if (left(arguments.string, 1) == "-") {
+	        arguments.string = right(arguments.string, len(arguments.string) - 1);
 		}
 
-		if (right(string, 1) == "-") {
-			 string = left(string, len(string)-1);
+		if (right(arguments.string, 1) == "-") {
+			arguments.string = left(arguments.string, len(arguments.string) - 1);
 		}
 
-		return string;
+		return arguments.string;
 
 	}
 
 	public string function underscore(required string string) {
 
+		arguments.string = replace(arguments.string, " ", "_", "all");
+		arguments.string = replace(arguments.string, "-", "_", "all");
+
 		var array = [];
 		var i = "";
 
-		for (i = 1; i <= len(string); i++) {
+		for (i = 1; i <= len(arguments.string); i++) {
 
-			var char = mid(string, i, 1);
+			var char = mid(arguments.string, i, 1);
 
 			if (i == 1) {
     			arrayAppend(array, ucase(char));
@@ -233,15 +239,15 @@ component {
    			}
   		}
 
-  		var name = arrayToList(array, "");
+		arguments.string = trim(lcase(arrayToList(array, "")));
 
-  		return trim(lcase(name));
+	    return replace(arguments.string, "__", "_", "all");
 
 	}
 
 	public string function uncamelize(required string string) {
 
-		return humanize(underscore(string));
+		return humanize(underscore(arguments.string));
 
 	}
 
@@ -257,31 +263,31 @@ component {
 
 	public string function isLower(required string string) {
 
-		return compare(string, lcase(string)) == 0;
+		return compare(arguments.string, lcase(arguments.string)) == 0;
 
 	}
 
 	public string function isUpper(required string string) {
 
-		return compare(string, ucase(string)) == 0;
+		return compare(arguments.string, ucase(arguments.string)) == 0;
 
 	}
 
 	public boolean function startsWith(required string string, required string substring) {
 
-		return left(string, len(substring)) == substring;
+		return left(arguments.string, len(arguments.substring)) == arguments.substring;
 
 	}
 
 	public boolean function endsWith(required string string, required string substring) {
 
-		return right(string, len(substring)) == substring;
+		return right(arguments.string, len(arguments.substring)) == arguments.substring;
 
 	}
 
 	public array function toArray(required string string, string delimeter=",") {
 
-		var array = listToArray(string, delimeter);
+		var array = listToArray(arguments.string, arguments.delimeter);
 		var i = "";
 
 		for (i = 1; i <= arrayLen(array); i++) {
@@ -294,12 +300,12 @@ component {
 
 	public string function toOrdinal(required string string) {
 
-		var lastTwo = right(string, 2);
+		var lastTwo = right(arguments.string, 2);
 
 		if (listFind("11,12,13", lastTwo)) {
 			var check = lastTwo;
 		} else {
-			var check = right(string, 1);
+			var check = right(arguments.string, 1);
 		}
 
 		var ordinal = "th";
@@ -320,15 +326,13 @@ component {
 			}
 		}
 
-		return string & ordinal;
+		return arguments.string & ordinal;
 
 	}
 
 	private string function setWords() {
 
 		var words = {};
-		var i = "";
-
 		words["advice"] = "advice";
 		words["afterlife"] = "afterlives";
 		words["air"] = "air";
@@ -448,11 +452,12 @@ component {
 		words["wolf"] = "wolves";
 		words["yen"] = "yen";
 
-		singulars = words;
-		plurals = {};
+		variables.singulars = words;
+		variables.plurals = {};
 
+		var i = "";
 		for (i in words) {
-			plurals[words[i]] = i;
+			variables.plurals[words[i]] = i;
 		}
 
 	}

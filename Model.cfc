@@ -36,11 +36,11 @@ component {
 
 	public boolean function exists(string id) {
 
-		if (isNull(id)) {
+		if (isNull(arguments.id)) {
 			return DAO.exists(this);
 		}
 
-		return DAO.exists(this, id);
+		return DAO.exists(this, arguments.id);
 
 	}
 
@@ -78,63 +78,6 @@ component {
 
 	}
 
-	public any function _get(required string property) {
-
-		var value = "";
-
-		if (structKeyExists(this, "get#property#")) {
-
-			value = evaluate("get#property#()");
-
-			if (isNull(value) && DAO.isRelationship(this, property)) {
-
-				var relationship = DAO.getRelationship(this, arguments.property);
-
-				switch(relationship.type) {
-
-					case "ManyToOne": {
-						value = DAO.new(relationship.entity, {}, "");
-						prop(property, value);
-						break;
-					}
-
-					case "OneToOne": {
-						value = DAO.new(relationship.entity, {}, "");
-						break;
-					}
-
-				}
-
-			}
-
-		} else {
-
-			if (right(property, 2) == "ID") {
-
-				var relationship = left(property, len(property)-2);
-
-				if (structKeyExists(this, "get#relationship#")) {
-
-					var related = evaluate("get#relationship#()");
-
-					if (!isNull(related)) {
-						value = related.getID();
-					}
-
-				}
-
-			}
-
-		}
-
-		if (isNull(value)) {
-			value = "";
-		}
-
-		return value;
-
-	}
-
 	public any function get(required string id, any data) {
 
 		var model = DAO.get(this, id);
@@ -159,7 +102,7 @@ component {
 
 	public boolean function has(required string property) {
 
-		var value = _get(arguments.property);
+		var value = DAO.getProperty(this, arguments.property);
 
 		return coldmvc.data.count(value) > 0;
 
@@ -187,24 +130,18 @@ component {
 
 	}
 
-	public any function populate(any data, string properties="") {
+	public any function populate(required struct data, string properties="") {
 
-		return DAO.populate(this, data, properties);
+		return DAO.populate(this, arguments.data, arguments.properties);
 
 	}
 
 	public any function prop(required string property, any value) {
 
 		if (structKeyExists(arguments, "value")) {
-
-			_set(arguments.property, arguments.value);
-
-			return this;
-
+			return DAO.setProperty(this, arguments.property, arguments.value);
 		} else {
-
-			return _get(arguments.property);
-
+			return DAO.getProperty(this, arguments.property);
 		}
 
 	}
@@ -212,22 +149,6 @@ component {
 	public any function save(boolean flush="true") {
 
 		return DAO.save(this, arguments.flush);
-
-	}
-
-	public any function _set(required string property, any value) {
-
-		if (structKeyExists(this, "set#property#")) {
-
-			if (!structKeyExists(arguments, "value") || isNull(value) || (isSimpleValue(value) && value == "")) {
-				evaluate("set#property#(javaCast('null', ''))");
-			} else {
-				evaluate("set#property#(value)");
-			}
-
-		}
-
-		return this;
 
 	}
 

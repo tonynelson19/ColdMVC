@@ -5,6 +5,7 @@
 component {
 
 	property beanInjector;
+	property coldmvc;
 	property debugManager;
 	property development;
 	property eventDispatcher;
@@ -45,25 +46,24 @@ component {
 
 	public any function add(required any model, required string to, required any object) {
 
-		var property = coldmvc.string.pluralize(to);
-		var array = model._get(property);
+		var property = coldmvc.string.pluralize(arguments.to);
+		var array = getProperty(arguments.model, arguments.property);
 
 		if (!isArray(array)) {
 			array = [];
 		}
 
-		arrayAppend(array, object);
-		model._set(property, array);
+		arrayAppend(array, arguments.object);
 
-		return model;
+		return setProperty(arguments.model, arguments.property, array);
 
 	}
 
-	public any function addTo(required any model, required string method, required struct args) {
+	public any function addTo(required any model, required string method, required struct data) {
 
-		var to = replaceNoCase(method, "addTo", "");
+		var to = replaceNoCase(arguments.method, "addTo", "");
 		to = modelManager.getName(to);
-		return add(model, to, args[1]);
+		return add(arguments.model, to, arguments.data[1]);
 
 	}
 
@@ -72,32 +72,32 @@ component {
 		var query = {};
 		query.hql = [];
 		query.parameters = {};
-		query.options = options;
+		query.options = arguments.options;
 
-		var name = modelManager.getName(model);
-		var alias = modelManager.getAlias(model);
-		var joins = parseInclude(model, options);
+		var name = modelManager.getName(arguments.model);
+		var alias = modelManager.getAlias(arguments.model);
+		var joins = parseInclude(arguments.model, arguments.options);
 		var i = "";
 		var counter = 0;
 
-		arrayAppend(query.hql, select);
+		arrayAppend(query.hql, arguments.select);
 		arrayAppend(query.hql, joins);
 
-		parameters = parseParameters(model, parameters);
+		arguments.parameters = parseParameters(arguments.model, arguments.parameters);
 
-		if (!structIsEmpty(parameters)) {
+		if (!structIsEmpty(arguments.parameters)) {
 
 			arrayAppend(query.hql, "where");
 
-			for (i in parameters) {
+			for (i in arguments.parameters) {
 
 				counter++;
 
-				var parameter = parameters[i];
+				var parameter = arguments.parameters[i];
 
 				buildParameter(query, parameter);
 
-				if (counter < structCount(parameters)) {
+				if (counter < structCount(arguments.parameters)) {
 					arrayAppend(query.hql, parameter.conjunction);
 				}
 
@@ -111,21 +111,21 @@ component {
 
 	}
 
-	private struct function buildDynamicQuery(required any model, required string method, required struct args, required string select) {
+	private struct function buildDynamicQuery(required any model, required string method, required struct data, required string select) {
 
 		var query = {};
 		query.parameters = {};
 		query.hql = [];
 
-		var parsed = parseMethod(model, method);
+		var parsed = parseMethod(arguments.model, arguments.method);
 		var i = "";
 		var parameters = [];
 
-		for (i = 1; i <= structCount(args); i++) {
-			arrayAppend(parameters, args[i]);
+		for (i = 1; i <= structCount(arguments.data); i++) {
+			arrayAppend(parameters, arguments.data[i]);
 		}
 
-		arrayAppend(query.hql, select);
+		arrayAppend(query.hql, arguments.select);
 
 		for (i = 1; i <= arrayLen(parsed.joins); i++) {
 			arrayAppend(query.hql, "join #parsed.joins[i]# #replace(parsed.joins[i], '.', '_')#");
@@ -166,29 +166,29 @@ component {
 			arguments.parameters = [];
 		}
 
-		if (parameter.operator.value != "") {
+		if (arguments.parameter.operator.value != "") {
 
-			if (parameter.operator.ignorecase) {
-				var alias = "lower(#parameter.alias#)";
+			if (arguments.parameter.operator.ignorecase) {
+				var alias = "lower(#arguments.parameter.alias#)";
 			} else {
-				var alias = parameter.alias;
+				var alias = arguments.parameter.alias;
 			}
 
-			if (structKeyExists(parameter, "value")) {
-				var value = parameter.value;
+			if (structKeyExists(arguments.parameter, "value")) {
+				var value = arguments.parameter.value;
 			} else {
-				var value = parameters[1];
+				var value = arguments.parameters[1];
 			}
 
 			var values = [];
-			var type = modelManager.getJavaType(parameter.model, parameter.property);
+			var type = modelManager.getJavaType(arguments.parameter.model, arguments.parameter.property);
 
-			if (parameter.operator.operator == "in" || parameter.operator.operator == "not in") {
+			if (arguments.parameter.operator.operator == "in" || arguments.parameter.operator.operator == "not in") {
 
-				arrayAppend(query.hql, alias);
-				arrayAppend(query.hql, parameter.operator.operator);
-				arrayAppend(query.hql, "(:#parameter.property#)");
-				query.parameters[parameter.property] = toJavaArray(type, value);
+				arrayAppend(arguments.query.hql, alias);
+				arrayAppend(arguments.query.hql, arguments.parameter.operator.operator);
+				arrayAppend(arguments.query.hql, "(:#arguments.parameter.property#)");
+				arguments.query.parameters[arguments.parameter.property] = toJavaArray(type, value);
 
 			} else {
 
@@ -201,20 +201,20 @@ component {
 				for (i = 1; i <= arrayLen(value); i++) {
 
 					// if the value is just the value, make sure it's the proper type
-					if (parameter.operator.value == "${value}") {
+					if (arguments.parameter.operator.value == "${value}") {
 						arrayAppend(values, toJavaType(type, value[i]));
 					} else {
-						arrayAppend(values, replaceNoCase(parameter.operator.value, "${value}", toJavaType(type, value[i])));
+						arrayAppend(values, replaceNoCase(arguments.parameter.operator.value, "${value}", toJavaType(type, value[i])));
 					}
 
 				}
 
 				if (arrayLen(values) == 1) {
 
-					arrayAppend(query.hql, alias);
-					arrayAppend(query.hql, parameter.operator.operator);
-					arrayAppend(query.hql, ":#parameter.property#");
-					query.parameters[parameter.property] = values[1];
+					arrayAppend(arguments.query.hql, alias);
+					arrayAppend(arguments.query.hql, arguments.parameter.operator.operator);
+					arrayAppend(arguments.query.hql, ":#arguments.parameter.property#");
+					arguments.query.parameters[arguments.parameter.property] = values[1];
 
 				} else {
 
@@ -223,17 +223,17 @@ component {
 					for (i = 1; i <= arrayLen(values); i++) {
 
 						var value = values[i];
-						var property = parameter.property & i;
-						query.parameters[property] = value;
-						arrayAppend(hql, alias & " " & parameter.operator.operator & " :" & property);
+						var property = arguments.parameter.property & i;
+						arguments.query.parameters[property] = value;
+						arrayAppend(hql, alias & " " & arguments.parameter.operator.operator & " :" & property);
 
 					}
 
 					// not like, not equal
-					if (left(parameter.operator.operator, 4) == "not ") {
-						arrayAppend(query.hql, "(" & arrayToList(hql, " and ") & ")");
+					if (left(arguments.parameter.operator.operator, 4) == "not ") {
+						arrayAppend(arguments.query.hql, "(" & arrayToList(hql, " and ") & ")");
 					} else {
-						arrayAppend(query.hql, "(" & arrayToList(hql, " or ") & ")");
+						arrayAppend(arguments.query.hql, "(" & arrayToList(hql, " or ") & ")");
 					}
 
 				}
@@ -241,32 +241,31 @@ component {
 
 			}
 
-			if (!arrayIsEmpty(parameters)) {
-				arrayDeleteAt(parameters, 1);
+			if (!arrayIsEmpty(arguments.parameters)) {
+				arrayDeleteAt(arguments.parameters, 1);
 			}
 
 		}
 
-		return parameters;
+		return arguments.parameters;
 
 	}
 
 	public numeric function count(required any model) {
 
-		var name = modelManager.getName(model);
+		var name = modelManager.getName(arguments.model);
 
 		return execute("select count(*) from #name#", {}, true, {});
 
 	}
 
-	public numeric function countBy(required any model, required string method, required struct args) {
+	public numeric function countBy(required any model, required string method, required struct data) {
 
-		method = replaceNoCase(method, "countBy", "");
+		arguments.method = replaceNoCase(arguments.method, "countBy", "");
 
-		var name = modelManager.getName(model);
-		var alias = modelManager.getAlias(model);
-
-		var query = buildDynamicQuery(model, method, args, "select count(*) from #name# #alias#");
+		var name = modelManager.getName(arguments.model);
+		var alias = modelManager.getAlias(arguments.model);
+		var query = buildDynamicQuery(arguments.model, arguments.method, arguments.data, "select count(*) from #name# #alias#");
 
 		return execute(query.hql, query.parameters, true, {});
 
@@ -274,10 +273,9 @@ component {
 
 	public numeric function countWhere(required any model, required struct parameters) {
 
-		var name = modelManager.getName(model);
-		var alias = modelManager.getAlias(model);
-
-		var query = buildQuery(model, parameters, {}, "select count(*) from #name# #alias#");
+		var name = modelManager.getName(arguments.model);
+		var alias = modelManager.getAlias(arguments.model);
+		var query = buildQuery(arguments.model, arguments.parameters, {}, "select count(*) from #name# #alias#");
 
 		return execute(query.hql, query.parameters, true, {});
 
@@ -285,16 +283,16 @@ component {
 
 	public void function delete(required any model, required boolean flush) {
 
-		if (modelManager.hasProperty(model, "isDeleted")) {
-			model._set("isDeleted", 1);
-			model._set("deletedOn", coldmvc.date.get());
-			model._set("deletedBy", coldmvc.user.id());
-			entitySave(model);
+		if (modelManager.hasProperty(arguments.model, "isDeleted")) {
+			setProperty(arguments.model, "isDeleted", 1);
+			setProperty(arguments.model, "deletedOn", coldmvc.date.get());
+			setProperty(arguments.model, "deletedBy", coldmvc.user.id());
+			entitySave(arguments.model);
 		} else {
-			entityDelete(model);
+			entityDelete(arguments.model);
 		}
 
-		if (flush) {
+		if (arguments.flush) {
 			ormFlush();
 		}
 
@@ -308,12 +306,12 @@ component {
 		// need to use createQuery() to handle the "in" operator with arrays...
 		// return ormExecuteQuery(query, parameters, unique, options);
 
-		var result = ormGetSession().createQuery(query);
+		var result = ormGetSession().createQuery(arguments.query);
 
 		var parameter = "";
-		for (parameter in parameters) {
+		for (parameter in arguments.parameters) {
 
-			var value = parameters[parameter];
+			var value = arguments.parameters[parameter];
 
 			if (isSimpleValue(value)) {
 				result.setParameter(parameter, value);
@@ -323,15 +321,15 @@ component {
 
 		}
 
-		if (structKeyExists(options, "offset") && isNumeric(options.offset)) {
-			result.setFirstResult(options.offset);
+		if (structKeyExists(arguments.options, "offset") && isNumeric(arguments.options.offset)) {
+			result.setFirstResult(arguments.options.offset);
 		}
 
-		if (structKeyExists(options, "max") && isNumeric(options.max)) {
-			result.setMaxResults(options.max);
+		if (structKeyExists(arguments.options, "max") && isNumeric(arguments.options.max)) {
+			result.setMaxResults(arguments.options.max);
 		}
 
-		if (unique) {
+		if (arguments.unique) {
 			var start = getTickCount();
 			var records = result.uniqueResult();
 			var end = getTickCount();
@@ -344,7 +342,7 @@ component {
 		}
 
 		if (development) {
-			debugManager.addQuery(query, parameters, unique, options, end-start, count);
+			debugManager.addQuery(arguments.query, arguments.parameters, arguments.unique, arguments.options, end - start, count);
 		}
 
 		// if the result returned something, return it
@@ -359,11 +357,11 @@ component {
 
 	public boolean function exists(required any model, string id) {
 
-		// User.exists(1)
-		if (!isNull(id)) {
+		// _Model.exists(1)
+		if (!isNull(arguments.id)) {
 
-			var name = modelManager.getName(model);
-			var result = get(name, id);
+			var name = modelManager.getName(arguments.model);
+			var result = get(name, arguments.id);
 
 			if (isNull(result)) {
 				return false;
@@ -372,27 +370,27 @@ component {
 			}
 
 		} else {
-			// user.exists()
-			return model.id() != "";
+			// model.exists()
+			return arguments.model.id() != "";
 		}
 
 	}
 
 	public any function find(required any model, required string query, required struct parameters, required struct options) {
 
-		var result = findDelegate(model, query, parameters, options);
+		var result = findDelegate(arguments.model, arguments.query, arguments.parameters, arguments.options);
 
 		if (!isNull(result) && arrayLen(result) > 0) {
 			return result[1];
 		}
 
-		return new(model);
+		return new(arguments.model);
 
 	}
 
 	public array function findAll(required any model, required string query, required struct parameters, required struct options) {
 
-		var result = findDelegate(model, query, parameters, options);
+		var result = findDelegate(arguments.model, arguments.query, arguments.parameters, arguments.options);
 
 		if (!isNull(result)) {
 			return result;
@@ -404,20 +402,20 @@ component {
 
 	private any function findDelegate(required any model, required string query, required struct parameters, required struct options) {
 
-		var unique = parseUnique(options);
-		var sortorder = parseSortOrder(model, options);
+		var unique = parseUnique(arguments.options);
+		var sortorder = parseSortOrder(arguments.model, arguments.options);
 
 		if (sortorder != "") {
-			query = query & " order by " & sortorder;
+			arguments.query = arguments.query & " order by " & sortorder;
 		}
 
-		return execute(query, parameters, unique, options);
+		return execute(arguments.query, arguments.parameters, unique, arguments.options);
 
 	}
 
 	public array function findAllWhere(required any model, required struct parameters, required struct options) {
 
-		var result = findStatic(model, parameters, options);
+		var result = findStatic(arguments.model, arguments.parameters, arguments.options);
 
 		if (!isNull(result)) {
 			return result;
@@ -429,21 +427,21 @@ component {
 
 	private array function findAllWith(required any model, required array relationships, required struct options) {
 
-		var name = modelManager.getName(model);
+		var name = modelManager.getName(arguments.model);
 		var alias = modelManager.getAlias(name);
 		var query = [];
 		arrayAppend(query, "select #alias# from #name# #alias#");
 
-		if (arrayLen(relationships) > 0) {
+		if (arrayLen(arguments.relationships) > 0) {
 
 			query[2] = "where";
 
 			var i = "";
-			var length = arrayLen(relationships);
+			var length = arrayLen(arguments.relationships);
 
 			for (i = 1; i <= length; i++) {
 
-				arrayAppend(query, "size(#alias#.#relationships[i].property#) > 0");
+				arrayAppend(query, "size(#alias#.#arguments.relationships[i].property#) > 0");
 
 				if (i < length) {
 					arrayAppend(query, "and");
@@ -455,74 +453,74 @@ component {
 
 		query = arrayToList(query, " ");
 
-		return findAll(model, query, {}, options);
+		return findAll(arguments.model, query, {}, arguments.options);
 
 	}
 
-	private array function findAllWithDynamic(required any model, required string method, required struct args) {
+	private array function findAllWithDynamic(required any model, required string method, required struct data) {
 
-		method = replaceNoCase(method, "findAllWith", "");
+		arguments.method = replaceNoCase(arguments.method, "findAllWith", "");
 
-		var parsed = parseMethod(model, method);
+		var parsed = parseMethod(arguments.model, arguments.method);
 		var options = {};
 
-		if (structKeyExists(args, 1)) {
-			options = args[1];
+		if (structKeyExists(arguments.data, 1)) {
+			options = arguments.data[1];
 		}
 
-		return findAllWith(model, parsed.parameters, options);
+		return findAllWith(arguments.model, parsed.parameters, options);
 
 	}
 
-	private any function findDynamic(required any model, required string method, required struct args, required string prefix) {
+	private any function findDynamic(required any model, required string method, required struct data, required string prefix) {
 
-		method = replaceNoCase(method, prefix, "");
+		arguments.method = replaceNoCase(arguments.method, prefix, "");
 
-		var name = modelManager.getName(model);
-		var alias = modelManager.getAlias(model);
+		var name = modelManager.getName(arguments.model);
+		var alias = modelManager.getAlias(arguments.model);
+		var query = buildDynamicQuery(arguments.model, arguments.method, arguments.data, "select #alias# from #name# #alias#");
 
-		var query = buildDynamicQuery(model, method, args, "select #alias# from #name# #alias#");
-
-		if (prefix == "findBy") {
-			return this.find(model, query.hql, query.parameters, query.options);
-		} else if (prefix == "findAllBy") {
-			return findAll(model, query.hql, query.parameters, query.options);
+		if (arguments.prefix == "findBy") {
+			return this.find(arguments.model, query.hql, query.parameters, query.options);
+		} else if (arguments.prefix == "findAllBy") {
+			return findAll(arguments.model, query.hql, query.parameters, query.options);
 		}
 
 	}
 
 	private any function findStatic(required any model, required struct parameters, required struct options) {
 
-		var name = modelManager.getName(model);
-		var alias = modelManager.getAlias(model);
+		var name = modelManager.getName(arguments.model);
+		var alias = modelManager.getAlias(arguments.model);
+		var query = buildQuery(arguments.model, arguments.parameters, arguments.options, "select #alias# from #name# #alias#");
 
-		var query = buildQuery(model, parameters, options, "select #alias# from #name# #alias#");
-
-		return findDelegate(model, query.hql, query.parameters, query.options);
+		return findDelegate(arguments.model, query.hql, query.parameters, query.options);
 
 	}
 
 	public any function findWhere(required any model, required struct parameters, required struct options) {
 
-		var result = findStatic(model, parameters, options);
+		var result = findStatic(arguments.model, parameters, arguments.options);
 
 		if (!isNull(result) && arrayLen(result) > 0) {
 			return result[1];
 		}
 
-		return new(model);
+		return new(arguments.model);
 
 	}
 
 	public any function get(required any model, required string id) {
 
-		var name = modelManager.getName(model);
+		var name = modelManager.getName(arguments.model);
 
-		if (id == "") {
+		if (arguments.id == "") {
+
 			var obj = new(name);
+
 		} else {
 
-			var obj = load(name, id);
+			var obj = load(name, arguments.id);
 
 			if (isNull(obj)) {
 				obj = new(name);
@@ -536,14 +534,14 @@ component {
 
 	public array function getAll(required any model, required any ids, required struct options) {
 
-		var name = modelManager.getName(model);
-		var alias = modelManager.getAlias(model);
-		var pk = modelManager.getID(model);
-		var joins = parseInclude(model, options);
+		var name = modelManager.getName(arguments.model);
+		var alias = modelManager.getAlias(arguments.model);
+		var pk = modelManager.getID(arguments.model);
+		var joins = parseInclude(arguments.model, arguments.options);
 		var query = [];
 		var type = modelManager.getJavaType(name, pk);
 
-		ids = toJavaArray(type, ids);
+		arguments.ids = toJavaArray(type, arguments.ids);
 
 		arrayAppend(query, "select #alias# from #name# #alias#");
 		arrayAppend(query, joins);
@@ -551,21 +549,21 @@ component {
 
 		query = arrayToList(query, " ");
 
-		var results = findAll(model, query, {"id"=ids}, options);
+		var results = findAll(arguments.model, query, { "id" = arguments.ids}, arguments.options);
 
 		// rebuild the results in the order of the requested IDs
-		if (!structKeyExists(options, "sort")) {
+		if (!structKeyExists(arguments.options, "sort")) {
 
 			var records = {};
 			var i = "";
 			for (i = 1; i <= arrayLen(results); i++) {
-				records[results[i]._get("id")] = results[i];
+				records[getProperty(results[i], "id")] = results[i];
 			}
 
 			results = [];
-			for (i = 1; i <= arrayLen(ids); i++) {
+			for (i = 1; i <= arrayLen(arguments.ids); i++) {
 
-				var id = ids[i];
+				var id = arguments.ids[i];
 
 				if (structKeyExists(records, id)) {
 					arrayAppend(results, records[id]);
@@ -582,37 +580,25 @@ component {
 
 	public struct function getRelationship(required any model, required string property) {
 
-		var relationships = modelManager.getRelationships(model);
-		var key = "";
+		var relationships = modelManager.getRelationships(arguments.model);
 
-		for (key in relationships) {
-			if (relationships[key].property == property) {
-				return relationships[key];
-			}
-		}
+		return relationships[arguments.property];
 
 	}
 
 	public boolean function isRelationship(required any model, required string property) {
 
-		var relationships = modelManager.getRelationships(model);
-		var key = "";
+		var relationships = modelManager.getRelationships(arguments.model);
 
-		for (key in relationships) {
-			if (relationships[key].property == property) {
-				return true;
-			}
-		}
-
-		return false;
+		return structKeyExists(relationships, arguments.property);
 
 	}
 
 	public array function list(required any model, required struct options) {
 
-		var name = modelManager.getName(model);
-		var alias = modelManager.getAlias(model);
-		var joins = parseInclude(model, options);
+		var name = modelManager.getName(arguments.model);
+		var alias = modelManager.getAlias(arguments.model);
+		var joins = parseInclude(arguments.model, arguments.options);
 		var query = [];
 
 		arrayAppend(query, "select #alias# from #name# #alias#");
@@ -620,65 +606,61 @@ component {
 
 		query = arrayToList(query, " ");
 
-		return findAll(model, query, {}, options);
+		return findAll(arguments.model, query, {}, arguments.options);
 
 	}
 
 	private any function load(required any model, required string id) {
 
 		// possible bug with entityLoadByPK, so use hql instead
-		var name = modelManager.getName(model);
-		var alias = modelManager.getAlias(model);
-		var pk = modelManager.getID(model);
+		var name = modelManager.getName(arguments.model);
+		var alias = modelManager.getAlias(arguments.model);
+		var pk = modelManager.getID(arguments.model);
 		var type = modelManager.getJavaType(name, pk);
 
-		id = toJavaType(type, id);
+		arguments.id = toJavaType(type, arguments.id);
 
-		return execute("select #alias# from #name# #alias# where lower(#alias#.#pk#) = :id", {"id"=id}, true, {});
+		return execute("select #alias# from #name# #alias# where lower(#alias#.#pk#) = :id", {"id" = arguments.id}, true, {});
 
 	}
 
-	public any function missingMethod(required any model, required string method, required struct args) {
+	public any function missingMethod(required any model, required string method, required struct data) {
 
-		if (left(method, 6) == "findBy") {
-			return findDynamic(model, method, args, "findBy");
-		} else if (left(method, 9) == "findAllBy") {
-			return findDynamic(model, method, args, "findAllBy");
-		} else if (left(method, 11) == "findAllWith") {
-			return findAllWithDynamic(model, method, args);
-		} else if (left(method, 5) == "addTo") {
-			return addTo(model, method, args);
-		} else if (left(method, 7) == "countBy") {
-			return countBy(model, method, args);
+		if (left(arguments.method, 6) == "findBy") {
+			return findDynamic(arguments.model, arguments.method, arguments.data, "findBy");
+		} else if (left(arguments.method, 9) == "findAllBy") {
+			return findDynamic(arguments.model, arguments.method, arguments.data, "findAllBy");
+		} else if (left(arguments.method, 11) == "findAllWith") {
+			return findAllWithDynamic(arguments.model, arguments.method, arguments.data);
+		} else if (left(arguments.method, 5) == "addTo") {
+			return addTo(arguments.model, arguments.method, arguments.data);
+		} else if (left(arguments.method, 7) == "countBy") {
+			return countBy(arguments.model, arguments.method, arguments.data);
 		}
 
-		if (structKeyExists(args, 1)) {
-			model._set(method, args[1]);
-			return model;
+		if (structKeyExists(arguments.data, 1)) {
+			return setProperty(arguments.model, arguments.method, arguments.data[1]);
 		} else {
-			return model._get(method);
+			return getProperty(arguments.model, arguments.method);
 		}
 
 	}
 
 	public any function new(required any model) {
 
-		var name = modelManager.getName(model);
+		var name = modelManager.getName(arguments.model);
 		var obj = entityNew(name);
-		var relationships = modelManager.getRelationships(model);
+		var relationships = modelManager.getRelationships(arguments.model);
 		var i = "";
 
 		for (i in relationships) {
 
 			switch(relationships[i].type) {
 
-				case "ManyToMany": {
-					obj._set(relationships[i].property, []);
-					break;
-				}
-
+				// populate empty arrays
+				case "ManyToMany":
 				case "OneToMany": {
-					obj._set(relationships[i].property, []);
+					setProperty(obj, relationships[i].property, []);
 					break;
 				}
 
@@ -697,24 +679,23 @@ component {
 	private void function dispatchEvent(required string event, required string name, required any model) {
 
 		var data = {
-			name = name,
-			model = model
+			name = arguments.name,
+			model = arguments.model
 		};
 
-		eventDispatcher.dispatchEvent(event, data);
-		eventDispatcher.dispatchEvent(event & ":" & name, data);
+		eventDispatcher.dispatchEvent(arguments.event, data);
+		eventDispatcher.dispatchEvent(arguments.event & ":" & arguments.name, data);
 
 	}
 
 	private string function parseInclude(required any model, required struct options) {
 
-		if (structKeyExists(options, "include")) {
+		if (structKeyExists(arguments.options, "include")) {
 
-			var alias = modelManager.getAlias(model);
+			var alias = modelManager.getAlias(arguments.model);
 			var joins = [];
 			var i = "";
-
-			var includes = listToArray(replace(options.include, " ", "", "all"));
+			var includes = listToArray(replace(arguments.options.include, " ", "", "all"));
 
 			for (i = 1; i <= arrayLen(includes); i++) {
 
@@ -768,7 +749,7 @@ component {
 
 				var property = keys[i];
 
-				if (left(method, len(property)) == property) {
+				if (left(arguments.method, len(property)) == property) {
 
 					var parameter = {};
 					parameter.model = name;
@@ -785,15 +766,15 @@ component {
 						parameter.alias = alias & "." & property;
 					}
 
-					method = replaceNoCase(method, property, "");
+					arguments.method = replaceNoCase(arguments.method, property, "");
 
-					if (method != "") {
+					if (arguments.method != "") {
 
 						for (j = 1; j <= arrayLen(operatorArray); j++) {
 
-							if (left(method, len(operatorArray[j])) == operatorArray[j]) {
+							if (left(arguments.method, len(operatorArray[j])) == operatorArray[j]) {
 								parameter.operator = operators[operatorArray[j]];
-								method = replaceNoCase(method, operatorArray[j], "");
+								arguments.method = replaceNoCase(arguments.method, operatorArray[j], "");
 								break;
 							}
 
@@ -801,9 +782,9 @@ component {
 
 						for (j = 1; j <= arrayLen(conjunctions); j++) {
 
-							if (left(method, len(conjunctions[j])) == conjunctions[j]) {
+							if (left(arguments.method, len(conjunctions[j])) == conjunctions[j]) {
 								parameter.conjunction = conjunctions[j];
-								method = replaceNoCase(method, conjunctions[j], "");
+								arguments.method = replaceNoCase(arguments.method, conjunctions[j], "");
 								break;
 							}
 
@@ -817,7 +798,7 @@ component {
 
 			}
 
-         } while (method != "");
+         } while (arguments.method != "");
 
 		return result;
 
@@ -882,7 +863,7 @@ component {
 			} else if (isObject(value)) {
 
 				parameter.alias = parameter.alias & ".id";
-				parameter.value = value._get("id");
+				parameter.value = getProperty(value, "id");
 
 			} else if (isStruct(value)) {
 
@@ -927,10 +908,10 @@ component {
 		var value = "";
 		var i = "";
 
-		if (structKeyExists(options, "sort")) {
+		if (structKeyExists(arguments.options, "sort")) {
 
 			alias = modelManager.getAlias(model);
-			sort = listToArray(options.sort);
+			sort = listToArray(arguments.options.sort);
 			i = "";
 
 			for (i = 1; i <= arrayLen(sort); i++) {
@@ -951,8 +932,8 @@ component {
 
 			sortorder = arrayToList(sort, ", ");
 
-			if (structKeyExists(options, "order")) {
-				sortorder = sortorder & " " & options.order;
+			if (structKeyExists(arguments.options, "order")) {
+				sortorder = sortorder & " " & arguments.options.order;
 			} else {
 				sortorder = sortorder & " asc";
 			}
@@ -967,176 +948,77 @@ component {
 
 		var unique = false;
 
-		if (structKeyExists(options, "unique")) {
-			unique = options.unique;
+		if (structKeyExists(arguments.options, "unique")) {
+			unique = arguments.options.unique;
 		}
 
 		return unique;
 
 	}
 
-	public any function populate(required any model, required any data, string propertyList="") {
-
-		var key = "";
-		var i = "";
-
-		var properties = modelManager.getProperties(model);
-		var relationships = modelManager.getRelationships(model);
-		var type = coldmvc.data.type(data);
-
-		if (type == "object") {
-
-			if (modelManager.modelExists(data)) {
-
-				for (i = 1; i<= listLen(propertyList); i++) {
-
-					var property = listGetAt(propertyList, i);
-
-					if (property != "id") {
-						model._set(property, data._get(property));
-					}
-
-				}
-
-			} else {
-
-				var metaData = getMetaData(data);
-
-				if (!structKeyExists(metaData, "functions")) {
-
-					var struct = {};
-
-					for (key in data) {
-						if (structKeyExists(properties, key)) {
-							struct[properties[key].column] = data[key];
-						}
-					}
-
-					populateStruct(model, struct, propertyList, properties, relationships);
-
-				}
-
-			}
-
-		} else if (type == "struct") {
-			populateStruct(model, data, propertyList, properties, relationships);
-		}
-
-		return model;
-
-	}
-
-	private void function populateProperty(required any model, required any data, required struct properties, required string property, required struct relationships) {
-
-		if (structKeyExists(properties, property)) {
-
-			if (isSimpleValue(data[property]) && !structIsEmpty(properties[property].relationship)) {
-
-				if (properties[property].relationship.type == "ManyToOne") {
-
-					// get the related entity
-					var related = get(properties[property].relationship.entity, data[property], {});
-
-					// don't populate new models
-					if (related.exists()) {
-						model._set(property, related);
-					}
-
-				} else {
-					model._set(property, getAll(properties[property].relationship.entity, data[property], {}));
-				}
-
-			} else {
-				model._set(property, data[property]);
-			}
-
-		} else {
-
-			var name = replace(property, "_", "", "all");
-
-			if (structKeyExists(properties, name)) {
-				model._set(name, data[property]);
-			} else {
-
-				if (right(property, 2) == "id") {
-
-					name = left(property, len(property)-2);
-					name = replace(name, "_", "", "all");
-					name = modelManager.getName(name);
-
-					if (name != "") {
-
-						if (data[property] != "") {
-							model._set(name, load(name, data[property]));
-						} else {
-							model._set(name);
-						}
-
-					}
-
-				}
-
-			}
-
-		}
-
-	}
-
-	private void function populateStruct(required any model, required any data, required string propertyList, required struct properties, required struct relationships) {
+	public any function populate(required any model, required struct data, string propertyList="") {
 
 		var key = "";
 
-		for (key in data) {
-			if (propertyList == "" || listFindNoCase(propertyList, key)) {
-				populateProperty(model, data, properties, key, relationships);
-			}
+		if (arguments.propertyList == "") {
+			arguments.propertyList = structKeyList(arguments.data);
 		}
+
+		for (key in arguments.data) {
+
+			if (listFindNoCase(arguments.propertyList, key)) {
+				setProperty(arguments.model, key, arguments.data[key]);
+			}
+
+		}
+
+		return arguments.model;
 
 	}
 
 	public any function save(required any model, required boolean flush) {
 
-		entitySave(model);
+		entitySave(arguments.model);
 
-		if (flush) {
+		if (arguments.flush) {
 			ormFlush();
 		}
 
-		return model;
+		return arguments.model;
 
 	}
 
 	private any function toJavaType(required string type, required any value) {
 
-		if (isSimpleValue(value)) {
-			value = lcase(value);
+		if (isSimpleValue(arguments.value)) {
+			arguments.value = lcase(arguments.value);
 		}
 
-		switch(type) {
+		switch(arguments.type) {
 
 			case "datetime": {
-				if (isDate(value)) {
-					value = createDate(year(value), month(value), day(value));
+				if (isDate(arguments.value)) {
+					arguments.value = createDate(year(arguments.value), month(arguments.value), day(arguments.value));
 				}
 				break;
 			}
 
 			case "int": {
-				if (!isNumeric(value)) {
-					value = 0;
+				if (!isNumeric(arguments.value)) {
+					arguments.value = 0;
 				}
-				value = javaCast(type, value);
+				arguments.value = javaCast("int", arguments.value);
 				break;
 			}
 
 			case "boolean": {
-				value = javaCast(type, value);
+				arguments.value = javaCast("boolean", arguments.value);
 				break;
 			}
 
 		}
 
-		return value;
+		return arguments.value;
 
 	}
 
@@ -1145,15 +1027,119 @@ component {
 		var result = [];
 		var i = "";
 
-		if (!isArray(value)) {
-			value = listToArray(value);
+		if (!isArray(arguments.value)) {
+			arguments.value = listToArray(arguments.value);
 		}
 
-		for (i = 1; i <= arrayLen(value); i++) {
-			arrayAppend(result, toJavaType(type, value[i]));
+		for (i = 1; i <= arrayLen(arguments.value); i++) {
+			arrayAppend(result, toJavaType(arguments.type, arguments.value[i]));
 		}
 
 		return result.toArray();
+
+	}
+
+	public any function getProperty(required any model, required string property) {
+
+		var value = "";
+
+		if (structKeyExists(arguments.model, "get#arguments.property#")) {
+
+			value = evaluate("arguments.model.get#arguments.property#()");
+
+			if (isNull(value) && isRelationship(arguments.model, arguments.property)) {
+
+				var relationship = getRelationship(arguments.model, arguments.property);
+
+				switch(relationship.type) {
+
+					case "ManyToOne":
+					case "OneToOne": {
+						value = new(relationship.entity);
+						setProperty(arguments.model, arguments.property, value);
+						break;
+					}
+
+					case "OneToMany":
+					case "ManyToMany": {
+						arguments.value = [];
+						break;
+					}
+
+				}
+
+			}
+
+		}
+
+		if (isNull(value)) {
+			value = "";
+		}
+
+		return value;
+
+	}
+
+	public any function setProperty(required any model, required string property, any value) {
+
+		// if a value wasn't passed in, or it's null, or it's an empty string, set it to null
+		if (!structKeyExists(arguments, "value") || isNull(arguments.value) || (isSimpleValue(arguments.value) && arguments.value == "")) {
+
+			evaluate("arguments.model.set#arguments.property#(javaCast('null', ''))");
+
+		} else {
+
+			// if it's a relationship
+			if (isRelationship(arguments.model, arguments.property)) {
+
+				var relationship = getRelationship(arguments.model, arguments.property);
+
+				if (isSimpleValue(arguments.value)) {
+
+					switch(relationship.type) {
+
+						// single ID
+						case "ManyToOne":
+						case "OneToOne": {
+							var related = get(relationship.entity, arguments.value);
+							if (related.exists()) {
+								arguments.value = related;
+							}
+							break;
+						}
+
+						// comma-separated list of IDs
+						case "OneToMany":
+						case "ManyToMany": {
+							arguments.value = getAll(relationship.entity, arguments.value, {});
+							break;
+						}
+
+					}
+
+				} else if (isArray(arguments.value) && arrayLen(arguments.value) > 0 && isSimpleValue(arguments.value[1])) {
+
+					// array of simple values
+					switch(relationship.type) {
+
+						case "OneToMany":
+						case "ManyToMany": {
+							arguments.value = getAll(relationship.entity, arrayToList(arguments.value), {});
+							break;
+						}
+
+					}
+
+				}
+
+			}
+
+			// relay the call through to the setter
+			evaluate("arguments.model.set#arguments.property#(arguments.value)");
+
+		}
+
+		return arguments.model;
 
 	}
 

@@ -10,7 +10,7 @@ component {
 
 	public any function init() {
 
-		cache = {};
+		variables.cache = {};
 
 		return this;
 
@@ -19,27 +19,27 @@ component {
 	public void function clearCache() {
 
 		// if you're in development mode, clear the cache each request in case the models change
-		if (development) {
-			cache = {};
+		if (variables.development) {
+			variables.cache = {};
 		}
 
 	}
 
 	public any function get(required string name) {
 
-		if (!structKeyExists(cache, arguments.name)) {
+		if (!structKeyExists(variables.cache, arguments.name)) {
 
 			var model = entityNew(arguments.name);
 
 			// put it into the cache now to avoid circular dependencies
-			cache[arguments.name] = model;
+			variables.cache[arguments.name] = model;
 
 			// inject any other models into this model
 			coldmvc.factory.autowire(model);
 
 		}
 
-		return cache[arguments.name];
+		return variables.cache[arguments.name];
 
 	}
 

@@ -30,7 +30,7 @@ component {
 
 	private string function convertJavaType(required string type) {
 
-		if (type == "integer") {
+		if (arguments.type == "integer") {
 			return "int";
 		}
 
@@ -40,18 +40,18 @@ component {
 
 	public struct function getModel(required any model) {
 
-		var name = getName(model);
+		var name = getName(arguments.model);
 
 		if (!structKeyExists(cache, name)) {
 
 			var i = "";
 			var j = "";
 
-			if (!isObject(model)) {
-				model = modelFactory.get(name);
+			if (!isObject(arguments.model)) {
+				arguments.model = modelFactory.get(name);
 			}
 
-			var metaData = getMetaData(model);
+			var metaData = getMetaData(arguments.model);
 			var classMetaData = ormGetSessionFactory().getClassMetaData(name);
 
 			var result = {};
@@ -134,7 +134,12 @@ component {
 						var relationshipMetaData = ormGetSessionFactory().getClassMetaData(propertyTypes[i].getName());
 
 						relationship.entity = relationshipMetaData.getEntityName();
-						relationship.type = "ManyToOne";
+
+						if (propertyTypes[i].isOneToOne()) {
+							relationship.type = "OneToOne";
+						} else {
+							relationship.type = "ManyToOne";
+						}
 
 					}
 
@@ -220,22 +225,22 @@ component {
 
 	public string function getAlias(required any model) {
 
-		return coldmvc.string.camelize(getName(model));
+		return coldmvc.string.camelize(getName(arguments.model));
 
 	}
 
 	public string function getClass(required any model) {
 
-		return getModel(model).class;
+		return getModel(arguments.model).class;
 
 	}
 
 	public string function getClassName(required any model) {
 
-		var className = model;
+		var className = arguments.model;
 
-		if (isObject(model)) {
-			className = getMetaData(model).fullname;
+		if (isObject(arguments.model)) {
+			className = getMetaData(arguments.model).fullname;
 		}
 
 		return listLast(className, ".");
@@ -244,7 +249,7 @@ component {
 
 	public string function getID(required any model) {
 
-		return getModel(model).id;
+		return getModel(arguments.model).id;
 
 	}
 
@@ -252,13 +257,13 @@ component {
 
 		var models = getModels();
 
-		if (isSimpleValue(model)) {
-			if (structKeyExists(models, model)) {
-				return models[model].name;
+		if (isSimpleValue(arguments.model)) {
+			if (structKeyExists(models, arguments.model)) {
+				return models[arguments.model].name;
 			}
 		}
 
-		var className = getClassName(model);
+		var className = getClassName(arguments.model);
 
 		if (structKeyExists(models, className)) {
 			return models[className].name;
@@ -270,43 +275,43 @@ component {
 
 	public string function getJavaType(required any model, required string property) {
 
-		var properties = getProperties(model);
+		var properties = getProperties(arguments.model);
 
-		return properties[property].javatype;
+		return properties[arguments.property].javatype;
 
 	}
 
 	public struct function getProperties(required any model) {
 
-		return getModel(model).properties;
+		return getModel(arguments.model).properties;
 
 	}
 
 	public struct function getRelationships(required any model) {
 
-		return getModel(model).relationships;
+		return getModel(arguments.model).relationships;
 
 	}
 
 	public string function getProperty(required any model, required string property) {
 
-		var properties = getProperties(model);
+		var properties = getProperties(arguments.model);
 
-		return properties[property].name;
+		return properties[arguments.property].name;
 
 	}
 
 	public boolean function hasProperty(required any model, required string property) {
 
-		var properties = getProperties(model);
+		var properties = getProperties(arguments.model);
 
-		return structKeyExists(properties, property);
+		return structKeyExists(properties, arguments.property);
 
 	}
 
 	public boolean function modelExists(required any model) {
 
-		var name = getName(model);
+		var name = getName(arguments.model);
 		var models = getModels();
 
 		return structKeyExists(models, name);

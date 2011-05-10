@@ -15,7 +15,7 @@
 						<cfif viewHelper.beanName neq "">
 							#viewHelper.beanName#.#viewHelper.method#()
 						<cfelse>
-							coldmvc.#viewHelper.helper#.#viewHelper.method#()
+							$.#viewHelper.helper#.#viewHelper.method#()
 						</cfif>
 					</td>
 				</tr>

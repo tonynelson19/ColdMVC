@@ -386,7 +386,7 @@ component {
 
 			// if the value of the parameter is an object, get the value of the corresponding property
 			if (isObject(value)) {
-				value = value._get(parameter);
+				value = value.prop(parameter);
 			}
 
 			// add the value to the struct of flattened parameters

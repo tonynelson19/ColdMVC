@@ -42,6 +42,7 @@
 				<value>/coldmvc/app/debug/helpers.cfm</value>
 				<value>/coldmvc/app/debug/tags.cfm</value>
 				<value>/coldmvc/app/debug/actionhelpers.cfm</value>
+				<value>/coldmvc/app/debug/modelhelpers.cfm</value>
 				<value>/coldmvc/app/debug/viewhelpers.cfm</value>
 				<value>/coldmvc/app/debug/queries.cfm</value>
 				<value>/coldmvc/app/debug/beans.cfm</value>
@@ -66,7 +67,7 @@
 				</entry>
 				<entry key="applicationStart">
 					<list>
-						<value>helperManager.addHelpers</value>
+						<value>helperManager.setup</value>
 						<value>actionHelperManager.findActionHelpers</value>
 						<value>modelHelperManager.findModelHelpers</value>
 						<value>viewHelperManager.findViewHelpers</value>
@@ -79,7 +80,7 @@
 					<list>
 						<value>metaDataObserver.findObservers</value>
 						<value>modelFactory.clearCache</value>
-						<value>helperManager.addHelpers</value>
+						<value>helperManager.setup</value>
 						<value>tagManager.generateTags</value>
 						<value>templateManager.generateTemplates</value>
 						<value>paramManager.populateParams</value>

@@ -10,8 +10,8 @@ component {
 
 	public HelperManager function init() {
 
-		templates = {};
-		directories = [];
+		variables.templates = {};
+		variables.directories = [];
 
 		return this;
 
@@ -19,27 +19,37 @@ component {
 
 	public void function setPluginManager(required any pluginManager) {
 
-		var plugins = pluginManager.getPlugins();
+		var plugins = arguments.pluginManager.getPlugins();
 		var i = "";
 		var path = "/app/helpers/";
 
-		arrayAppend(directories, path);
+		addDirectory(path);
 
 		for (i = 1; i <= arrayLen(plugins); i++) {
-			arrayAppend(directories, plugins[i].mapping & path);
+			addDirectory(plugins[i].mapping & path);
 		}
 
-		arrayAppend(directories, "/coldmvc" & path);
+		addDirectory("/coldmvc" & path);
+
+	}
+
+	public void function addDirectory(required string directory) {
+
+		arrayAppend(variables.directories, arguments.directory);
 
 	}
 
 	public void function postProcessBeanFactory(any beanFactory) {
-		addHelpers();
+
+		setup();
+
 	}
 
-	public void function addHelpers() {
+	public void function setup() {
+
 		addScope("coldmvc");
 		addScope("$");
+
 	}
 
 	private void function addScope(required string scope) {
@@ -74,9 +84,9 @@ component {
 		var i = "";
 		var j = "";
 
-		for (i = 1; i <= arrayLen(directories); i++) {
+		for (i = 1; i <= arrayLen(variables.directories); i++) {
 
-			var directory = expandPath(directories[i]);
+			var directory = expandPath(variables.directories[i]);
 
 			if (fileSystemFacade.directoryExists(directory)) {
 
@@ -86,7 +96,7 @@ component {
 
 					var helper = {};
 					helper.name = listFirst(files.name[j], ".");
-					helper.classPath = getClassPath(directories[i], helper.name);
+					helper.classPath = getClassPath(variables.directories[i], helper.name);
 
 					var metaData = getComponentMetaData(helper.classPath);
 
@@ -103,8 +113,7 @@ component {
 
 					if (!structKeyExists(helpers, helper.name)) {
 
-
-						helper.path = directories[i] & files.name[j];
+						helper.path = variables.directories[i] & files.name[j];
 						helper.object = createObject("component", helper.classPath);
 
 						if (structKeyExists(helper.object, "init")) {
@@ -112,15 +121,15 @@ component {
 						}
 
 						// can't use the beanInjector to autowire since the beanInjector uses helpers to get a reference to the bean factory
-						if (structKeyExists(helper.object, "setBeanFactory")) {
+						if (structKeyExists(helper.object, "setBeanFactory") && structKeyExists(variables, "beanFactory")) {
 							helper.object.setBeanFactory(beanFactory);
 						}
 
-						if (structKeyExists(helper.object, "setConfig")) {
+						if (structKeyExists(helper.object, "setConfig") && structKeyExists(variables, "config")) {
 							helper.object.setConfig(config);
 						}
 
-						templates[helper.name] = helper.path;
+						variables.templates[helper.name] = helper.path;
 						helpers[helper.name] = helper.object;
 
 					}
@@ -135,14 +144,20 @@ component {
 
 	}
 
-	private string function getClassPath(string directory, string name) {
-		directory = replace(directory, "\", "/", "all");
-		directory = arrayToList(listToArray(directory, "/"), ".");
-		return directory & "." & name;
+	private string function getClassPath(required string directory, required string name) {
+
+		arguments.directory = replace(arguments.directory, "\", "/", "all");
+
+		arguments.directory = arrayToList(listToArray(arguments.directory, "/"), ".");
+
+		return arguments.directory & "." & arguments.name;
+
 	}
 
 	public struct function getTemplates() {
-		return templates;
+
+		return variables.templates;
+
 	}
 
 }

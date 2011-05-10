@@ -348,7 +348,7 @@
 						<cfswitch expression="#type#">
 
 							<cfcase value="object">
-								<cfset value = param._get(args.name) />
+								<cfset value = param.prop(args.name) />
 							</cfcase>
 
 							<cfcase value="struct">
@@ -380,7 +380,7 @@
 				<cfif isSimpleValue(item)>
 					<cfset arrayAppend(value, item) />
 				<cfelseif isObject(item)>
-					<cfset arrayAppend(value, item._get("id")) />
+					<cfset arrayAppend(value, item.id()) />
 				<cfelseif isStruct(item)>
 					<cfset arrayAppend(value, item.id) />
 				</cfif>

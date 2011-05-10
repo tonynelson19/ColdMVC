@@ -1,7 +1,10 @@
 /**
+ * @accessors true
  * @extends coldmvc.Helper
  */
 component {
+
+	property beanFactory;
 
 	public any function get(string beanName) {
 
@@ -16,7 +19,7 @@ component {
 
 	public boolean function has(required string beanName) {
 
-		return getBeanFactory().containsBean(beanName);
+		return getBeanFactory().containsBean(arguments.beanName);
 
 	}
 
@@ -26,16 +29,21 @@ component {
 
 	}
 
-	public void function autowire(any entity) {
+	public void function autowire(required any entity) {
 
-		get("beanInjector").autowire(entity);
-		get("modelInjector").autowire(entity);
+		get("beanInjector").autowire(arguments.entity);
+		get("modelInjector").autowire(arguments.entity);
 
 	}
 
 	private any function getBeanFactory() {
 
-		return application.coldmvc.beanFactory;
+		if (structKeyExists(variables, "beanFactory")) {
+			return variables.beanFactory;
+		} else {
+			return application.coldmvc.beanFactory;
+		}
+
 
 	}
 

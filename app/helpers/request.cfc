@@ -77,12 +77,18 @@ component {
 
 	}
 
+	/**
+	 * @actionHelper isPost
+	 */
 	public boolean function isPost() {
 
 		return getMethod() == "post";
 
 	}
 
+	/**
+	 * @actionHelper isGet
+	 */
 	public boolean function isGet() {
 
 		return getMethod() == "get";

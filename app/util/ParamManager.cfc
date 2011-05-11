@@ -27,6 +27,7 @@ component {
 
 		if (isDefined('form')) {
 			structAppend(collection, form);
+			structDelete(collection, "fieldnames");
 		}
 
 		if (isDefined('url')) {

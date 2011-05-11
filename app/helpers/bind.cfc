@@ -4,10 +4,15 @@
  */
 component {
 
-	public void function start(required string key) {
+	public void function start(required string key, string index="") {
 
 		var binds = getAll();
-		arrayAppend(binds, key);
+
+		arrayAppend(binds, {
+			key = arguments.key,
+			index = arguments.index
+		});
+
 		set(binds);
 
 	}
@@ -18,7 +23,7 @@ component {
 		var i = "";
 
 		for (i = arrayLen(binds); i > 0; i--) {
-			if (binds[i] == key) {
+			if (binds[i].key == arguments.key) {
 				arrayDeleteAt(binds, i);
 				break;
 			}
@@ -41,9 +46,9 @@ component {
 
 	}
 
-	public any function set(any value) {
+	public any function set(required any value) {
 
-		return super.set("bindings", value);
+		return super.set("bindings", arguments.value);
 
 	}
 

@@ -173,7 +173,9 @@
 
 			<cfif length gt 0>
 
-				<cfif isObject(args.options[1])>
+				<cfset var first = args.options[1] />
+
+				<cfif isObject(first)>
 
 					<cfloop array="#args.options#" index="option">
 
@@ -181,6 +183,20 @@
 							id = evaluate("option.#args.optionKey#()"),
 							name = evaluate("option.#args.optionValue#()"),
 							title = evaluate("option.#args.optionTitle#()")
+						} />
+
+						<cfset arrayAppend(array, item) />
+
+					</cfloop>
+
+				<cfelseif isSimpleValue(first)>
+
+					<cfloop array="#args.options#" index="option">
+
+						<cfset var item = {
+							id = option,
+							name = option,
+							title = option
 						} />
 
 						<cfset arrayAppend(array, item) />
@@ -264,11 +280,11 @@
 
 	<!------>
 
-	<cffunction name="getBinding" access="private" output="false" returntype="string">
+	<cffunction name="getBinding" access="private" output="false" returntype="struct">
 		<cfargument name="args" required="true" type="struct" />
 
 		<cfif args.bind neq "">
-			<cfreturn args.bind />
+			<cfreturn { key = args.bind, index = "" } />
 		<cfelse>
 			<cfreturn coldmvc.bind.get() />
 		</cfif>
@@ -286,8 +302,12 @@
 
 			<cfset var binding = getBinding(args) />
 
-			<cfif binding neq "">
-				<cfset name = coldmvc.string.camelize(binding) & "." & args.name />
+			<cfset var camelized = coldmvc.string.camelize(binding.key) />
+
+			<cfif binding.index neq "">
+				<cfset name = "#camelized#[#binding.index#].#args.name#" />
+			<cfelse>
+				<cfset name = "#camelized#.#args.name#" />
 			</cfif>
 
 		</cfif>
@@ -308,6 +328,9 @@
 		<cfif not structKeyExists(args, "id")>
 			<cfset args.id = replace(args.name, " ", "_", "all") />
 			<cfset args.id = replace(args.id, ".", "_", "all") />
+			<cfset args.id = replace(args.id, "[", "_", "all") />
+			<cfset args.id = replace(args.id, "]", "_", "all") />
+			<cfset args.id = replace(args.id, "__", "_", "all") />
 		</cfif>
 
 		<cfreturn args.id />
@@ -337,13 +360,20 @@
 				<!--- if you're currently inside a form that's bound to a param --->
 				<cfset var binding = getBinding(args) />
 
-				<cfif binding neq "">
+				<cfif binding.key neq "">
 
 					<!--- check to see if the binding exists (aka params.user) --->
-					<cfif coldmvc.params.has(binding)>
+					<cfif coldmvc.params.has(binding.key)>
 
-						<cfset var param = coldmvc.params.get(binding) />
+						<cfset var param = coldmvc.params.get(binding.key) />
 						<cfset var type = coldmvc.data.type(param) />
+
+						<cfif binding.index neq "">
+
+							<cfset param = coldmvc.data.value(param, binding.index) />
+							<cfset type = coldmvc.data.type(param) />
+
+						</cfif>
 
 						<cfswitch expression="#type#">
 
@@ -352,7 +382,9 @@
 							</cfcase>
 
 							<cfcase value="struct">
-								<cfset value = param[args.name] />
+								<cfif structKeyExists(param, args.name)>
+									<cfset value = param[args.name] />
+								</cfif>
 							</cfcase>
 
 						</cfswitch>

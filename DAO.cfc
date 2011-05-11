@@ -1085,7 +1085,30 @@ component {
 		// if a value wasn't passed in, or it's null, or it's an empty string, set it to null
 		if (!structKeyExists(arguments, "value") || isNull(arguments.value) || (isSimpleValue(arguments.value) && arguments.value == "")) {
 
-			evaluate("arguments.model.set#arguments.property#(javaCast('null', ''))");
+			arguments.value = javaCast("null", "");
+
+			if (isRelationship(arguments.model, arguments.property)) {
+
+				var relationship = getRelationship(arguments.model, arguments.property);
+
+				switch(relationship.type) {
+
+					// comma-separated list of IDs
+					case "OneToMany":
+					case "ManyToMany": {
+						arguments.value = [];
+						break;
+					}
+
+				}
+
+			}
+
+			if (isNull(arguments.value)) {
+				evaluate("arguments.model.set#arguments.property#(javaCast('null', ''))");
+			} else {
+				evaluate("arguments.model.set#arguments.property#(arguments.value)");
+			}
 
 		} else {
 

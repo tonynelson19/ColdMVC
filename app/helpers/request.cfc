@@ -65,6 +65,9 @@ component {
 
 	}
 
+	/**
+	 * @actionHelper isAjax
+	 */
 	public boolean function isAjax() {
 
 		var headers = getHeaders();

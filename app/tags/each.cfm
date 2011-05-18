@@ -18,6 +18,10 @@
 			</cfif>
 		</cfif>
 
+		<cfif not structKeyExists(attributes, "value")>
+			<cfset attributes.value = coldmvc.string.singularize(attributes.bind) />
+		</cfif>
+
 	</cfif>
 
 	<cfparam name="attributes.value" default="it" />

@@ -234,7 +234,7 @@ component {
 				if (structKeyExists(metaData, "formats")) {
 					controller["formats"] = metaData.formats;
 				} else {
-					controller["formats"] = "html";
+					controller["formats"] = "html,pdf";
 				}
 
 				controller["formats"] = replace(controller.formats, " ", "", "all");

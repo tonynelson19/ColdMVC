@@ -8,6 +8,7 @@ component {
 	property controllerManager;
 	property defaultLayout;
 	property eventDispatcher;
+	property pdfRenderer;
 	property renderer;
 	property routeSerializer;
 	property templateManager;
@@ -90,45 +91,65 @@ component {
 
 			if (controllerManager.respondsTo(coldmvc.event.getController(), coldmvc.event.getAction(), format)) {
 
-				switch(format) {
+				var view = coldmvc.event.getView();
+				var formatView = replace(view, ".cfm", ".#format#.cfm");
+				var formatViewExists = templateManager.viewExists(formatView);
 
-					case "html": {
+				if (formatViewExists) {
 
-						// if a layout was specified, call it
-						if (layout != "") {
-							callMethods("layoutController", "Layout");
+					writeOutput(renderer.renderView(formatView));
+
+				}
+				else {
+
+					switch(format) {
+
+						case "html":
+						case "pdf": {
+
+							// if a layout was specified, call it
+							if (layout != "") {
+								callMethods("layoutController", "Layout");
+							}
+
+							// if the layout exists, render it
+							if (layout != "" && templateManager.layoutExists(layout)) {
+								output = renderer.renderLayout(layout);
+							} else {
+								// the layout didn't exists, so try to render the view
+								output = renderer.renderView(view);
+							}
+
+							break;
 						}
 
-						// update the values from the event in case it changed
-						layout = coldmvc.event.getLayout();
-						var view = coldmvc.event.getView();
-
-						// if the layout exists, render it
-						if (layout != "" && templateManager.layoutExists(layout)) {
-							output = renderer.renderLayout(layout);
-						} else {
-							// the layout didn't exists, so try to render the view
-							output = renderer.renderView(view);
+						case "js": {
+							output = routeSerializer.toJSON(params);
+							break;
 						}
 
-						break;
+						case "xml": {
+							output = routeSerializer.toXML(params);
+							break;
+						}
+
 					}
 
-					case "json": {
-						output = routeSerializer.toJSON(params);
-						break;
-					}
-
-					case "xml": {
-						output = routeSerializer.toXML(params);
-						break;
+					if (format == "pdf") {
+						pdfRenderer.toPDF(output);
+					} else {
+						writeOutput(output);
 					}
 
 				}
 
-			}
+			} else {
 
-			writeOutput(output);
+				var text = coldmvc.request.getStatusText(403);
+
+				throw(403 & " " & text, "coldmvc.exception.#coldmvc.string.pascalize(text)#", "Format '#format#' not allowed", 403);
+
+			}
 
 		} catch (any error) {
 

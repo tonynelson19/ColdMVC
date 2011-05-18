@@ -157,6 +157,8 @@
 	
 	<bean id="paramManager" class="coldmvc.app.util.ParamManager" />
 	
+	<bean id="pdfRenderer" class="coldmvc.app.util.PDFRenderer" />
+	
 	<bean id="renderer" class="coldmvc.app.util.Renderer" />
 	
 	<bean id="routeDispatcher" class="coldmvc.app.util.RouteDispatcher">

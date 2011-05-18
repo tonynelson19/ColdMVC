@@ -154,7 +154,9 @@ component {
 		var value = get("format");
 
 		if (value == "") {
-			value = "html";
+			return "html";
+		} else if (value == "json") {
+			return "js";
 		}
 
 		return value;
@@ -166,8 +168,8 @@ component {
 	 */
 	public any function setFormat(required string format) {
 
-		if (arguments.format == "js") {
-			arguments.format = "json";
+		if (arguments.format == "json") {
+			arguments.format = "js";
 		}
 
 		return set("format", arguments.format);

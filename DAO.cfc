@@ -174,8 +174,10 @@ component {
 
 		if (structKeyExists(arguments.parameter, "value")) {
 			var value = arguments.parameter.value;
-		} else {
+		} else if (arguments.parameter.operator.value != "") {
 			var value = arguments.parameters[1];
+		} else {
+			var value = "";
 		}
 
 		if (isObject(value)) {
@@ -202,11 +204,15 @@ component {
 
 			for (i = 1; i <= arrayLen(value); i++) {
 
-				// if the value is just the value, make sure it's the proper type
-				if (arguments.parameter.operator.value == "${value}") {
-					arrayAppend(values, toJavaType(type, value[i]));
-				} else {
-					arrayAppend(values, replaceNoCase(arguments.parameter.operator.value, "${value}", toJavaType(type, value[i])));
+				if (arguments.parameter.operator.value != "") {
+
+					// if the value is just the value, make sure it's the proper type
+					if (arguments.parameter.operator.value == "${value}") {
+						arrayAppend(values, toJavaType(type, value[i]));
+					} else {
+						arrayAppend(values, replaceNoCase(arguments.parameter.operator.value, "${value}", toJavaType(type, value[i])));
+					}
+
 				}
 
 			}
@@ -222,6 +228,12 @@ component {
 				}
 
 				arguments.query.parameters[arguments.parameter.property] = values[1];
+
+			} else if (arrayLen(values) == 0) {
+
+				// isNull/isNotNull won't have a value associated  with it
+				arrayAppend(arguments.query.hql, alias);
+				arrayAppend(arguments.query.hql, arguments.parameter.operator.operator);
 
 			} else {
 
@@ -247,7 +259,7 @@ component {
 
 		}
 
-		if (!arrayIsEmpty(arguments.parameters)) {
+		if (arguments.parameter.operator.value != "" && !arrayIsEmpty(arguments.parameters)) {
 			arrayDeleteAt(arguments.parameters, 1);
 		}
 
@@ -844,7 +856,10 @@ component {
 						parameter.model = relationships[property].entity;
 						parameter.alias = alias & "_" & relationships[property].property & ".id";
 						parameter.property = "id";
-						arrayAppend(result.joins, alias & "." & relationships[property].property);
+						var join =  alias & "." & relationships[property].property;
+						if (!arrayFindNoCase(result.joins, join)) {
+							arrayAppend(result.joins, join);
+						}
 					} else {
 						parameter.alias = alias & "." & property;
 					}

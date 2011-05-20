@@ -42,7 +42,7 @@ component {
 			return binds[length];
 		}
 
-		return "";
+		return { key = "", index = "" };
 
 	}
 

@@ -28,6 +28,12 @@ component {
 
 	}
 
+	public any function createQuery() {
+
+		return DAO.createQuery(this);
+
+	}
+
 	public void function delete(boolean flush="true") {
 
 		DAO.delete(this, arguments.flush);

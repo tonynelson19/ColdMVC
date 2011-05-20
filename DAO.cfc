@@ -14,31 +14,31 @@ component {
 
 	public any function init() {
 
-		conjunctions = ["and", "or"];
+		variables.conjunctions = ["and", "or"];
 
-		operators = {};
-		operators["equal"] = { operator="=", value="${value}", ignorecase="true" };
-		operators["notEqual"] = { operator="!=", value="${value}", ignorecase="true" };
-		operators["like"] = { operator="like", value="%${value}%", ignorecase="true" };
-		operators["notLike"] = { operator="not like", value="%${value}%", ignorecase="true" };
-		operators["in"] = { operator="in", value="${value}", ignorecase="true" };
-		operators["notIn"] = { operator="not in", value="${value}", ignorecase="true" };
-		operators["startsWith"] = { operator="like", value="${value}%", ignorecase="true" };
-		operators["notStartsWith"] = { operator="not like", value="${value}%", ignorecase="true" };
-		operators["endsWith"] = { operator="like", value="%${value}", ignorecase="true" };
-		operators["notEndsWith"] = { operator="not like", value="%${value}", ignorecase="true" };
-		operators["isNull"] = { operator="is null", value="", ignorecase="false" };
-		operators["isNotNull"] = { operator="is not null", value="", ignorecase="false" };
-		operators["greaterThan"] = { operator=">", value="${value}", ignorecase="false" };
-		operators["greaterThanEquals"] = { operator=">=", value="${value}", ignorecase="false" };
-		operators["lessThan"] = { operator="<", value="${value}", ignorecase="false" };
-		operators["lessThanEquals"] = { operator="<=", value="${value}", ignorecase="false" };
-		operators["before"] = { operator="<", value="${value}", ignorecase="false" };
-		operators["after"] = { operator=">", value="${value}", ignorecase="false" };
-		operators["onOrBefore"] = { operator="<=", value="${value}", ignorecase="false" };
-		operators["onOrAfter"] = { operator=">=", value="${value}", ignorecase="false" };
+		variables.operators = {};
+		variables.operators["equal"] = { operator="=", value="${value}", ignorecase="true" };
+		variables.operators["notEqual"] = { operator="!=", value="${value}", ignorecase="true" };
+		variables.operators["like"] = { operator="like", value="%${value}%", ignorecase="true" };
+		variables.operators["notLike"] = { operator="not like", value="%${value}%", ignorecase="true" };
+		variables.operators["in"] = { operator="in", value="${value}", ignorecase="true" };
+		variables.operators["notIn"] = { operator="not in", value="${value}", ignorecase="true" };
+		variables.operators["startsWith"] = { operator="like", value="${value}%", ignorecase="true" };
+		variables.operators["notStartsWith"] = { operator="not like", value="${value}%", ignorecase="true" };
+		variables.operators["endsWith"] = { operator="like", value="%${value}", ignorecase="true" };
+		variables.operators["notEndsWith"] = { operator="not like", value="%${value}", ignorecase="true" };
+		variables.operators["isNull"] = { operator="is null", value="", ignorecase="false" };
+		variables.operators["isNotNull"] = { operator="is not null", value="", ignorecase="false" };
+		variables.operators["greaterThan"] = { operator=">", value="${value}", ignorecase="false" };
+		variables.operators["greaterThanEquals"] = { operator=">=", value="${value}", ignorecase="false" };
+		variables.operators["lessThan"] = { operator="<", value="${value}", ignorecase="false" };
+		variables.operators["lessThanEquals"] = { operator="<=", value="${value}", ignorecase="false" };
+		variables.operators["before"] = { operator="<", value="${value}", ignorecase="false" };
+		variables.operators["after"] = { operator=">", value="${value}", ignorecase="false" };
+		variables.operators["onOrBefore"] = { operator="<=", value="${value}", ignorecase="false" };
+		variables.operators["onOrAfter"] = { operator=">=", value="${value}", ignorecase="false" };
 
-		operatorArray = listToArray(coldmvc.list.sortByLen(structKeyList(operators)));
+		variables.operatorArray = listToArray(coldmvc.list.sortByLen(structKeyList(variables.operators)));
 
 		return this;
 
@@ -128,7 +128,7 @@ component {
 		arrayAppend(query.hql, arguments.select);
 
 		for (i = 1; i <= arrayLen(parsed.joins); i++) {
-			arrayAppend(query.hql, "join #parsed.joins[i]# #replace(parsed.joins[i], '.', '_')#");
+			arrayAppend(query.hql, "left join #parsed.joins[i]# #replace(parsed.joins[i], '.', '_')#");
 		}
 
 		for (i = 1; i <= arrayLen(parsed.parameters); i++) {
@@ -185,7 +185,7 @@ component {
 		}
 
 		var values = [];
-		var type = modelManager.getJavaType(arguments.parameter.model, arguments.parameter.property);
+		var type = getJavaType(arguments.parameter.model, arguments.parameter.property);
 
 		if (arguments.parameter.operator.operator == "in" || arguments.parameter.operator.operator == "not in") {
 
@@ -206,12 +206,7 @@ component {
 
 				if (arguments.parameter.operator.value != "") {
 
-					// if the value is just the value, make sure it's the proper type
-					if (arguments.parameter.operator.value == "${value}") {
-						arrayAppend(values, toJavaType(type, value[i]));
-					} else {
-						arrayAppend(values, replaceNoCase(arguments.parameter.operator.value, "${value}", toJavaType(type, value[i])));
-					}
+					arrayAppend(values, updateOperatorValue(value[i], type, arguments.parameter.operator));
 
 				}
 
@@ -241,9 +236,8 @@ component {
 
 				for (i = 1; i <= arrayLen(values); i++) {
 
-					var value = values[i];
 					var property = arguments.parameter.property & i;
-					arguments.query.parameters[property] = value;
+					arguments.query.parameters[property] = values[i];
 					arrayAppend(hql, alias & " " & arguments.parameter.operator.operator & " :" & property);
 
 				}
@@ -340,6 +334,12 @@ component {
 
 	}
 
+	public any function createQuery(required any model) {
+
+		return new coldmvc.app.util.Query(arguments.model, this);
+
+	}
+
 	public void function delete(required any model, required boolean flush) {
 
 		if (modelManager.hasProperty(arguments.model, "isDeleted")) {
@@ -425,6 +425,19 @@ component {
 
 		// the result didn't return anything, so return null
 		return;
+
+	}
+
+	public any function executeQuery(required any model, required string query, required struct parameters, required struct options) {
+
+		var unique = parseUnique(arguments.options);
+		var sortOrder = parseSortOrder(arguments.model, arguments.options);
+
+		if (sortOrder != "") {
+			arguments.query = arguments.query & " order by " & sortOrder;
+		}
+
+		return execute(arguments.query, arguments.parameters, unique, arguments.options);
 
 	}
 
@@ -612,7 +625,7 @@ component {
 		var pk = modelManager.getID(arguments.model);
 		var joins = parseInclude(arguments.model, arguments.options);
 		var query = [];
-		var type = modelManager.getJavaType(name, pk);
+		var type = getJavaType(name, pk);
 
 		arguments.ids = toJavaArray(type, arguments.ids);
 
@@ -651,6 +664,12 @@ component {
 
 	}
 
+	public string function getJavaType(required any model, required string property) {
+
+		return modelManager.getJavaType(arguments.model, arguments.property);
+
+	}
+
 	private string function getModelFromProperty(required string property) {
 
 		var array = listToArray(arguments.property, ".");
@@ -660,10 +679,8 @@ component {
 		for (i = 1; i < arrayLen(array); i++) {
 
 			if (isRelationship(model, array[i + 1])) {
-
 				var relationship = getRelationship(model, array[i + 1]);
 				model = relationship.entity;
-
 			} else {
 				break;
 			}
@@ -671,6 +688,12 @@ component {
 		}
 
 		return model;
+
+	}
+
+	public struct function getOperators() {
+
+		return variables.operators;
 
 	}
 
@@ -712,7 +735,7 @@ component {
 		var name = modelManager.getName(arguments.model);
 		var alias = modelManager.getAlias(arguments.model);
 		var pk = modelManager.getID(arguments.model);
-		var type = modelManager.getJavaType(name, pk);
+		var type = getJavaType(name, pk);
 
 		arguments.id = toJavaType(type, arguments.id);
 
@@ -850,16 +873,19 @@ component {
 					parameter.model = name;
 					parameter.property = property;
 					parameter.conjunction = "and";
-					parameter.operator = operators["equal"];
+					parameter.operator = variables.operators["equal"];
+					parameter.join = "";
 
 					if (structKeyExists(relationships, property)) {
 						parameter.model = relationships[property].entity;
 						parameter.alias = alias & "_" & relationships[property].property & ".id";
 						parameter.property = "id";
-						var join =  alias & "." & relationships[property].property;
-						if (!arrayFindNoCase(result.joins, join)) {
-							arrayAppend(result.joins, join);
+
+						parameter.join =  alias & "." & relationships[property].property;
+						if (!arrayFindNoCase(result.joins, parameter.join)) {
+							arrayAppend(result.joins, parameter.join);
 						}
+
 					} else {
 						parameter.alias = alias & "." & property;
 					}
@@ -868,11 +894,11 @@ component {
 
 					if (arguments.method != "") {
 
-						for (j = 1; j <= arrayLen(operatorArray); j++) {
+						for (j = 1; j <= arrayLen(variables.operatorArray); j++) {
 
-							if (left(arguments.method, len(operatorArray[j])) == operatorArray[j]) {
-								parameter.operator = operators[operatorArray[j]];
-								arguments.method = replaceNoCase(arguments.method, operatorArray[j], "");
+							if (left(arguments.method, len(variables.operatorArray[j])) == variables.operatorArray[j]) {
+								parameter.operator = variables.operators[variables.operatorArray[j]];
+								arguments.method = replaceNoCase(arguments.method, variables.operatorArray[j], "");
 								break;
 							}
 
@@ -898,6 +924,7 @@ component {
 
 			if (arguments.method != "") {
 				if (previousMethod == arguments.method) {
+					// safeguard against infinite loops
 					throw(message="Unable to parse method: #originalMethod#");
 				} else {
 					continueLoop = true;
@@ -906,7 +933,23 @@ component {
 				continueLoop = false;
 			}
 
-         } while (continueLoop);
+		} while (continueLoop);
+
+		// now make sure any calls to isNull or isNotNull are still valid on relationship calls (foo.bar is null > foo.bar.id is null)
+		for (i = 1; i <= arrayLen(result.parameters); i++) {
+
+			var paramter = result.parameters[i];
+
+			if (parameter.join != "" && parameter.operator.value == "") {
+
+				parameter.property = listLast(parameter.alias, ".");
+				parameter.alias = parameter.join;
+				parameter.join = "";
+				parameter.model = name;
+
+			}
+
+		}
 
 		return result;
 
@@ -973,7 +1016,7 @@ component {
 			}
 
 			// get the full operator definition
-			parameter.operator = operators[parameter.operator];
+			parameter.operator = variables.operators[parameter.operator];
 
 			// add the parameter back to the result
 			result[parameter.alias] = parameter;
@@ -1074,7 +1117,7 @@ component {
 
 	}
 
-	private any function toJavaType(required string type, required any value) {
+	public any function toJavaType(required string type, required any value) {
 
 		if (isSimpleValue(arguments.value)) {
 			arguments.value = lcase(arguments.value);
@@ -1108,7 +1151,7 @@ component {
 
 	}
 
-	private any function toJavaArray(required string type, required any value) {
+	public any function toJavaArray(required string type, required any value) {
 
 		var result = [];
 		var i = "";
@@ -1122,6 +1165,19 @@ component {
 		}
 
 		return result.toArray();
+
+	}
+
+	public any function updateOperatorValue(required any value, required string type, required struct operator) {
+
+		var javaType = toJavaType(arguments.type, arguments.value);
+
+		// if the value is just the value, make sure it's the proper type (replaceNoCase converts back to string)
+		if (arguments.operator.value == "${value}") {
+			return javaType;
+		} else {
+			return replaceNoCase(arguments.operator.value, "${value}", javaType);
+		}
 
 	}
 

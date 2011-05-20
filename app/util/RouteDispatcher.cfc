@@ -112,6 +112,10 @@ component {
 								callMethods("layoutController", "Layout");
 							}
 
+							// in case the event changed
+							layout = coldmvc.event.getLayout();
+							view = coldmvc.event.getView();
+
 							// if the layout exists, render it
 							if (layout != "" && templateManager.layoutExists(layout)) {
 								output = renderer.renderLayout(layout);

@@ -68,10 +68,10 @@ component {
 		arguments.page = validatePage(arguments);
 		arguments.max = validateMax(arguments);
 
-		var _offset = 0;
+		var _offset = 1;
 
 		if (arguments.page > 1) {
-			_offset = (arguments.page - 1) * arguments.max;
+			_offset = (arguments.page - 1) * arguments.max + 1;
 		}
 
 		return _offset;
@@ -217,14 +217,12 @@ component {
 
 	}
 
-	public numeric function start(required numeric page, required numeric offset) {
+	public numeric function start(required numeric page, required numeric max) {
 
 		var value = 1;
 
-		if (arguments.page == 1) {
-			value = arguments.page;
-		} else {
-			value = (arguments.page - 1) * arguments.offset + 1;
+		if (arguments.page > 1) {
+			value = (arguments.page - 1) * arguments.max + 1;
 		}
 
 		return value;

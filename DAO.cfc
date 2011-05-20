@@ -166,88 +166,135 @@ component {
 			arguments.parameters = [];
 		}
 
-		if (arguments.parameter.operator.value != "") {
+		if (arguments.parameter.operator.ignorecase) {
+			var alias = "lower(#arguments.parameter.alias#)";
+		} else {
+			var alias = arguments.parameter.alias;
+		}
 
-			if (arguments.parameter.operator.ignorecase) {
-				var alias = "lower(#arguments.parameter.alias#)";
-			} else {
-				var alias = arguments.parameter.alias;
+		if (structKeyExists(arguments.parameter, "value")) {
+			var value = arguments.parameter.value;
+		} else {
+			var value = arguments.parameters[1];
+		}
+
+		if (isObject(value)) {
+			value = value.prop(arguments.parameter.property);
+		}
+
+		var values = [];
+		var type = modelManager.getJavaType(arguments.parameter.model, arguments.parameter.property);
+
+		if (arguments.parameter.operator.operator == "in" || arguments.parameter.operator.operator == "not in") {
+
+			arrayAppend(arguments.query.hql, alias);
+			arrayAppend(arguments.query.hql, arguments.parameter.operator.operator);
+			arrayAppend(arguments.query.hql, "(:#arguments.parameter.property#)");
+			arguments.query.parameters[arguments.parameter.property] = toJavaArray(type, value);
+
+		} else {
+
+			if (!isArray(value)) {
+				value = [ value ];
 			}
 
-			if (structKeyExists(arguments.parameter, "value")) {
-				var value = arguments.parameter.value;
-			} else {
-				var value = arguments.parameters[1];
+			var i = "";
+
+			for (i = 1; i <= arrayLen(value); i++) {
+
+				// if the value is just the value, make sure it's the proper type
+				if (arguments.parameter.operator.value == "${value}") {
+					arrayAppend(values, toJavaType(type, value[i]));
+				} else {
+					arrayAppend(values, replaceNoCase(arguments.parameter.operator.value, "${value}", toJavaType(type, value[i])));
+				}
+
 			}
 
-			var values = [];
-			var type = modelManager.getJavaType(arguments.parameter.model, arguments.parameter.property);
-
-			if (arguments.parameter.operator.operator == "in" || arguments.parameter.operator.operator == "not in") {
+			if (arrayLen(values) == 1) {
 
 				arrayAppend(arguments.query.hql, alias);
 				arrayAppend(arguments.query.hql, arguments.parameter.operator.operator);
-				arrayAppend(arguments.query.hql, "(:#arguments.parameter.property#)");
-				arguments.query.parameters[arguments.parameter.property] = toJavaArray(type, value);
+
+				// don't add parameter placeholders for isNull/isNotNull
+				if (arguments.parameter.operator.value != "") {
+					arrayAppend(arguments.query.hql, ":#arguments.parameter.property#");
+				}
+
+				arguments.query.parameters[arguments.parameter.property] = values[1];
 
 			} else {
 
-				if (!isArray(value)) {
-					value = [ value ];
-				}
+				var hql = [];
 
-				var i = "";
+				for (i = 1; i <= arrayLen(values); i++) {
 
-				for (i = 1; i <= arrayLen(value); i++) {
-
-					// if the value is just the value, make sure it's the proper type
-					if (arguments.parameter.operator.value == "${value}") {
-						arrayAppend(values, toJavaType(type, value[i]));
-					} else {
-						arrayAppend(values, replaceNoCase(arguments.parameter.operator.value, "${value}", toJavaType(type, value[i])));
-					}
+					var value = values[i];
+					var property = arguments.parameter.property & i;
+					arguments.query.parameters[property] = value;
+					arrayAppend(hql, alias & " " & arguments.parameter.operator.operator & " :" & property);
 
 				}
 
-				if (arrayLen(values) == 1) {
-
-					arrayAppend(arguments.query.hql, alias);
-					arrayAppend(arguments.query.hql, arguments.parameter.operator.operator);
-					arrayAppend(arguments.query.hql, ":#arguments.parameter.property#");
-					arguments.query.parameters[arguments.parameter.property] = values[1];
-
+				// not like, not equal
+				if (left(arguments.parameter.operator.operator, 4) == "not ") {
+					arrayAppend(arguments.query.hql, "(" & arrayToList(hql, " and ") & ")");
 				} else {
-
-					var hql = [];
-
-					for (i = 1; i <= arrayLen(values); i++) {
-
-						var value = values[i];
-						var property = arguments.parameter.property & i;
-						arguments.query.parameters[property] = value;
-						arrayAppend(hql, alias & " " & arguments.parameter.operator.operator & " :" & property);
-
-					}
-
-					// not like, not equal
-					if (left(arguments.parameter.operator.operator, 4) == "not ") {
-						arrayAppend(arguments.query.hql, "(" & arrayToList(hql, " and ") & ")");
-					} else {
-						arrayAppend(arguments.query.hql, "(" & arrayToList(hql, " or ") & ")");
-					}
-
+					arrayAppend(arguments.query.hql, "(" & arrayToList(hql, " or ") & ")");
 				}
 
-
-			}
-
-			if (!arrayIsEmpty(arguments.parameters)) {
-				arrayDeleteAt(arguments.parameters, 1);
 			}
 
 		}
 
+		if (!arrayIsEmpty(arguments.parameters)) {
+			arrayDeleteAt(arguments.parameters, 1);
+		}
+
 		return arguments.parameters;
+
+	}
+
+	private string function cleanProperty(required string alias, required string property) {
+
+		arguments.property = trim(arguments.property);
+
+		var prefix = arguments.alias & ".";
+
+		if (left(arguments.property, len(prefix)) != prefix) {
+			arguments.property = prefix & arguments.property;
+		}
+
+		var array = listToArray(arguments.property, ".");
+		var len = arrayLen(array);
+		var i = "";
+		var model = arguments.alias;
+
+		for (i = 1; i <= len; i++) {
+
+			// if it's the first item, then it's the base entity
+			if (i == 1) {
+				array[i] = arguments.alias;
+			}
+			// it's a property on the previous entity
+			else {
+
+				array[i] = modelManager.getProperty(model, array[i]);
+
+				if (isRelationship(model, array[i]) && i < len) {
+					var relationship = getRelationship(model, array[i]);
+					model = relationship.entity;
+				}
+
+			}
+
+		}
+
+		if (isRelationship(model, array[len])) {
+			arrayAppend(array, "id");
+		}
+
+		return arrayToList(array, ".");
 
 	}
 
@@ -311,21 +358,35 @@ component {
 		var parameter = "";
 		for (parameter in arguments.parameters) {
 
-			var value = arguments.parameters[parameter];
+			var position = findNoCase(":#parameter#", arguments.query);
 
-			if (isSimpleValue(value)) {
-				result.setParameter(parameter, value);
-			} else {
-				result.setParameterList(parameter, value);
+			// make sure the parameter is actually in the query
+			if (position) {
+
+				var matchedCase = mid(arguments.query, position + 1, len(parameter));
+				var value = arguments.parameters[parameter];
+
+				if (isSimpleValue(value)) {
+					result.setParameter(matchedCase, value);
+				} else {
+					result.setParameterList(matchedCase, value);
+				}
+
 			}
 
 		}
 
 		if (structKeyExists(arguments.options, "offset") && isNumeric(arguments.options.offset)) {
-			result.setFirstResult(arguments.options.offset);
+			if (arguments.options.offset < 1) {
+				arguments.options.offset = 1;
+			}
+			result.setFirstResult(arguments.options.offset - 1);
 		}
 
 		if (structKeyExists(arguments.options, "max") && isNumeric(arguments.options.max)) {
+			if (arguments.options.max < 0) {
+				arguments.options.max = 0;
+			}
 			result.setMaxResults(arguments.options.max);
 		}
 
@@ -403,10 +464,10 @@ component {
 	private any function findDelegate(required any model, required string query, required struct parameters, required struct options) {
 
 		var unique = parseUnique(arguments.options);
-		var sortorder = parseSortOrder(arguments.model, arguments.options);
+		var sortOrder = parseSortOrder(arguments.model, arguments.options);
 
-		if (sortorder != "") {
-			arguments.query = arguments.query & " order by " & sortorder;
+		if (sortOrder != "") {
+			arguments.query = arguments.query & " order by " & sortOrder;
 		}
 
 		return execute(arguments.query, arguments.parameters, unique, arguments.options);
@@ -578,6 +639,29 @@ component {
 
 	}
 
+	private string function getModelFromProperty(required string property) {
+
+		var array = listToArray(arguments.property, ".");
+		var i = "";
+		var model = array[1];
+
+		for (i = 1; i < arrayLen(array); i++) {
+
+			if (isRelationship(model, array[i + 1])) {
+
+				var relationship = getRelationship(model, array[i + 1]);
+				model = relationship.entity;
+
+			} else {
+				break;
+			}
+
+		}
+
+		return model;
+
+	}
+
 	public struct function getRelationship(required any model, required string property) {
 
 		var relationships = modelManager.getRelationships(arguments.model);
@@ -733,15 +817,14 @@ component {
 		var properties = modelManager.getProperties(model);
 		var relationships = modelManager.getRelationships(model);
 		var keys = structKeyList(properties);
-		var related = {};
 
-		for (i in relationships) {
-			related[relationships[i].param] = relationships[i];
-		}
-
-		keys = listAppend(keys, structKeyList(related));
+		keys = listAppend(keys, structKeyList(relationships));
 		keys = coldmvc.list.sortByLen(keys);
 		keys = listToArray(keys);
+
+		var continueLoop = true;
+		var previousMethod = arguments.method;
+		var originalMethod = arguments.method;
 
 		do {
 
@@ -757,11 +840,11 @@ component {
 					parameter.conjunction = "and";
 					parameter.operator = operators["equal"];
 
-					if (structKeyExists(related, property)) {
-						parameter.model = related[property].entity;
-						parameter.alias = alias & "_" & related[property].property & ".id";
+					if (structKeyExists(relationships, property)) {
+						parameter.model = relationships[property].entity;
+						parameter.alias = alias & "_" & relationships[property].property & ".id";
 						parameter.property = "id";
-						arrayAppend(result.joins, alias & "." & related[property].property);
+						arrayAppend(result.joins, alias & "." & relationships[property].property);
 					} else {
 						parameter.alias = alias & "." & property;
 					}
@@ -798,7 +881,17 @@ component {
 
 			}
 
-         } while (arguments.method != "");
+			if (arguments.method != "") {
+				if (previousMethod == arguments.method) {
+					throw(message="Unable to parse method: #originalMethod#");
+				} else {
+					continueLoop = true;
+				}
+			} else {
+				continueLoop = false;
+			}
+
+         } while (continueLoop);
 
 		return result;
 
@@ -806,44 +899,23 @@ component {
 
 	private struct function parseParameters(required any model, required struct parameters) {
 
-		var alias = modelManager.getAlias(model);
-		var properties = modelManager.getProperties(model);
+		var alias = modelManager.getAlias(arguments.model);
+		var properties = modelManager.getProperties(arguments.model);
 		var result = {};
 		var property = "";
 
-		for (property in parameters) {
+		for (property in arguments.parameters) {
 
-			var value = parameters[property];
+			var value = arguments.parameters[property];
 			var parameter = {};
 			parameter.conjunction = "and";
 			parameter.operator = "equal";
 			parameter.value = "";
+			parameter.alias = cleanProperty(alias, property);
+			parameter.model = getModelFromProperty(parameter.alias);
+			parameter.property = listLast(parameter.alias, ".");
 
-			if (find(".", property)) {
-
-				var prop = listToArray(property, ".");
-				var len = arrayLen(prop);
-
-				// { "foo.bar" = "baz" }
-				parameter.model = modelManager.getAlias(prop[len-1]);
-				parameter.property = modelManager.getProperty(parameter.model, prop[len]);
-				parameter.alias = parameter.model & "." & parameter.property;
-
-				// if the parameter belongs to a different model
-				if (parameter.model != alias) {
-
-					// _Comment.findWhere({"post.title" = "Hello, World"}) => comment.post.title = 'Hello, World';
-					if (len == 2) {
-						parameter.alias = alias & "." & parameter.alias;
-					}
-
-				}
-
-			} else {
-				parameter.model = alias;
-				parameter.property = properties[property].name;
-				parameter.alias = parameter.model & "." & parameter.property;
-			}
+			var relationships = modelManager.getRelationships(parameter.model);
 
 			if (isSimpleValue(value)) {
 
@@ -862,7 +934,6 @@ component {
 
 			} else if (isObject(value)) {
 
-				parameter.alias = parameter.alias & ".id";
 				parameter.value = getProperty(value, "id");
 
 			} else if (isStruct(value)) {
@@ -890,7 +961,7 @@ component {
 			parameter.operator = operators[parameter.operator];
 
 			// add the parameter back to the result
-			result[property] = parameter;
+			result[parameter.alias] = parameter;
 
 		}
 
@@ -900,7 +971,7 @@ component {
 
 	private string function parseSortOrder(required any model, required struct options) {
 
-		var sortorder = "";
+		var sortOrder = "";
 		var sortAlias = "";
 		var sortProperty = "";
 		var alias = "";
@@ -930,17 +1001,17 @@ component {
 
 			}
 
-			sortorder = arrayToList(sort, ", ");
+			sortOrder = arrayToList(sort, ", ");
 
 			if (structKeyExists(arguments.options, "order")) {
-				sortorder = sortorder & " " & arguments.options.order;
+				sortOrder = sortOrder & " " & arguments.options.order;
 			} else {
-				sortorder = sortorder & " asc";
+				sortOrder = sortOrder & " asc";
 			}
 
 		}
 
-		return sortorder;
+		return sortOrder;
 
 	}
 
@@ -1082,72 +1153,23 @@ component {
 
 	public any function setProperty(required any model, required string property, any value) {
 
-		// if a value wasn't passed in, or it's null, or it's an empty string, set it to null
-		if (!structKeyExists(arguments, "value") || isNull(arguments.value) || (isSimpleValue(arguments.value) && arguments.value == "")) {
+		if (structKeyExists(arguments.model, "set#arguments.property#")) {
 
-			arguments.value = javaCast("null", "");
+			// if a value wasn't passed in, or it's null, or it's an empty string, set it to null
+			if (!structKeyExists(arguments, "value") || isNull(arguments.value) || (isSimpleValue(arguments.value) && arguments.value == "")) {
 
-			if (isRelationship(arguments.model, arguments.property)) {
+				arguments.value = javaCast("null", "");
 
-				var relationship = getRelationship(arguments.model, arguments.property);
+				if (isRelationship(arguments.model, arguments.property)) {
 
-				switch(relationship.type) {
-
-					// comma-separated list of IDs
-					case "OneToMany":
-					case "ManyToMany": {
-						arguments.value = [];
-						break;
-					}
-
-				}
-
-			}
-
-			if (isNull(arguments.value)) {
-				evaluate("arguments.model.set#arguments.property#(javaCast('null', ''))");
-			} else {
-				evaluate("arguments.model.set#arguments.property#(arguments.value)");
-			}
-
-		} else {
-
-			// if it's a relationship
-			if (isRelationship(arguments.model, arguments.property)) {
-
-				var relationship = getRelationship(arguments.model, arguments.property);
-
-				if (isSimpleValue(arguments.value)) {
+					var relationship = getRelationship(arguments.model, arguments.property);
 
 					switch(relationship.type) {
-
-						// single ID
-						case "ManyToOne":
-						case "OneToOne": {
-							var related = get(relationship.entity, arguments.value);
-							if (related.exists()) {
-								arguments.value = related;
-							}
-							break;
-						}
 
 						// comma-separated list of IDs
 						case "OneToMany":
 						case "ManyToMany": {
-							arguments.value = getAll(relationship.entity, arguments.value, {});
-							break;
-						}
-
-					}
-
-				} else if (isArray(arguments.value) && arrayLen(arguments.value) > 0 && isSimpleValue(arguments.value[1])) {
-
-					// array of simple values
-					switch(relationship.type) {
-
-						case "OneToMany":
-						case "ManyToMany": {
-							arguments.value = getAll(relationship.entity, arrayToList(arguments.value), {});
+							arguments.value = [];
 							break;
 						}
 
@@ -1155,10 +1177,63 @@ component {
 
 				}
 
-			}
+				if (isNull(arguments.value)) {
+					evaluate("arguments.model.set#arguments.property#(javaCast('null', ''))");
+				} else {
+					evaluate("arguments.model.set#arguments.property#(arguments.value)");
+				}
 
-			// relay the call through to the setter
-			evaluate("arguments.model.set#arguments.property#(arguments.value)");
+			} else {
+
+				// if it's a relationship
+				if (isRelationship(arguments.model, arguments.property)) {
+
+					var relationship = getRelationship(arguments.model, arguments.property);
+
+					if (isSimpleValue(arguments.value)) {
+
+						switch(relationship.type) {
+
+							// single ID
+							case "ManyToOne":
+							case "OneToOne": {
+								var related = get(relationship.entity, arguments.value);
+								if (related.exists()) {
+									arguments.value = related;
+								}
+								break;
+							}
+
+							// comma-separated list of IDs
+							case "OneToMany":
+							case "ManyToMany": {
+								arguments.value = getAll(relationship.entity, arguments.value, {});
+								break;
+							}
+
+						}
+
+					} else if (isArray(arguments.value) && arrayLen(arguments.value) > 0 && isSimpleValue(arguments.value[1])) {
+
+						// array of simple values
+						switch(relationship.type) {
+
+							case "OneToMany":
+							case "ManyToMany": {
+								arguments.value = getAll(relationship.entity, arrayToList(arguments.value), {});
+								break;
+							}
+
+						}
+
+					}
+
+				}
+
+				// relay the call through to the setter
+				evaluate("arguments.model.set#arguments.property#(arguments.value)");
+
+			}
 
 		}
 

@@ -44,6 +44,20 @@ component {
 
 	}
 
+	public any function find(required string query, struct parameters, struct options) {
+
+		if (!structKeyExists(arguments, "parameters")) {
+			 arguments.parameters = {};
+		}
+
+		if (!structKeyExists(arguments, "options")) {
+			 arguments.options = {};
+		}
+
+		return DAO.find(this, arguments.query, arguments.parameters, arguments.options);
+
+	}
+
 	public array function findAll(required string query, struct parameters, struct options) {
 
 		if (!structKeyExists(arguments, "parameters")) {

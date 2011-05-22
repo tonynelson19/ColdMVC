@@ -14,7 +14,7 @@ component {
 
 		variables.query = {
 			select = "select #variables.alias#",
-			from = "from #variables.entity# #variables.alias#",
+			from = "from #variables.entity# as #variables.alias#",
 			joins = [],
 			where = []
 		};
@@ -36,9 +36,7 @@ component {
 
 	public any function andWhere(required any string) {
 
-		arrayAppend(variables.query.where, " and " & arguments.string);
-
-		return this;
+		return buildWhere(arguments.string, "and");
 
 	}
 
@@ -62,19 +60,37 @@ component {
 			 result = result & " where " & trim(arrayToList(variables.query.where, " "));
 		}
 
-		return result;
+		return trim(result);
 
 	}
 
 	public any function getResults() {
 
-		return variables.dao.executeQuery(variables.model, getHQL(), variables.parameters, variables.options);
+		var result = variables.dao.executeQuery(variables.model, getHQL(), variables.parameters, variables.options);
+
+		if (structKeyExists(variables.options, "unique") && variables.options.unique && isNull(result)) {
+			return variables.dao.new(variables.model);
+		}
+
+		return result;
+
+	}
+
+	public any function innerJoin(required string property, string alias="") {
+
+		return buildJoin(arguments.property, arguments.alias, "inner");
 
 	}
 
 	public any function join(required string property, string alias="") {
 
 		return buildJoin(arguments.property, arguments.alias, "");
+
+	}
+
+	public any function leftJoin(required string property, string alias="") {
+
+		return buildJoin(arguments.property, arguments.alias, "left");
 
 	}
 
@@ -115,9 +131,7 @@ component {
 
 	public any function orWhere(required any string) {
 
-		arrayAppend(variables.query.where, " or " & arguments.string);
-
-		return this;
+		return buildWhere(arguments.string, "or");
 
 	}
 
@@ -141,9 +155,7 @@ component {
 
 	public any function where(required any string) {
 
-		arrayAppend(variables.query.where, arguments.string);
-
-		return this;
+		return buildWhere(arguments.string, "");
 
 	}
 
@@ -158,30 +170,34 @@ component {
 
 	}
 
-	private string function buildClause(required string property, required string operator, any value="", string binding="") {
+	private string function buildClause(required string property, required string operator, any value="", boolean parameter=true) {
 
 		var propertyDef = cleanProperty(arguments.property);
 		var operatorDef = getOperator(arguments.operator);
 
 		if (operatorDef.value != "") {
 
-			if (arguments.binding == "") {
-				arguments.binding = listLast(arguments.property, ".");
+			var binding = "";
 
-				if (hasParameter(arguments.binding)) {
+			if (arguments.parameter) {
+
+				binding = listLast(arguments.property, ".");
+
+				if (hasParameter(binding)) {
 					var counter = 2;
-					while (hasParameter(arguments.binding & "_" & counter)) {
+					while (hasParameter(binding & "_" & counter)) {
 						counter++;
 					}
-					arguments.binding = arguments.binding & "_" & counter;
+					binding = binding & "_" & counter;
 				}
+
 			}
 
 			var type = variables.dao.getJavaType(propertyDef.model, propertyDef.property);
 
-			variables.parameters[arguments.binding] = variables.dao.updateOperatorValue(arguments.value, type, operatorDef);
+			variables.parameters[binding] = variables.dao.updateOperatorValue(arguments.value, type, operatorDef);
 
-			return trim(propertyDef.alias & " " & operatorDef.operator & " :" & arguments.binding);
+			return trim(propertyDef.alias & " " & operatorDef.operator & " :" & binding);
 
 		} else {
 
@@ -193,7 +209,7 @@ component {
 
 	private string function buildConjunction(required array clauses, required string type) {
 
-		return " ( " & trim(arrayToList(arguments.clauses, " #arguments.type# ")) & " ) ";
+		return " ( " & trim(arrayToList(arguments.clauses, " " & arguments.type & " ")) & " ) ";
 
 	}
 
@@ -212,6 +228,18 @@ component {
 		var string = arguments.type & " join " & propertyDef.alias & " as " & arguments.alias;
 
 		arrayAppend(variables.query.joins, trim(string));
+
+		return this;
+
+	}
+
+	private any function buildWhere(required string string, required string type) {
+
+		if (arguments.type == "") {
+			arrayAppend(variables.query.where, trim(arguments.string));
+		} else {
+			arrayAppend(variables.query.where, arguments.type & " " & trim(arguments.string));
+		}
 
 		return this;
 
@@ -271,7 +299,7 @@ component {
 
 			// convert the unnamed arguments into a sorted array
 			for (i = 1; i <= structCount(arguments.missingMethodArguments); i++) {
-				arrayAppend(clauses, arguments.missingMethodArguments[i]);
+				arrayAppend(clauses, trim(arguments.missingMethodArguments[i]));
 			}
 
 			return buildConjunction(clauses, arguments.missingMethodName);
@@ -289,7 +317,7 @@ component {
 				var property = arguments.missingMethodArguments[1];
 				var operator = arguments.missingMethodName;
 				var value = (structCount(arguments.missingMethodArguments) > 1) ? arguments.missingMethodArguments[2] : "";
-				var binding = (structCount(arguments.missingMethodArguments) > 2) ? arguments.missingMethodArguments[3] : "";
+				var binding = (structCount(arguments.missingMethodArguments) > 2) ? arguments.missingMethodArguments[3] : true;
 
 				return buildClause(property, operator, value, binding);
 

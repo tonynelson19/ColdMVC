@@ -302,12 +302,20 @@
 
 			<cfset var binding = getBinding(args) />
 
-			<cfset var camelized = coldmvc.string.camelize(binding.key) />
+			<cfif binding.key neq "">
 
-			<cfif binding.index neq "">
-				<cfset name = "#camelized#[#binding.index#].#args.name#" />
+				<cfset var camelized = coldmvc.string.camelize(binding.key) />
+
+				<cfif binding.index neq "">
+					<cfset name = "#camelized#[#binding.index#].#args.name#" />
+				<cfelse>
+					<cfset name = "#camelized#.#args.name#" />
+				</cfif>
+
 			<cfelse>
-				<cfset name = "#camelized#.#args.name#" />
+
+				<cfset name = args.name />
+
 			</cfif>
 
 		</cfif>
@@ -478,13 +486,7 @@
 		<cfset var local = {} />
 
 		<cfif not structKeyExists(args, "label")>
-
-			<cfset args.label = coldmvc.string.uncamelize(args.name) />
-
-			<cfif right(args.label, 3) eq " ID">
-				<cfset args.label = left(args.label, len(args.label)-3) />
-			</cfif>
-
+			<cfset args.label = coldmvc.string.propercase(args.name) />
 		</cfif>
 
 		<cfreturn trim(args.label) />

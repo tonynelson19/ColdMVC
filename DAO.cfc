@@ -447,7 +447,7 @@ component {
 		if (!isNull(arguments.id)) {
 
 			var name = modelManager.getName(arguments.model);
-			var result = get(name, arguments.id);
+			var result = load(name, arguments.id);
 
 			if (isNull(result)) {
 				return false;

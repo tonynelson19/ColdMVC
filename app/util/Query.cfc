@@ -16,7 +16,8 @@ component {
 			select = "select #variables.alias#",
 			from = "from #variables.entity# as #variables.alias#",
 			joins = [],
-			where = []
+			where = [],
+			groupBy = ""
 		};
 
 		variables.operators = variables.dao.getOperators();
@@ -40,6 +41,25 @@ component {
 
 	}
 
+	public any function count(string string="")
+	{
+
+		var previousSelect = variables.query.select;
+
+		if (arguments.string == "") {
+			arguments.string = variables.alias & ".id";
+		}
+
+		variables.query.select = "select count(#arguments.string#)";
+
+		var result = get();
+
+		variables.query.select = previousSelect;
+
+		return result;
+
+	}
+
 	public any function get() {
 
 		unique(true);
@@ -50,17 +70,21 @@ component {
 
 	public any function getHQL() {
 
-		var result = variables.query.select & " " & variables.query.from;
+		var hql = variables.query.select & " " & variables.query.from;
 
 		if (arrayLen(variables.query.joins) > 0) {
-			 result = result & " " & arrayToList(variables.query.joins, " ");
+			 hql = hql & " " & arrayToList(variables.query.joins, " ");
 		}
 
 		if (arrayLen(variables.query.where) > 0) {
-			 result = result & " where " & trim(arrayToList(variables.query.where, " "));
+			 hql = hql & " where " & trim(arrayToList(variables.query.where, " "));
 		}
 
-		return trim(result);
+		if (variables.query.groupBy != "") {
+			 hql = hql & " group by " & variables.query.groupBy;
+		}
+
+		return trim(hql);
 
 	}
 
@@ -73,6 +97,15 @@ component {
 		}
 
 		return result;
+
+	}
+
+	public any function groupBy(required string value)
+	{
+
+		variables.query.groupBy = arguments.value;
+
+		return this;
 
 	}
 
@@ -135,6 +168,15 @@ component {
 
 	}
 
+	public any function select(required string string)
+	{
+
+		variables.query.select = "select " & arguments.string;
+
+		return this;
+
+	}
+
 	public any function sort(required string value)
 	{
 
@@ -194,10 +236,15 @@ component {
 			}
 
 			var type = variables.dao.getJavaType(propertyDef.model, propertyDef.property);
+			var val = variables.dao.updateOperatorValue(arguments.value, type, operatorDef);
 
-			variables.parameters[binding] = variables.dao.updateOperatorValue(arguments.value, type, operatorDef);
+			if (isSimpleValue(val)) {
+				val = lcase(val);
+			}
 
-			return trim(propertyDef.alias & " " & operatorDef.operator & " :" & binding);
+			variables.parameters[binding] = val;
+
+			return trim("lower(" & propertyDef.alias & ") " & operatorDef.operator & " :" & binding);
 
 		} else {
 

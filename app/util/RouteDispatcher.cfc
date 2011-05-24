@@ -127,13 +127,13 @@ component {
 							break;
 						}
 
-						case "js": {
-							output = routeSerializer.toJSON(params);
+						case "json": {
+							output = routeSerializer.toJSON(coldmvc.params.get());
 							break;
 						}
 
 						case "xml": {
-							output = routeSerializer.toXML(params);
+							output = routeSerializer.toXML(coldmvc.params.get());
 							break;
 						}
 

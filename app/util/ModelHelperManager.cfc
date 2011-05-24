@@ -65,10 +65,20 @@ component {
 
 			if (structKeyExists(fn, "modelHelper")) {
 
+				var modelHelper = fn.modelHelper;
+				var args = [];
+
+				if (find("(", fn.modelHelper)) {
+
+					var modelHelper = trim(listFirst(fn.modelHelper, "("));
+					var args = listToArray(replace(replace(listRest(fn.modelHelper, "("), ")", ""), " ", "", "all"));
+
+				}
+
 				if (bean) {
-					add(name=fn.modelHelper, beanName=name, method=fn.name);
+					add(name=modelHelper, beanName=name, method=fn.name, args=args);
 				} else {
-					add(name=fn.modelHelper, helper=name, method=fn.name);
+					add(name=modelHelper, helper=name, method=fn.name, args=args);
 				}
 
 			}
@@ -77,10 +87,14 @@ component {
 
 	}
 
-	public void function add(required string name, string beanName="", string helper="", string method="", boolean includeMethod="false") {
+	public void function add(required string name, string beanName="", string helper="", string method="", boolean includeMethod="false", array args) {
 
 		if (method == "") {
 			method = name;
+		}
+
+		if (!structKeyExists(arguments, "args")) {
+			arguments.args = [];
 		}
 
 		if (!structKeyExists(modelHelpers, name)) {
@@ -107,6 +121,17 @@ component {
 			args.model = this;
 			args.method = method;
 			args.parameters = arguments;
+
+			if (structKeyExists(arguments, "1") && !arrayIsEmpty(modelHelper.args)) {
+
+				var i = "";
+				for (i = 1; i <= arrayLen(modelHelper.args); i++) {
+					if (structKeyExists(arguments, i)) {
+						args[modelHelper.args[i]] = arguments[i];
+					}
+				}
+
+			}
 
 			if (modelHelper.helper != "") {
 				return evaluate("coldmvc.#modelHelper.helper#.#modelHelper.method#(argumentCollection=args)");

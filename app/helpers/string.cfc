@@ -11,6 +11,9 @@ component {
 
 	}
 
+	/**
+	 * @viewHelper singularize
+	 */
 	public string function singularize(required string string) {
 
 		var length = len(arguments.string);
@@ -20,51 +23,50 @@ component {
 		}
 
 		if (len(arguments.string) <= 2) {
-			return setAndReturn(variables.plurals, arguments.string, arguments.string);
+			return addPlural(arguments.string, arguments.string);
 		}
 
 		if (length >= 4) {
 
 			if (listFindNoCase("bies,cies,dies,fies,gies,hies,jies,kies,lies,mies,nies,pies,ries,sies,ties,vies,wies,xies,zies", right(arguments.string, 4))) {
-				return setAndReturn(variables.plurals, arguments.string, left(arguments.string, len(arguments.string)-3) & "y");
+				return addPlural(arguments.string, left(arguments.string, len(arguments.string) - 3) & "y");
 			} else if (listFindNoCase("ches,shes", right(arguments.string, 4))) {
-				return setAndReturn(variables.plurals, arguments.string, left(arguments.string, len(arguments.string)-2));
+				return addPlural(arguments.string, left(arguments.string, len(arguments.string) - 2));
 			} else if (listFindNoCase("zzes", right(arguments.string, 4))) {
-				return setAndReturn(variables.plurals, arguments.string, left(arguments.string, len(arguments.string)-3));
+				return addPlural(arguments.string, left(arguments.string, len(arguments.string) - 3));
 			} else if (listFindNoCase("men", right(arguments.string, 3))) {
-				return setAndReturn(variables.plurals, arguments.string, left(arguments.string, len(arguments.string)-3) & "man");
+				return addPlural(arguments.string, left(arguments.string, len(arguments.string) - 3) & "man");
 			}
 
 		}
 
 		if (length >= 3) {
-
 			if (listFindNoCase("ses,zes,xes", right(arguments.string, 3))) {
-				return setAndReturn(variables.plurals, arguments.string, left(arguments.string, len(arguments.string)-2));
+				return addPlural(arguments.string, left(arguments.string, len(arguments.string) - 2));
 			}
-
 		}
 
 		if (length >= 2) {
-
 			if (listFindNoCase("ae", right(arguments.string, 2))) {
-				return setAndReturn(variables.plurals, arguments.string, left(arguments.string, len(arguments.string)-1));
+				return addPlural(arguments.string, left(arguments.string, len(arguments.string) - 1));
 			}
-
 		}
 
 		if (right(arguments.string, 1) == "i") {
-			return setAndReturn(variables.plurals, arguments.string, left(arguments.string, len(arguments.string)-1) & "us");
+			return addPlural(arguments.string, left(arguments.string, len(arguments.string) - 1) & "us");
 		}
 
 		if (right(arguments.string, 1) == "s") {
-			return setAndReturn(variables.plurals, arguments.string, left(arguments.string, len(arguments.string)-1));
+			return addPlural(arguments.string, left(arguments.string, len(arguments.string) - 1));
 		}
 
-		return setAndReturn(variables.plurals, arguments.string, arguments.string);
+		return addPlural(arguments.string, arguments.string);
 
 	}
 
+	/**
+	 * @viewHelper pluralize
+	 */
 	public string function pluralize(required string string, numeric count="0") {
 
 		if (arguments.count == 1) {
@@ -84,24 +86,62 @@ component {
 				var pattern = createObject("java", "java.util.regex.Pattern").compile(javaCast("string", patterns[i].key));
 				var matcher = pattern.matcher(javaCast("string", arguments.string));
 
-				return setAndReturn(variables.singulars, arguments.string, matcher.replaceAll(patterns[i].string));
+				return addSingular(arguments.string, matcher.replaceAll(patterns[i].string));
 
 			}
 
 		}
 
-		return setAndReturn(variables.singulars, arguments.string, arguments.string);
+		return addSingular(arguments.string, arguments.string);
 
 	}
 
-	private string function setAndReturn(required struct data, required string key, required any string) {
+	public string function addPlural(required string key, required any value) {
 
-		arguments.data[arguments.key] = arguments.string;
-
-		return arguments.string;
+		return setAndReturn(variables.plurals, arguments.key, arguments.value);
 
 	}
 
+	public string function addSingular(required string key, required any value) {
+
+		return setAndReturn(variables.singulars, arguments.key, arguments.value);
+
+	}
+
+	private string function setAndReturn(required struct data, required string key, required string value) {
+
+		arguments.data[arguments.key] = arguments.value;
+
+		return arguments.value;
+
+	}
+
+	/**
+	 * @viewHelper singularOrPlural
+	 */
+	public string function singularOrPlural(required numeric value, required string singularPhrase, string pluralPhrase, string zeroPhrase) {
+
+		if (!structKeyExists(arguments, "pluralPhrase")) {
+			arguments.pluralPhrase = pluralize(arguments.singularPhrase);
+		}
+
+		if (!structKeyExists(arguments, "zeroPhrase")) {
+			arguments.zeroPhrase = arguments.pluralPhrase;
+		}
+
+		if (arguments.value == 0) {
+			return arguments.zeroPhrase;
+		} else if (arguments.value == 1) {
+			return arguments.singularPhrase;
+		} else {
+			return arguments.pluralPhrase;
+		}
+
+	}
+
+	/**
+	 * @viewHelper propercase
+	 */
 	public string function capitalize(required string string) {
 
 		var i = "";
@@ -181,6 +221,9 @@ component {
 
 	}
 
+	/**
+	 * @viewHelper humanize
+	 */
 	public string function humanize(required string string) {
 
 		if (arguments.string != "") {
@@ -195,6 +238,14 @@ component {
 
 		return arguments.string;
 
+	}
+
+	/**
+	 * @viewHelper propercase
+	 */
+	public string function propercase(required string string) {
+
+		return capitalize(uncamelize(arguments.string));
 	}
 
 	public string function slugify(required string string) {
@@ -251,6 +302,9 @@ component {
 
 	}
 
+	/**
+	 * @viewHelper truncate
+	 */
 	public string function truncate(required string string, numeric length=50) {
 
 		if (len(arguments.string) > arguments.length) {

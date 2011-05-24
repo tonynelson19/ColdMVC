@@ -155,8 +155,6 @@ component {
 
 		if (value == "") {
 			return "html";
-		} else if (value == "json") {
-			return "js";
 		}
 
 		return value;
@@ -167,10 +165,6 @@ component {
 	 * @actionHelper setFormat
 	 */
 	public any function setFormat(required string format) {
-
-		if (arguments.format == "json") {
-			arguments.format = "js";
-		}
 
 		return set("format", arguments.format);
 

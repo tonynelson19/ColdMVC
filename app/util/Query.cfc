@@ -35,9 +35,9 @@ component {
 
 	}
 
-	public any function andWhere(required any value) {
+	public any function andWhere() {
 
-		return buildWhere(arguments.value, "and");
+		return buildWhere(arguments, "and");
 
 	}
 
@@ -77,7 +77,17 @@ component {
 		}
 
 		if (arrayLen(variables.query.where) > 0) {
-			 hql = hql & " where " & trim(arrayToList(variables.query.where, " "));
+			
+			var where = trim(arrayToList(variables.query.where, " "));
+			
+			if (left(where, 4) == "and ") {
+				where = replaceNoCase(where, "and ", "");
+				
+			} else if (left(where, 3) == "or ") {
+				where = replaceNoCase(where, "or ", "");
+			}
+			
+			hql = hql & " where " & where;
 		}
 
 		if (variables.query.groupBy != "") {
@@ -162,9 +172,9 @@ component {
 
 	}
 
-	public any function orWhere(required any value) {
+	public any function orWhere() {
 
-		return buildWhere(arguments.value, "or");
+		return buildWhere(arguments, "or");
 
 	}
 
@@ -195,9 +205,9 @@ component {
 
 	}
 
-	public any function where(required any value) {
+	public any function where() {
 
-		return buildWhere(arguments.value, "");
+		return buildWhere(arguments, "");
 
 	}
 
@@ -312,29 +322,38 @@ component {
 
 	}
 
-	private any function buildWhere(required any value, required string type) {
-
-		if (isSimpleValue(arguments.value)) {
-			arguments.value = [ arguments.value ];
-		}
-
+	private any function buildWhere(required struct collection, required string type) {
+		
+		var clauses = [];
 		var i = "";
-		for (i = 1; i <= arrayLen(arguments.value); i++) {
+		var j = "";
+		
+		for (i = 1; i <= structCount(arguments.collection); i++) {
+			
+			var value = arguments.collection[i];			
 
-			var string = trim(arguments.value[i]);
-
-			if (string != "") {
-
-				if (arguments.type == "" && i > 1) {
-					arrayAppend(variables.query.where, "and " & string);
-				} else if (arguments.type == "" ) {
-					arrayAppend(variables.query.where, string);
-				} else {
-					arrayAppend(variables.query.where, arguments.type & " " & string);
-				}
-
+			if (isSimpleValue(value)) {
+				value = [ value ];
 			}
-
+			
+			for (j = 1; j <= arrayLen(value); j++) {
+	
+				var string = trim(value[j]);
+	
+				if (string != "") {
+	
+					if (arguments.type == "" && j > 1) {
+						arrayAppend(variables.query.where, "and " & string);
+					} else if (arguments.type == "" ) {
+						arrayAppend(variables.query.where, string);
+					} else {
+						arrayAppend(variables.query.where, arguments.type & " " & string);
+					}
+	
+				}
+	
+			}
+		
 		}
 
 		return this;

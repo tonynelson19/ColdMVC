@@ -327,8 +327,11 @@ component {
 		var clauses = [];
 		var i = "";
 		var j = "";
+		var counter = 0;
 		
 		for (i = 1; i <= structCount(arguments.collection); i++) {
+			
+			counter++;
 			
 			var value = arguments.collection[i];			
 
@@ -337,12 +340,14 @@ component {
 			}
 			
 			for (j = 1; j <= arrayLen(value); j++) {
-	
+				
+				counter++;
+				
 				var string = trim(value[j]);
 	
 				if (string != "") {
 	
-					if (arguments.type == "" && j > 1) {
+					if (arguments.type == "" && counter > 1) {
 						arrayAppend(variables.query.where, "and " & string);
 					} else if (arguments.type == "" ) {
 						arrayAppend(variables.query.where, string);

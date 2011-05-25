@@ -788,7 +788,7 @@ component {
 		}
 
 		dispatchEvent("preLoad", name, obj);
-    	coldmvc.factory.autowire(obj);
+		coldmvc.factory.autowire(obj);
 		dispatchEvent("postLoad", name, obj);
 
 		return obj;

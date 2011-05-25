@@ -253,7 +253,6 @@ component {
 				}
 
 				if (arrayIsEmpty(array)) {
-
 					if (operator == "in") {
 						return "1 = 0";
 					} else {

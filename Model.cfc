@@ -10,12 +10,6 @@ component {
 	property updatedOn;
 	property updatedBy;
 
-	public any function add(required string to, required any object) {
-
-		return DAO.add(this, arguments.to,  arguments.object);
-
-	}
-
 	public numeric function count() {
 
 		return DAO.count(this);

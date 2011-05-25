@@ -43,30 +43,7 @@ component {
 		return this;
 
 	}
-
-	public any function add(required any model, required string to, required any object) {
-
-		var property = coldmvc.string.pluralize(arguments.to);
-		var array = getProperty(arguments.model, arguments.property);
-
-		if (!isArray(array)) {
-			array = [];
-		}
-
-		arrayAppend(array, arguments.object);
-
-		return setProperty(arguments.model, arguments.property, array);
-
-	}
-
-	public any function addTo(required any model, required string method, required struct data) {
-
-		var to = replaceNoCase(arguments.method, "addTo", "");
-		to = modelManager.getName(to);
-		return add(arguments.model, to, arguments.data[1]);
-
-	}
-
+	
 	private struct function buildQuery(required any model, required struct parameters, required struct options, required string select) {
 
 		var query = {};
@@ -511,53 +488,6 @@ component {
 
 	}
 
-	private array function findAllWith(required any model, required array relationships, required struct options) {
-
-		var name = modelManager.getName(arguments.model);
-		var alias = modelManager.getAlias(name);
-		var query = [];
-		arrayAppend(query, "select #alias# from #name# #alias#");
-
-		if (arrayLen(arguments.relationships) > 0) {
-
-			query[2] = "where";
-
-			var i = "";
-			var length = arrayLen(arguments.relationships);
-
-			for (i = 1; i <= length; i++) {
-
-				arrayAppend(query, "size(#alias#.#arguments.relationships[i].property#) > 0");
-
-				if (i < length) {
-					arrayAppend(query, "and");
-				}
-
-			}
-
-		}
-
-		query = arrayToList(query, " ");
-
-		return findAll(arguments.model, query, {}, arguments.options);
-
-	}
-
-	private array function findAllWithDynamic(required any model, required string method, required struct data) {
-
-		arguments.method = replaceNoCase(arguments.method, "findAllWith", "");
-
-		var parsed = parseMethod(arguments.model, arguments.method);
-		var options = {};
-
-		if (structKeyExists(arguments.data, 1)) {
-			options = arguments.data[1];
-		}
-
-		return findAllWith(arguments.model, parsed.parameters, options);
-
-	}
-
 	private any function findDynamic(required any model, required string method, required struct data, required string prefix) {
 
 		arguments.method = replaceNoCase(arguments.method, prefix, "");
@@ -629,6 +559,11 @@ component {
 
 		arguments.ids = toJavaArray(type, arguments.ids);
 
+		// if the array is empty, then the query wouldn't return any results, so just return an empty array
+		if (arrayIsEmpty(arguments.ids)) {
+			return [];
+		}
+		
 		arrayAppend(query, "select #alias# from #name# #alias#");
 		arrayAppend(query, joins);
 		arrayAppend(query, "where lower(#alias#.#pk#) in (:id)");
@@ -648,14 +583,9 @@ component {
 
 			results = [];
 			for (i = 1; i <= arrayLen(arguments.ids); i++) {
-
-				var id = arguments.ids[i];
-
-				if (structKeyExists(records, id)) {
-					arrayAppend(results, records[id]);
+				if (structKeyExists(records, arguments.ids[i])) {
+					arrayAppend(results, records[arguments.ids[i]]);
 				}
-
-
 			}
 
 		}
@@ -749,10 +679,6 @@ component {
 			return findDynamic(arguments.model, arguments.method, arguments.data, "findBy");
 		} else if (left(arguments.method, 9) == "findAllBy") {
 			return findDynamic(arguments.model, arguments.method, arguments.data, "findAllBy");
-		} else if (left(arguments.method, 11) == "findAllWith") {
-			return findAllWithDynamic(arguments.model, arguments.method, arguments.data);
-		} else if (left(arguments.method, 5) == "addTo") {
-			return addTo(arguments.model, arguments.method, arguments.data);
 		} else if (left(arguments.method, 7) == "countBy") {
 			return countBy(arguments.model, arguments.method, arguments.data);
 		}

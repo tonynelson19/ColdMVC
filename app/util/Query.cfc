@@ -35,9 +35,9 @@ component {
 
 	}
 
-	public any function andWhere(required any string) {
+	public any function andWhere(required any value) {
 
-		return buildWhere(arguments.string, "and");
+		return buildWhere(arguments.value, "and");
 
 	}
 
@@ -162,9 +162,9 @@ component {
 
 	}
 
-	public any function orWhere(required any string) {
+	public any function orWhere(required any value) {
 
-		return buildWhere(arguments.string, "or");
+		return buildWhere(arguments.value, "or");
 
 	}
 
@@ -195,9 +195,9 @@ component {
 
 	}
 
-	public any function where(required any string) {
+	public any function where(required any value) {
 
-		return buildWhere(arguments.string, "");
+		return buildWhere(arguments.value, "");
 
 	}
 
@@ -236,15 +236,48 @@ component {
 			}
 
 			var type = variables.dao.getJavaType(propertyDef.model, propertyDef.property);
-			var val = variables.dao.updateOperatorValue(arguments.value, type, operatorDef);
+			var bindString = ":" & binding;
 
-			if (isSimpleValue(val)) {
-				val = lcase(val);
+			if (operator == "in" || operator == "notIn") {
+
+				if (!isArray(arguments.value)) {
+					var arguments.value = listToArray(arguments.value);
+				}
+
+				var array = [];
+				var i = "";
+				for (i = 1; i <= arrayLen(arguments.value); i++) {
+					if (trim(arguments.value[i]) != "") {
+						arrayAppend(array, trim(arguments.value[i]));
+					}
+				}
+
+				if (arrayIsEmpty(array)) {
+
+					if (operator == "in") {
+						return "1 = 0";
+					} else {
+						return "1 = 1";
+					}
+				}
+
+				bindString = "(" & bindString & ")";
+
+				var val = variables.dao.toJavaArray(type, array);
+
+			} else {
+
+				var val = variables.dao.updateOperatorValue(arguments.value, type, operatorDef);
+
+				if (isSimpleValue(val)) {
+					val = lcase(val);
+				}
+
 			}
 
 			variables.parameters[binding] = val;
 
-			return trim("lower(" & propertyDef.alias & ") " & operatorDef.operator & " :" & binding);
+			return trim("lower(" & propertyDef.alias & ") " & operatorDef.operator & " " & bindString);
 
 		} else {
 
@@ -280,12 +313,29 @@ component {
 
 	}
 
-	private any function buildWhere(required string string, required string type) {
+	private any function buildWhere(required any value, required string type) {
 
-		if (arguments.type == "") {
-			arrayAppend(variables.query.where, trim(arguments.string));
-		} else {
-			arrayAppend(variables.query.where, arguments.type & " " & trim(arguments.string));
+		if (isSimpleValue(arguments.value)) {
+			arguments.value = [ arguments.value ];
+		}
+
+		var i = "";
+		for (i = 1; i <= arrayLen(arguments.value); i++) {
+
+			var string = trim(arguments.value[i]);
+
+			if (string != "") {
+
+				if (arguments.type == "" && i > 1) {
+					arrayAppend(variables.query.where, "and " & string);
+				} else if (arguments.type == "" ) {
+					arrayAppend(variables.query.where, string);
+				} else {
+					arrayAppend(variables.query.where, arguments.type & " " & string);
+				}
+
+			}
+
 		}
 
 		return this;
@@ -341,15 +391,27 @@ component {
 
 		if (arguments.missingMethodName == "and" || arguments.missingMethodName == "or") {
 
-			var clauses = [];
-			var i = "";
+			if (!structIsEmpty(arguments.missingMethodArguments)) {
 
-			// convert the unnamed arguments into a sorted array
-			for (i = 1; i <= structCount(arguments.missingMethodArguments); i++) {
-				arrayAppend(clauses, trim(arguments.missingMethodArguments[i]));
+				if (isArray(arguments.missingMethodArguments[1])) {
+
+					var clauses = arguments.missingMethodArguments[1];
+
+				} else {
+
+					var clauses = [];
+					var i = "";
+
+					// convert the unnamed arguments into a sorted array
+					for (i = 1; i <= structCount(arguments.missingMethodArguments); i++) {
+						arrayAppend(clauses, trim(arguments.missingMethodArguments[i]));
+					}
+
+				}
+
+				return buildConjunction(clauses, arguments.missingMethodName);
+
 			}
-
-			return buildConjunction(clauses, arguments.missingMethodName);
 
 		}
 

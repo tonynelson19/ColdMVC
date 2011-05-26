@@ -111,12 +111,12 @@ component {
 
 			// if a controller wasn't already specified, add the current controller
 			if (!structKeyExists(parameters, "controller")) {
-				parameters.controller = coldmvc.event.controller();
+				parameters.controller = coldmvc.event.getController();
 			}
 
 			// if an action wasn't already specified, add the current action
 			if (!structKeyExists(parameters, "action")) {
-				parameters.action = coldmvc.event.action();
+				parameters.action = coldmvc.event.getAction();
 			}
 
 			// generate a new path with the added parameters

@@ -114,14 +114,6 @@ component {
 
 	}
 
-	public boolean function has(required string property) {
-
-		var value = DAO.getProperty(this, arguments.property);
-
-		return coldmvc.data.count(value) > 0;
-
-	}
-
 	public array function list(struct options) {
 
 		if (!structKeyExists(arguments, "options")) {

@@ -6,8 +6,8 @@ component {
 	private string function buildLink(required string querystring, required string pars) {
 
 		var args = {};
-		args.controller = coldmvc.event.controller();
-		args.action = coldmvc.event.action();
+		args.controller = coldmvc.event.getController();
+		args.action = coldmvc.event.getAction();
 
 		if (arguments.querystring == "") {
 			return coldmvc.link.to(parameters=args, querystring=arguments.pars);

@@ -30,9 +30,6 @@
 	</bean>
 	
 	<bean id="debugManager" class="coldmvc.app.util.DebugManager">
-		<property name="configPath">
-			<value>/config/debug.ini</value>
-		</property>
 		<property name="templates">
 			<list>
 				<value>/coldmvc/app/debug/info.cfm</value>

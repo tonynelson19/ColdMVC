@@ -68,17 +68,10 @@ component {
 				var modelHelper = fn.modelHelper;
 				var args = [];
 
-				if (find("(", fn.modelHelper)) {
-
-					var modelHelper = trim(listFirst(fn.modelHelper, "("));
-					var args = listToArray(replace(replace(listRest(fn.modelHelper, "("), ")", ""), " ", "", "all"));
-
-				}
-
 				if (bean) {
-					add(name=modelHelper, beanName=name, method=fn.name, args=args);
+					add(name=modelHelper, beanName=name, method=fn.name, args=fn.parameters);
 				} else {
-					add(name=modelHelper, helper=name, method=fn.name, args=args);
+					add(name=modelHelper, helper=name, method=fn.name, args=fn.parameters);
 				}
 
 			}
@@ -122,15 +115,12 @@ component {
 			args.method = method;
 			args.parameters = arguments;
 
-			if (structKeyExists(arguments, "1") && !arrayIsEmpty(modelHelper.args)) {
-
-				var i = "";
-				for (i = 1; i <= arrayLen(modelHelper.args); i++) {
-					if (structKeyExists(arguments, i)) {
-						args[modelHelper.args[i]] = arguments[i];
+			if (structKeyExists(arguments, "1") && arrayLen(modelHelper.args) > 1) {
+				for (i = 1; i <= structCount(arguments); i++) {
+					if (arrayLen(modelHelper.args) >= i + 1) {
+						args[modelHelper.args[i + 1].name] = arguments[i];
 					}
 				}
-
 			}
 
 			if (modelHelper.helper != "") {

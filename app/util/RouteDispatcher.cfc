@@ -89,69 +89,59 @@ component {
 			var format = coldmvc.event.getFormat();
 			var output = "";
 
-			if (controllerManager.respondsTo(coldmvc.event.getController(), coldmvc.event.getAction(), format)) {
+			var view = coldmvc.event.getView();
+			var formatView = replace(view, ".cfm", ".#format#.cfm");
+			var formatViewExists = templateManager.viewExists(formatView);
 
-				var view = coldmvc.event.getView();
-				var formatView = replace(view, ".cfm", ".#format#.cfm");
-				var formatViewExists = templateManager.viewExists(formatView);
+			if (formatViewExists) {
 
-				if (formatViewExists) {
+				writeOutput(renderer.renderView(formatView));
 
-					writeOutput(renderer.renderView(formatView));
+			}
+			else {
 
-				}
-				else {
+				switch(format) {
 
-					switch(format) {
+					case "html":
+					case "pdf": {
 
-						case "html":
-						case "pdf": {
-
-							// if a layout was specified, call it
-							if (layout != "") {
-								callMethods("layoutController", "Layout");
-							}
-
-							// in case the event changed
-							layout = coldmvc.event.getLayout();
-							view = coldmvc.event.getView();
-
-							// if the layout exists, render it
-							if (layout != "" && templateManager.layoutExists(layout)) {
-								output = renderer.renderLayout(layout);
-							} else {
-								// the layout didn't exists, so try to render the view
-								output = renderer.renderView(view);
-							}
-
-							break;
+						// if a layout was specified, call it
+						if (layout != "") {
+							callMethods("layoutController", "Layout");
 						}
 
-						case "json": {
-							output = routeSerializer.toJSON(coldmvc.params.get());
-							break;
+						// in case the event changed
+						layout = coldmvc.event.getLayout();
+						view = coldmvc.event.getView();
+
+						// if the layout exists, render it
+						if (layout != "" && templateManager.layoutExists(layout)) {
+							output = renderer.renderLayout(layout);
+						} else {
+							// the layout didn't exists, so try to render the view
+							output = renderer.renderView(view);
 						}
 
-						case "xml": {
-							output = routeSerializer.toXML(coldmvc.params.get());
-							break;
-						}
-
+						break;
 					}
 
-					if (format == "pdf") {
-						pdfRenderer.toPDF(output);
-					} else {
-						writeOutput(output);
+					case "json": {
+						output = routeSerializer.toJSON(coldmvc.params.get());
+						break;
+					}
+
+					case "xml": {
+						output = routeSerializer.toXML(coldmvc.params.get());
+						break;
 					}
 
 				}
 
-			} else {
-
-				var text = coldmvc.request.getStatusText(403);
-
-				throw(403 & " " & text, "coldmvc.exception.#coldmvc.string.pascalize(text)#", "Format '#format#' not allowed", 403);
+				if (format == "pdf") {
+					pdfRenderer.toPDF(output);
+				} else {
+					writeOutput(output);
+				}
 
 			}
 
@@ -244,6 +234,10 @@ component {
 		// userController.preList()
 		callMethod(beanName, "pre#action#");
 
+		if (type == "Action") {
+			validateRequest();
+		}
+
 		// userController.list()
 		callMethod(beanName, action);
 
@@ -286,6 +280,45 @@ component {
 			}
 
 		}
+
+	}
+
+	private void function validateRequest() {
+
+		var controller = coldmvc.event.getController();
+		var action = coldmvc.event.getAction();
+		var currentFormat = coldmvc.event.getFormat();
+		var allowedFormats = controllerManager.getFormats(controller, action);
+
+		if (!listFindNoCase(allowedFormats, currentFormat)) {
+			fail(403, "Format '#currentFormat#' not allowed");
+		}
+
+		var requiredParams = controllerManager.getParams(controller, action);
+		var currentParams = coldmvc.params.get();
+		var i = "";
+
+		for (i = 1; i <= arrayLen(requiredParams); i++) {
+			if (!structKeyExists(currentParams, requiredParams[i])) {
+				fail(404, "Parameter '#requiredParams[i]#' not found");
+			}
+		}
+
+		var validMethods = controllerManager.getMethods(controller, action);
+		var currentMethod = coldmvc.cgi.get("request_method");
+
+		if (validMethods != "" && !listFindNoCase(validMethods, currentMethod)) {
+			fail(405, "Method '#currentMethod#' not allowed");
+		}
+
+	}
+
+	private void function fail(required numeric statusCode, required string message) {
+
+		var text = coldmvc.request.getStatusText(arguments.statusCode);
+		var type = coldmvc.string.pascalize(text);
+
+		throw(arguments.statusCode & " " & text, "coldmvc.exception.#type#", arguments.message, arguments.statusCode);
 
 	}
 

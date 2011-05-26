@@ -42,11 +42,11 @@ component {
 	public string function getView(string controller, string action) {
 
 		if (!structKeyExists(arguments, "controller")) {
-			controller = coldmvc.event.controller();
+			controller = coldmvc.event.getController();
 		}
 
 		if (!structKeyExists(arguments, "action")) {
-			action = coldmvc.event.action();
+			action = coldmvc.event.getAction();
 		}
 
 		var controllers = getControllers();
@@ -69,26 +69,6 @@ component {
 		}
 
 		return formatView(view);
-
-	}
-
-	public string function respondsTo(string controller, string action, string format) {
-
-		if (!structKeyExists(arguments, "controller")) {
-			controller = coldmvc.event.controller();
-		}
-
-		if (!structKeyExists(arguments, "action")) {
-			action = coldmvc.event.action();
-		}
-
-		if (!structKeyExists(arguments, "format")) {
-			format = coldmvc.event.format();
-		}
-
-		var allowed = getFormats(controller, action);
-
-		return listFindNoCase(allowed, format);
 
 	}
 
@@ -123,7 +103,7 @@ component {
 	public string function getLayout(string controller, string action) {
 
 		if (!structKeyExists(arguments, "controller")) {
-			arguments.controller = coldmvc.event.controller();
+			arguments.controller = coldmvc.event.getController();
 		}
 
 		return getMethodAnnotation(arguments, "layout", arguments.controller);
@@ -136,14 +116,26 @@ component {
 
 	}
 
-	private string function getMethodAnnotation(required struct args, required string key, required string def) {
+	public string function getMethods(string controller, string action) {
+
+		return getMethodAnnotation(arguments, "methods", "");
+
+	}
+
+	public array function getParams(string controller, string action) {
+
+		return getMethodAnnotation(arguments, "params", []);
+
+	}
+
+	private any function getMethodAnnotation(required struct args, required string key, required any defaultValue) {
 
 		if (!structKeyExists(args, "controller")) {
-			args.controller = coldmvc.event.controller();
+			args.controller = coldmvc.event.getController();
 		}
 
 		if (!structKeyExists(args, "action")) {
-			args.action = coldmvc.event.action();
+			args.action = coldmvc.event.getAction();
 		}
 
 		var controllers = getControllers();
@@ -151,14 +143,14 @@ component {
 		if (structKeyExists(controllers, args.controller)) {
 
 			if (structKeyExists(controllers[args.controller].actions, args.action)) {
-				return controllers[args.controller].actions[args.action][key];
-			} else {
-				return controllers[args.controller][key];
+				return controllers[args.controller].actions[args.action][arguments.key];
+			} else if (structKeyExists(controllers[args.controller], arguments.key)) {
+				return controllers[args.controller][arguments.key];
 			}
 
 		}
 
-		return def;
+		return arguments.defaultValue;
 
 	}
 
@@ -290,12 +282,22 @@ component {
 				}
 
 				if (structKeyExists(method, "formats")) {
-					action["formats"] = method.formats;
+					action["formats"] = replace(method.formats, " ", "", "all");
 				} else {
 					action["formats"] = formats;
 				}
 
-				action["formats"] = replace(action.formats, " ", "", "all");
+				if (structKeyExists(method, "methods")) {
+					action["methods"] = replace(method.methods, " ", "", "all");
+				} else {
+					action["methods"] = "";
+				}
+
+				if (structKeyExists(method, "params")) {
+					action["params"] = listToArray(replace(method.params, " ", "", "all"));
+				} else {
+					action["params"] = [];
+				}
 
 				actions[action.key] = action;
 

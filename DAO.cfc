@@ -5,7 +5,6 @@
 component {
 
 	property beanInjector;
-	property coldmvc;
 	property debugManager;
 	property development;
 	property eventDispatcher;
@@ -43,7 +42,7 @@ component {
 		return this;
 
 	}
-	
+
 	private struct function buildQuery(required any model, required struct parameters, required struct options, required string select) {
 
 		var query = {};
@@ -53,12 +52,10 @@ component {
 
 		var name = modelManager.getName(arguments.model);
 		var alias = modelManager.getAlias(arguments.model);
-		var joins = parseInclude(arguments.model, arguments.options);
 		var i = "";
 		var counter = 0;
 
 		arrayAppend(query.hql, arguments.select);
-		arrayAppend(query.hql, joins);
 
 		arguments.parameters = parseParameters(arguments.model, arguments.parameters);
 
@@ -166,10 +163,26 @@ component {
 
 		if (arguments.parameter.operator.operator == "in" || arguments.parameter.operator.operator == "not in") {
 
-			arrayAppend(arguments.query.hql, alias);
-			arrayAppend(arguments.query.hql, arguments.parameter.operator.operator);
-			arrayAppend(arguments.query.hql, "(:#arguments.parameter.property#)");
-			arguments.query.parameters[arguments.parameter.property] = toJavaArray(type, value);
+			var array = toJavaArray(type, value);
+
+			// empty arrays should either return all results or no results
+			if (arrayIsEmpty(array)) {
+
+				if (arguments.parameter.operator.operator == "in") {
+					arrayAppend(arguments.query.hql, "1 = 0");
+				} else {
+					arrayAppend(arguments.query.hql, "1 = 1");
+				}
+
+			} else {
+
+				arrayAppend(arguments.query.hql, alias);
+				arrayAppend(arguments.query.hql, arguments.parameter.operator.operator);
+				arrayAppend(arguments.query.hql, "(:#arguments.parameter.property#)");
+
+				arguments.query.parameters[arguments.parameter.property] = array;
+
+			}
 
 		} else {
 
@@ -553,7 +566,6 @@ component {
 		var name = modelManager.getName(arguments.model);
 		var alias = modelManager.getAlias(arguments.model);
 		var pk = modelManager.getID(arguments.model);
-		var joins = parseInclude(arguments.model, arguments.options);
 		var query = [];
 		var type = getJavaType(name, pk);
 
@@ -563,9 +575,8 @@ component {
 		if (arrayIsEmpty(arguments.ids)) {
 			return [];
 		}
-		
+
 		arrayAppend(query, "select #alias# from #name# #alias#");
-		arrayAppend(query, joins);
 		arrayAppend(query, "where lower(#alias#.#pk#) in (:id)");
 
 		query = arrayToList(query, " ");
@@ -647,11 +658,9 @@ component {
 
 		var name = modelManager.getName(arguments.model);
 		var alias = modelManager.getAlias(arguments.model);
-		var joins = parseInclude(arguments.model, arguments.options);
 		var query = [];
 
 		arrayAppend(query, "select #alias# from #name# #alias#");
-		arrayAppend(query, joins);
 
 		query = arrayToList(query, " ");
 
@@ -730,38 +739,6 @@ component {
 
 		eventDispatcher.dispatchEvent(arguments.event, data);
 		eventDispatcher.dispatchEvent(arguments.event & ":" & arguments.name, data);
-
-	}
-
-	private string function parseInclude(required any model, required struct options) {
-
-		if (structKeyExists(arguments.options, "include")) {
-
-			var alias = modelManager.getAlias(arguments.model);
-			var joins = [];
-			var i = "";
-			var includes = listToArray(replace(arguments.options.include, " ", "", "all"));
-
-			for (i = 1; i <= arrayLen(includes); i++) {
-
-				var property = modelManager.getName(includes[i]);
-				var related = property;
-
-				if (!modelManager.modelExists(related)) {
-					related = coldmvc.string.singularize(related);
-				}
-
-				var propertyAlias = modelManager.getAlias(related);
-
-				arrayAppend(joins, "join #alias#.#property# as #propertyAlias#");
-
-			}
-
-			return arrayToList(joins, " ");
-
-		} else {
-			return "";
-		}
 
 	}
 
@@ -1087,7 +1064,17 @@ component {
 		}
 
 		for (i = 1; i <= arrayLen(arguments.value); i++) {
-			arrayAppend(result, toJavaType(arguments.type, arguments.value[i]));
+
+			var val = arguments.value[i];
+
+			if (isSimpleValue(val)) {
+				val = trim(val);
+			}
+
+			if (!isSimpleValue(val) || (isSimpleValue(val) && val != "")) {
+				arrayAppend(result, toJavaType(arguments.type, val));
+			}
+
 		}
 
 		return result.toArray();

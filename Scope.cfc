@@ -30,14 +30,14 @@ component {
 	public void function append(required struct values, boolean overwrite=true) {
 
 		var data = getScope();
-		structAppend(data, values, overwrite);
+		structAppend(data, arguments.values, arguments.overwrite);
 
 	}
 
 	public void function clear(any key) {
 
 		var data = getScope();
-		structDelete(data, key);
+		structDelete(data, arguments.key);
 
 	}
 
@@ -45,11 +45,11 @@ component {
 
 		var container = getPageContext().getFusionContext().hiddenScope;
 
-		if (!structKeyExists(container, scope)) {
-			container[scope] = {};
+		if (!structKeyExists(container, arguments.scope)) {
+			container[arguments.scope] = {};
 		}
 
-		return container[scope];
+		return container[arguments.scope];
 
 	}
 
@@ -60,7 +60,7 @@ component {
 		if (structKeyExists(arguments, "key")) {
 
 			if (!structKeyExists(data, arguments.key)) {
-				data[arguments.key] = def;
+				data[arguments.key] = arguments.def;
 			}
 
 			return data[arguments.key];
@@ -83,11 +83,11 @@ component {
 
 	private any function getOrSet(required string key, struct collection) {
 
-		if (structKeyExists(collection, 1)) {
-			return set(key, collection[1]);
+		if (structKeyExists(arguments.collection, 1)) {
+			return set(arguments.key, arguments.collection[1]);
 		}
 
-		return get(key);
+		return get(arguments.key);
 
 	}
 
@@ -127,15 +127,15 @@ component {
 			data[key] = {};
 		}
 
-		if (namespace == "") {
+		if (variables.namespace == "") {
 			return data[key];
 		}
 
-		if (!structKeyExists(data[key], namespace)) {
-			data[key][namespace] = {};
+		if (!structKeyExists(data[key], variables.namespace)) {
+			data[key][variables.namespace] = {};
 		}
 
-		return data[key][namespace];
+		return data[key][variables.namespace];
 
 	}
 
@@ -147,7 +147,7 @@ component {
 
 	public boolean function has(required string key) {
 
-		return structKeyExists(getScope(), key);
+		return structKeyExists(getScope(), arguments.key);
 
 	}
 
@@ -165,12 +165,12 @@ component {
 		var data = getScope();
 
 		if (structKeyExists(arguments, "value")) {
-			data[key] = value;
+			data[arguments.key] = arguments.value;
 		} else {
-			if (namespace == "") {
-				getScopes()[scope] = key;
+			if (variables.namespace == "") {
+				getScopes()[variables.scope] = arguments.key;
 			} else {
-				getScopes()[scope][getKey()][namespace] = key;
+				getScopes()[variables.scope][getKey()][variables.namespace] = arguments.key;
 			}
 		}
 

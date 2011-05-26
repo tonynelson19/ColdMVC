@@ -56,7 +56,11 @@ component {
 
 	public any function path() {
 
-		return getOrSet("path", arguments);
+		if (structIsEmpty(arguments)) {
+			return getPath();
+		} else {
+			return setPath(arguments[1]);
+		}
 
 	}
 
@@ -167,6 +171,18 @@ component {
 	public any function setFormat(required string format) {
 
 		return set("format", arguments.format);
+
+	}
+
+	public any function getPath() {
+
+		return get("path");
+
+	}
+
+	public any function setPath(required string path) {
+
+		return set("path", arguments.path);
 
 	}
 

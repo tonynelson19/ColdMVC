@@ -504,8 +504,8 @@
 
 			<cfif not structKeyExists(args, "parameters")>
 
-				<cfset args.parameters.controller = getKey(args, "controller", coldmvc.event.controller()) />
-				<cfset args.parameters.action = getKey(args, "action", coldmvc.event.action()) />
+				<cfset args.parameters.controller = getKey(args, "controller", coldmvc.event.getController()) />
+				<cfset args.parameters.action = getKey(args, "action", coldmvc.event.getAction()) />
 
 			</cfif>
 

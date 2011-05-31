@@ -91,9 +91,8 @@ component {
 
 			var view = coldmvc.event.getView();
 			var formatView = replace(view, ".cfm", ".#format#.cfm");
-			var formatViewExists = templateManager.viewExists(formatView);
 
-			if (formatViewExists) {
+			if (templateManager.viewExists(formatView)) {
 
 				writeOutput(renderer.renderView(formatView));
 
@@ -173,6 +172,14 @@ component {
 					var action = controllerManager.getAction(controller);
 					var view = controllerManager.getView(controller, action);
 					var layout = controllerManager.getLayout(controller, action);
+
+					// check to see if a status-specific view exists
+					var status = coldmvc.request.getStatus();
+					var statusView = "error/#status#.cfm";
+
+					if (templateManager.viewExists(statusView)) {
+						view = statusView;
+					};
 
 					coldmvc.event.setController(controller);
 					coldmvc.event.setAction(action);

@@ -34,14 +34,14 @@ component {
 
 					// If the current piece of the field has a bracket, determine the index and the element name.
 					if (find("[", tempElement)) {
-						tempIndex = reReplaceNoCase(tempElement, '.+\[|\]', '', 'all');
-						tempElement = reReplaceNoCase(tempElement, '\[.+\]', '', 'all');
+						tempIndex = reReplaceNoCase(tempElement, ".+\[|\]", "", "all");
+						tempElement = reReplaceNoCase(tempElement, "\[.+\]", "", "all");
 					}
 
 					// If there is a temp element defined, means this field is an array || struct.
 					if (!structKeyExists(currentElement, tempElement)) {
 
-						// If tempIndex is 0, it's a Struct, otherwise an Array.
+						// If tempIndex is 0, it's a struct, otherwise an array.
 						if (tempIndex == 0) {
 							currentElement[tempElement] = {};
 						} else {
@@ -95,7 +95,7 @@ component {
 
 	private string function addToList(required string collectionsList, required string fieldName) {
 
-		var field = reReplaceNoCase(fieldName, '(\.|\[).+', '');
+		var field = reReplaceNoCase(fieldName, "(\.|\[).+", "");
 
 		if (!listFindNoCase(collectionsList, field)) {
 			collectionsList = listAppend(collectionsList, field);

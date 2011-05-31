@@ -121,20 +121,30 @@ component {
 	 */
 	public string function singularOrPlural(required numeric value, required string singularPhrase, string pluralPhrase, string zeroPhrase) {
 
-		if (!structKeyExists(arguments, "pluralPhrase")) {
-			arguments.pluralPhrase = pluralize(arguments.singularPhrase);
-		}
+		if (arguments.value == 1) {
 
-		if (!structKeyExists(arguments, "zeroPhrase")) {
-			arguments.zeroPhrase = arguments.pluralPhrase;
-		}
-
-		if (arguments.value == 0) {
-			return arguments.zeroPhrase;
-		} else if (arguments.value == 1) {
 			return arguments.singularPhrase;
+
+		} else if (arguments.value == 0) {
+
+			if (!structKeyExists(arguments, "pluralPhrase")) {
+				arguments.pluralPhrase = pluralize(arguments.singularPhrase);
+			}
+
+			if (!structKeyExists(arguments, "zeroPhrase")) {
+				arguments.zeroPhrase = arguments.pluralPhrase;
+			}
+
+			return arguments.zeroPhrase;
+
 		} else {
+
+			if (!structKeyExists(arguments, "pluralPhrase")) {
+				arguments.pluralPhrase = pluralize(arguments.singularPhrase);
+			}
+
 			return arguments.pluralPhrase;
+
 		}
 
 	}

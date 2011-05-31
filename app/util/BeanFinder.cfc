@@ -56,7 +56,7 @@ component {
 
 						folder = getClassPath(folder);
 
-						if (folder == '') {
+						if (folder == "") {
 							bean.class = classPath & "." & name;
 						} else {
 							bean.class = classPath & "." & folder & "." & name;

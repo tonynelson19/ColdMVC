@@ -92,12 +92,12 @@ component {
 
 	}
 
-	public any function get(required string id, any data) {
+	public any function get(required string id, any data, string properties="") {
 
 		var model = DAO.get(this, id);
 
 		if (structKeyExists(arguments, "data")) {
-			model.populate(data);
+			model.populate(data, arguments.properties);
 		}
 
 		return model;

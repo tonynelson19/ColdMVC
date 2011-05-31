@@ -77,16 +77,16 @@ component {
 		}
 
 		if (arrayLen(variables.query.where) > 0) {
-			
+
 			var where = trim(arrayToList(variables.query.where, " "));
-			
+
 			if (left(where, 4) == "and ") {
 				where = replaceNoCase(where, "and ", "");
-				
+
 			} else if (left(where, 3) == "or ") {
 				where = replaceNoCase(where, "or ", "");
 			}
-			
+
 			hql = hql & " where " & where;
 		}
 
@@ -137,7 +137,11 @@ component {
 
 	}
 
-	public any function list() {
+	public any function list(struct options) {
+
+		if (structKeyExists(arguments, "options")) {
+			structAppend(variables.options, arguments.options, true);
+		}
 
 		unique(false);
 
@@ -207,7 +211,7 @@ component {
 
 	public any function where() {
 
-		return buildWhere(arguments, "");
+		return buildWhere(arguments, "and");
 
 	}
 
@@ -323,42 +327,29 @@ component {
 	}
 
 	private any function buildWhere(required struct collection, required string type) {
-		
-		var clauses = [];
+
 		var i = "";
 		var j = "";
-		var counter = 0;
-		
-		for (i = 1; i <= structCount(arguments.collection); i++) {
-			
-			counter++;
-			
-			var value = arguments.collection[i];			
 
+		for (i = 1; i <= structCount(arguments.collection); i++) {
+
+			var value = arguments.collection[i];
+
+			// make sure we're always working with arrays of clauses
 			if (isSimpleValue(value)) {
 				value = [ value ];
 			}
-			
+
 			for (j = 1; j <= arrayLen(value); j++) {
-				
-				counter++;
-				
+
 				var string = trim(value[j]);
-	
+
 				if (string != "") {
-	
-					if (arguments.type == "" && counter > 1) {
-						arrayAppend(variables.query.where, "and " & string);
-					} else if (arguments.type == "" ) {
-						arrayAppend(variables.query.where, string);
-					} else {
-						arrayAppend(variables.query.where, arguments.type & " " & string);
-					}
-	
+					arrayAppend(variables.query.where, arguments.type & " " & string);
 				}
-	
+
 			}
-		
+
 		}
 
 		return this;

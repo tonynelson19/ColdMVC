@@ -16,26 +16,26 @@ component {
 		variables.conjunctions = ["and", "or"];
 
 		variables.operators = {};
-		variables.operators["equal"] = { operator="=", value="${value}", ignorecase="true" };
-		variables.operators["notEqual"] = { operator="!=", value="${value}", ignorecase="true" };
-		variables.operators["like"] = { operator="like", value="%${value}%", ignorecase="true" };
-		variables.operators["notLike"] = { operator="not like", value="%${value}%", ignorecase="true" };
-		variables.operators["in"] = { operator="in", value="${value}", ignorecase="true" };
-		variables.operators["notIn"] = { operator="not in", value="${value}", ignorecase="true" };
-		variables.operators["startsWith"] = { operator="like", value="${value}%", ignorecase="true" };
-		variables.operators["notStartsWith"] = { operator="not like", value="${value}%", ignorecase="true" };
-		variables.operators["endsWith"] = { operator="like", value="%${value}", ignorecase="true" };
-		variables.operators["notEndsWith"] = { operator="not like", value="%${value}", ignorecase="true" };
-		variables.operators["isNull"] = { operator="is null", value="", ignorecase="false" };
-		variables.operators["isNotNull"] = { operator="is not null", value="", ignorecase="false" };
-		variables.operators["greaterThan"] = { operator=">", value="${value}", ignorecase="false" };
-		variables.operators["greaterThanEquals"] = { operator=">=", value="${value}", ignorecase="false" };
-		variables.operators["lessThan"] = { operator="<", value="${value}", ignorecase="false" };
-		variables.operators["lessThanEquals"] = { operator="<=", value="${value}", ignorecase="false" };
-		variables.operators["before"] = { operator="<", value="${value}", ignorecase="false" };
-		variables.operators["after"] = { operator=">", value="${value}", ignorecase="false" };
-		variables.operators["onOrBefore"] = { operator="<=", value="${value}", ignorecase="false" };
-		variables.operators["onOrAfter"] = { operator=">=", value="${value}", ignorecase="false" };
+		variables.operators["equal"] = { operator="=", value="${value}" };
+		variables.operators["notEqual"] = { operator="!=", value="${value}" };
+		variables.operators["like"] = { operator="like", value="%${value}%" };
+		variables.operators["notLike"] = { operator="not like", value="%${value}%" };
+		variables.operators["in"] = { operator="in", value="${value}" };
+		variables.operators["notIn"] = { operator="not in", value="${value}" };
+		variables.operators["startsWith"] = { operator="like", value="${value}%" };
+		variables.operators["notStartsWith"] = { operator="not like", value="${value}%" };
+		variables.operators["endsWith"] = { operator="like", value="%${value}" };
+		variables.operators["notEndsWith"] = { operator="not like", value="%${value}" };
+		variables.operators["isNull"] = { operator="is null", value="" };
+		variables.operators["isNotNull"] = { operator="is not null", value="" };
+		variables.operators["greaterThan"] = { operator=">", value="${value}" };
+		variables.operators["greaterThanEquals"] = { operator=">=", value="${value}" };
+		variables.operators["lessThan"] = { operator="<", value="${value}" };
+		variables.operators["lessThanEquals"] = { operator="<=", value="${value}" };
+		variables.operators["before"] = { operator="<", value="${value}" };
+		variables.operators["after"] = { operator=">", value="${value}" };
+		variables.operators["onOrBefore"] = { operator="<=", value="${value}" };
+		variables.operators["onOrAfter"] = { operator=">=", value="${value}" };
 
 		variables.operatorArray = listToArray(coldmvc.list.sortByLen(structKeyList(variables.operators)));
 
@@ -140,11 +140,7 @@ component {
 			arguments.parameters = [];
 		}
 
-		if (arguments.parameter.operator.ignorecase) {
-			var alias = "lower(#arguments.parameter.alias#)";
-		} else {
-			var alias = arguments.parameter.alias;
-		}
+		var alias = "lower(#arguments.parameter.alias#)";
 
 		if (structKeyExists(arguments.parameter, "value")) {
 			var value = arguments.parameter.value;

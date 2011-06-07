@@ -1,13 +1,16 @@
 <cfif thisTag.executionMode eq "start">
 
-<cfparam name="attributes.lang" default="en-US" />
-<cfparam name="attributes.xmllang" default="en-US" />
-<cfparam name="attributes.xmlns" default="http://www.w3.org/1999/xhtml" />
+	<cfparam name="attributes.lang" default="en" />
 
-<cfoutput>
-<html lang="#attributes.lang#" xml:lang="#attributes.xmllang#" xmlns="#attributes.xmlns#">
-</cfoutput>
+	<cfoutput>
+	<!--[if lt IE 7]> <html class="no-js ie6" lang="#attributes.lang#"> <![endif]-->
+	<!--[if IE 7]> <html class="no-js ie7" lang="#attributes.lang#"> <![endif]-->
+	<!--[if IE 8]> <html class="no-js ie8" lang="#attributes.lang#"> <![endif]-->
+	<!--[if gt IE 8]><!-->  <html class="no-js" lang="#attributes.lang#"> <!--<![endif]-->
+	</cfoutput>
 
 <cfelse>
-</html>
+
+	</html>
+
 </cfif>

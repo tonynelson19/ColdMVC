@@ -173,13 +173,26 @@ component {
 					var view = controllerManager.getView(controller, action);
 					var layout = controllerManager.getLayout(controller, action);
 
-					// check to see if a status-specific view exists
+					// check to see if a status specific view exists
 					var status = coldmvc.request.getStatus();
-					var statusView = "error/#status#.cfm";
+					var statusCodeView = "error/#status#.cfm";
 
+					// first check on the status code (error/404.cfm)
 					if (templateManager.viewExists(statusView)) {
-						view = statusView;
-					};
+
+						view = statusCodeView;
+
+					// now check on the status text (error/not_found.cfm)
+					} else {
+
+						var statusText = coldmvc.request.getStatusText(status);
+						var statusTextView = "error/#lcase(replace(statusText, " ", "_", "all"))#.cfm";
+
+						if (templateManager.viewExists(statusTextView)) {
+							view = statusTextView;
+						}
+
+					}
 
 					coldmvc.event.setController(controller);
 					coldmvc.event.setAction(action);

@@ -11,16 +11,16 @@ component {
 
 		var metaData = getMetaData(this);
 
-		variables.scope = metaData.scope;
+		if (structKeyExists(arguments, "scope")) {
+			variables.scope = arguments.scope;
+		} else {
+			variables.scope = metaData.scope;
+		}
 
 		if (structKeyExists(metaData, "namespace")) {
 			variables.namespace = metaData.namespace;
 		} else {
 			variables.namespace = listLast(metaData.fullname, ".");
-		}
-
-		if (structKeyExists(arguments, "scope")) {
-			variables.scope = arguments.scope;
 		}
 
 		return this;
@@ -96,7 +96,7 @@ component {
 		var data = "";
 		var key = getKey();
 
-		switch(scope) {
+		switch(variables.scope) {
 			case "application": {
 				data = application;
 				break;
@@ -107,10 +107,6 @@ component {
 			}
 			case "request": {
 				data = request;
-				break;
-			}
-			case "cgi": {
-				data = cgi;
 				break;
 			}
 			case "server": {

@@ -8,10 +8,16 @@ component {
 	/**
 	 * @actionHelper assertAjax
 	 */
-	public void function assertAjax() {
+	public void function assertAjax(string message) {
 
 		if (!coldmvc.request.isAjax()) {
-			fail(403, "Expected Ajax");
+
+			if (!structKeyExists(arguments, "message")) {
+				arguments.message = "Expected Ajax";
+			}
+
+			fail(403, arguments.message);
+
 		}
 
 	}
@@ -22,7 +28,13 @@ component {
 	public void function assertGet() {
 
 		if (!coldmvc.request.isGet()) {
-			fail(405, "Expected GET");
+
+			if (!structKeyExists(arguments, "message")) {
+				arguments.message = "Expected GET";
+			}
+
+			fail(405, arguments.message);
+
 		}
 
 	}
@@ -30,10 +42,16 @@ component {
 	/**
 	 * @actionHelper assertLoggedIn
 	 */
-	public void function assertLoggedIn() {
+	public void function assertLoggedIn(string message) {
 
 		if (!coldmvc.user.isLoggedIn()) {
-			fail(401, "User not logged in");
+
+			if (!structKeyExists(arguments, "message")) {
+				arguments.message = "User not logged in";
+			}
+
+			fail(401, arguments.message);
+
 		}
 
 	}
@@ -41,10 +59,16 @@ component {
 	/**
 	 * @actionHelper assertModelExists
 	 */
-	public void function assertModelExists(required any model) {
+	public void function assertModelExists(required any model, string message) {
 
 		if (!arguments.model.exists()) {
-			fail(404, "#modelManager.getName(arguments.model)# does not exist");
+
+			if (!structKeyExists(arguments, "message")) {
+				arguments.message = "#modelManager.getName(arguments.model)# does not exist";
+			}
+
+			fail(404, arguments.message);
+
 		}
 
 	}
@@ -52,10 +76,16 @@ component {
 	/**
 	 * @actionHelper assertParamExists
 	 */
-	public void function assertParamExists(required string key) {
+	public void function assertParamExists(required string key, string message) {
 
 		if (!coldmvc.params.hasParam(arguments.key)) {
-			fail(404, "Parameter '#key#' not found");
+
+			if (!structKeyExists(arguments, "message")) {
+				arguments.message = "Parameter '#key#' not found";
+			}
+
+			fail(404, arguments.message);
+
 		}
 
 	}
@@ -63,15 +93,21 @@ component {
 	/**
 	 * @actionHelper assertPost
 	 */
-	public void function assertPost() {
+	public void function assertPost(string message) {
 
 		if (!coldmvc.request.isPost()) {
-			fail(405, "Expected POST");
+
+			if (!structKeyExists(arguments, "message")) {
+				arguments.message = "Expected POST";
+			}
+
+			fail(405, arguments.message);
+
 		}
 
 	}
 
-	private void function fail(required numeric statusCode, required string message) {
+	public void function fail(required numeric statusCode, required string message) {
 
 		var text = coldmvc.request.getStatusText(arguments.statusCode);
 		var type = coldmvc.string.pascalize(text);

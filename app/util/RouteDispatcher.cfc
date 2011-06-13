@@ -178,7 +178,7 @@ component {
 					var statusCodeView = "error/#status#.cfm";
 
 					// first check on the status code (error/404.cfm)
-					if (templateManager.viewExists(statusView)) {
+					if (templateManager.viewExists(statusCodeView)) {
 
 						view = statusCodeView;
 

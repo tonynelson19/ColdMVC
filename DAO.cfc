@@ -929,32 +929,26 @@ component {
 	private string function parseSortOrder(required any model, required struct options) {
 
 		var sortOrder = "";
-		var sortAlias = "";
-		var sortProperty = "";
-		var alias = "";
-		var sort = "";
-		var value = "";
-		var i = "";
 
 		if (structKeyExists(arguments.options, "sort")) {
 
-			alias = modelManager.getAlias(model);
-			sort = listToArray(arguments.options.sort);
-			i = "";
+			var alias = modelManager.getAlias(model);
+			var sort = listToArray(arguments.options.sort);
+			var i = "";
 
 			for (i = 1; i <= arrayLen(sort); i++) {
 
-				value = sort[i];
+				var value = trim(sort[i]);
 
-				if (find(".", value)) {
-					sortAlias = modelManager.getAlias(listFirst(value, "."));
-					sortProperty = modelManager.getProperty(sortAlias, listLast(value, "."));
+				if (find(" ", value)) {
+					var sortValue = listFirst(value, " ");
+					var sortOrder = listRest(value, " ");
 				} else {
-					sortAlias = alias;
-					sortProperty = modelManager.getProperty(sortAlias, value);
+					var sortValue = value;
+					var sortOrder = "";
 				}
 
-				sort[i] = sortAlias & "." & sortProperty;
+				sort[i] = trim(cleanProperty(alias, sortValue) & " " & sortOrder);
 
 			}
 

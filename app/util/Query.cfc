@@ -41,8 +41,7 @@ component {
 
 	}
 
-	public any function count(string string="")
-	{
+	public any function count(string string="") {
 
 		var previousSelect = variables.query.select;
 
@@ -110,8 +109,7 @@ component {
 
 	}
 
-	public any function groupBy(required string value)
-	{
+	public any function groupBy(required string value) {
 
 		variables.query.groupBy = arguments.value;
 
@@ -149,8 +147,7 @@ component {
 
 	}
 
-	public any function max(required numeric value)
-	{
+	public any function max(required numeric value) {
 
 		variables.options.max = arguments.value;
 
@@ -158,8 +155,7 @@ component {
 
 	}
 
-	public any function offset(required numeric value)
-	{
+	public any function offset(required numeric value) {
 
 		variables.options.offset = arguments.value;
 
@@ -167,8 +163,7 @@ component {
 
 	}
 
-	public any function order(required string value)
-	{
+	public any function order(required string value) {
 
 		variables.options.order = arguments.value;
 
@@ -182,8 +177,7 @@ component {
 
 	}
 
-	public any function select(required string string)
-	{
+	public any function select(required string string) {
 
 		variables.query.select = "select " & arguments.string;
 
@@ -191,8 +185,7 @@ component {
 
 	}
 
-	public any function sort(required string value)
-	{
+	public any function sort(required string value) {
 
 		variables.options.sort = arguments.value;
 
@@ -200,8 +193,7 @@ component {
 
 	}
 
-	public any function unique(required boolean value)
-	{
+	public any function unique(required boolean value) {
 
 		variables.options.unique = arguments.value;
 

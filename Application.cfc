@@ -241,6 +241,7 @@ component {
 		defaults["/config"] = this.rootPath & "config/";
 		defaults["/public"] = this.rootPath & "public/";
 		defaults["/app"] = this.rootPath & "app/";
+		defaults["/generated"] = this.rootPath & ".generated/";
 		defaults["/views"] = this.rootPath & ".generated/views/";
 		defaults["/layouts"] = this.rootPath & ".generated/layouts/";
 		defaults["/tags"] = this.rootPath & ".generated/tags/";

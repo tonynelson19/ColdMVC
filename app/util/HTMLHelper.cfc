@@ -498,22 +498,33 @@
 	<cffunction name="getURL" access="private" output="false" returntype="string">
 		<cfargument name="args" required="true" type="struct" />
 
-		<cfif not structKeyExists(args, "url")>
+		<cfif not structKeyExists(arguments.args, "url")>
 
-			<cfset args.querystring = getKey(args, "querystring") />
+			<cfif structKeyExists(arguments.args, "parameters")
+				or structKeyExists(arguments.args, "controller")
+				or structKeyExists(arguments.args, "action")
+				or structKeyExists(arguments.args, "querystring")>
 
-			<cfif not structKeyExists(args, "parameters")>
+				<cfset arguments.args.querystring = getKey(arguments.args, "querystring") />
 
-				<cfset args.parameters.controller = getKey(args, "controller", coldmvc.event.getController()) />
-				<cfset args.parameters.action = getKey(args, "action", coldmvc.event.getAction()) />
+				<cfif not structKeyExists(arguments.args, "parameters")>
+
+					<cfset arguments.args.parameters.controller = getKey(arguments.args, "controller", coldmvc.event.getController()) />
+					<cfset arguments.args.parameters.action = getKey(arguments.args, "action", coldmvc.event.getAction()) />
+
+				</cfif>
+
+				<cfset arguments.args.url = coldmvc.link.to(arguments.args.parameters, arguments.args.querystring) />
+
+			<cfelse>
+
+				<cfset arguments.args.url = "" />
 
 			</cfif>
 
-			<cfset args.url = coldmvc.link.to(args.parameters, args.querystring) />
-
 		</cfif>
 
-		<cfreturn trim(args.url) />
+		<cfreturn trim(arguments.args.url) />
 
 	</cffunction>
 
@@ -561,11 +572,11 @@
 g
 		<cfset var string = 'class="wrapper"' />
 
-		<cfif args.id neq "">
-			<cfset string = string & ' id="wrapper_for_#args.id#"' />
+		<cfif arguments.args.id neq "">
+			<cfset string = string & ' id="wrapper_for_#arguments.args.id#"' />
 		</cfif>
 
-		<cfif not args.visible>
+		<cfif not arguments.args.visible>
 			<cfset string = string & ' style="display:none;"' />
 		</cfif>
 

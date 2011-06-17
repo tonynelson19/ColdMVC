@@ -121,12 +121,17 @@ component {
 						}
 
 						// can't use the beanInjector to autowire since the beanInjector uses helpers to get a reference to the bean factory
-						if (structKeyExists(helper.object, "setBeanFactory") && structKeyExists(variables, "beanFactory")) {
-							helper.object.setBeanFactory(beanFactory);
+						if (structKeyExists(variables, "beanFactory")) {
+
+							if (structKeyExists(helper.object, "setBeanFactory")) {
+								helper.object.setBeanFactory(variables.beanFactory);
+							}
+
+							variables.beanFactory.autowireClassPath(helper.object, helper.classPath);
 						}
 
-						if (structKeyExists(helper.object, "setConfig") && structKeyExists(variables, "config")) {
-							helper.object.setConfig(config);
+						if (structKeyExists(variables, "config") && structKeyExists(helper.object, "setConfig")) {
+							helper.object.setConfig(variables.config);
 						}
 
 						variables.templates[helper.name] = helper.path;

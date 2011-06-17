@@ -1,4 +1,9 @@
+/**
+ * @accessors true
+ */
 component {
+
+	property config;
 
 	public any function init(required string xml, required struct config, struct beans) {
 
@@ -159,16 +164,14 @@ component {
 					}
 
 					if (structKeyExists(variables.config, beanDef.id)) {
-
 						for (property in variables.config[beanDef.id]) {
-
 							if (structKeyExists(beanInstance, "set#property#")) {
 								evaluate("beanInstance.set#property#(variables.config[beanDef.id][property])");
 							}
-
 						}
-
 					}
+
+					autowireClassPath(beanInstance, beanDef.class);
 
 					if (beanDef.initMethod != "") {
 						evaluate("beanInstance.#beanDef.initMethod#()");
@@ -432,6 +435,37 @@ component {
 	public struct function getBeanDefinitions() {
 
 		return singletons;
+
+	}
+
+	public any function autowireClassPath(required any object, required string classPath) {
+
+		// autowire an object with config settings based on its class path
+		// example: coldmvc.app.util.Object.foo = bar => object.setFoo(bar)
+		var array = listToArray(arguments.classPath, ".");
+		var len = arrayLen(array);
+		var struct = variables.config;
+		var i = 1;
+		var key = "";
+
+		for (i = 1; i <= len; i++) {
+
+			// drill into the config struct
+			if (structKeyExists(struct, array[i])) {
+				var struct = struct[array[i]];
+			} else {
+				break;
+			}
+
+			if (i == len) {
+				for (key in struct) {
+					if (structKeyExists(arguments.object, "set#key#")) {
+						evaluate("arguments.object.set#key#(struct[key])");
+					}
+				}
+			}
+
+		}
 
 	}
 

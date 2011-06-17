@@ -8,22 +8,7 @@
 
 		<cfset append(arguments, "class", "button") />
 
-		<cfif not structKeyExists(arguments, "url")>
-
-			<cfif structKeyExists(arguments, "parameters")
-				or structKeyExists(arguments, "controller")
-				or structKeyExists(arguments, "action")
-				or structKeyExists(arguments, "querystring")>
-
-				<cfset arguments.url = getURL(arguments) />
-
-			<cfelse>
-
-				<cfset arguments.url = "" />
-
-			</cfif>
-
-		</cfif>
+		<cfset arguments.url = getURL(arguments) />
 
 		<cfif arguments.url neq "">
 			<cfset arguments.onclick = "window.location='#htmlEditFormat(arguments.url)#';" />
@@ -137,10 +122,12 @@
 		<cfargument name="method" required="false" default="post" />
 
 		<cfset arguments.tag = "form" />
+
 		<!--- prevent the form tag from having a title --->
 		<cfset arguments.title = "" />
 
 		<cfset configure(arguments) />
+
 		<cfset arguments.url = getURL(arguments) />
 
 		<cfreturn '<form action="#arguments.url#" method="#arguments.method#" enctype="multipart/form-data" #arguments.common#>' />

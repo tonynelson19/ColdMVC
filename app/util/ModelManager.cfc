@@ -287,6 +287,12 @@ component {
 
 	}
 
+	public array function getPropertyNames(required any model) {
+
+		return getModel(arguments.model).propertyNames;
+
+	}
+
 	public struct function getRelationships(required any model) {
 
 		return getModel(arguments.model).relationships;

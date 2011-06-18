@@ -83,20 +83,6 @@ component {
 
 	}
 
-	private void function processBean(required any bean, required string beanName) {
-
-		if (structKeyExists(bean, "setBeanFactory")) {
-			bean.setBeanFactory(this);
-		}
-
-		if (structKeyExists(bean, "setBeanName")) {
-			bean.setBeanName(beanName);
-		}
-
-		processBeanPostProcessors(bean, beanName);
-
-	}
-
 	private void function processBeanPostProcessors(required any bean, required string beanName) {
 
 		var i = "";
@@ -148,13 +134,12 @@ component {
 				if (!beanDef.constructed) {
 
 					var beanInstance = getBeanInstance(beanDef.id);
-					var functions = findFunctions(beanDef.id);
 
-					if (structKeyExists(functions, "setBeanFactory")) {
+					if (structKeyExists(beanInstance, "setBeanFactory")) {
 						beanInstance.setBeanFactory(this);
 					}
 
-					if (structKeyExists(functions, "setBeanName")) {
+					if (structKeyExists(beanInstance, "setBeanName")) {
 						beanInstance.setBeanName(beanDef.id);
 					}
 
@@ -466,6 +451,26 @@ component {
 			}
 
 		}
+
+	}
+
+	public any function new(required string classPath) {
+
+		var object = createObject("component", arguments.classPath);
+
+		if (structKeyExists(object, "init")) {
+			object.init();
+		}
+
+		if (structKeyExists(object, "setBeanFactory")) {
+			object.setBeanFactory(this);
+		}
+
+		autowireClassPath(object, arguments.classPath);
+
+		processBeanPostProcessors(object, "");
+
+		return object;
 
 	}
 

@@ -978,17 +978,17 @@ component {
 
 	}
 
-	public any function populate(required any model, required struct data, string propertyList="") {
+	public any function populate(required any model, required struct data, string properties="") {
 
 		var key = "";
 
-		if (arguments.propertyList == "") {
-			arguments.propertyList = structKeyList(arguments.data);
+		if (arguments.properties == "") {
+			arguments.properties = structKeyList(arguments.data);
 		}
 
 		for (key in arguments.data) {
 
-			if (listFindNoCase(arguments.propertyList, key)) {
+			if (listFindNoCase(arguments.properties, key)) {
 				setProperty(arguments.model, key, arguments.data[key]);
 			}
 

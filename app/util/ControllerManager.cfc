@@ -7,12 +7,20 @@ component {
 	property metaDataFlattener;
 	property templateManager;
 
+	public struct function getController(required string controller) {
+
+		var controllers = getControllers();
+
+		return controllers[arguments.controller];
+
+	}
+
 	public string function getName(required string controller) {
 
 		var controllers = getControllers();
 
-		if (structKeyExists(controllers, controller)) {
-			return controllers[controller].name;
+		if (structKeyExists(controllers, arguments.controller)) {
+			return controllers[arguments.controller].name;
 		}
 
 		return "";
@@ -23,48 +31,48 @@ component {
 
 		var controllers = getControllers();
 
-		if (!structKeyExists(controllers, controller)) {
+		if (!structKeyExists(controllers, arguments.controller)) {
 			return "";
 		}
 
 		if (!structKeyExists(arguments, "action")) {
-			action = controllers[controller].action;
+			arguments.action = controllers[arguments.controller].action;
 		}
 
-		if (!structKeyExists(controllers[controller].actions, action)) {
-			return action;
+		if (!structKeyExists(controllers[arguments.controller].actions, arguments.action)) {
+			return arguments.action;
 		}
 
-		return controllers[controller].actions[action].key;
+		return controllers[arguments.controller].actions[arguments.action].key;
 
 	}
 
 	public string function getView(string controller, string action) {
 
 		if (!structKeyExists(arguments, "controller")) {
-			controller = coldmvc.event.getController();
+			arguments.controller = coldmvc.event.getController();
 		}
 
 		if (!structKeyExists(arguments, "action")) {
-			action = coldmvc.event.getAction();
+			arguments.action = coldmvc.event.getAction();
 		}
 
 		var controllers = getControllers();
 		var view = "";
 
 		// if the controller exists and it's valid method, get the view from the metadata
-		if (structKeyExists(controllers, controller)) {
+		if (structKeyExists(controllers, arguments.controller)) {
 
-			if (structKeyExists(controllers[controller].actions, action)) {
-				view = controllers[controller].actions[action].view;
+			if (structKeyExists(controllers[arguments.controller].actions, action)) {
+				view = controllers[arguments.controller].actions[arguments.action].view;
 			} else {
-				view = controllers[controller].directory & "/" & action;
+				view = controllers[arguments.controller].directory & "/" & arguments.action;
 			}
 
 		} else {
 
 			// not a valid controller/action, so build it assuming it's a normal request
-			view = buildView(controller, action);
+			view = buildView(arguments.controller, arguments.action);
 
 		}
 
@@ -74,23 +82,23 @@ component {
 
 	private string function buildView(required string controller, required string action) {
 
-		return controller & "/" & action & ".cfm";
+		return arguments.controller & "/" & arguments.action & ".cfm";
 
 	}
 
 	private string function formatView(required string view) {
 
-		view = replace(view, "//", "/", "all");
+		arguments.view = replace(arguments.view, "//", "/", "all");
 
-		if (left(view, 1) == "/") {
-			view = replace(view, "/", "");
+		if (left(arguments.view, 1) == "/") {
+			arguments.view = replace(arguments.view, "/", "");
 		}
 
-		if (right(view, 4) != ".cfm") {
-			view = view & ".cfm";
+		if (right(arguments.view, 4) != ".cfm") {
+			arguments.view = arguments.view & ".cfm";
 		}
 
-		return view;
+		return arguments.view;
 
 	}
 
@@ -130,22 +138,22 @@ component {
 
 	private any function getMethodAnnotation(required struct args, required string key, required any defaultValue) {
 
-		if (!structKeyExists(args, "controller")) {
-			args.controller = coldmvc.event.getController();
+		if (!structKeyExists(arguments.args, "controller")) {
+			arguments.args.controller = coldmvc.event.getController();
 		}
 
-		if (!structKeyExists(args, "action")) {
-			args.action = coldmvc.event.getAction();
+		if (!structKeyExists(arguments.args, "action")) {
+			arguments.args.action = coldmvc.event.getAction();
 		}
 
 		var controllers = getControllers();
 
-		if (structKeyExists(controllers, args.controller)) {
+		if (structKeyExists(controllers, arguments.args.controller)) {
 
-			if (structKeyExists(controllers[args.controller].actions, args.action)) {
-				return controllers[args.controller].actions[args.action][arguments.key];
-			} else if (structKeyExists(controllers[args.controller], arguments.key)) {
-				return controllers[args.controller][arguments.key];
+			if (structKeyExists(controllers[arguments.args.controller].actions, arguments.args.action)) {
+				return controllers[arguments.args.controller].actions[arguments.args.action][arguments.key];
+			} else if (structKeyExists(controllers[arguments.args.controller], arguments.key)) {
+				return controllers[arguments.args.controller][arguments.key];
 			}
 
 		}
@@ -158,8 +166,8 @@ component {
 
 		var controllers = getControllers();
 
-		if (structKeyExists(controllers, controller)) {
-			return structKeyExists(controllers[controller].actions, action);
+		if (structKeyExists(controllers, arguments.controller)) {
+			return structKeyExists(controllers[arguments.controller].actions, arguments.action);
 		} else {
 			return false;
 		}
@@ -311,18 +319,18 @@ component {
 
 	private string function findLayout(required string controller, required struct metaData) {
 
-		if (structKeyExists(metaData, "layout")) {
-			return metaData.layout;
+		if (structKeyExists(arguments.metaData, "layout")) {
+			return arguments.metaData.layout;
 		}
 
 		var layoutController = getLayoutController();
 
-		if (structKeyExists(layoutController.actions, controller)) {
-			return layoutController.actions[controller].layout;
+		if (structKeyExists(layoutController.actions, arguments.controller)) {
+			return layoutController.actions[arguments.controller].layout;
 		}
 
-		if (templateManager.layoutExists(controller)) {
-			return controller;
+		if (templateManager.layoutExists(arguments.controller)) {
+			return arguments.controller;
 		}
 
 		return layoutController.layout;
@@ -369,9 +377,9 @@ component {
 		var actions = {};
 		var key = "";
 
-		for (key in metaData.functions) {
+		for (key in arguments.metaData.functions) {
 
-			var fn = metaData.functions[key];
+			var fn = arguments.metaData.functions[key];
 
 			var method = {};
 			method.name = fn.name;

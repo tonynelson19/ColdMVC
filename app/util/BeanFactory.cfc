@@ -466,6 +466,8 @@ component {
 			object.setBeanFactory(this);
 		}
 
+		getBean("beanInjector").autowire(object);
+
 		autowireClassPath(object, arguments.classPath);
 
 		processBeanPostProcessors(object, "");

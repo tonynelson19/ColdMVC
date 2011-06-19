@@ -454,12 +454,16 @@ component {
 
 	}
 
-	public any function new(required string classPath) {
+	public any function new(required string classPath, struct constructorArgs) {
 
 		var object = createObject("component", arguments.classPath);
 
+		if (!structKeyExists(arguments, "constructorArgs")) {
+			arguments.constructorArgs = {};
+		}
+
 		if (structKeyExists(object, "init")) {
-			object.init();
+			object.init(argumentCollection=arguments.constructorArgs);
 		}
 
 		if (structKeyExists(object, "setBeanFactory")) {

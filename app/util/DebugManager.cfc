@@ -6,6 +6,13 @@ component {
 	property fileSystemFacade;
 	property templates;
 
+	public any function init() {
+
+		variables.templates = [];
+		return this;
+
+	}
+
 	public void function addEvent(required string event, required array listeners) {
 
 		append("events", arguments);
@@ -15,6 +22,14 @@ component {
 	public void function addQuery(required string query, required struct parameters, required boolean unique, required struct options, required numeric time, required numeric count) {
 
 		append("queries", arguments);
+
+	}
+
+	public function addTemplate(required string template) {
+
+		arrayAppend(variables.templates, arguments.template);
+
+		return this;
 
 	}
 

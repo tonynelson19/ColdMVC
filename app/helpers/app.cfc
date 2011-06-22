@@ -1,9 +1,13 @@
 /**
  * @extends coldmvc.Scope
  * @helper application
- * @namespace data
- * @scope application
  */
 component {
-	
+
+	private struct function getScope() {
+
+		return application;
+
+	}
+
 }

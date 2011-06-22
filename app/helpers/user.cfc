@@ -1,8 +1,13 @@
 /**
  * @extends coldmvc.Scope
- * @scope session
  */
 component {
+
+	private struct function getScope() {
+
+		return session;
+
+	}
 
 	/**
 	 * @actionHelper getUserID

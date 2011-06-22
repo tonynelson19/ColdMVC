@@ -41,11 +41,11 @@ component {
 
 	public void function postProcessBeanFactory(any beanFactory) {
 
-		setup();
+		startRequest();
 
 	}
 
-	public void function setup() {
+	public void function startRequest() {
 
 		addScope("coldmvc");
 		addScope("$");
@@ -54,17 +54,13 @@ component {
 
 	private void function addScope(required string scope) {
 
-		if (arguments.scope != "") {
+		var container = getPageContext().getFusionContext().hiddenScope;
 
-			var container = getPageContext().getFusionContext().hiddenScope;
-
-			if (!structKeyExists(container, arguments.scope)) {
-				container[arguments.scope] = {};
-			}
-
-			structAppend(container[arguments.scope], getHelpers());
-
+		if (!structKeyExists(container, arguments.scope)) {
+			container[arguments.scope] = {};
 		}
+
+		structAppend(container[arguments.scope], getHelpers());
 
 	}
 

@@ -1,8 +1,13 @@
 /**
  * @extends coldmvc.Scope
- * @scope session
  */
 component {
+
+	private struct function getScope() {
+
+		return session;
+
+	}
 
 	public any function get(string key, any def="") {
 
@@ -28,7 +33,7 @@ component {
 
 	private string function getCookieKey(required string key) {
 
-		return key & "_" & replace(coldmvc.cgi.get("path_translated") & "\" & coldmvc.event.view(), "/", "\", "all");
+		return key & "_" & replace(coldmvc.cgi.get("path_translated") & "\" & coldmvc.event.getView(), "/", "\", "all");
 
 	}
 

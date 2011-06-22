@@ -5,36 +5,28 @@ component {
 
 	property collectionParser;
 
-	public void function populateParams(string event) {
+	public void function startRequest() {
 
 		if (coldmvc.params.isEmpty()) {
 
-			var collection = getCollection();
+			var collection = {};
+
+			if (isDefined("form")) {
+				structAppend(collection, form);
+				structDelete(collection, "fieldnames");
+			}
+
+			if (isDefined("url")) {
+				structAppend(collection, url);
+			}
 
 			// remove reserved global variables
 			structDelete(collection, "$");
 			structDelete(collection, "coldmvc");
 
-			coldmvc.params.set(collection);
+			coldmvc.params.set(collectionParser.parseCollection(collection));
 
 		}
-
-	}
-
-	private struct function getCollection() {
-
-		var collection = {};
-
-		if (isDefined('form')) {
-			structAppend(collection, form);
-			structDelete(collection, "fieldnames");
-		}
-
-		if (isDefined('url')) {
-			structAppend(collection, url);
-		}
-
-		return collectionParser.parseCollection(collection);
 
 	}
 

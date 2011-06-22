@@ -1,13 +1,38 @@
 /**
  * @extends coldmvc.Scope
- * @namespace ""
- * @scope params
  */
 component {
 
+	public any function init() {
+
+		variables.key = "";
+		variables.namespace = "";
+
+		return this;
+
+	}
+
 	private struct function getScope() {
 
-		return createScope("params");
+		var hiddenScope = getPageContext().getFusionContext().hiddenScope;
+
+		if (!structKeyExists(hiddenScope, "params")) {
+			hiddenScope["params"] = {};
+		}
+
+		return hiddenScope["params"];
+
+	}
+
+	private struct function getContainer() {
+
+		return getScope();
+
+	}
+
+	public struct function getNamespace() {
+
+		return getScope();
 
 	}
 

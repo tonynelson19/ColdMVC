@@ -1,7 +1,12 @@
 /**
  * @extends coldmvc.Scope
- * @scope request
  */
 component {
+
+	private struct function getScope() {
+
+		return request;
+
+	}
 
 }

@@ -1,7 +1,5 @@
 /**
  * @extends coldmvc.Scope
- * @namespace data
- * @scope request
  */
 component {
 
@@ -54,6 +52,12 @@ component {
 		};
 
 		return this;
+
+	}
+
+	private struct function getScope() {
+
+		return request;
 
 	}
 

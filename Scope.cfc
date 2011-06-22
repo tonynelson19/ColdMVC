@@ -1,21 +1,11 @@
-/**
- * @accessors true
- * @namespace data
- * @scope request
- */
 component {
 
-	property key;
+	public any function init() {
 
-	public any function init(string scope) {
+		variables.key = "coldmvc";
+		variables.namespace = "data";
 
 		var metaData = getMetaData(this);
-
-		if (structKeyExists(arguments, "scope")) {
-			variables.scope = arguments.scope;
-		} else {
-			variables.scope = metaData.scope;
-		}
 
 		if (structKeyExists(metaData, "namespace")) {
 			variables.namespace = metaData.namespace;
@@ -27,35 +17,69 @@ component {
 
 	}
 
+	private struct function getScope() {
+
+		throw("getScope() must be implemented");
+
+	}
+
+	private struct function getContainer() {
+
+		var scope = getScope();
+
+		if (variables.key == "") {
+			return scope;
+		}
+
+		if (!structKeyExists(scope, variables.key)) {
+			scope[variables.key] = {};
+		}
+
+		return scope[variables.key];
+
+	}
+
+	public struct function getNamespace(string namespace) {
+
+		var container = getContainer();
+
+		if (!structKeyExists(arguments, "namespace")) {
+			arguments.namespace = variables.namespace;
+		}
+
+		if (!structKeyExists(container, arguments.namespace)) {
+			container[arguments.namespace] = {};
+		}
+
+		return container[arguments.namespace];
+
+	}
+
 	public void function append(required struct values, boolean overwrite=true) {
 
-		var data = getScope();
+		var data = getNamespace();
+
 		structAppend(data, arguments.values, arguments.overwrite);
 
 	}
 
 	public void function clear(any key) {
 
-		var data = getScope();
+		var data = getNamespace();
+
 		structDelete(data, arguments.key);
 
 	}
 
-	private struct function createScope(required string scope) {
+	public void function empty() {
 
-		var container = getPageContext().getFusionContext().hiddenScope;
-
-		if (!structKeyExists(container, arguments.scope)) {
-			container[arguments.scope] = {};
-		}
-
-		return container[arguments.scope];
+		set({});
 
 	}
 
 	public any function get(string key, any def="") {
 
-		var data = getScope();
+		var data = getNamespace();
 
 		if (structKeyExists(arguments, "key")) {
 
@@ -66,18 +90,10 @@ component {
 			return data[arguments.key];
 
 		} else {
+
 			return data;
+
 		}
-
-	}
-
-	public string function getKey() {
-
-		if (!structKeyExists(variables, "key")) {
-			variables.key = "coldmvc";
-		}
-
-		return variables.key;
 
 	}
 
@@ -91,83 +107,40 @@ component {
 
 	}
 
-	private struct function getScope() {
-
-		var data = "";
-		var key = getKey();
-
-		switch(variables.scope) {
-			case "application": {
-				data = application;
-				break;
-			}
-			case "session": {
-				data = session;
-				break;
-			}
-			case "request": {
-				data = request;
-				break;
-			}
-			case "server": {
-				data = server;
-				break;
-			}
-		}
-
-		if (key == "") {
-			return data;
-		}
-
-		if (!structKeyExists(data, key)) {
-			data[key] = {};
-		}
-
-		if (variables.namespace == "") {
-			return data[key];
-		}
-
-		if (!structKeyExists(data[key], variables.namespace)) {
-			data[key][variables.namespace] = {};
-		}
-
-		return data[key][variables.namespace];
-
-	}
-
-	private struct function getScopes() {
-
-		return getPageContext().getFusionContext().hiddenScope;
-
-	}
-
 	public boolean function has(required string key) {
 
-		return structKeyExists(getScope(), arguments.key);
+		var data = getNamespace();
+
+		return structKeyExists(data, arguments.key);
 
 	}
 
 	public boolean function isEmpty() {
 
-		var data = getScope();
+		var data = getNamespace();
+
 		return structIsEmpty(data);
 
 	}
 
 	public any function set(required any key, any value) {
 
-		// key could be a struct to set the entire scope's value
-
-		var data = getScope();
+		var data = getNamespace();
 
 		if (structKeyExists(arguments, "value")) {
+
 			data[arguments.key] = arguments.value;
+
 		} else {
+
+			var container = getContainer();
+
 			if (variables.namespace == "") {
-				getScopes()[variables.scope] = arguments.key;
+				container = arguments.key;
 			} else {
-				getScopes()[variables.scope][getKey()][variables.namespace] = arguments.key;
+				container[variables.namespace] = arguments.key;
 			}
+
 		}
 
 		return this;

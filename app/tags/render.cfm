@@ -1,6 +1,6 @@
 <cfif thisTag.executionMode eq "end">
-	<cfif not structKeyExists(attributes, "view")>
-		<cfset attributes.view = coldmvc.event.view() />
+	<cfif not structKeyExists(attributes, "section")>
+		<cfset attributes.section = "body" />
 	</cfif>
-	<cfset thisTag.generatedContent = coldmvc.factory.get("renderer").renderView(attributes.view) />
+	<cfset thisTag.generatedContent = coldmvc.event.getContent(attributes.section) />
 </cfif>

@@ -6,16 +6,16 @@ component {
 	property configPath;
 	property directory;
 
-	public PluginManager function init() {
+	public any function init() {
 
-		plugins = [];
-		mappings = {};
-		cache = {
+		variables.plugins = [];
+		variables.mappings = {};
+		variables.cache = {
 			plugins = {},
 			requires = {}
 		};
 
-		fileSystemFacade = new coldmvc.app.util.FileSystemFacade();
+		variables.fileSystemFacade = new coldmvc.app.util.FileSystemFacade();
 
 		return this;
 
@@ -23,8 +23,8 @@ component {
 
 	public void function loadPlugins() {
 
-		if (fileSystemFacade.fileExists(expandPath(configPath))) {
-			include configPath;
+		if (fileSystemFacade.fileExists(expandPath(variables.configPath))) {
+			include variables.configPath;
 		}
 
 	}
@@ -35,12 +35,12 @@ component {
 		plugin.name = arguments.name;
 		plugin.path = arguments.path;
 
-		if (path == "") {
+		if (arguments.path == "") {
 			plugin.path = plugin.name;
 			plugin.name = listLast(sanitize(plugin.name), "/");
 		}
 
-		if (!structKeyExists(cache.plugins, plugin.name)) {
+		if (!structKeyExists(variables.cache.plugins, plugin.name)) {
 
 			var original = plugin.path;
 
@@ -62,19 +62,18 @@ component {
 
 			plugin.path = sanitize(plugin.path);
 
-			if (mapping != "") {
-				plugin.mapping = mapping;
+			if (arguments.mapping != "") {
+				plugin.mapping = arguments.mapping;
 			} else {
 				plugin.mapping = "/plugins/#plugin.name#";
 			}
 
-			arrayAppend(plugins, plugin);
+			arrayAppend(variables.plugins, plugin);
 
-			mappings[plugin.mapping] = plugin.path;
+			variables.mappings[plugin.mapping] = plugin.path;
 
 			var config = plugin.path & "config/plugins.cfm";
 			var rootPath = sanitize(expandPath("/plugins/"));
-
 			var mappedPlugins = "/plugins/" & replaceNoCase(config, rootPath, "");
 
 			if (fileSystemFacade.fileExists(config)) {
@@ -89,7 +88,7 @@ component {
 				plugin.version = "";
 			}
 
-			cache.plugins[plugin.name] = plugin.path;
+			variables.cache.plugins[plugin.name] = plugin.path;
 
 		}
 
@@ -97,13 +96,13 @@ component {
 
 	public void function requires(required string name) {
 
-		cache.requires[arguments.name] = true;
+		variables.cache.requires[arguments.name] = true;
 
 	}
 
 	public array function getRequiredPlugins() {
 
-		return listToArray(listSort(structKeyList(cache.requires), "textnocase"));
+		return listToArray(listSort(structKeyList(variables.cache.requires), "textnocase"));
 
 	}
 
@@ -115,7 +114,7 @@ component {
 
 		for (i = 1; i <= arrayLen(required); i++) {
 
-			if (!structKeyExists(cache.plugins, required[i])) {
+			if (!structKeyExists(variables.cache.plugins, required[i])) {
 				arrayAppend(missing, required[i]);
 			}
 
@@ -128,13 +127,13 @@ component {
 
 	public array function getPlugins() {
 
-		return plugins;
+		return variables.plugins;
 
 	}
 
 	public struct function getMappings() {
 
-		return mappings;
+		return variables.mappings;
 
 	}
 
@@ -143,8 +142,8 @@ component {
 		var list = [];
 		var i = "";
 
-		for (i = 1; i <= arrayLen(plugins); i++) {
-			arrayAppend(list, "/#plugins[i].name#/");
+		for (i = 1; i <= arrayLen(variables.plugins); i++) {
+			arrayAppend(list, "/#variables.plugins[i].name#/");
 		}
 
 		return arrayToList(list);
@@ -156,8 +155,8 @@ component {
 		var paths = [];
 		var i = "";
 
-		for (i = 1; i <= arrayLen(plugins); i++) {
-			arrayAppend(paths, plugins[i].path);
+		for (i = 1; i <= arrayLen(variables.plugins); i++) {
+			arrayAppend(paths, variables.plugins[i].path);
 		}
 
 		return paths;
@@ -166,13 +165,13 @@ component {
 
 	private string function sanitize(required string filePath) {
 
-		filePath = replace(filePath, "\", "/", "all");
+		arguments.filePath = replace(arguments.filePath, "\", "/", "all");
 
-		if (right(filePath, 1) != "/") {
-			filePath = filePath & "/";
+		if (right(arguments.filePath, 1) != "/") {
+			arguments.filePath = arguments.filePath & "/";
 		}
 
-		return filePath;
+		return arguments.filePath;
 
 	}
 

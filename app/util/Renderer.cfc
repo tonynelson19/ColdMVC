@@ -14,33 +14,33 @@ component {
 
 	public string function renderLayout(required string layout) {
 
-		return renderTemplate("layouts", layout, "coldmvc.app.util.Layout");
+		return renderTemplate("layouts", layout);
 
 	}
 
 	public string function renderView(required string view) {
 
 		eventDispatcher.dispatchEvent("preView");
-		eventDispatcher.dispatchEvent("preView:#view#");
+		eventDispatcher.dispatchEvent("preView:#arguments.view#");
 
-		var result = renderTemplate("views", view, "coldmvc.app.util.View");
+		var result = renderTemplate("views", arguments.view);
 
-		eventDispatcher.dispatchEvent("postView:#view#");
+		eventDispatcher.dispatchEvent("postView:#arguments.view#");
 		eventDispatcher.dispatchEvent("postView");
 
 		return result;
 
 	}
 
-	private string function renderTemplate(required string directory, required string path, required string class) {
+	private string function renderTemplate(required string directory, required string path) {
 
 		var output = "";
 
-		if (templateManager.templateExists(directory, path)) {
+		if (templateManager.templateExists(arguments.directory, arguments.path)) {
 
-			var template = templateManager.generate(directory, path);
+			var template = templateManager.generate(arguments.directory, arguments.path);
 
-			output = createObject("component", class).init(template);
+			output = createObject("component", "coldmvc.app.util.Template").init(template);
 
 		}
 

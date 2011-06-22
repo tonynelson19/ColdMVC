@@ -8,7 +8,7 @@ component {
 		structAppend(variables, coldmvc.params.get());
 
 		savecontent variable="local.html" {
-			include template;
+			include arguments.template;
 		}
 
 		return trim(local.html);

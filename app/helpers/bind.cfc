@@ -1,8 +1,13 @@
 /**
  * @extends coldmvc.Scope
- * @scope request
  */
 component {
+
+	private struct function getScope() {
+
+		return request;
+
+	}
 
 	public void function start(required string key, string index="") {
 

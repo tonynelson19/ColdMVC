@@ -1,19 +1,28 @@
 /**
  * @extends coldmvc.Scope
- * @scope request
  */
 component {
 
-	public function getScope() {
+	private struct function getScope() {
 
-		var cgiScope = super.getScope();
+		return request;
 
-		// copy the cgi scope into the request scope so you can modify its values if needed
-		if (structIsEmpty(cgiScope)) {
-			structAppend(cgiScope, cgi);
+	}
+
+	public struct function getNamespace() {
+
+		var container = getContainer();
+
+		if (!structKeyExists(container, "cgi")) {
+			container["cgi"] = {};
 		}
 
-		return cgiScope;
+		// copy the cgi scope into the request scope so you can modify its values if needed
+		if (structIsEmpty(container["cgi"])) {
+			structAppend(container["cgi"], cgi);
+		}
+
+		return container["cgi"];
 
 	}
 

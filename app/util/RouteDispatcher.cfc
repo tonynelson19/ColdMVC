@@ -113,12 +113,19 @@ component {
 						layout = coldmvc.event.getLayout();
 						view = coldmvc.event.getView();
 
+						// always render the view before the layout
+						var viewOutput = renderer.renderView(view);
+
 						// if the layout exists, render it
 						if (layout != "" && templateManager.layoutExists(layout)) {
+
+							coldmvc.event.setContent("body", viewOutput);
+
 							output = renderer.renderLayout(layout);
+
 						} else {
-							// the layout didn't exists, so try to render the view
-							output = renderer.renderView(view);
+
+							output = viewOutput;
 						}
 
 						break;

@@ -7,10 +7,14 @@ component {
 	property controllerManager;
 	property defaultController;
 	property router;
+	property baseURL;
 
 	public any function init() {
+
 		variables.aliases = {};
+
 		return this;
+
 	}
 
 	public void function loadAliases() {
@@ -19,18 +23,18 @@ component {
 		var key = "";
 
 		for (key in controllers) {
-			aliases["/#key#/#controllers[key].action#"] = "/#key#";
+			variables.aliases["/#key#/#controllers[key].action#"] = "/#key#";
 		}
 
-		var action = controllerManager.getAction(defaultController);
+		var action = controllerManager.getAction(variables.defaultController);
 
-		aliases["/#defaultController#"] = "";
-		aliases["/#defaultController#/#action#"] = "";
-		aliases["/"] = "";
+		variables.aliases["/#variables.defaultController#"] = "";
+		variables.aliases["/#variables.defaultController#/#action#"] = "";
+		variables.aliases["/"] = "";
 
 	}
 
-	public void function handleRequest(string event) {
+	public void function handleRequest() {
 
 		// parse the path info from the script
 		var path = parseURL();
@@ -99,28 +103,28 @@ component {
 	public function buildURL(required string name, required struct parameters, required string querystring) {
 
 		// if the querystring is like "/post/show/5", consider it a manually created url and simply prepend the base url
-		if (left(querystring, 1) == "/") {
-			return getBaseURL() & checkAlias(querystring);
+		if (left(arguments.querystring, 1) == "/") {
+			return getBaseURL() & checkAlias(arguments.querystring);
 		}
 
 		// generate a path for the given arguments
-		var path = router.generate(name, parameters);
+		var path = router.generate(arguments.name, arguments.parameters);
 
 		// if the router couldn't generate a route, add the event parameters and try again
 		if (path == "") {
 
 			// if a controller wasn't already specified, add the current controller
-			if (!structKeyExists(parameters, "controller")) {
-				parameters.controller = coldmvc.event.getController();
+			if (!structKeyExists(arguments.parameters, "controller")) {
+				arguments.parameters.controller = coldmvc.event.getController();
 			}
 
 			// if an action wasn't already specified, add the current action
-			if (!structKeyExists(parameters, "action")) {
-				parameters.action = coldmvc.event.getAction();
+			if (!structKeyExists(arguments.parameters, "action")) {
+				arguments.parameters.action = coldmvc.event.getAction();
 			}
 
 			// generate a new path with the added parameters
-			path = router.generate(name, parameters);
+			path = router.generate(arguments.name, arguments.parameters);
 
 		}
 
@@ -128,15 +132,25 @@ component {
 		path = getBaseURL() & checkAlias(path);
 
 		// if the querystring wasn't empty, append it to the path
-		if (querystring != "") {
-			path = coldmvc.url.addQueryString(path, querystring);
+		if (arguments.querystring != "") {
+			path = coldmvc.url.addQueryString(path, arguments.querystring);
 		}
 
 		return path;
 
 	}
 
-	private string function getBaseURL() {
+	public string function getBaseURL() {
+
+		if (!structKeyExists(variables, "baseURL")) {
+			variables.baseURL = loadBaseURL();
+		}
+
+		return variables.baseURL;
+
+	}
+
+	private string function loadBaseURL() {
 
 		// check for ssl
 		var path = coldmvc.cgi.get("server_name") & coldmvc.config.get("urlPath");
@@ -171,10 +185,10 @@ component {
 
 	private string function checkAlias(required string path) {
 
-		if (structKeyExists(aliases, path)) {
-			return aliases[path];
+		if (structKeyExists(variables.aliases, arguments.path)) {
+			return variables.aliases[arguments.path];
 		} else {
-			return path;
+			return arguments.path;
 		}
 
 	}

@@ -10,16 +10,17 @@ component {
 
 	public TemplateManager function init() {
 
-		loaded = false;
-		cache = {};
-		includes = [];
+		variables.loaded = false;
+		variables.cache = {};
+		variables.includes = [];
+
 		return this;
 
 	}
 
 	public struct function getTemplates() {
 
-		return cache;
+		return variables.cache;
 
 	}
 
@@ -32,12 +33,12 @@ component {
 
 	public void function generateTemplates() {
 
-		if (development || !loaded) {
+		if (variables.development || !variables.loaded) {
 			deleteFiles();
-			includes = [];
+			variables.includes = [];
 			loadTemplates();
 			generateIncludes();
-			loaded = true;
+			variables.loaded = true;
 		}
 
 	}
@@ -54,29 +55,29 @@ component {
 	private void function deleteDirectory(required string directory) {
 
 		// delete and recreate the folder
-		directory = expandPath("/#directory#/");
+		arguments.directory = expandPath("/#arguments.directory#/");
 
 		// if it exists, delete the directory
-		if (fileSystemFacade.directoryExists(directory)) {
-			directoryDelete(directory, true);
+		if (fileSystemFacade.directoryExists(arguments.directory)) {
+			directoryDelete(arguments.directory, true);
 		}
 
 		// now create the empty directory
-		directoryCreate(directory);
+		directoryCreate(arguments.directory);
 
 	}
 
 	private void function findTemplates(required string directory) {
 
-		cache[directory] = {};
+		variables.cache[directory] = {};
 
 		var plugins = pluginManager.getPlugins();
 		var i = "";
 		var j = "";
-		var paths = [ "/app/#directory#/" ];
+		var paths = [ "/app/#arguments.directory#/" ];
 
 		for (i = 1; i <= arrayLen(plugins); i++) {
-			arrayAppend(paths, plugins[i].mapping & "/app/#directory#/");
+			arrayAppend(paths, plugins[i].mapping & "/app/#arguments.directory#/");
 		}
 
 		for (i = 1; i <= arrayLen(paths); i++) {
@@ -92,18 +93,18 @@ component {
 					var filePath = replace(files[j], "\", "/", "all");
 					var name = replace(filePath, expandedDirectory, "");
 
-					if (!structKeyExists(cache[directory], name)) {
+					if (!structKeyExists(variables.cache[arguments.directory], name)) {
 
 						var template = {
 							name = name,
 							path = paths[i] & name,
 							file = listLast(name, "/"),
 							generated = false,
-							destination = "/" & directory & "/" & name,
-							directory = directory
+							destination = "/" & arguments.directory & "/" & name,
+							directory = arguments.directory
 						};
 
-						cache[directory][template.name] = template;
+						variables.cache[arguments.directory][template.name] = template;
 
 						if (left(template.file, 1) == "_") {
 							arrayAppend(includes, template);
@@ -122,27 +123,28 @@ component {
 	private void function generateIncludes() {
 
 		var i = "";
-		for (i = 1; i <= arrayLen(includes); i++) {
-			generate(includes[i].directory, includes[i].name);
+
+		for (i = 1; i <= arrayLen(variables.includes); i++) {
+			generate(variables.includes[i].directory, variables.includes[i].name);
 		}
 
 	}
 
 	public string function generate(required string directory, required string path) {
 
-		path = sanitizeTemplate(path);
+		arguments.path = sanitizeTemplate(arguments.path);
 
-		if (templateExists(directory, path)) {
+		if (templateExists(arguments.directory, arguments.path)) {
 
-			var template = cache[directory][path];
+			var template = variables.cache[arguments.directory][arguments.path];
 
 			if (!template.generated) {
 
 				// add the tags to the content from the view/layout
 				var templatePath = replace(expandPath(template.path), "\", "/", "all");
 				var templateContent = generateContent(fileRead(templatePath));
-				var destinationPath = replace(expandPath("/app/#directory#/"), "\", "/", "all");
-				var generatedPath = replaceNoCase(destinationPath, "/app/#directory#/", "/.generated/#directory#/") & template.name;
+				var destinationPath = replace(expandPath("/app/#arguments.directory#/"), "\", "/", "all");
+				var generatedPath = replaceNoCase(destinationPath, "/app/#arguments.directory#/", "/.generated/#arguments.directory#/") & template.name;
 
 				// now get the directory for the generated template
 				var generatedDirectory = getDirectoryFromPath(generatedPath);
@@ -169,37 +171,37 @@ component {
 
 	public string function generateContent(required string content) {
 
-		return tagManager.addTags('<cfset coldmvc.factory.get("viewHelperManager").addViewHelpers(variables) />' & content);
+		return tagManager.addTags('<cfset coldmvc.factory.get("viewHelperManager").addViewHelpers(variables) />' & arguments.content);
 
 	}
 
 	public boolean function layoutExists(required string layout) {
 
-		return templateExists("layouts", layout);
+		return templateExists("layouts", arguments.layout);
 
 	}
 
 	public boolean function viewExists(required string view) {
 
-		return templateExists("views", view);
+		return templateExists("views", arguments.view);
 
 	}
 
 	public boolean function templateExists(required string directory, required string path) {
 
-		path = sanitizeTemplate(path);
+		arguments.path = sanitizeTemplate(arguments.path);
 
-		return structKeyExists(cache[directory], path);
+		return structKeyExists(variables.cache[arguments.directory], arguments.path);
 
 	}
 
 	private string function sanitizeTemplate(required string path) {
 
-		if (right(path, 4) != ".cfm") {
-			path = path & ".cfm";
+		if (right(arguments.path, 4) != ".cfm") {
+			arguments.path = arguments.path & ".cfm";
 		}
 
-		return path;
+		return arguments.path;
 
 	}
 

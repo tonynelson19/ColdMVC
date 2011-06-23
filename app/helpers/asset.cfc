@@ -1,5 +1,4 @@
 /**
- * @accessors true;
  * @extends coldmvc.Helper
  */
 component {
@@ -77,7 +76,7 @@ component {
 
 	}
 
-	private string function linkToAsset(required string type, required string name) {
+	public string function linkToAsset(required string type, required string name) {
 
 		if (left(name, 4) == "http") {
 			return name;
@@ -87,19 +86,19 @@ component {
 
 	}
 
-	private string function getAssetURL(required string type, required string name) {
+	public string function getAssetURL(required string type, required string name) {
 
 		return getBaseURL() & "/" & type & "/" & name;
 
 	}
 
-	private string function getBaseURL() {
+	public string function getBaseURL() {
 
 		return coldmvc.config.get("assetPath");
 
 	}
 
-	private string function getVersion() {
+	public string function getVersion() {
 
 		if (coldmvc.config.get("development")) {
 			var timestamp = now();
@@ -114,6 +113,7 @@ component {
 	private void function markRendered(required string type, required string name) {
 
 		var cache = getAssetCache(type);
+
 		cache[name] = now();
 
 	}

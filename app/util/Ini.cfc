@@ -106,20 +106,33 @@ component {
 
 			var value = section[key];
 
+			if (isSimpleValue(value)) {
+
+				value = trim(value);
+
+				// apparently ColdFusion doesn't allow wrapping values in double quotes...
+				if (left(value, 1) == '"' && right(value, 1) == '"') {
+					value = replace(value, '"', "", "one");
+					value = left(value, len(value) - 1);
+				}
+
+			}
+
 			if (isJSON(value)) {
 
 				var deserialized = deserializeJSON(value);
 
 				// simple values stay the same (prevents true from becoming YES)
 				if (isSimpleValue(deserialized)) {
-					data[key] = trim(value);
+					data[key] = value;
 				} else {
 					data[key] = deserialized;
 				}
 
 
 			} else {
-				data[key] = trim(value);
+
+				data[key] = value;
 			}
 
 		}

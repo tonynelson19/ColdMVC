@@ -110,20 +110,21 @@ component {
 					if (!structKeyExists(helpers, helper.name)) {
 
 						helper.path = variables.directories[i] & files.name[j];
-						helper.object = createObject("component", helper.classPath);
+						helper.object = beanFactory.new(helper.classPath);
 
-						if (structKeyExists(helper.object, "init")) {
-							helper.object = helper.object.init();
-						}
+						var globalConfig = beanFactory.getConfig();
 
-						// can't use the beanInjector to autowire since the beanInjector uses helpers to get a reference to the bean factory
-						if (structKeyExists(variables, "beanFactory")) {
+						if (structKeyExists(globalConfig, "coldmvc") && structKeyExists(globalConfig["coldmvc"], helper.name)) {
 
-							if (structKeyExists(helper.object, "setBeanFactory")) {
-								helper.object.setBeanFactory(variables.beanFactory);
+							var settings = globalConfig["coldmvc"][helper.name];
+							var key = "";
+
+							for (key in settings) {
+								if (structKeyExists(helper.object, "set#key#")) {
+									evaluate("helper.object.set#key#(settings[key])");
+								}
 							}
 
-							variables.beanFactory.autowireClassPath(helper.object, helper.classPath);
 						}
 
 						if (structKeyExists(variables, "config") && structKeyExists(helper.object, "setConfig")) {

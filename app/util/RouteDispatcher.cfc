@@ -119,7 +119,7 @@ component {
 						// if the layout exists, render it
 						if (layout != "" && templateManager.layoutExists(layout)) {
 
-							coldmvc.event.setContent("body", viewOutput);
+							coldmvc.page.setContent("body", viewOutput);
 
 							output = renderer.renderLayout(layout);
 

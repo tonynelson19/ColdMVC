@@ -197,43 +197,4 @@ component {
 
 	}
 
-	/**
-	 * @viewHelper render
-	 */
-	public string function render(string key) {
-
-		if (!structKeyExists(arguments, "key")) {
-			arguments.key = "body";
-		}
-
-		return getContent(arguments.key);
-
-	}
-
-	public struct function getSections() {
-
-		return get("sections", {});
-
-	}
-
-	public void function setContent(required string key, required string content) {
-
-		var sections = getSections();
-
-		sections[arguments.key] = arguments.content;
-
-	}
-
-	public string function getContent(required string key) {
-
-		var sections = getSections();
-
-		if (structKeyExists(sections, arguments.key)) {
-			return sections[arguments.key];
-		} else {
-			return "";
-		}
-
-	}
-
 }

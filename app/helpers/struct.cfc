@@ -9,7 +9,7 @@ component {
 		var array = [];
 		var key = "";
 
-		for (key in struct) {
+		for (key in arguments.struct) {
 			arrayAppend(array, key);
 		}
 
@@ -22,13 +22,13 @@ component {
 	public string function toAttributes(required struct struct) {
 
 		var array = [];
-		var keys = sortKeys(struct);
+		var keys = sortKeys(arguments.struct);
 		var i = "";
 
 		for (i = 1; i <= arrayLen(keys); i++) {
 
 			var key = keys[i];
-			var value = struct[key];
+			var value = arguments.struct[key];
 
 			if (isSimpleValue(value) && value != "") {
 
@@ -47,13 +47,13 @@ component {
 
 	public string function toJSON(required struct struct) {
 
-		return serializeJSON(struct);
+		return serializeJSON(arguments.struct);
 
 	}
 
 	public query function toQuery(required struct struct) {
 
-		var keys = sortKeys(struct);
+		var keys = sortKeys(arguments.struct);
 		var query = queryNew(arrayToList(keys));
 		var key = "";
 		var i = "";
@@ -61,7 +61,7 @@ component {
 
 		for (key in struct) {
 
-			var value = struct[key];
+			var value = arguments.struct[key];
 
 			if (isArray(value)) {
 
@@ -99,13 +99,13 @@ component {
 	public string function toQueryString(required struct struct) {
 
 		var array = [];
-		var keys = sortKeys(struct);
+		var keys = sortKeys(arguments.struct);
 		var i = "";
 
 		for (i = 1; i <= arrayLen(keys); i++) {
 
 			var key = keys[i];
-			var value = struct[key];
+			var value = arguments.struct[key];
 
 			if (isSimpleValue(value)) {
 				arrayAppend(array, "#key#=#urlEncodedFormat(value)#");
@@ -121,32 +121,34 @@ component {
 
 		var xml = [];
 
-		arrayAppend(xml, '<#node#>');
-		arrayAppend(xml, structToXML(struct));
-		arrayAppend(xml, '</#node#>');
+		arrayAppend(xml, '<#arguments.node#>');
+		arrayAppend(xml, structToXML(arguments.struct));
+		arrayAppend(xml, '</#arguments.node#>');
 
 		xml = arrayToList(xml, "");
 
-		return coldmvc.xml.format(xml);
+		return coldmvc.format.xml(xml);
 
 	}
 
 	private string function structToXML(required struct struct) {
 
 		var xml = [];
-		var keys = sortKeys(struct);
+		var keys = sortKeys(arguments.struct);
 		var i = "";
 		var j = "";
 
 		for (i = 1; i <= arrayLen(keys); i++) {
 
 			var key = keys[i];
-			var value = struct[key];
+			var value = arguments.struct[key];
 
 			arrayAppend(xml, '<#key#>');
 
 			if (isSimpleValue(value)) {
+
 				arrayAppend(xml, xmlFormat(value));
+
 			} else if (isArray(value)) {
 
 				var singular = coldmvc.string.singularize(key);

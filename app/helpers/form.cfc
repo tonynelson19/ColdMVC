@@ -246,36 +246,36 @@
 
 		<cfset var i = "" />
 
-		<cfset args.tag = type />
+		<cfset arguments.args.tag = arguments.type />
 
-		<cfset configure(args) />
-		<cfset configureOptions(args) />
+		<cfset configure(arguments.args) />
+		<cfset configureOptions(arguments.args) />
 
-		<cfset var length = arrayLen(args.options) />
+		<cfset var length = arrayLen(arguments.args.options) />
 
 		<cfif length neq 0>
-			<cfset args.id = "#args.name#[1]" />
+			<cfset arguments.args.id = "#arguments.args.name#[1]" />
 		</cfif>
 
-		<cfif not structKeyExists(args, "align")>
+		<cfif not structKeyExists(arguments.args, "align")>
 			<cfif length gt 2>
-				<cfset args.align = "vertical" />
+				<cfset arguments.args.align = "vertical" />
 			<cfelse>
-				<cfset args.align = "horizontal" />
+				<cfset arguments.args.align = "horizontal" />
 			</cfif>
 		</cfif>
 
 		<cfoutput>
-		<cfsavecontent variable="args.field">
-			<ul class="#type# #args.align#">
+		<cfsavecontent variable="arguments.args.field">
+			<ul class="#type# #arguments.args.align#">
 				<cfloop from="1" to="#length#" index="i">
-					<li <cfif i eq 1>class="first"<cfelseif i eq local.length>class="last"</cfif>><input type="#type#" name="#args.name#" id="#args.name#[#i#]" value="#htmlEditFormat(args.options[i].id)#" title="#htmlEditFormat(args.options[i].title)#" <cfif listFindNoCase(args.value, args.options[i].id) or (args.value eq args.options[i].id)>checked="checked"</cfif> #args.events#><label for="#args.name#[#i#]" title="#htmlEditFormat(args.options[i].title)#">#args.options[i].name#</label></li>
+					<li <cfif i eq 1>class="first"<cfelseif i eq local.length>class="last"</cfif>><input type="#type#" name="#arguments.args.name#" id="#arguments.args.name#[#i#]" value="#htmlEditFormat(arguments.args.options[i].id)#" title="#htmlEditFormat(arguments.args.options[i].title)#" <cfif listFindNoCase(arguments.args.value, arguments.args.options[i].id) or (arguments.args.value eq arguments.args.options[i].id)>checked="checked"</cfif> #arguments.args.events#><label for="#arguments.args.name#[#i#]" title="#htmlEditFormat(arguments.args.options[i].title)#">#arguments.args.options[i].name#</label></li>
 				</cfloop>
 			</ul>
 		</cfsavecontent>
 		</cfoutput>
 
-		<cfreturn this.field(argumentCollection=args) />
+		<cfreturn this.field(argumentCollection=arguments.args) />
 
 	</cffunction>
 

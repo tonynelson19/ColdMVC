@@ -193,6 +193,6 @@
 		</property>
 	</bean>
 	
-	<bean id="viewHelperManager" class="coldmvc.app.util.ViewHelperManager" init-method="setup" />
+	<bean id="viewHelperManager" class="coldmvc.app.util.ViewHelperManager" />
 	
 </beans>

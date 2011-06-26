@@ -8,35 +8,11 @@ component {
 	property metaDataFlattener;
 	property pluginManager;
 
-	public ViewHelperManager function init() {
+	public any function init() {
 
-		viewHelpers = {};
+		variables.viewHelpers = {};
 
 		return this;
-
-	}
-
-	public void function setup() {
-
-		var plugins = pluginManager.getPlugins();
-		var i = "";
-		var path = "/config/viewhelpers.cfm";
-
-		includeConfigPath(path);
-
-		for (i = 1; i <= arrayLen(plugins); i++) {
-			includeConfigPath(plugins[i].mapping & path);
-		}
-
-		includeConfigPath("/coldmvc" & path);
-
-	}
-
-	private void function includeConfigPath(required string configPath) {
-
-		if (fileSystemFacade.fileExists(expandPath(configPath))) {
-			include configPath;
-		}
 
 	}
 
@@ -58,7 +34,7 @@ component {
 
 	private void function parseMethods(required any object, required string name, required boolean bean) {
 
-		var metaData = metaDataFlattener.flattenMetaData(object);
+		var metaData = metaDataFlattener.flattenMetaData(arguments.object);
 		var key = "";
 
 		for (key in metaData.functions) {
@@ -67,10 +43,10 @@ component {
 
 			if (structKeyExists(fn, "viewHelper")) {
 
-				if (bean) {
-					add(name=fn.viewHelper, beanName=name, method=fn.name);
+				if (arguments.bean) {
+					add(name=fn.viewHelper, beanName=arguments.name, method=fn.name, parameters=fn.parameters, includeMethod=false);
 				} else {
-					add(name=fn.viewHelper, helper=name, method=fn.name);
+					add(name=fn.viewHelper, helper=arguments.name, method=fn.name, parameters=fn.parameters, includeMethod=false);
 				}
 
 			}
@@ -79,26 +55,30 @@ component {
 
 	}
 
-	public void function add(required string name, string beanName="", string helper="", string method="", boolean includeMethod="false") {
+	public void function add(required string name, string beanName="", string helper="", string method="", array parameters, boolean includeMethod="false") {
 
-		if (method == "") {
-			method = name;
+		if (arguments.method == "") {
+			arguments.method = arguments.name;
 		}
 
-		if (!structKeyExists(viewHelpers, name)) {
-			viewHelpers[name] = arguments;
+		if (!structKeyExists(arguments, "parameters")) {
+			arguments.parameters = [];
+		}
+
+		if (!structKeyExists(variables.viewHelpers, arguments.name)) {
+			variables.viewHelpers[arguments.name] = arguments;
 		}
 
 	}
 
-	public void function addViewHelpers(required any vars) {
+	public void function addViewHelpers(required struct caller) {
 
 		var viewHelper = "";
 
-		for (viewHelper in viewHelpers) {
+		for (viewHelper in variables.viewHelpers) {
 
-			if (!structKeyExists(vars, viewHelper)) {
-				vars[viewHelper] = callViewHelper;
+			if (!structKeyExists(arguments.caller, viewHelper)) {
+				arguments.caller[viewHelper] = callViewHelper;
 			}
 
 		}
@@ -107,7 +87,7 @@ component {
 
 	public struct function getViewHelpers() {
 
-		return viewHelpers;
+		return variables.viewHelpers;
 
 	}
 
@@ -120,13 +100,29 @@ component {
 
 			var viewHelper = viewHelpers[method];
 
-			var args = {};
+			var parameters = {};
+
+			// check for unnamed arguments
+			if (structKeyExists(arguments, "1") && arrayLen(viewHelper.parameters) > 0) {
+				for (i = 1; i <= structCount(arguments); i++) {
+					if (arrayLen(viewHelper.parameters) >= i) {
+						parameters[viewHelper.parameters[i].name] = arguments[i];
+					}
+				}
+			}
 
 			if (viewHelper.includeMethod) {
+
+				var args = {};
 				args.method = method;
-				args.parameters = arguments;
+				args.parameters = parameters;
+
 			} else {
-				args = arguments;
+
+				var args = {};
+				structAppend(args, arguments);
+				structAppend(args, parameters, true);
+
 			}
 
 			if (viewHelper.helper != "") {

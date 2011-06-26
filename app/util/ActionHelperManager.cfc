@@ -6,9 +6,9 @@ component {
 	property beanFactory;
 	property metaDataFlattener;
 
-	public ActionHelperManager function init() {
+	public any function init() {
 
-		actionHelpers = {};
+		variables.actionHelpers = {};
 
 		return this;
 
@@ -64,7 +64,7 @@ component {
 
 	private void function parseMethods(required any object, required string name, required boolean bean) {
 
-		var metaData = metaDataFlattener.flattenMetaData(object);
+		var metaData = metaDataFlattener.flattenMetaData(arguments.object);
 		var key = "";
 
 		for (key in metaData.functions) {
@@ -74,9 +74,9 @@ component {
 			if (structKeyExists(fn, "actionHelper")) {
 
 				if (bean) {
-					add(name=fn.actionHelper, beanName=name, method=fn.name);
+					add(name=fn.actionHelper, beanName=arguments.name, method=fn.name, parameters=fn.parameters);
 				} else {
-					add(name=fn.actionHelper, helper=name, method=fn.name);
+					add(name=fn.actionHelper, helper=arguments.name, method=fn.name, parameters=fn.parameters);
 				}
 
 			}
@@ -85,21 +85,25 @@ component {
 
 	}
 
-	public void function add(required string name, string beanName="", string helper="", string method="", boolean includeMethod="false") {
+	public void function add(required string name, string beanName="", string helper="", string method="", array parameters, boolean includeMethod="false") {
 
-		if (method == "") {
-			method = name;
+		if (arguments.method == "") {
+			arguments.method = arguments.name;
 		}
 
-		if (!structKeyExists(actionHelpers, name)) {
-			actionHelpers[name] = arguments;
+		if (!structKeyExists(arguments, "parameters")) {
+			arguments.parameters = [];
+		}
+
+		if (!structKeyExists(variables.actionHelpers, arguments.name)) {
+			variables.actionHelpers[arguments.name] = arguments;
 		}
 
 	}
 
 	public struct function getActionHelpers() {
 
-		return actionHelpers;
+		return variables.actionHelpers;
 
 	}
 
@@ -111,13 +115,30 @@ component {
 		if (structKeyExists(actionHelpers, method)) {
 
 			var actionHelper = actionHelpers[method];
-			var args = {};
+
+			var parameters = {};
+
+			// check for unnamed arguments
+			if (structKeyExists(arguments, "1") && arrayLen(actionHelper.parameters) > 0) {
+				for (i = 1; i <= structCount(arguments); i++) {
+					if (arrayLen(actionHelper.parameters) >= i) {
+						parameters[actionHelper.parameters[i].name] = arguments[i];
+					}
+				}
+			}
 
 			if (actionHelper.includeMethod) {
+
+				var args = {};
 				args.method = method;
-				args.parameters = arguments;
+				args.parameters = parameters;
+
 			} else {
-				args = arguments;
+
+				var args = {};
+				structAppend(args, arguments);
+				structAppend(args, parameters, true);
+
 			}
 
 			if (actionHelper.helper != "") {

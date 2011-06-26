@@ -19,8 +19,8 @@ component {
 		for (i = 1; i <= arrayLen(lines); i++) {
 
 			var line = trim(lines[i]);
-			var isCDATAStart = left(line, 9) EQ "<![CDATA[";
-			var isCDATAEnd = right(line, 3) EQ "]]>";
+			var isCDATAStart = left(line, 9) == "<![CDATA[";
+			var isCDATAEnd = right(line, 3) == "]]>";
 
 			if (!isCDATAStart && !isCDATAEnd && left(line, 1) == "<" && right(line, 1) == ">") {
 

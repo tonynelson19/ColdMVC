@@ -29,6 +29,7 @@
 		</cfif>
 
 		<cfset var i = "" />
+		<cfset var key = "" />
 
 		<cfset arguments.args._processed = true />
 
@@ -55,14 +56,24 @@
 
 		<cfset arguments.args.common = [] />
 
+		<!--- check for common attributes --->
 		<cfloop list="name,id,title,class,placeholder,#arguments.commonKeys#" index="i">
 			<cfif arguments.args[i] neq "">
 				<cfset arrayAppend(arguments.args.common, '#i#="#htmlEditFormat(arguments.args[i])#"') />
 			</cfif>
 		</cfloop>
 
+		<!--- check for data attributes --->
+		<cfloop collection="#arguments.args#" item="key">
+			<cfif left(key, 5) eq "data-" and arguments.args[key] neq "">
+				<cfset arrayAppend(arguments.args.common, '#lcase(key)#="#htmlEditFormat(arguments.args[key])#"') />
+			</cfif>
+		</cfloop>
+
+		<!--- store events outside of common for use w/ radios and checkboxes --->
 		<cfset arguments.args.events = [] />
 
+		<!--- check for events --->
 		<cfloop list="blur,change,click,dblclick,focus,keyup,keydown,keypress,submit" index="i">
 			<cfset var event = "on#i#" />
 			<cfset arguments.args[event] = getKey(arguments.args, event) />
@@ -72,12 +83,14 @@
 			</cfif>
 		</cfloop>
 
+		<!--- check for boolean attributes --->
 		<cfloop list="readonly,disabled" index="i">
 			<cfif arguments.args[i] eq "true">
 				<cfset arrayAppend(arguments.args.common, '#i#="#htmlEditFormat(arguments.args[i])#"') />
 			</cfif>
 		</cfloop>
 
+		<!--- check for numeric values --->
 		<cfloop list="size,maxlength,rows,cols" index="i">
 			<cfset var value = getKey(arguments.args, i) />
 			<cfif isNumeric(value)>

@@ -56,7 +56,7 @@ component {
 
 	private void function parseMethods(required any object, required string name, required boolean bean) {
 
-		var metaData = metaDataFlattener.flattenMetaData(object);
+		var metaData = metaDataFlattener.flattenMetaData(arguments.object);
 		var key = "";
 
 		for (key in metaData.functions) {
@@ -68,10 +68,10 @@ component {
 				var modelHelper = fn.modelHelper;
 				var args = [];
 
-				if (bean) {
-					add(name=modelHelper, beanName=name, method=fn.name, args=fn.parameters);
+				if (arguments.bean) {
+					add(name=modelHelper, beanName=arguments.name, method=fn.name, parameters=fn.parameters);
 				} else {
-					add(name=modelHelper, helper=name, method=fn.name, args=fn.parameters);
+					add(name=modelHelper, helper=arguments.name, method=fn.name, parameters=fn.parameters);
 				}
 
 			}
@@ -80,25 +80,25 @@ component {
 
 	}
 
-	public void function add(required string name, string beanName="", string helper="", string method="", boolean includeMethod="false", array args) {
+	public void function add(required string name, string beanName="", string helper="", string method="", boolean includeMethod="false", array parameters) {
 
-		if (method == "") {
-			method = name;
+		if (arguments.method == "") {
+			arguments.method = arguments.name;
 		}
 
-		if (!structKeyExists(arguments, "args")) {
-			arguments.args = [];
+		if (!structKeyExists(arguments, "parameters")) {
+			arguments.parameters = [];
 		}
 
-		if (!structKeyExists(modelHelpers, name)) {
-			modelHelpers[name] = arguments;
+		if (!structKeyExists(variables.modelHelpers, arguments.name)) {
+			variables.modelHelpers[arguments.name] = arguments;
 		}
 
 	}
 
 	public struct function getModelHelpers() {
 
-		return modelHelpers;
+		return variables.modelHelpers;
 
 	}
 
@@ -115,10 +115,11 @@ component {
 			args.method = method;
 			args.parameters = arguments;
 
-			if (structKeyExists(arguments, "1") && arrayLen(modelHelper.args) > 1) {
+			// check for unnamed arguments
+			if (structKeyExists(arguments, "1") && arrayLen(modelHelper.parameters) > 1) {
 				for (i = 1; i <= structCount(arguments); i++) {
-					if (arrayLen(modelHelper.args) >= i + 1) {
-						args[modelHelper.args[i + 1].name] = arguments[i];
+					if (arrayLen(modelHelper.parameters) >= i + 1) {
+						args[modelHelper.parameters[i + 1].name] = arguments[i];
 					}
 				}
 			}

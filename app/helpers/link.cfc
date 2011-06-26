@@ -11,55 +11,42 @@ component {
 	 */
 	public string function to(any parameters, string querystring, string name="") {
 
-		configure(arguments);
-
-		return beanFactory.getBean("routeHandler").buildURL(name=arguments.name, parameters=arguments.parameters, querystring=arguments.querystring);
+		return buildURL(arguments);
 
 	}
 
 	/**
 	 * @actionHelper redirect
 	 */
-	public void function redirect(any parameters, string querystring) {
+	public void function redirect(any parameters, string querystring, string name="") {
 
-		if (isSimpleValue(arguments.parameters)) {
-			arguments.querystring = arguments.parameters;
-			arguments.parameters = {};
-		}
-
-		if (!structKeyExists(arguments, "parameters")) {
-			arguments.parameters = {};
-		}
-
-		if (!structKeyExists(arguments, "querystring")) {
-			arguments.querystring = "";
-		}
-
-		location(to(parameters=arguments.parameters, querystring=arguments.querystring), false);
+		location(buildURL(arguments), false);
 
 	}
 
-	private void function configure(args) {
+	private string function buildURL(required struct args) {
 
-		if (!structKeyExists(args, "querystring")) {
-			args.querystring = "";
+		if (!structKeyExists(arguments.args, "querystring")) {
+			arguments.args.querystring = "";
 		}
 
-		if (isSimpleValue(args.parameters)) {
+		if (isSimpleValue(arguments.args.parameters)) {
 
-			if (left(args.parameters, 1) == "/" && args.querystring != "") {
-				args.querystring = args.parameters & "?" & args.querystring;
+			if (left(arguments.args.parameters, 1) == "/" && arguments.args.querystring != "") {
+				arguments.args.querystring = arguments.args.parameters & "?" & arguments.args.querystring;
 			} else {
-				args.querystring = args.parameters;
+				arguments.args.querystring = arguments.args.parameters;
 			}
 
-			args.parameters = {};
+			arguments.args.parameters = {};
 
 		}
 
-		if (!structKeyExists(args, "parameters")) {
-			args.parameters = {};
+		if (!structKeyExists(arguments.args, "parameters")) {
+			arguments.args.parameters = {};
 		}
+
+		return beanFactory.getBean("routeHandler").buildURL(name=arguments.args.name, parameters=arguments.args.parameters, querystring=arguments.args.querystring);
 
 	}
 

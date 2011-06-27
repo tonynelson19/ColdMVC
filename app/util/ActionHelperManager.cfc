@@ -115,7 +115,7 @@ component {
 		if (structKeyExists(actionHelpers, method)) {
 
 			var actionHelper = actionHelpers[method];
-
+			var i = "";
 			var parameters = {};
 
 			// check for unnamed arguments

@@ -111,6 +111,8 @@ component {
 
 			var modelHelper = modelHelpers[method];
 			var args = {};
+			var i = "";
+
 			args.model = this;
 			args.method = method;
 			args.parameters = arguments;

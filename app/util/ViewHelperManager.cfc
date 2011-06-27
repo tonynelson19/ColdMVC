@@ -99,7 +99,7 @@ component {
 		if (structKeyExists(viewHelpers, method)) {
 
 			var viewHelper = viewHelpers[method];
-
+			var i = "";
 			var parameters = {};
 
 			// check for unnamed arguments

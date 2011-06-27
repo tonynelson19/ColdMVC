@@ -1,10 +1,10 @@
 <cfif thisTag.executionMode eq "end">
 
-	<cfif not structKeyExists(attributes, "section")>
-		<cfset attributes.section = "body" />
+	<cfif not structKeyExists(attributes, "name")>
+		<cfset attributes.name = "body" />
 	</cfif>
 
-	<cfset content = coldmvc.page.getContent(attributes.section) />
+	<cfset content = coldmvc.page.getContent(attributes.name) />
 
 	<cfif structKeyExists(attributes, "result")>
 		<cfset caller[attributes.result] = content />

@@ -12,7 +12,7 @@ component {
 
 		variables.title = "";
 		variables.titleSeparator = " | ";
-		variables.titleType = "append";
+		variables.titleType = "prepend";
 
 		return this;
 
@@ -53,7 +53,7 @@ component {
 		if (variables.title != "") {
 
 			if (variables.titleType == "append") {
-				arrayAppend(array, variables.title);
+				arrayPrepend(array, variables.title);
 			} else {
 				arrayAppend(array, variables.title);
 			}

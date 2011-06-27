@@ -87,10 +87,12 @@ component {
 
 	public any function createPluginManager() {
 
-		application.coldmvc.pluginManager = new coldmvc.app.util.PluginManager();
-		application.coldmvc.pluginManager.setDirectory(this.directory);
-		application.coldmvc.pluginManager.setConfigPath("/config/plugins.cfm");
-		application.coldmvc.pluginManager.loadPlugins();
+		var pluginManager = new coldmvc.app.util.PluginManager();
+		pluginManager.setDirectory(this.directory);
+		pluginManager.setConfigPath("/config/plugins.cfm");
+		pluginManager.loadPlugins();
+
+		application.coldmvc.pluginManager = pluginManager;
 
 		return application.coldmvc.pluginManager;
 
@@ -350,8 +352,12 @@ component {
 			// check to see if there's a config file
 			if (_fileExists(configPath)) {
 
-				// parse the file
-				var ini = new coldmvc.app.util.Ini(configPath);
+				// make sure the mapping works
+				if (_fileExists(expandPath("/coldmvc/app/util/Ini.cfc"))) {
+					var ini = new coldmvc.app.util.Ini(configPath);
+				} else {
+					var ini = new app.util.Ini(configPath);
+				}
 
 				// load the default section first
 				var section = ini.getSection("default");

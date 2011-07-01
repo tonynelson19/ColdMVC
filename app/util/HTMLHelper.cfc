@@ -536,7 +536,7 @@
 			<cfsavecontent variable="local.string">
 				<div #_wrapper(arguments)#>
 					<div class="label">
-						<label id="label_for_#arguments.id#" for="#arguments.id#" title="#htmlEditFormat(arguments.title)#">#htmlEditFormat(arguments.label)#:</label>
+						<label for="#arguments.id#" title="#htmlEditFormat(arguments.title)#">#htmlEditFormat(arguments.label)#:</label>
 					</div>
 					<div class="field">
 						#trim(arguments.field)#
@@ -562,10 +562,6 @@
 		<cfargument name="args" required="true" type="struct" />
 g
 		<cfset var string = 'class="wrapper"' />
-
-		<cfif arguments.args.id neq "">
-			<cfset string = string & ' id="wrapper_for_#arguments.args.id#"' />
-		</cfif>
 
 		<cfif not arguments.args.visible>
 			<cfset string = string & ' style="display:none;"' />

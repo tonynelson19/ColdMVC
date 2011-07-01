@@ -390,7 +390,6 @@ component {
 			"controller" = "index",
 			"debug" = true,
 			"development" = false,
-			"directory" = this.directory,
 			"environment" = variables.environment,
 			"https" = "auto",
 			"layout" = "index",

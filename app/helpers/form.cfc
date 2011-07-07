@@ -118,12 +118,13 @@
 	<!------>
 
 	<cffunction name="form" access="public" output="false" returntype="string">
-		<cfargument name="name" required="false" default="form" />
+		<cfargument name="id" required="false" default="form" />
 		<cfargument name="method" required="false" default="post" />
 
 		<cfset arguments.tag = "form" />
 
-		<!--- prevent the form tag from having a title --->
+		<!--- prevent the form tag from having unnecessary attributes --->
+		<cfset arguments.name = "" />
 		<cfset arguments.title = "" />
 
 		<cfset configure(arguments) />

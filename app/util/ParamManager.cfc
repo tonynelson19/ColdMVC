@@ -24,7 +24,9 @@ component {
 			structDelete(collection, "$");
 			structDelete(collection, "coldmvc");
 
-			coldmvc.params.set(collectionParser.parseCollection(collection));
+			var parsed = collectionParser.parseCollection(collection);
+
+			coldmvc.params.set(parsed);
 
 		}
 

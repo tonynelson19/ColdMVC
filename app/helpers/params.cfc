@@ -63,4 +63,16 @@ component {
 
 	}
 
+	public any function set(required any key, any value) {
+
+		if (structKeyExists(arguments, "value")) {
+			getPageContext().getFusionContext().hiddenScope["params"][arguments.key] = arguments.value;
+		} else {
+			getPageContext().getFusionContext().hiddenScope["params"] = arguments.key;
+		}
+
+		return this;
+
+	}
+
 }

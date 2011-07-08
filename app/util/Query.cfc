@@ -97,6 +97,12 @@ component {
 
 	}
 
+	public struct function getOptions() {
+
+		return variables.options;
+
+	}
+
 	public any function getResults() {
 
 		var result = variables.dao.executeQuery(variables.model, getHQL(), variables.parameters, variables.options);

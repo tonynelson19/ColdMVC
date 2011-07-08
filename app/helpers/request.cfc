@@ -143,7 +143,11 @@ component {
 			arguments.statusCode = getStatus();
 		}
 
-		return variables.statusCodes[arguments.statusCode];
+		if (structKeyExists(variables.statusCodes, arguments.statusCode)) {
+			return variables.statusCodes[arguments.statusCode];
+		} else {
+			return "";
+		}
 
 	}
 

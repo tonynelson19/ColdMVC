@@ -962,7 +962,7 @@ component {
 
 		}
 
-		return sortOrder;
+		return trim(sortOrder);
 
 	}
 

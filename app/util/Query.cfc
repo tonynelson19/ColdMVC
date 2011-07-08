@@ -44,6 +44,7 @@ component {
 	public any function count(string string="") {
 
 		var previousSelect = variables.query.select;
+		var previousOptions = duplicate(variables.options);
 
 		if (arguments.string == "") {
 			arguments.string = variables.alias & ".id";
@@ -51,9 +52,16 @@ component {
 
 		variables.query.select = "select count(#arguments.string#)";
 
+		structDelete(variables.options, "max");
+		structDelete(variables.options, "offset");
+		structDelete(variables.options, "sort");
+		structDelete(variables.options, "order");
+
 		var result = get();
 
 		variables.query.select = previousSelect;
+
+		structAppend(variables.options, previousOptions);
 
 		return result;
 
@@ -153,17 +161,25 @@ component {
 
 	}
 
-	public any function max(required numeric value) {
+	public any function max(required any value) {
 
-		variables.options.max = arguments.value;
+		if (isNumeric(arguments.value)) {
+			variables.options.max = arguments.value;
+		} else {
+			structDelete(variables.options, "max");
+		}
 
 		return this;
 
 	}
 
-	public any function offset(required numeric value) {
+	public any function offset(required any value) {
 
-		variables.options.offset = arguments.value;
+		if (isNumeric(arguments.value)) {
+			variables.options.offset = arguments.value;
+		} else {
+			structDelete(variables.options, "offset");
+		}
 
 		return this;
 

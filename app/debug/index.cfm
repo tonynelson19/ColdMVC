@@ -45,6 +45,10 @@
 		padding-right: 3px;
 	}
 
+	div#coldmvc_debug td.coldmvc_label.coldmvc_field {
+		width: auto;
+	}
+
 	div#coldmvc_debug h4 {
 		font-weight: bold;
 	}

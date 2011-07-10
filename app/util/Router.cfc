@@ -12,13 +12,14 @@ component {
 	property pluginManager;
 	property viewHelperManager;
 	property preventDefaults;
+	property routes;
 
 	public Router function init() {
 
-		routes = [];
-		namedRoutes = {};
-		models = {};
-		preventDefaults = false;
+		variables.routes = [];
+		variables.namedRoutes = {};
+		variables.models = {};
+		variables.preventDefaults = false;
 
 		return this;
 
@@ -36,7 +37,7 @@ component {
 			includeConfigPath(plugins[i].mapping & path);
 		}
 
-		if (!preventDefaults) {
+		if (!variables.preventDefaults) {
 			includeConfigPath("/coldmvc" & path);
 		}
 
@@ -44,14 +45,8 @@ component {
 
 	private void function includeConfigPath(required string configPath) {
 
-		// in case of loops inside the config file
-		var i = "";
-		var j = "";
-		var k = "";
-		var l = "";
-
-		if (fileSystemFacade.fileExists(expandPath(configPath))) {
-			include configPath;
+		if (fileSystemFacade.fileExists(expandPath(arguments.configPath))) {
+			createObject("component", "coldmvc.app.util.RouteFile").init(this, arguments.configPath);
 		}
 
 	}
@@ -61,8 +56,8 @@ component {
 		var namedRoute = "";
 
 		// for each named route, add a corresponding view helper ("post" => postURL())
-		for (namedRoute in namedRoutes) {
-			viewHelperManager.add(name="#namedRoute#URL", beanName=beanName, method="handleViewHelper", includeMethod="true");
+		for (namedRoute in variables.namedRoutes) {
+			viewHelperManager.add(name="#namedRoute#URL", beanName=variables.beanName, method="handleViewHelper", includeMethod="true");
 		}
 
 	}
@@ -70,18 +65,19 @@ component {
 	public any function handleViewHelper(required string method, required struct parameters) {
 
 		// remove URL from the end
-		var namedRoute = left(method, len(method)-3);
+		var namedRoute = left(arguments.method, len(arguments.method) - 3);
 
-		var viewHelper = {};
-		viewHelper.parameters = {};
-		viewHelper.querystring = "";
+		var viewHelper = {
+			parameters = {},
+			querystring = ""
+		};
 
-		if (structKeyExists(parameters, "1")) {
-			parseViewHelperParameter(viewHelper, parameters[1]);
+		if (structKeyExists(arguments.parameters, "1")) {
+			parseViewHelperParameter(viewHelper, arguments.parameters[1]);
 		}
 
-		if (structKeyExists(parameters, "2")) {
-			parseViewHelperParameter(viewHelper, parameters[2]);
+		if (structKeyExists(arguments.parameters, "2")) {
+			parseViewHelperParameter(viewHelper, arguments.parameters[2]);
 		}
 
 		return coldmvc.link.to(name=namedRoute, parameters=viewHelper.parameters, querystring=viewHelper.querystring);
@@ -90,17 +86,17 @@ component {
 
 	private void function parseViewHelperParameter(required struct viewHelper, required any parameter) {
 
-		if (isSimpleValue(parameter)) {
-			viewHelper.querystring = parameter;
-		} else if (isObject(parameter)) {
-			viewHelper.parameters.id = parameter;
-		} else if (isStruct(parameter)) {
-			viewHelper.parameters = parameter;
+		if (isSimpleValue(arguments.parameter)) {
+			arguments.viewHelper.querystring = arguments.parameter;
+		} else if (isObject(arguments.parameter)) {
+			arguments.viewHelper.parameters.id = arguments.parameter;
+		} else if (isStruct(arguments.parameter)) {
+			arguments.viewHelper.parameters = arguments.parameter;
 		}
 
 	}
 
-	private void function add(required string key, struct options) {
+	public void function add(required string key, struct options) {
 
 		var i = "";
 
@@ -120,18 +116,18 @@ component {
 		};
 
 		// add the default options
-		structAppend(options, defaultOptions, false);
-		structAppend(options.defaults, options.required, false);
-		structAppend(options.requirements, options.required, false);
+		structAppend(arguments.options, defaultOptions, false);
+		structAppend(arguments.options.defaults, arguments.options.required, false);
+		structAppend(arguments.options.requirements, arguments.options.required, false);
 
 		// set the options to the route for better readability
-		var route = options;
+		var route = arguments.options;
 
 		// if the route doesn't already contain a pattern
 		if (!structKeyExists(route, "pattern")) {
 
 			// then the key must be the pattern
-			route.pattern = key;
+			route.pattern = arguments.key;
 
 			// if a name wasn't specified, set it to an empty string
 			if (!structKeyExists(route, "name")) {
@@ -144,7 +140,7 @@ component {
 
 			// if a name wasn't passed in, consider the key to be the name of the route
 			if (!structKeyExists(route, "name")) {
-				route.name = key;
+				route.name = arguments.key;
 			}
 
 		}
@@ -205,20 +201,20 @@ component {
 		}
 
 		// create an array of all the models for quicker generation lookups
-		if (!structKeyExists(models, route.model)) {
-			models[route.model] = [];
+		if (!structKeyExists(variables.models, route.model)) {
+			variables.models[route.model] = [];
 		}
 
 		// add the route to the array of routes for this model
-		arrayAppend(models[route.model], route);
+		arrayAppend(variables.models[route.model], route);
 
 		// if the route has a name, add it to the named route
 		if (route.name != "") {
-			namedRoutes[route.name] = route;
+			variables.namedRoutes[route.name] = route;
 		}
 
 		// add the route
-		arrayAppend(routes, route);
+		arrayAppend(variables.routes, route);
 
 	}
 
@@ -226,15 +222,15 @@ component {
 
 		var i = "";
 
-		if (right(path, 1) == "/") {
-			path = left(path, len(path) - 1);
+		if (right(arguments.path, 1) == "/") {
+			arguments.path = left(arguments.path, len(arguments.path) - 1);
 		}
 
 		// loop over all the routes
-		for (i = 1; i <= arrayLen(routes); i++) {
+		for (i = 1; i <= arrayLen(variables.routes); i++) {
 
-			var route = routes[i];
-			var matches = reFind(route.expression, path, 1, true);
+			var route = variables.routes[i];
+			var matches = reFind(route.expression, arguments.path, 1, true);
 
 			// if the path matches the pattern
 			if (arrayLen(matches.len) > 1) {
@@ -245,7 +241,7 @@ component {
 
 				// find the value of each parameter from the path based on the matched results
 				for (j = 1; j <= arrayLen(route.parameters); j++) {
-					parameters[route.parameters[j]] =  mid(path, matches.pos[j+1], matches.len[j+1]);
+					parameters[route.parameters[j]] =  mid(arguments.path, matches.pos[j+1], matches.len[j+1]);
 				}
 
 				// add the default parameters to the route
@@ -291,25 +287,25 @@ component {
 
 		var path = "";
 		var parameterList = "";
-		var flattenedParameters = flattenParameters(parameters);
+		var flattenedParameters = flattenParameters(arguments.parameters);
 		var i = "";
 
 		// if there are routes that pertain to models
-		if (!structIsEmpty(models)) {
+		if (!structIsEmpty(variables.models)) {
 
 			// if an action and an id were passed in and the id is an object
-			if (structKeyExists(parameters, "id") && isObject(parameters.id)) {
+			if (structKeyExists(arguments.parameters, "id") && isObject(arguments.parameters.id)) {
 
 				// get the name of the model
-				var model = modelManager.getName(parameters.id);
+				var model = modelManager.getName(arguments.parameters.id);
 
 				// check to see if there are any routes defined for this model
-				if (structKeyExists(models, model)) {
+				if (structKeyExists(variables.models, model)) {
 
-					for (i = 1; i <= arrayLen(models[model]); i++) {
+					for (i = 1; i <= arrayLen(variables.models[model]); i++) {
 
-						var route = models[model][i];
-						var combinedParameters = combineParameters(parameters, route);
+						var route = variables.models[model][i];
+						var combinedParameters = combineParameters(arguments.parameters, route);
 
 						if (route.defaults.action == combinedParameters.action) {
 							return populatePathForModel(route.generates, combinedParameters);
@@ -324,9 +320,9 @@ component {
 		}
 
 		// if the name matches a named route
-		if (structKeyExists(namedRoutes, name)) {
+		if (structKeyExists(variables.namedRoutes, arguments.name)) {
 
-			var route = namedRoutes[name];
+			var route = variables.namedRoutes[arguments.name];
 			var combinedParameters = combineParameters(flattenedParameters, route);
 			parameterList = createParameterList(combinedParameters);
 
@@ -377,12 +373,11 @@ component {
 
 		var flattenedParameters = {};
 		var parameter = "";
-		var value = "";
 
 		// loop over all the parameters
-		for (parameter in parameters) {
+		for (parameter in arguments.parameters) {
 
-			value = parameters[parameter];
+			var value = arguments.parameters[parameter];
 
 			// if the value of the parameter is an object, get the value of the corresponding property
 			if (isObject(value)) {
@@ -403,10 +398,10 @@ component {
 		var i = "";
 
 		// make sure all the parameters pass their requirements
-		for (i in requirements) {
+		for (i in arguments.requirements) {
 
 			// if it didn't pass, then it's not the correct route
-			if (!reFindNoCase("^(#requirements[i]#)$", parameters[i])) {
+			if (!reFindNoCase("^(#arguments.requirements[i]#)$", arguments.parameters[i])) {
 				return false;
 			}
 		}
@@ -420,18 +415,18 @@ component {
 		var parameter = "";
 
 		// replace all instance of the parameters with the corresponding value
-		for (parameter in parameters) {
-			path = replaceNoCase(path, ":#parameter#", parameters[parameter]);
+		for (parameter in arguments.parameters) {
+			arguments.path = replaceNoCase(arguments.path, ":#parameter#", arguments.parameters[parameter]);
 		}
 
-		return path;
+		return arguments.path;
 
 	}
 
 	private string function populatePathForModel(required string path, required struct parameters) {
 
 		var continueLoop = true;
-		var remaining = path;
+		var remaining = arguments.path;
 		var replacements = [];
 		var substring = "";
 		var i = "";
@@ -457,7 +452,7 @@ component {
 			}
 
 			// evaluate the parameter (:id.name())
-			var value = evaluate("parameters.#substring#");
+			var value = evaluate("arguments.parameters.#substring#");
 
 			// build an array of all the values you'll need to replace
 			arrayAppend(replacements, {
@@ -479,28 +474,28 @@ component {
 
 		// now go through and replace all the parameters
 		for (i = 1; i <= arrayLen(replacements); i++) {
-			path = replaceNoCase(path, replacements[i].substring, replacements[i].value);
+			arguments.path = replaceNoCase(arguments.path, replacements[i].substring, replacements[i].value);
 		}
 
-		return path;
+		return arguments.path;
 
 	}
 
 	private struct function combineParameters(required struct parameters, required struct route) {
 
 		var combined = {};
-		structAppend(combined, parameters, false);
-		structAppend(combined, route.defaults, false);
+		structAppend(combined, arguments.parameters, false);
+		structAppend(combined, arguments.route.defaults, false);
 		return combined;
 
 	}
 
 	private string function createParameterList(required any parameters) {
 
-		if (isArray(parameters)) {
-			return listSort(arrayToList(parameters), "textnocase");
+		if (isArray(arguments.parameters)) {
+			return listSort(arrayToList(arguments.parameters), "textnocase");
 		} else {
-			return listSort(structKeyList(parameters), "textnocase");
+			return listSort(structKeyList(arguments.parameters), "textnocase");
 		}
 
 	}

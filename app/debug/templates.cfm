@@ -10,8 +10,8 @@
 			<tbody>
 				<cfloop list="#listSort(structKeyList(templates[i]), 'textnocase')#" index="j">
 					<tr>
-						<td class="coldmvc_label">#templates[i][j].name#:</td>
-						<td class="coldmvc_field">#templates[i][j].path#</td>
+						<td class="coldmvc_label">#j#:</td>
+						<td class="coldmvc_field">#templates[i][j].source#</td>
 					</tr>
 				</cfloop>
 				<cfif structIsEmpty(templates[i])>

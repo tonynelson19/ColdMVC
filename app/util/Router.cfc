@@ -98,11 +98,10 @@ component {
 
 	public void function add(required string key, struct options) {
 
-		var i = "";
-
-		// if options weren't passed in, set a default value
-		if (!structKeyExists(arguments, "options")) {
-			arguments.options = {};
+		if (structKeyExists(arguments, "options")) {
+			var route = duplicate(arguments.options);
+		} else {
+			var route = {};
 		}
 
 		// make sure the options contain all the appropriate keys
@@ -116,12 +115,9 @@ component {
 		};
 
 		// add the default options
-		structAppend(arguments.options, defaultOptions, false);
-		structAppend(arguments.options.defaults, arguments.options.required, false);
-		structAppend(arguments.options.requirements, arguments.options.required, false);
-
-		// set the options to the route for better readability
-		var route = arguments.options;
+		structAppend(route, defaultOptions, false);
+		structAppend(route.defaults, route.required, false);
+		structAppend(route.requirements, route.required, false);
 
 		// if the route doesn't already contain a pattern
 		if (!structKeyExists(route, "pattern")) {
@@ -151,6 +147,8 @@ component {
 		// remove the : from the start of each parameter
         route.parameters = [];
         var parameters = {};
+		var i = "";
+
         for (i = 1; i <= arrayLen(route.components); i++) {
             var parameter = replace(route.components[i], ":", "");
             arrayAppend(route.parameters, parameter);

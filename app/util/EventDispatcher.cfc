@@ -12,9 +12,9 @@ component {
 
 	public any function init() {
 
-		systemObservers = {};
-		customObservers = {};
-		cache = {};
+		variables.systemObservers = {};
+		variables.customObservers = {};
+		variables.cache = {};
 
 		return this;
 
@@ -36,14 +36,15 @@ component {
 
 	public void function loadXML(required string filePath) {
 
-		if (!fileSystemFacade.fileExists(filePath)) {
-			filePath = expandPath(filePath);
+		if (!fileSystemFacade.fileExists(arguments.filePath)) {
+			arguments.filePath = expandPath(arguments.filePath);
 		}
 
-		if (fileSystemFacade.fileExists(filePath)) {
+		if (fileSystemFacade.fileExists(arguments.filePath)) {
 
-			var xml = xmlParse(fileRead(filePath));
+			var xml = xmlParse(fileRead(arguments.filePath));
 			var i = "";
+
 			for (i = 1; i <= arrayLen(xml.events.xmlChildren); i++) {
 
 				var eventXML = xml.events.xmlChildren[i];
@@ -60,35 +61,40 @@ component {
 
 	}
 
-	public void function addSystemObserver(required string event, required string beanName, required string method) {
+	public void function addSystemObserver(required string event, required string beanName, required string method, struct data) {
 
-		add(systemObservers, arguments);
-
-	}
-
-	public void function addObserver(required string event, required string beanName, required string method) {
-
-		add(customObservers, arguments);
+		add(variables.systemObservers, arguments);
 
 	}
 
-	private void function add(required struct observers, required struct data) {
+	public void function addObserver(required string event, required string beanName, required string method, struct data) {
 
-		if (!structKeyExists(observers, data.event)) {
-			observers[data.event] = [];
+		add(variables.customObservers, arguments);
+
+	}
+
+	private void function add(required struct observers, required struct collection) {
+
+		if (!structKeyExists(arguments.observers, arguments.collection.event)) {
+			arguments.observers[arguments.collection.event] = [];
 		}
 
-		arrayAppend(observers[data.event], {
-			beanName = data.beanName,
-			method = data.method,
-			string = data.beanName & "." & data.method
+		if (!structKeyExists(arguments.collection, "data")) {
+			arguments.collection.data = {};
+		}
+
+		arrayAppend(arguments.observers[arguments.collection.event], {
+			beanName = arguments.collection.beanName,
+			method = arguments.collection.method,
+			string = arguments.collection.beanName & "." & arguments.collection.method,
+			data = arguments.collection.data
 		});
 
 	}
 
 	public void function dispatchEvent(required string event, struct data) {
 
-		var listeners = getListeners(event);
+		var listeners = getListeners(arguments.event);
 		var i = "";
 
 		if (!structKeyExists(arguments, "data")) {
@@ -103,6 +109,8 @@ component {
 			var method = listeners[i].method;
 			var bean = getBeanFactory().getBean(beanName);
 
+			structAppend(arguments.data, listeners[i].data);
+
 			evaluate("bean.#method#(event=arguments.event, data=arguments.data)");
 
 		}
@@ -112,17 +120,17 @@ component {
 	private array function getListeners(required string event) {
 
 		// check to see if there's data in the cache for the event
-		if (structKeyExists(cache, event)) {
-			return cache[event];
+		if (structKeyExists(variables.cache, arguments.event)) {
+			return variables.cache[arguments.event];
 		}
 
 		var listeners = [];
-		listeners = findListeners(listeners, systemObservers, event);
-		listeners = findListeners(listeners, customObservers, event);
+		listeners = findListeners(listeners, variables.systemObservers, arguments.event);
+		listeners = findListeners(listeners, variables.customObservers, arguments.event);
 
 		// if you're not in development mode, cache the listeners for the next request
-		if (!development) {
-			cache[event] = listeners;
+		if (!variables.development) {
+			variables.cache[arguments.event] = listeners;
 		}
 
 		return listeners;
@@ -134,15 +142,15 @@ component {
 		var key = "";
 		var i = "";
 
-		for (key in observers) {
-			if (reFindNoCase("^#key#$", event)) {
-				for (i = 1; i <= arrayLen(observers[key]); i++) {
-					arrayAppend(listeners, observers[key][i]);
+		for (key in arguments.observers) {
+			if (reFindNoCase("^#key#$", arguments.event)) {
+				for (i = 1; i <= arrayLen(arguments.observers[key]); i++) {
+					arrayAppend(arguments.listeners, arguments.observers[key][i]);
 				}
 			}
 		}
 
-		return listeners;
+		return arguments.listeners;
 
 	}
 
@@ -150,8 +158,8 @@ component {
 
 		if (development) {
 
-			var count = arrayLen(listeners);
-			var text = "eventDispatcher.dispatchEvent(#event#)";
+			var count = arrayLen(arguments.listeners);
+			var text = "eventDispatcher.dispatchEvent(#arguments.event#)";
 			var string = "";
 
 			if (count > 0) {
@@ -160,7 +168,7 @@ component {
 				var i = "";
 
 				for (i = 1; i <= count; i++) {
-					arrayAppend(methods, listeners[i].string);
+					arrayAppend(methods, arguments.listeners[i].string);
 				}
 
 				methods = arrayToList(methods, ", ");
@@ -168,8 +176,8 @@ component {
 
 			}
 
-			if (development) {
-				debugManager.addEvent(event, listeners);
+			if (variables.development) {
+				debugManager.addEvent(arguments.event, arguments.listeners);
 			}
 
 		}
@@ -181,12 +189,12 @@ component {
 		var event = "";
 		var i = "";
 
-		for (event in observers) {
+		for (event in arguments.observers) {
 
-			for (i = 1; i <= arrayLen(observers[event]); i++) {
+			for (i = 1; i <= arrayLen(arguments.observers[event]); i++) {
 
-				var beanName = listFirst(observers[event][i], ".");
-				var method = listLast(observers[event][i], ".");
+				var beanName = listFirst(arguments.observers[event][i], ".");
+				var method = listLast(arguments.observers[event][i], ".");
 
 				addSystemObserver(event, beanName, method);
 

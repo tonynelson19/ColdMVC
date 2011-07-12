@@ -19,6 +19,10 @@
 				<td class="coldmvc_field">#debugManager.getFrameworkVersion()#</td>
 			</tr>
 			<tr>
+				<td class="coldmvc_label">Module:</td>
+				<td class="coldmvc_field">#debugManager.getModule()#</td>
+			</tr>
+			<tr>
 				<td class="coldmvc_label">Controller:</td>
 				<td class="coldmvc_field">#debugManager.getController()#</td>
 			</tr>

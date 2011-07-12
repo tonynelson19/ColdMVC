@@ -1,10 +1,16 @@
 <cfif thisTag.executionMode eq "end">
+
 	<cfparam name="attributes.directory" default="views" pattern="(views|layouts)" />
 
+	<cfif not structKeyExists(attributes, "module")>
+		<cfset attributes.module = coldmvc.event.getModule() />
+	</cfif>
+
 	<!--- make sure the template exists --->
-	<cfset __hidden__ = coldmvc.factory.get("templateManager").generate(attributes.directory, attributes.template) />
+	<cfset __hidden__ = coldmvc.factory.get("templateManager").generate(attributes.module, attributes.directory, attributes.template) />
 
 	<!--- remove any tag-specific attributes --->
+	<cfset structDelete(attributes, "module") />
 	<cfset structDelete(attributes, "directory") />
 	<cfset structDelete(attributes, "template") />
 	<cfset structDelete(variables, "caller") />

@@ -12,7 +12,6 @@
 		<property name="postProcessors">
 			<list>
 				<value>modelInjector</value>
-				<value>actionHelperManager</value>
 			</list>
 		</property>
 	</bean>
@@ -21,7 +20,14 @@
 	
 	<bean id="config" class="coldmvc.app.util.Config" />
 	
-	<bean id="controllerManager" class="coldmvc.app.util.ControllerManager" />
+	<bean id="controllerManager" class="coldmvc.app.util.ControllerManager">
+		<property name="defaultController">
+			<value>${controller}</value>
+		</property>
+		<property name="defaultLayout">
+			<value>${layout}</value>
+		</property>
+	</bean>
 	
 	<bean id="dao" class="coldmvc.DAO">
 		<property name="development">
@@ -33,20 +39,22 @@
 		<property name="templates">
 			<list>
 				<value>/coldmvc/app/debug/info.cfm</value>
+				<value>/coldmvc/app/debug/queries.cfm</value>
 				<value>/coldmvc/app/debug/mappings.cfm</value>
 				<value>/coldmvc/app/debug/plugins.cfm</value>
-				<value>/coldmvc/app/debug/config.cfm</value>
+				<value>/coldmvc/app/debug/modules.cfm</value>
+				<value>/coldmvc/app/debug/controllers.cfm</value>
+				<value>/coldmvc/app/debug/models.cfm</value>
+				<value>/coldmvc/app/debug/templates.cfm</value>
 				<value>/coldmvc/app/debug/helpers.cfm</value>
 				<value>/coldmvc/app/debug/tags.cfm</value>
 				<value>/coldmvc/app/debug/actionhelpers.cfm</value>
 				<value>/coldmvc/app/debug/modelhelpers.cfm</value>
 				<value>/coldmvc/app/debug/viewhelpers.cfm</value>
-				<value>/coldmvc/app/debug/queries.cfm</value>
 				<value>/coldmvc/app/debug/beans.cfm</value>
-				<value>/coldmvc/app/debug/models.cfm</value>
-				<value>/coldmvc/app/debug/templates.cfm</value>
 				<value>/coldmvc/app/debug/events.cfm</value>
 				<value>/coldmvc/app/debug/routes.cfm</value>
+				<value>/coldmvc/app/debug/config.cfm</value>
 			</list>
 		</property>
 	</bean>
@@ -153,6 +161,8 @@
 		</property>
 	</bean>
 	
+	<bean id="moduleManager" class="coldmvc.app.util.ModuleManager" />
+	
 	<bean id="paramManager" class="coldmvc.app.util.ParamManager" />
 	
 	<bean id="pdfRenderer" class="coldmvc.app.util.PDFRenderer" />
@@ -160,19 +170,12 @@
 	<bean id="renderer" class="coldmvc.app.util.Renderer" />
 	
 	<bean id="routeDispatcher" class="coldmvc.app.util.RouteDispatcher">
-		<property name="defaultLayout">
-			<value>${layout}</value>
-		</property>
 		<property name="development">
 			<value>${development}</value>
 		</property>
 	</bean>
 	
-	<bean id="routeHandler" class="coldmvc.app.util.RouteHandler">
-		<property name="defaultController">
-			<value>${controller}</value>
-		</property>
-	</bean>
+	<bean id="routeHandler" class="coldmvc.app.util.RouteHandler" />
 	
 	<bean id="routeSerializer" class="coldmvc.app.util.RouteSerializer" />
 	

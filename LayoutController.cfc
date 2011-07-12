@@ -1,6 +1,3 @@
-/**
- * @extends coldmvc.Singleton
- */
 component {
 
 }

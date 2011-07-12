@@ -88,7 +88,6 @@ component {
 	public any function createPluginManager() {
 
 		var pluginManager = new coldmvc.app.util.PluginManager();
-		pluginManager.setDirectory(this.directory);
 		pluginManager.setConfigPath("/config/plugins.cfm");
 		pluginManager.loadPlugins();
 

@@ -3,75 +3,153 @@
  */
 component {
 
+	property actionHelperManager;
 	property beanFactory;
+	property beanName;
+	property defaultController;
+	property defaultLayout;
+	property eventDispatcher;
+	property fileSystemFacade;
 	property metaDataFlattener;
+	property moduleManager;
 	property templateManager;
 
-	public struct function getController(required string controller) {
+	public any function init() {
 
-		var controllers = getControllers();
+		variables.instances = {};
+		variables.layoutControllers = {};
 
-		return controllers[arguments.controller];
+		return this;
 
 	}
 
-	public string function getName(required string controller) {
+	public void function setModuleManager(required any moduleManager) {
+
+		variables.moduleManager = arguments.moduleManager;
+		variables.defaultModule = variables.moduleManager.getDefaultModule();
+
+	}
+
+	public struct function getController(required string module, required string controller) {
 
 		var controllers = getControllers();
 
-		if (structKeyExists(controllers, arguments.controller)) {
-			return controllers[arguments.controller].name;
+		if (structKeyExists(controllers, arguments.module)) {
+
+			if (structKeyExists(controllers[arguments.module], arguments.controller)) {
+
+				return controllers[arguments.module][arguments.controller];
+
+			} else {
+
+				if (arguments.module == variables.defaultModule) {
+					throw("Unknown controller: '#arguments.controller#'");
+				} else {
+					throw("Unknown controller: '#arguments.module#'.'#arguments.controller#'");
+				}
+
+			}
+
+		} else {
+
+			throw("Unknown module: '#arguments.module#'");
+
+		}
+
+	}
+
+	public boolean function controllerExists(required string module, required string controller) {
+
+		var controllers = getControllers();
+
+		if (structKeyExists(controllers, arguments.module) && structKeyExists(controllers[arguments.module], arguments.controller)) {
+			return true;
+		} else {
+			return false;
+		}
+
+	}
+
+	public string function getName(required string module, required string controller) {
+
+		if (controllerExists(arguments.module, arguments.controller)) {
+
+			var controllerDef = getController(arguments.module, arguments.controller);
+
+			return controllerDef.name;
+
 		}
 
 		return "";
 
 	}
 
-	public string function getAction(required string controller, string action) {
+	public string function getAction(required string module, required string controller) {
 
-		var controllers = getControllers();
+		if (controllerExists(arguments.module, arguments.controller)) {
 
-		if (!structKeyExists(controllers, arguments.controller)) {
+			var controllerDef = getController(arguments.module, arguments.controller);
+
+			return controllerDef.action;
+
+		} else {
+
 			return "";
-		}
 
-		if (!structKeyExists(arguments, "action")) {
-			arguments.action = controllers[arguments.controller].action;
 		}
-
-		if (!structKeyExists(controllers[arguments.controller].actions, arguments.action)) {
-			return arguments.action;
-		}
-
-		return controllers[arguments.controller].actions[arguments.action].key;
 
 	}
 
-	public string function getView(string controller, string action) {
+	public string function getClassPath(required string module, required string controller) {
 
-		if (!structKeyExists(arguments, "controller")) {
-			arguments.controller = coldmvc.event.getController();
+		if (controllerExists(arguments.module, arguments.controller)) {
+
+			var controllerDef = getController(arguments.module, arguments.controller);
+
+			return controllerDef.class;
+
 		}
 
-		if (!structKeyExists(arguments, "action")) {
-			arguments.action = coldmvc.event.getAction();
+		return "";
+
+	}
+
+	public any function getInstance(required string module, required string controller) {
+
+		var key = arguments.module & "." & arguments.controller;
+
+		if (!structKeyExists(variables.instances, key)) {
+
+			var classPath = getClassPath(arguments.module, arguments.controller);
+
+			var instance = beanFactory.new(classPath);
+
+			actionHelperManager.autowire(instance);
+
+			variables.instances[key] = instance;
+
 		}
 
-		var controllers = getControllers();
+		return variables.instances[key];
+
+	}
+
+	public string function getView(required string module, required string controller, required string action) {
+
 		var view = "";
 
-		// if the controller exists and it's valid method, get the view from the metadata
-		if (structKeyExists(controllers, arguments.controller)) {
+		if (controllerExists(arguments.module, arguments.controller)) {
 
-			if (structKeyExists(controllers[arguments.controller].actions, action)) {
-				view = controllers[arguments.controller].actions[arguments.action].view;
+			var controllerDef = getController(arguments.module, arguments.controller);
+
+			if (structKeyExists(controllerDef.actions, arguments.action)) {
+				view = controllerDef.actions[arguments.action].view;
 			} else {
-				view = controllers[arguments.controller].directory & "/" & arguments.action;
+				view = buildView(controllerDef.key, arguments.action);
 			}
 
 		} else {
 
-			// not a valid controller/action, so build it assuming it's a normal request
 			view = buildView(arguments.controller, arguments.action);
 
 		}
@@ -102,58 +180,46 @@ component {
 
 	}
 
-	public string function getAjaxLayout(string controller, string action) {
+	public string function getAjaxLayout(required string module, required string controller, required string action) {
 
-		return getMethodAnnotation(arguments, "ajaxLayout", "");
-
-	}
-
-	public string function getLayout(string controller, string action) {
-
-		if (!structKeyExists(arguments, "controller")) {
-			arguments.controller = coldmvc.event.getController();
-		}
-
-		return getMethodAnnotation(arguments, "layout", arguments.controller);
+		return getMethodAnnotation(arguments.module, arguments.controller, arguments.action, "ajaxLayout", "");
 
 	}
 
-	public string function getFormats(string controller, string action) {
+	public string function getLayout(required string module, required string controller, required string action) {
 
-		return getMethodAnnotation(arguments, "formats", "html");
-
-	}
-
-	public string function getMethods(string controller, string action) {
-
-		return getMethodAnnotation(arguments, "methods", "");
+		return getMethodAnnotation(arguments.module, arguments.controller, arguments.action, "layout", arguments.controller);
 
 	}
 
-	public array function getParams(string controller, string action) {
+	public string function getFormats(required string module, required string controller, required string action) {
 
-		return getMethodAnnotation(arguments, "params", []);
+		return getMethodAnnotation(arguments.module, arguments.controller, arguments.action, "formats", "html");
 
 	}
 
-	private any function getMethodAnnotation(required struct args, required string key, required any defaultValue) {
+	public string function getMethods(required string module, required string controller, required string action) {
 
-		if (!structKeyExists(arguments.args, "controller")) {
-			arguments.args.controller = coldmvc.event.getController();
-		}
+		return getMethodAnnotation(arguments.module, arguments.controller, arguments.action, "methods", "");
 
-		if (!structKeyExists(arguments.args, "action")) {
-			arguments.args.action = coldmvc.event.getAction();
-		}
+	}
 
-		var controllers = getControllers();
+	public array function getParams(required string module, required string controller, required string action) {
 
-		if (structKeyExists(controllers, arguments.args.controller)) {
+		return getMethodAnnotation(arguments.module, arguments.controller, arguments.action, "params", []);
 
-			if (structKeyExists(controllers[arguments.args.controller].actions, arguments.args.action)) {
-				return controllers[arguments.args.controller].actions[arguments.args.action][arguments.key];
-			} else if (structKeyExists(controllers[arguments.args.controller], arguments.key)) {
-				return controllers[arguments.args.controller][arguments.key];
+	}
+
+	private any function getMethodAnnotation(required string module, required string controller, required string action, required string key, required any defaultValue) {
+
+		if (controllerExists(arguments.module, arguments.controller)) {
+
+			var controllerDef = getController(arguments.module, arguments.controller);
+
+			if (structKeyExists(controllerDef.actions, arguments.action)) {
+				return controllerDef.actions[arguments.action][arguments.key];
+			} else if (structKeyExists(controllerDef, arguments.key)) {
+				return controllerDef[arguments.key];
 			}
 
 		}
@@ -162,22 +228,47 @@ component {
 
 	}
 
-	public boolean function hasAction(required string controller, required string action) {
+	public boolean function hasAction(required string module, required string controller, required string action) {
 
-		var controllers = getControllers();
+		if (controllerExists(arguments.module, arguments.controller)) {
 
-		if (structKeyExists(controllers, arguments.controller)) {
-			return structKeyExists(controllers[arguments.controller].actions, arguments.action);
-		} else {
-			return false;
+			var controllerDef = getController(arguments.module, arguments.controller);
+
+			return structKeyExists(controllerDef.actions, arguments.action);
+
 		}
+
+		return false;
 
 	}
 
 	public struct function getControllers() {
 
-		if (!structKeyExists(variables, "controllers")) {
+		if (!structKeyExists(variables, "loaded")) {
+
 			variables.controllers = loadControllers();
+
+			var module = "";
+			var key = "";
+
+			for (module in variables.controllers) {
+
+				for (key in variables.controllers[module]) {
+
+					var controller = variables.controllers[module][key];
+					var metaData = metaDataFlattener.flattenMetaData(controller.class);
+
+					controller["layout"] = findLayout(variables.defaultModule, controller.key, metaData);
+					controller["actions"] = getActions(controller, metaData);
+
+				}
+
+			}
+
+			loadObservers();
+
+			variables.loaded = true;
+
 		}
 
 		return variables.controllers;
@@ -187,25 +278,46 @@ component {
 	private struct function loadControllers() {
 
 		var controllers = {};
-		var beanDefinitions = beanFactory.getBeanDefinitions();
-		var beanDef = "";
+		var path = "/app/controllers/";
+		var modules = moduleManager.getModules();
+		var key = "";
+
+		controllers[variables.defaultModule] = loadModule(variables.defaultModule, path);
+
+		for (key in modules) {
+			controllers[modules[key].name] = loadModule(modules[key].name, modules[key].directory & path);
+		}
+
+		return controllers;
+
+	}
+
+	private struct function loadModule(required string module, required string path) {
+
+		var controllers = {};
+		var classPath = arrayToList(listToArray(replace(arguments.path, "\", "/", "all"), "/"), ".");
+		var directory = expandPath(arguments.path);
 		var length = len("Controller");
 
-		for (beanDef in beanDefinitions) {
+		if (fileSystemFacade.directoryExists(directory)) {
 
-			if (right(beanDef, length) == "Controller") {
+			var files = directoryList(directory, false, "query", "*Controller.cfc");
+			var i = "";
+
+			for (i = 1; i <= files.recordCount; i++) {
 
 				var controller = {};
-
-				controller["class"] = beanDefinitions[beanDef];
-				controller["name"] = beanDef;
+				var name = listFirst(files.name[i], ".");
+				controller["module"] = arguments.module;
+				controller["class"] = classPath & "." & name;
+				controller["name"] = files.name[i];
 
 				var metaData = metaDataFlattener.flattenMetaData(controller.class);
 
 				if (structKeyExists(metaData, "controller")) {
 					controller["key"] = metaData.controller;
 				} else {
-					controller["key"] = left(beanDef, len(beanDef)-length);
+					controller["key"] = left(name, len(name) - length);
 					controller["key"] = coldmvc.string.underscore(controller.key);
 				}
 
@@ -215,15 +327,6 @@ component {
 				} else {
 					controller["action"] = "index";
 				}
-
-				// get the directory where the views should live
-				if (structKeyExists(metaData, "directory")) {
-					controller["directory"] = metaData.directory;
-				} else {
-					controller["directory"] = controller.key;
-				}
-
-				controller["layout"] = findLayout(controller.key, metaData);
 
 				if (structKeyExists(metaData, "ajaxLayout")) {
 					controller["ajaxLayout"] = metaData.ajaxLayout;
@@ -238,7 +341,7 @@ component {
 				}
 
 				controller["formats"] = replace(controller.formats, " ", "", "all");
-				controller["actions"] = getActions(controller.directory, controller.layout, controller.ajaxLayout, controller.formats, metaData);
+
 				controllers[controller.key] = controller;
 
 			}
@@ -249,18 +352,18 @@ component {
 
 	}
 
-	private struct function getActions(required string directory, required string layout, required string ajaxLayout, required string formats, required struct metaData) {
+	private struct function getActions(required struct controller, required struct metaData) {
 
 		var actions = {};
-		var i = "";
+		var key = "";
 
-		for (i in metaData.functions) {
+		for (key in metaData.functions) {
 
 			// valid actions must contain at least 1 lowercase letter (auto-generated property getters and setters will be in all caps)
-			if (reFind("[a-z]", i)) {
+			if (reFind("[a-z]", key)) {
 
-				var method = metaData.functions[i];
-				var name = i;
+				var method = metaData.functions[key];
+				var name = key;
 				var action = {};
 				action["name"] = method.name;
 				action["access"] = method.access;
@@ -274,25 +377,25 @@ component {
 				if (structKeyExists(action, "view")) {
 					action["view"] = method.view;
 				} else {
-					action["view"] = buildView(directory, action.key);
+					action["view"] = buildView(arguments.controller.key, action.key);
 				}
 
 				if (structKeyExists(method, "layout")) {
 					action["layout"] = method.layout;
 				} else {
-					action["layout"] = layout;
+					action["layout"] = arguments.controller.layout;
 				}
 
 				if (structKeyExists(method, "ajaxLayout")) {
 					action["ajaxLayout"] = method.ajaxLayout;
 				} else {
-					action["ajaxLayout"] = ajaxLayout;
+					action["ajaxLayout"] = arguments.controller.ajaxLayout;
 				}
 
 				if (structKeyExists(method, "formats")) {
 					action["formats"] = replace(method.formats, " ", "", "all");
 				} else {
-					action["formats"] = formats;
+					action["formats"] = arguments.controller.formats;
 				}
 
 				if (structKeyExists(method, "methods")) {
@@ -317,19 +420,19 @@ component {
 
 	}
 
-	private string function findLayout(required string controller, required struct metaData) {
+	private string function findLayout(required string module, required string controller, required struct metaData) {
 
 		if (structKeyExists(arguments.metaData, "layout")) {
 			return arguments.metaData.layout;
 		}
 
-		var layoutController = getLayoutController();
+		var layoutController = getLayoutController(arguments.module);
 
 		if (structKeyExists(layoutController.actions, arguments.controller)) {
 			return layoutController.actions[arguments.controller].layout;
 		}
 
-		if (templateManager.layoutExists(arguments.controller)) {
+		if (templateManager.layoutExists(arguments.module, arguments.controller)) {
 			return arguments.controller;
 		}
 
@@ -337,15 +440,15 @@ component {
 
 	}
 
-	private struct function getLayoutController() {
+	private struct function getLayoutController(required string module) {
 
-		if (!structKeyExists(variables, "layoutController")) {
+		if (!structKeyExists(variables.layoutControllers, arguments.module)) {
 
-			if (beanFactory.containsBean("layoutController")) {
+			if (structKeyExists(variables.controllers, arguments.module) && structKeyExists(variables.controllers[arguments.module], "layout")) {
 
-				var obj = beanFactory.getBean("layoutController");
+				var controller = variables.controllers[arguments.module]["layout"];
+				var metaData = metaDataFlattener.flattenMetaData(controller.class);
 				var result = {};
-				var metaData = metaDataFlattener.flattenMetaData(obj);
 
 				if (structKeyExists(metaData, "layout")) {
 					result.layout = metaData.layout;
@@ -355,20 +458,24 @@ component {
 
 				result.actions = getMethodsForLayoutController(metaData);
 
-				variables.layoutController = result;
+			} else if (arguments.module != variables.defaultModule) {
+
+				return getLayoutController(variables.defaultModule);
 
 			} else {
 
-				 variables.layoutController = {
-				 	actions = {},
-					layout = "index"
+				 var result = {
+					layout = "index",
+				 	actions = {}
 				 };
 
 			}
 
+			variables.layoutControllers[arguments.module] = result;
+
 		}
 
-		return variables.layoutController;
+		return variables.layoutControllers[arguments.module];
 
 	}
 
@@ -395,6 +502,55 @@ component {
 		}
 
 		return actions;
+
+	}
+
+	private void function loadObservers() {
+
+		var module = "";
+		var key = "";
+
+		for (module in variables.controllers) {
+
+			for (key in variables.controllers[module]) {
+
+				var controller = variables.controllers[module][key];
+				var metaData = metaDataFlattener.flattenMetaData(controller.class);
+				var method = "";
+
+				for (method in metaData.functions) {
+
+					var methodDef = metaData.functions[method];
+
+					if (structKeyExists(methodDef, "events")) {
+
+						var events = listToArray(replace(methodDef.events, " ", "", "all"));
+						var i = "";
+						var data = {
+							module = module,
+							controller = key,
+							method = methodDef.name
+						};
+
+						for (i = 1; i <= arrayLen(events); i++) {
+							eventDispatcher.addObserver(events[i], variables.beanName, "dispatchEvent", data);
+						}
+
+					}
+
+				}
+
+			}
+
+		}
+
+	}
+
+	public void function dispatchEvent(required string event, required struct data) {
+
+		var instance = getInstance(arguments.data.module, arguments.data.controller);
+
+		evaluate("instance.#arguments.data.method#(event=arguments.event, data=arguments.data)");
 
 	}
 

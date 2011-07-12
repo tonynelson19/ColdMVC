@@ -1,11 +1,24 @@
 /**
+ * @accessors true
  * @extends coldmvc.Scope
  */
 component {
 
+	property moduleManager;
+
 	private struct function getScope() {
 
 		return request;
+
+	}
+
+	public any function module() {
+
+		if (structIsEmpty(arguments)) {
+			return getModule();
+		} else {
+			return setModule(arguments[1]);
+		}
 
 	}
 
@@ -77,7 +90,35 @@ component {
 
 	public string function getKey() {
 
-		return getController() & "." & getAction();
+		if (isDefaultModule()) {
+			return getController() & "." & getAction();
+		} else {
+			return getModule() & "." & getController() & "." & getAction();
+		}
+
+	}
+
+	public boolean function isDefaultModule() {
+
+		return getModule() == moduleManager.getDefaultModule();
+
+	}
+
+	/**
+	 * @actionHelper getModule
+	 */
+	public string function getModule() {
+
+		return get("module");
+
+	}
+
+	/**
+	 * @actionHelper setModule
+	 */
+	public any function setModule(required string module) {
+
+		return set("module", arguments.module);
 
 	}
 

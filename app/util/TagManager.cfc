@@ -10,13 +10,13 @@ component {
 
 	public TagManager function init() {
 
-		tagLibraries = {
+		variables.tagLibraries = {
 			"c" = "/tags/"
 		};
 
-		directory = expandPath("/tags/");
-		directories = [];
-		loaded = false;
+		variables.directory = expandPath("/tags/");
+		variables.directories = [];
+		variables.loaded = false;
 
 		return this;
 
@@ -24,43 +24,43 @@ component {
 
 	public void function setPluginManager(required any pluginManager) {
 
-		var plugins = pluginManager.getPlugins();
+		var plugins = arguments.pluginManager.getPlugins();
 		var i = "";
 		var path = "/app/tags/";
 
-		arrayAppend(directories, path);
+		arrayAppend(variables.directories, path);
 
 		for (i = 1; i <= arrayLen(plugins); i++) {
-			arrayAppend(directories, plugins[i].mapping & path);
+			arrayAppend(variables.directories, plugins[i].mapping & path);
 		}
 
-		arrayAppend(directories, "/coldmvc" & path);
+		arrayAppend(variables.directories, "/coldmvc" & path);
 
 	}
 
 	public struct function getTagLibraries() {
 
-		return tagLibraries;
+		return variables.tagLibraries;
 
 	}
 
 	public void function setTagLibrary(required string prefix, required string path) {
 
-		if (right(path, 1) != "/") {
-			path = path & "/";
+		if (right(arguments.path, 1) != "/") {
+			arguments.path = arguments.path & "/";
 		}
 
-		tagLibraries[prefix] = path;
+		variables.tagLibraries[arguments.prefix] = arguments.path;
 
 	}
 
 	private void function generateFiles() {
 
-		if (fileSystemFacade.directoryExists(directory)) {
-			directoryDelete(directory, true);
+		if (fileSystemFacade.directoryExists(variables.directory)) {
+			directoryDelete(variables.directory, true);
 		}
 
-		directoryCreate(directory);
+		directoryCreate(variables.directory);
 
 		var template = "";
 		for (template in config.templates) {
@@ -71,17 +71,17 @@ component {
 
 	public void function generateTags() {
 
-		if (!loaded) {
+		if (!variables.loaded) {
 			loadConfig();
 		}
 
-		if (!loaded || development) {
+		if (!variables.loaded || variables.development) {
 			lock name="coldmvc.app.util.TagManager" type="exclusive" timeout="5" throwontimeout="true" {
 				generateFiles();
 			}
 		}
 
-		loaded = true;
+		variables.loaded = true;
 
 	}
 
@@ -91,10 +91,10 @@ component {
 		var i = "";
 		result.templates = {};
 
-		for (i = 1; i <= arrayLen(directories); i++) {
+		for (i = 1; i <= arrayLen(variables.directories); i++) {
 
 			var library = {};
-			library.path = replace(directories[i], "\", "/", "all");
+			library.path = replace(variables.directories[i], "\", "/", "all");
 			library.directory = expandPath(library.path);
 
 			if (fileSystemFacade.directoryExists(library.directory)) {
@@ -134,13 +134,13 @@ component {
 		var key = "";
 
 		// only append the library if the content is referencing it
-		for (key in tagLibraries) {
-			if (findNoCase("<#key#:", content)) {
-				arrayAppend(array, '<cfimport prefix="#key#" taglib="#tagLibraries[key]#" />');
+		for (key in variables.tagLibraries) {
+			if (findNoCase("<#key#:", arguments.content)) {
+				arrayAppend(array, '<cfimport prefix="#key#" taglib="#variables.tagLibraries[key]#" />');
 			}
 		}
 
-		return arrayToList(array, "") & content;
+		return arrayToList(array, "") & arguments.content;
 
 	}
 

@@ -14,26 +14,24 @@ component {
 
 	}
 
-	public void function postProcessAfterInitialization(required any bean, required string beanName) {
+	public void function autowire(required any object) {
 
-		if (right(arguments.beanName, len("Controller")) == "Controller") {
+		var metaData = getMetaData(arguments.object);
 
-			lock name="coldmvc.app.util.ActionHelperManager.#arguments.beanName#" type="exclusive" timeout="5" throwontimeout="true" {
+		lock name="coldmvc.app.util.ActionHelperManager.#metaData.fullName#" type="exclusive" timeout="5" throwontimeout="true" {
 
-				arguments.bean.__setVariable = __setVariable;
+			arguments.object.__setVariable = __setVariable;
 
-				var actionHelpers = getActionHelpers();
-				var actionHelper = "";
+			var actionHelpers = getActionHelpers();
+			var actionHelper = "";
 
-				for (actionHelper in actionHelpers) {
-					if (!structKeyExists(bean, actionHelper)) {
-						arguments.bean.__setVariable(actionHelper, callActionHelper);
-					}
+			for (actionHelper in actionHelpers) {
+				if (!structKeyExists(arguments.object, actionHelper)) {
+					arguments.object.__setVariable(actionHelper, callActionHelper);
 				}
-
-				structDelete(arguments.bean, "__setVariable");
-
 			}
+
+			structDelete(arguments.object, "__setVariable");
 
 		}
 

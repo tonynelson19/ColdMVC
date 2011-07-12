@@ -8,7 +8,7 @@ component {
 
 	public BeanFinder function init() {
 
-		directories = [ "/app" ];
+		variables.directories = [ "/app" ];
 
 		return this;
 
@@ -20,7 +20,7 @@ component {
 		var i = "";
 
 		for (i = 1; i <= arrayLen(plugins); i++) {
-			arrayAppend(directories, plugins[i].mapping);
+			arrayAppend(variables.directories, plugins[i].mapping);
 		}
 
 	}
@@ -31,10 +31,10 @@ component {
 		var j = "";
 		var beans = {};
 
-		for (i = 1; i <= arrayLen(directories); i++) {
+		for (i = 1; i <= arrayLen(variables.directories); i++) {
 
-			var directory = replace(expandPath(directories[i]), "\", "/", "all");
-			var classPath = getClassPath(directories[i]);
+			var directory = replace(expandPath(variables.directories[i]), "\", "/", "all");
+			var classPath = getClassPath(variables.directories[i]);
 
 			if (fileSystemFacade.directoryExists(directory)) {
 

@@ -6,6 +6,7 @@ component {
 	property development;
 	property fileSystemFacade;
 	property pluginManager;
+	property moduleManager;
 	property tagManager;
 
 	public TemplateManager function init() {
@@ -15,6 +16,13 @@ component {
 		variables.includes = [];
 
 		return this;
+
+	}
+
+	public void function setModuleManager(required any moduleManager) {
+
+		variables.moduleManager = arguments.moduleManager;
+		variables.defaultModule = variables.moduleManager.getDefaultModule();
 
 	}
 
@@ -74,15 +82,33 @@ component {
 		var plugins = pluginManager.getPlugins();
 		var i = "";
 		var j = "";
-		var paths = [ "/app/#arguments.directory#/" ];
+		var paths = [{
+			directory = "/app/#arguments.directory#/",
+			module = variables.defaultModule
+
+		}];
 
 		for (i = 1; i <= arrayLen(plugins); i++) {
-			arrayAppend(paths, plugins[i].mapping & "/app/#arguments.directory#/");
+			arrayAppend(paths, {
+				directory = plugins[i].mapping & "/app/#arguments.directory#/",
+				module = variables.defaultModule
+			});
+		}
+
+		var modules = moduleManager.getModules();
+		var key = "";
+
+		for (key in modules) {
+			arrayAppend(paths, {
+				directory = modules[key].directory & "/app/#arguments.directory#/",
+				module = key
+			});
 		}
 
 		for (i = 1; i <= arrayLen(paths); i++) {
 
-			var expandedDirectory = replace(expandPath(paths[i]), "\", "/", "all");
+			var path = paths[i];
+			var expandedDirectory = replace(expandPath(path.directory), "\", "/", "all");
 
 			if (fileSystemFacade.directoryExists(expandedDirectory)) {
 
@@ -91,23 +117,24 @@ component {
 				for (j = 1; j <= arrayLen(files); j++) {
 
 					var filePath = replace(files[j], "\", "/", "all");
-					var name = replace(filePath, expandedDirectory, "");
+					var template = replace(filePath, expandedDirectory, "");
+					var key = buildKey(path.module, template);
 
-					if (!structKeyExists(variables.cache[arguments.directory], name)) {
+					if (!structKeyExists(variables.cache[arguments.directory], key)) {
 
 						var template = {
-							name = name,
-							path = paths[i] & name,
-							file = listLast(name, "/"),
+							module = path.module,
 							generated = false,
-							destination = "/" & arguments.directory & "/" & name,
+							template = template,
+							source = path.directory & template,
+							destination = "/" & arguments.directory & "/" & path.module & "/" & template,
 							directory = arguments.directory
 						};
 
-						variables.cache[arguments.directory][template.name] = template;
+						variables.cache[arguments.directory][key] = template;
 
-						if (left(template.file, 1) == "_") {
-							arrayAppend(includes, template);
+						if (left(listLast(key, "/"), 1) == "_") {
+							arrayAppend(variables.includes, template);
 						}
 
 					}
@@ -117,7 +144,6 @@ component {
 			}
 
 		}
-
 	}
 
 	private void function generateIncludes() {
@@ -125,43 +151,39 @@ component {
 		var i = "";
 
 		for (i = 1; i <= arrayLen(variables.includes); i++) {
-			generate(variables.includes[i].directory, variables.includes[i].name);
+			generate(variables.includes[i].module, variables.includes[i].directory, variables.includes[i].template);
 		}
 
 	}
 
-	public string function generate(required string directory, required string path) {
+	public string function generate(required string module, required string directory, required string template) {
 
-		arguments.path = sanitizeTemplate(arguments.path);
+		if (templateExists(arguments.module, arguments.directory, arguments.template)) {
 
-		if (templateExists(arguments.directory, arguments.path)) {
+			var templateDef = getTemplate(arguments.module, arguments.directory, arguments.template);
 
-			var template = variables.cache[arguments.directory][arguments.path];
-
-			if (!template.generated) {
+			if (!templateDef.generated) {
 
 				// add the tags to the content from the view/layout
-				var templatePath = replace(expandPath(template.path), "\", "/", "all");
-				var templateContent = generateContent(fileRead(templatePath));
-				var destinationPath = replace(expandPath("/app/#arguments.directory#/"), "\", "/", "all");
-				var generatedPath = replaceNoCase(destinationPath, "/app/#arguments.directory#/", "/.generated/#arguments.directory#/") & template.name;
+				var content = generateContent(fileRead(expandPath(templateDef.source)));
+				var path = expandPath("/generated" & templateDef.destination);
 
 				// now get the directory for the generated template
-				var generatedDirectory = getDirectoryFromPath(generatedPath);
+				var destination = getDirectoryFromPath(path);
 
 				// if the directory doesn't exist, create it
-				if (!fileSystemFacade.directoryExists((generatedDirectory))) {
-					directoryCreate(generatedDirectory);
+				if (!fileSystemFacade.directoryExists((destination))) {
+					directoryCreate(destination);
 				}
 
 				// now write the generated file to disk
-				fileWrite(generatedPath, templateContent);
+				fileWrite(path, content);
 
-				template.generated = true;
+				templateDef.generated = true;
 
 			}
 
-			return template.destination;
+			return templateDef.destination;
 
 		}
 
@@ -175,33 +197,45 @@ component {
 
 	}
 
-	public boolean function layoutExists(required string layout) {
+	public boolean function layoutExists(required string module, required string layout) {
 
-		return templateExists("layouts", arguments.layout);
-
-	}
-
-	public boolean function viewExists(required string view) {
-
-		return templateExists("views", arguments.view);
+		return templateExists(arguments.module, "layouts", arguments.layout);
 
 	}
 
-	public boolean function templateExists(required string directory, required string path) {
+	public boolean function viewExists(required string module, required string view) {
 
-		arguments.path = sanitizeTemplate(arguments.path);
-
-		return structKeyExists(variables.cache[arguments.directory], arguments.path);
+		return templateExists(arguments.module, "views", arguments.view);
 
 	}
 
-	private string function sanitizeTemplate(required string path) {
+	public struct function getTemplate(required string module, required string directory, required string template) {
 
-		if (right(arguments.path, 4) != ".cfm") {
-			arguments.path = arguments.path & ".cfm";
+		var key = buildKey(arguments.module, arguments.template);
+
+		return variables.cache[arguments.directory][key];
+
+	}
+
+	public boolean function templateExists(required string module, required string directory, required string template) {
+
+		var key = buildKey(arguments.module, arguments.template);
+
+		return structKeyExists(variables.cache[arguments.directory], key);
+
+	}
+
+	private string function buildKey(required string module, required string template) {
+
+		if (right(arguments.template, 4) != ".cfm") {
+			arguments.template = arguments.template & ".cfm";
 		}
 
-		return arguments.path;
+		if (arguments.module == variables.defaultModule) {
+			return arguments.template;
+		} else {
+			return arguments.module & ":" & arguments.template;
+		}
 
 	}
 

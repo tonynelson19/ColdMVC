@@ -6,8 +6,8 @@ component {
 	property development;
 	property beanFactory;
 	property controllerManager;
-	property defaultLayout;
 	property eventDispatcher;
+	property moduleManager;
 	property pdfRenderer;
 	property renderer;
 	property routeSerializer;
@@ -17,19 +17,16 @@ component {
 
 		try {
 
-			var controller = coldmvc.event.getController();
-			var action = coldmvc.event.getAction();
-
 			if (coldmvc.params.has("format")) {
 				coldmvc.event.setFormat(coldmvc.params.get("format"));
 			}
 
 			// find the layout for the controller and action
-			var layout = controllerManager.getLayout();
+			var layout = controllerManager.getLayout(coldmvc.event.getModule(), coldmvc.event.getController(), coldmvc.event.getAction());
 
 			// it couldn't determine the layout, so set it to the default layout
 			if (layout == "") {
-				layout = defaultLayout;
+				layout = controllerManager.getDefaultLayout();
 			}
 
 			// set the layout into the event
@@ -37,39 +34,33 @@ component {
 
 			var resetLayout = false;
 
-			// if the controller is empty, publish the event
-			if (controller == "" ) {
+			// check to make sure the factory has the requested controller
+			if (!controllerManager.controllerExists(coldmvc.event.getModule(), coldmvc.event.getController())) {
 				eventDispatcher.dispatchEvent("missingController");
 				resetLayout = true;
 			}
 
-			// use the values from the event rather than the route in case missingController changed them
-			controller = controllerManager.getName(coldmvc.event.getController());
-
 			// check to make sure the factory has the requested controller
-			if (!beanFactory.containsBean(controller)) {
+			if (!controllerManager.controllerExists(coldmvc.event.getModule(), coldmvc.event.getController())) {
 				eventDispatcher.dispatchEvent("invalidController");
 				resetLayout = true;
 			}
 
 			// check to see if the controller has the specified action
-			if (!controllerManager.hasAction(coldmvc.event.getController(), coldmvc.event.getAction())) {
+			if (!controllerManager.hasAction(coldmvc.event.getModule(), coldmvc.event.getController(), coldmvc.event.getAction())) {
 				eventDispatcher.dispatchEvent("invalidAction");
 				resetLayout = true;
 			}
-
-			// use the values from the event rather than the route in case invalidController/invalidAction changed them
-			controller = controllerManager.getName(coldmvc.event.getController());
 
 			// if something was missing, reset the layout back to the one specified for the controller/action
 			if (resetLayout) {
 
 				// find the layout for the controller and action
-				layout = controllerManager.getLayout(coldmvc.event.getController(), coldmvc.event.getAction());
+				layout = controllerManager.getLayout(coldmvc.event.getModule(), coldmvc.event.getController(), coldmvc.event.getAction());
 
 				// it couldn't determine the layout, so set it to the default layout
 				if (layout == "") {
-					layout = defaultLayout;
+					layout = controllerManager.getDefaultLayout();
 				}
 
 				// set the layout into the event
@@ -78,54 +69,48 @@ component {
 			}
 
 			// call the action
-			callMethods(controller, "Action");
+			callMethods(coldmvc.event.getModule(), coldmvc.event.getController(), coldmvc.event.getAction(), "Action");
 
 			// if it's an ajax request, reset the layout
 			if (coldmvc.request.isAjax()) {
-				coldmvc.event.setLayout(controllerManager.getAjaxLayout());
+				coldmvc.event.setLayout(controllerManager.getAjaxLayout(coldmvc.event.getModule(), coldmvc.event.getController(), coldmvc.event.getAction()));
 			}
 
-			var layout = coldmvc.event.getLayout();
-			var format = coldmvc.event.getFormat();
-			var output = "";
+			var formatView = replace(coldmvc.event.getView(), ".cfm", ".#coldmvc.event.getFormat()#.cfm");
 
-			var view = coldmvc.event.getView();
-			var formatView = replace(view, ".cfm", ".#format#.cfm");
+			if (templateManager.viewExists(coldmvc.event.getModule(), formatView)) {
 
-			if (templateManager.viewExists(formatView)) {
-
-				writeOutput(renderer.renderView(formatView));
+				writeOutput(renderer.renderView(coldmvc.event.getModule(), formatView));
 
 			}
 			else {
 
-				switch(format) {
+				var output = "";
+
+				switch(coldmvc.event.getFormat()) {
 
 					case "html":
 					case "pdf": {
 
 						// if a layout was specified, call it
-						if (layout != "") {
-							callMethods("layoutController", "Layout");
+						if (coldmvc.event.getLayout() != "") {
+							callMethods(coldmvc.event.getModule(), "layout", coldmvc.event.getLayout(), "Layout");
 						}
 
-						// in case the event changed
-						layout = coldmvc.event.getLayout();
-						view = coldmvc.event.getView();
-
 						// always render the view before the layout
-						var viewOutput = renderer.renderView(view);
+						var viewOutput = renderer.renderView(coldmvc.event.getModule(), coldmvc.event.getView());
 
 						// if the layout exists, render it
-						if (layout != "" && templateManager.layoutExists(layout)) {
+						if (coldmvc.event.getLayout() != "" && templateManager.layoutExists(moduleManager.getDefaultModule(), coldmvc.event.getLayout())) {
 
 							coldmvc.page.setContent("body", viewOutput);
 
-							output = renderer.renderLayout(layout);
+							output = renderer.renderLayout(moduleManager.getDefaultModule(), coldmvc.event.getLayout());
 
 						} else {
 
 							output = viewOutput;
+
 						}
 
 						break;
@@ -143,7 +128,7 @@ component {
 
 				}
 
-				if (format == "pdf") {
+				if (coldmvc.event.getFormat() == "pdf") {
 					pdfRenderer.toPDF(output);
 				} else {
 					writeOutput(output);
@@ -172,20 +157,21 @@ component {
 					eventDispatcher.dispatchEvent("error:#error.errorCode#");
 				}
 
-				if (beanFactory.containsBean("errorController")) {
+				if (controllerManager.controllerExists(moduleManager.getDefaultModule(), "error")) {
 
 					// rebuild the event object
+					var module = moduleManager.getDefaultModule();
 					var controller = "error";
-					var action = controllerManager.getAction(controller);
-					var view = controllerManager.getView(controller, action);
-					var layout = controllerManager.getLayout(controller, action);
+					var action = controllerManager.getAction(module, controller);
+					var view = controllerManager.getView(module, controller, action);
+					var layout = controllerManager.getLayout(module, controller, action);
 
 					// check to see if a status specific view exists
 					var status = coldmvc.request.getStatus();
 					var statusCodeView = "error/#status#.cfm";
 
 					// first check on the status code (error/404.cfm)
-					if (templateManager.viewExists(statusCodeView)) {
+					if (templateManager.viewExists(module, statusCodeView)) {
 
 						view = statusCodeView;
 
@@ -195,12 +181,13 @@ component {
 						var statusText = coldmvc.request.getStatusText(status);
 						var statusTextView = "error/#lcase(replace(statusText, " ", "_", "all"))#.cfm";
 
-						if (templateManager.viewExists(statusTextView)) {
+						if (templateManager.viewExists(module, statusTextView)) {
 							view = statusTextView;
 						}
 
 					}
 
+					coldmvc.event.setModule(module);
 					coldmvc.event.setController(controller);
 					coldmvc.event.setAction(action);
 					coldmvc.event.setView(view);
@@ -228,100 +215,103 @@ component {
 
 	}
 
-	private void function callMethods(required string beanName, required string type) {
+	private void function callMethods(required string module, required string controller, required string action, required string type) {
 
 		// possible TODO: after publishing each event,
 		// check to see if the current event's controller and action have changed,
 		// which could have happened if applying security filtering.
 		// depending on the changes, this method could maybe use some heavy refactoring...
 
-		var action = coldmvc.event.get(type);
+		if (controllerManager.controllerExists(arguments.module, arguments.controller)) {
+			var instance = controllerManager.getInstance(arguments.module, arguments.controller);
+		} else {
+			var instance = {};
+		}
+
+		if (arguments.module eq moduleManager.getDefaultModule()) {
+			var key = arguments.controller;
+		} else {
+			var key = arguments.module & ":" & arguments.controller;
+		}
 
 		// event => preAction
-		eventDispatcher.dispatchEvent("pre#type#");
+		eventDispatcher.dispatchEvent("pre#arguments.type#");
 
-		if (type == "Action") {
+		if (arguments.type == "Action") {
 
-			// event => preAction:UserController
-			eventDispatcher.dispatchEvent("preAction:#beanName#");
+			// event => preAction:user
+			eventDispatcher.dispatchEvent("preAction:#key#");
 
-			// event => preAction:UserController.list
-			eventDispatcher.dispatchEvent("preAction:#beanName#.#action#");
+			// event => preAction:user.list
+			eventDispatcher.dispatchEvent("preAction:#key#.#arguments.action#");
 
 		} else {
 
 			// event => preLayout:index
-			eventDispatcher.dispatchEvent("preLayout:#action#");
+			eventDispatcher.dispatchEvent("preLayout:#arguments.action#");
 
 		}
 
 		// userController.pre()
-		callMethod(beanName, "pre");
+		callMethod(instance, "pre");
 
 		// userController.preList()
-		callMethod(beanName, "pre#action#");
+		callMethod(instance, "pre#arguments.action#");
 
-		if (type == "Action") {
+		if (arguments.type == "Action") {
 			validateRequest();
 		}
 
 		// userController.list()
-		callMethod(beanName, action);
+		callMethod(instance, arguments.action);
 
 		// userController.postList()
-		callMethod(beanName, "post#action#");
+		callMethod(instance, "post#arguments.action#");
 
 		// userController.post()
-		callMethod(beanName, "post");
+		callMethod(instance, "post");
 
-		if (type == "Action") {
+		if (arguments.type == "Action") {
 
-			// event => postAction:UserController.list
-			eventDispatcher.dispatchEvent("postAction:#beanName#.#action#");
+			// event => postAction:user.list
+			eventDispatcher.dispatchEvent("postAction:#arguments.controller#.#arguments.action#");
 
-			// event => postAction:UserController
-			eventDispatcher.dispatchEvent("postAction:#beanName#");
+			// event => postAction:user
+			eventDispatcher.dispatchEvent("postAction:#arguments.controller#");
 
 		} else {
 
 			// event => postLayout:index
-			eventDispatcher.dispatchEvent("postLayout:#action#");
+			eventDispatcher.dispatchEvent("postLayout:#arguments.action#");
 
 		}
 
 		// event => postAction
-		eventDispatcher.dispatchEvent("post#type#");
+		eventDispatcher.dispatchEvent("post#arguments.type#");
 
 	}
 
-	private void function callMethod(required string beanName, required string action) {
+	private void function callMethod(required any instance, required string method) {
 
-		// make sure the requested beanName actually exists
-		if (beanFactory.containsBean(beanName)) {
-
-			var bean = beanFactory.getBean(beanName);
-
-			// make sure the action exists on the bean before calling it
-			if (structKeyExists(bean, action)) {
-				evaluate("bean.#action#()");
-			}
-
+		if (structKeyExists(arguments.instance, arguments.method)) {
+			evaluate("arguments.instance.#arguments.method#()");
 		}
 
 	}
 
 	private void function validateRequest() {
 
+		var module = coldmvc.event.getModule();
 		var controller = coldmvc.event.getController();
 		var action = coldmvc.event.getAction();
 		var currentFormat = coldmvc.event.getFormat();
-		var allowedFormats = controllerManager.getFormats(controller, action);
+		var allowedFormats = controllerManager.getFormats(module, controller, action);
 
 		if (!listFindNoCase(allowedFormats, currentFormat)) {
 			fail(403, "Format '#currentFormat#' not allowed");
 		}
 
-		var requiredParams = controllerManager.getParams(controller, action);
+		var requiredParams = controllerManager.getParams(module, controller, action);
 		var currentParams = coldmvc.params.get();
 		var i = "";
 
@@ -331,7 +321,7 @@ component {
 			}
 		}
 
-		var validMethods = controllerManager.getMethods(controller, action);
+		var validMethods = controllerManager.getMethods(module, controller, action);
 		var currentMethod = coldmvc.cgi.get("request_method");
 
 		if (validMethods != "" && !listFindNoCase(validMethods, currentMethod)) {

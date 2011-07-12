@@ -7,19 +7,19 @@ component {
 
 	public any function init() {
 
-		cache = {};
+		variables.cache = {};
 
 		var settings = application.getApplicationSettings();
-		ormEnabled = settings.ormEnabled;
+		variables.ormEnabled = settings.ormEnabled;
 
-		if (ormEnabled) {
+		if (variables.ormEnabled) {
 
 			try {
 				ormGetSessionFactory();
 			}
 			catch(any e) {
 				// No entity using this datasource.
-				ormEnabled = false;
+				variables.ormEnabled = false;
 			}
 
 		}
@@ -42,7 +42,7 @@ component {
 
 		var name = getName(arguments.model);
 
-		if (!structKeyExists(cache, name)) {
+		if (!structKeyExists(variables.cache, name)) {
 
 			var i = "";
 			var j = "";
@@ -185,11 +185,11 @@ component {
 
 			}
 
-			cache[name] = result;
+			variables.cache[name] = result;
 
 		}
 
-		return cache[name];
+		return variables.cache[name];
 
 	}
 
@@ -201,7 +201,7 @@ component {
 
 			var models = {};
 
-			if (ormEnabled) {
+			if (variables.ormEnabled) {
 
 				var classes = ormGetSessionFactory().getAllClassMetadata();
 

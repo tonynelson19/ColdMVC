@@ -4,7 +4,6 @@
 component {
 
 	property configPath;
-	property directory;
 
 	public any function init() {
 

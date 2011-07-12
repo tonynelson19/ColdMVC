@@ -7,8 +7,10 @@ component {
 
 	property __Model;
 
-	function set__Model(any model) {
-		structAppend(variables, model);
+	function set__Model(required struct model) {
+
+		structAppend(variables, arguments.model);
+
 	}
 
 }

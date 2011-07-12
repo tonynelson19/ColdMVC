@@ -49,15 +49,21 @@ component {
 
 	}
 
-	public string function getAction() {
+	public string function getModule() {
 
-		return coldmvc.event.getAction();
+		return coldmvc.event.getModule();
 
 	}
 
 	public string function getController() {
 
 		return coldmvc.event.getController();
+
+	}
+
+	public string function getAction() {
+
+		return coldmvc.event.getAction();
 
 	}
 

@@ -23,10 +23,9 @@ component {
 
 	}
 
-	public void function setModuleManager(required any moduleManager) {
+	public void function setup() {
 
-		variables.moduleManager = arguments.moduleManager;
-		variables.defaultModule = variables.moduleManager.getDefaultModule();
+		variables.defaultModule = moduleManager.getDefaultModule();
 
 	}
 

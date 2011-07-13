@@ -20,7 +20,7 @@
 	
 	<bean id="config" class="coldmvc.app.util.Config" />
 	
-	<bean id="controllerManager" class="coldmvc.app.util.ControllerManager">
+	<bean id="controllerManager" class="coldmvc.app.util.ControllerManager" init-method="setup">
 		<property name="defaultController">
 			<value>${controller}</value>
 		</property>
@@ -175,7 +175,7 @@
 		</property>
 	</bean>
 	
-	<bean id="routeHandler" class="coldmvc.app.util.RouteHandler" />
+	<bean id="routeHandler" class="coldmvc.app.util.RouteHandler" init-method="setup" />
 	
 	<bean id="routeSerializer" class="coldmvc.app.util.RouteSerializer" />
 	
@@ -191,7 +191,7 @@
 		</property>
 	</bean>
 	
-	<bean id="templateManager" class="coldmvc.app.util.TemplateManager">
+	<bean id="templateManager" class="coldmvc.app.util.TemplateManager" init-method="setup">
 		<property name="development">
 			<value>${development}</value>
 		</property>

@@ -228,7 +228,7 @@ component {
 			var instance = {};
 		}
 
-		if (arguments.module eq moduleManager.getDefaultModule()) {
+		if (arguments.module == moduleManager.getDefaultModule()) {
 			var key = arguments.controller;
 		} else {
 			var key = arguments.module & ":" & arguments.controller;

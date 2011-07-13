@@ -1,4 +1,5 @@
-<cfset modules = coldmvc.factory.get("moduleManager").getModules() />
+<cfset moduleManager = coldmvc.factory.get("moduleManager") />
+<cfset modules = moduleManager.getModules() />
 <cfset moduleList = structKeyList(modules, "|") />
 
 <cfif moduleList neq "">

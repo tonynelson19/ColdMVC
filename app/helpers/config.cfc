@@ -23,7 +23,7 @@ component {
 	 */
 	public string function urlPath(string path="") {
 
-		return get("urlPath") & path;
+		return get("urlPath") & arguments.path;
 
 	}
 
@@ -32,7 +32,7 @@ component {
 	 */
 	public string function assetPath(string path="") {
 
-		return get("assetPath") & path;
+		return get("assetPath") & arguments.path;
 
 	}
 

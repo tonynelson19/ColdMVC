@@ -10,12 +10,21 @@ component {
 		var settings = {
 			controller = "index",
 			development = true,
-			layout = "index"
+			layout = "index",
+			sesURLs = false
 		};
 
 		variables.beanFactory = new coldmvc.app.util.BeanFactory(xml, settings, {
 			"pluginManager" = pluginManager
 		});
+
+		variables.beanFactory.getBean("config").setSettings(settings);
+
+		var eventDispatcher = variables.beanFactory.getBean("eventDispatcher");
+		eventDispatcher.dispatchEvent("preApplication");
+		eventDispatcher.dispatchEvent("applicationStart");
+		eventDispatcher.dispatchEvent("preRequest");
+
 
 	}
 

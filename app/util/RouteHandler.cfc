@@ -3,6 +3,7 @@
  */
 component {
 
+	property aliases;
 	property config;
 	property controllerManager;
 	property moduleManager;
@@ -17,22 +18,27 @@ component {
 
 	}
 
+	public void function setup() {
+
+		variables.defaultModule = moduleManager.getDefaultModule();
+		variables.defaultController = controllerManager.getDefaultController();
+
+	}
+
 	public void function loadAliases() {
 
 		var controllers = controllerManager.getControllers();
-		var defaultModule = moduleManager.getDefaultModule();
-		var defaultController = controllerManager.getDefaultController();
 		var key = "";
 		var modules = moduleManager.getModules();
 		var module = "";
 
 		for (module in modules) {
 
-			var action = controllerManager.getAction(module, defaultController);
+			var action = controllerManager.getAction(module, variables.defaultController);
 
 			for (key in controllers[module]) {
 
-				if (key == defaultController) {
+				if (key == variables.defaultController) {
 					variables.aliases["/#module#/#key#/#controllers[module][key].action#"] = "/#module#";
 				} else {
 					variables.aliases["/#module#/#key#/#controllers[module][key].action#"] = "/#module#/#key#";
@@ -44,14 +50,14 @@ component {
 
 		}
 
-		for (key in controllers[defaultModule]) {
-			variables.aliases["/#key#/#controllers[defaultModule][key].action#"] = "/#key#";
+		for (key in controllers[variables.defaultModule]) {
+			variables.aliases["/#key#/#controllers[variables.defaultModule][key].action#"] = "/#key#";
 		}
 
-		var action = controllerManager.getAction(defaultModule, defaultController);
+		var action = controllerManager.getAction(variables.defaultModule, variables.defaultController);
 
-		variables.aliases["/#defaultController#"] = "";
-		variables.aliases["/#defaultController#/#action#"] = "";
+		variables.aliases["/#variables.defaultController#"] = "";
+		variables.aliases["/#variables.defaultController#/#action#"] = "";
 		variables.aliases["/"] = "";
 
 	}
@@ -140,26 +146,41 @@ component {
 			return getBaseURL() & checkAlias(arguments.querystring);
 		}
 
-		// generate a path for the given arguments
-		var path = router.generate(arguments.name, arguments.parameters);
+		if (structKeyExists(arguments.parameters, "module")) {
 
-		// if the router couldn't generate a route, add the event parameters and try again
-		if (path == "") {
+			if (arguments.parameters.module == "") {
+				arguments.parameters.module = variables.defaultModule;
+			}
 
-			// if a controller wasn't already specified, add the current controller
 			if (!structKeyExists(arguments.parameters, "controller")) {
-				arguments.parameters.controller = coldmvc.event.getController();
+
+				if (structKeyExists(arguments.parameters, "action")) {
+					arguments.parameters.controller = coldmvc.event.getController();
+				} else {
+					arguments.parameters.controller = variables.defaultController;
+				}
 			}
 
-			// if an action wasn't already specified, add the current action
-			if (!structKeyExists(arguments.parameters, "action")) {
-				arguments.parameters.action = coldmvc.event.getAction();
-			}
+		} else {
 
-			// generate a new path with the added parameters
-			path = router.generate(arguments.name, arguments.parameters);
+			arguments.parameters.module = coldmvc.event.getModule();
 
 		}
+
+		if (structKeyExists(arguments.parameters, "controller") && !structKeyExists(arguments.parameters, "action")) {
+			arguments.parameters.action = controllerManager.getAction(arguments.parameters.module, arguments.parameters.controller);
+		}
+
+		if (structKeyExists(arguments.parameters, "action") && !structKeyExists(arguments.parameters, "controller")) {
+			arguments.parameters.controller = coldmvc.event.getController();
+		}
+
+		if (arguments.parameters.module == variables.defaultModule) {
+			structDelete(arguments.parameters, "module");
+		}
+
+		// generate a path for the given arguments
+		var path = router.generate(arguments.name, arguments.parameters);
 
 		// add the base URL to the generated path
 		path = getBaseURL() & checkAlias(path);

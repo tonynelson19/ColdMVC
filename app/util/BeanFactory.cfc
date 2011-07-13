@@ -122,6 +122,7 @@ component {
 		var property = "";
 		var i = "";
 		var dependencies = findDependencies(beanName, beanName);
+		var initMethods = [];
 
 		for (i = 1; i <= listLen(dependencies); i++) {
 
@@ -159,7 +160,12 @@ component {
 					autowireClassPath(beanInstance, beanDef.class);
 
 					if (beanDef.initMethod != "") {
-						evaluate("beanInstance.#beanDef.initMethod#()");
+
+						arrayAppend(initMethods, {
+							bean = beanInstance,
+							initMethod = beanDef.initMethod
+						});
+
 					}
 
 					beanDef.constructed = true;
@@ -169,6 +175,12 @@ component {
 				}
 
 			}
+
+		}
+
+		for (i = 1; i <= arrayLen(initMethods); i++) {
+
+			evaluate("initMethods[i].bean.#initMethods[i].initMethod#()");
 
 		}
 

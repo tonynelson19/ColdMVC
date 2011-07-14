@@ -466,7 +466,7 @@ component {
 
 	}
 
-	public any function new(required string classPath, struct constructorArgs) {
+	public any function new(required string classPath, struct constructorArgs, string beanName="") {
 
 		var object = createObject("component", arguments.classPath);
 
@@ -486,7 +486,7 @@ component {
 
 		autowireClassPath(object, arguments.classPath);
 
-		processBeanPostProcessors(object, "");
+		processBeanPostProcessors(object, arguments.beanName);
 
 		return object;
 

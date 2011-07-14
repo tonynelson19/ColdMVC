@@ -121,7 +121,7 @@ component {
 
 			var classPath = getClassPath(arguments.module, arguments.controller);
 
-			var instance = beanFactory.new(classPath, arguments.controller & "Controller");
+			var instance = beanFactory.new(classPath, {}, arguments.controller & "Controller");
 
 			actionHelperManager.autowire(instance);
 

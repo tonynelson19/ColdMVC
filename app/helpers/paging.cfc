@@ -66,7 +66,7 @@ component {
 
 	}
 
-	public numeric function maxOptions(struct collection) {
+	public array function maxOptions(struct collection) {
 
 		if (structKeyExists(arguments, "collection") && structKeyExists(arguments.collection, "max_options")) {
 				

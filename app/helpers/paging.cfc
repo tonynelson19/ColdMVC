@@ -5,14 +5,17 @@ component {
 
 	private string function buildLink(required string querystring, required string pars) {
 
-		var args = {};
-		args.controller = coldmvc.event.getController();
-		args.action = coldmvc.event.getAction();
+		// this probably needs to be more dynamic...
+		var parameters = {
+			module = coldmvc.event.getModule(),
+			controller = coldmvc.event.getController(),
+			action = coldmvc.event.getAction()
+		};
 
 		if (arguments.querystring == "") {
-			return coldmvc.link.to(parameters=args, querystring=arguments.pars);
+			return coldmvc.link.to(parameters=parameters, querystring=arguments.pars);
 		} else {
-			return coldmvc.link.to(parameters=args, querystring="#arguments.querystring#&#arguments.pars#");
+			return coldmvc.link.to(parameters=parameters, querystring="#arguments.querystring#&#arguments.pars#");
 		}
 
 	}
@@ -29,16 +32,16 @@ component {
 
 	public numeric function count(required struct collection) {
 
-		var value = "";
-
 		if (structKeyExists(arguments.collection, "count")) {
-			value = arguments.collection.count;
+		
+			var value = arguments.collection.count;
+		
 		} else if (structKeyExists(arguments.collection, "records")) {
 
 			if (isNumeric(arguments.collection.records)) {
-				value = arguments.collection.records;
+				var value = arguments.collection.records;
 			} else {
-				value = coldmvc.data.count(arguments.collection.records);
+				var value = coldmvc.data.count(arguments.collection.records);
 			}
 
 		}
@@ -60,6 +63,26 @@ component {
 		}
 
 		return validateMax(value);
+
+	}
+
+	public numeric function maxOptions(struct collection) {
+
+		if (structKeyExists(arguments, "collection") && structKeyExists(arguments.collection, "max_options")) {
+				
+			var value = arguments.collection.max_options;
+			
+			if (isSimpleValue(value)) {
+				value = listToArray(value);					
+			}
+
+		} else {
+			
+			var value = [ "10", "15", "20", "25", "50" ];
+			
+		}
+
+		return value;
 
 	}
 
@@ -86,6 +109,7 @@ component {
 
 		var result = {};
 		result.max = this.max(arguments.collection);
+		result.max_options = this.maxOptions(arguments.collection);
 		result.page = this.page(arguments.collection);
 		result.offset = this.offset(result.page, result.max);
 
@@ -128,9 +152,6 @@ component {
 
 		var html = [];
 		var i = "";
-		var onchange = "";
-		var onchange = "";
-		var max_options = ["10", "15", "20", "25", "50"];
 
 		var options = this.options(arguments);
 		options.count = this.count(arguments);
@@ -197,9 +218,9 @@ component {
 
 		arrayAppend(html, '<select name="paging_max" onchange="#onchange#">');
 
-		for (i = 1; i <= arrayLen(max_options); i++) {
+		for (i = 1; i <= arrayLen(options.max_options); i++) {
 
-			var option = max_options[i];
+			var option = options.max_options[i];
 
 			if (options.max == option) {
 				arrayAppend(html, '<option value="#option#" title="#option#" selected="true">#option#</option>');

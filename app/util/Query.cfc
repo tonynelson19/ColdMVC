@@ -111,6 +111,14 @@ component {
 
 	}
 
+	public any function setOptions(required struct options) {
+
+		structAppend(variables.options, arguments.options, true);
+
+		return this;
+
+	}
+
 	public any function getResults() {
 
 		var result = variables.dao.executeQuery(variables.model, getHQL(), variables.parameters, variables.options);

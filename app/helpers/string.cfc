@@ -12,6 +12,15 @@ component {
 	}
 
 	/**
+	 * @viewHelper escape
+	 */
+	public string function escape(required string string) {
+
+		return htmlEditFormat(arguments.string);
+
+	}
+
+	/**
 	 * @viewHelper singularize
 	 */
 	public string function singularize(required string string) {

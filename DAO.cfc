@@ -320,9 +320,9 @@ component {
 
 	}
 
-	public any function createQuery(required any model) {
+	public any function createQuery(required any model, required struct options) {
 
-		return new coldmvc.app.util.Query(arguments.model, this);
+		return new coldmvc.app.util.Query(this, arguments.model, arguments.options);
 
 	}
 

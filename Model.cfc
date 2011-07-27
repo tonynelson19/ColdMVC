@@ -22,9 +22,13 @@ component {
 
 	}
 
-	public any function createQuery() {
+	public any function createQuery(struct options) {
 
-		return DAO.createQuery(this);
+		if (!structKeyExists(arguments, "options")) {
+			arguments.options = {};
+		}
+
+		return DAO.createQuery(this, arguments.options);
 
 	}
 

@@ -1,6 +1,6 @@
 component {
 
-	public any function init(required any model, required any DAO) {
+	public any function init(required any DAO, required any model, required struct options) {
 
 		variables.model = arguments.model;
 		variables.dao = arguments.dao;
@@ -10,7 +10,7 @@ component {
 		variables.aliases = {};
 		addAlias(variables.alias, variables.entity);
 		variables.parameters = {};
-		variables.options = {};
+		variables.options = arguments.options;
 
 		variables.query = {
 			select = "select #variables.alias#",

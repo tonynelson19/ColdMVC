@@ -143,7 +143,13 @@ component {
 
 		// if the querystring is like "/post/show/5", consider it a manually created url and simply prepend the base url
 		if (left(arguments.querystring, 1) == "/") {
-			return getBaseURL() & checkAlias(arguments.querystring);
+
+			if (find("?", arguments.querystring)) {
+				return getBaseURL() & checkAlias(listFirst(arguments.querystring, "?")) & "?" & listRest(arguments.querystring, "?");
+			} else {
+				return getBaseURL() & checkAlias(arguments.querystring);
+			}
+
 		}
 
 		if (structKeyExists(arguments.parameters, "module")) {

@@ -5,18 +5,9 @@ component {
 
 	private string function buildLink(required string querystring, required string pars) {
 
-		// this probably needs to be more dynamic...
-		var parameters = {
-			module = coldmvc.event.getModule(),
-			controller = coldmvc.event.getController(),
-			action = coldmvc.event.getAction()
-		};
+		arguments.pars = (arguments.querystring == "") ? arguments.pars : arguments.querystring & "&" & arguments.pars;
 
-		if (arguments.querystring == "") {
-			return coldmvc.link.to(parameters=parameters, querystring=arguments.pars);
-		} else {
-			return coldmvc.link.to(parameters=parameters, querystring="#arguments.querystring#&#arguments.pars#");
-		}
+		return coldmvc.link.to(coldmvc.event.getPath(), arguments.pars);
 
 	}
 
@@ -33,9 +24,9 @@ component {
 	public numeric function count(required struct collection) {
 
 		if (structKeyExists(arguments.collection, "count")) {
-		
+
 			var value = arguments.collection.count;
-		
+
 		} else if (structKeyExists(arguments.collection, "records")) {
 
 			if (isNumeric(arguments.collection.records)) {
@@ -69,17 +60,17 @@ component {
 	public array function maxOptions(struct collection) {
 
 		if (structKeyExists(arguments, "collection") && structKeyExists(arguments.collection, "max_options")) {
-				
+
 			var value = arguments.collection.max_options;
-			
+
 			if (isSimpleValue(value)) {
-				value = listToArray(value);					
+				value = listToArray(value);
 			}
 
 		} else {
-			
+
 			var value = [ "10", "15", "20", "25", "50" ];
-			
+
 		}
 
 		return value;

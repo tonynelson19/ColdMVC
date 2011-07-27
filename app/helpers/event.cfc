@@ -234,6 +234,10 @@ component {
 
 	public any function setPath(required string path) {
 
+		if (arguments.path == "") {
+			arguments.path = "/";
+		}
+
 		return set("path", arguments.path);
 
 	}

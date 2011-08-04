@@ -373,7 +373,7 @@ component {
 					action["key"] = coldmvc.string.underscore(name);
 				}
 
-				if (structKeyExists(action, "view")) {
+				if (structKeyExists(method, "view")) {
 					action["view"] = method.view;
 				} else {
 					action["view"] = buildView(arguments.controller.key, action.key);

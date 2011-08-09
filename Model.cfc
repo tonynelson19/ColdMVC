@@ -40,11 +40,11 @@ component {
 
 	public boolean function exists(string id) {
 
-		if (isNull(arguments.id)) {
+		if (structKeyExists(arguments, "id")) {
+			return DAO.exists(this, arguments.id);
+		} else {
 			return DAO.exists(this);
 		}
-
-		return DAO.exists(this, arguments.id);
 
 	}
 
@@ -96,12 +96,24 @@ component {
 
 	}
 
-	public any function get(required string id, any data, string properties="") {
+	public any function get(required any id, any data, string properties="") {
 
-		var model = DAO.get(this, id);
+		if (isStruct(arguments.id)) {
+
+			arguments.data = arguments.id;
+
+			if (structKeyExists(arguments.data, "id")) {
+				arguments.id = arguments.data.id;
+			} else {
+				arguments.id = "";
+			}
+
+		}
+
+		var model = DAO.get(this, arguments.id);
 
 		if (structKeyExists(arguments, "data")) {
-			model.populate(data, arguments.properties);
+			model.populate(arguments.data, arguments.properties);
 		}
 
 		return model;

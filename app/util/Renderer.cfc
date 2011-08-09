@@ -15,7 +15,7 @@ component {
 
 	public string function renderLayout(required string module, required string layout) {
 
-		return renderTemplate(arguments.module, "layouts", layout);
+		return renderTemplate("layouts", arguments.module, arguments.layout);
 
 	}
 
@@ -24,13 +24,13 @@ component {
 		if (arguments.module == moduleManager.getDefaultModule()) {
 			var key = arguments.view;
 		} else {
-			var key = arguments.module & ":" & arguments.view;
+			var key = buildKey(arguments.module, arguments.view);
 		}
 
 		eventDispatcher.dispatchEvent("preView");
 		eventDispatcher.dispatchEvent("preView:#key#");
 
-		var result = renderTemplate(arguments.module, "views", arguments.view);
+		var result = renderTemplate("views", arguments.module, arguments.view);
 
 		eventDispatcher.dispatchEvent("postView:#key#");
 		eventDispatcher.dispatchEvent("postView");
@@ -39,7 +39,30 @@ component {
 
 	}
 
-	private string function renderTemplate(required string module, required string directory, required string path) {
+	/**
+	 * @actionHelper render
+	 */
+	public string function render(required string view, string module) {
+
+		if (!structKeyExists(arguments, "module")) {
+			arguments.module = coldmvc.event.getModule();
+		}
+
+		return renderTemplate("views", arguments.module, arguments.view);
+
+	}
+
+	private string function buildKey(required string module, required string view) {
+
+		if (arguments.module == moduleManager.getDefaultModule()) {
+			return arguments.view;
+		} else {
+			return arguments.module & ":" & arguments.view;
+		}
+
+	}
+
+	private string function renderTemplate(required string directory, required string module, required string path) {
 
 		var output = "";
 

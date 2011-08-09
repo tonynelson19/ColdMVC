@@ -80,7 +80,9 @@ component {
 
 			if (templateManager.viewExists(coldmvc.event.getModule(), formatView)) {
 
-				writeOutput(renderer.renderView(coldmvc.event.getModule(), formatView));
+				var output = renderView(coldmvc.event.getModule(), formatView);
+
+				writeOutput(output);
 
 			}
 			else {
@@ -98,7 +100,7 @@ component {
 						}
 
 						// always render the view before the layout
-						var viewOutput = renderer.renderView(coldmvc.event.getModule(), coldmvc.event.getView());
+						var viewOutput = renderView(coldmvc.event.getModule(), coldmvc.event.getView());
 
 						// if the layout exists, render it
 						if (coldmvc.event.getLayout() != "" && templateManager.layoutExists(moduleManager.getDefaultModule(), coldmvc.event.getLayout())) {
@@ -296,6 +298,26 @@ component {
 		if (structKeyExists(arguments.instance, arguments.method)) {
 			evaluate("arguments.instance.#arguments.method#()");
 		}
+
+	}
+
+	private string function renderView(required string module, required string view) {
+
+		if (arguments.module == moduleManager.getDefaultModule()) {
+			var key = arguments.view;
+		} else {
+			var key = buildKey(arguments.module, arguments.view);
+		}
+
+		eventDispatcher.dispatchEvent("preView");
+		eventDispatcher.dispatchEvent("preView:#key#");
+
+		var output = renderer.renderView(arguments.module, arguments.view);
+
+		eventDispatcher.dispatchEvent("postView:#key#");
+		eventDispatcher.dispatchEvent("postView");
+
+		return output;
 
 	}
 

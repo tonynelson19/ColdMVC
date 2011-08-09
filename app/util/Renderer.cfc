@@ -3,7 +3,6 @@
  */
 component {
 
-	property eventDispatcher;
 	property moduleManager;
 	property templateManager;
 
@@ -21,21 +20,7 @@ component {
 
 	public string function renderView(required string module, required string view) {
 
-		if (arguments.module == moduleManager.getDefaultModule()) {
-			var key = arguments.view;
-		} else {
-			var key = buildKey(arguments.module, arguments.view);
-		}
-
-		eventDispatcher.dispatchEvent("preView");
-		eventDispatcher.dispatchEvent("preView:#key#");
-
-		var result = renderTemplate("views", arguments.module, arguments.view);
-
-		eventDispatcher.dispatchEvent("postView:#key#");
-		eventDispatcher.dispatchEvent("postView");
-
-		return result;
+		return renderTemplate("views", arguments.module, arguments.view);
 
 	}
 
@@ -48,7 +33,7 @@ component {
 			arguments.module = coldmvc.event.getModule();
 		}
 
-		return renderTemplate("views", arguments.module, arguments.view);
+		return renderView(arguments.module, arguments.view);
 
 	}
 

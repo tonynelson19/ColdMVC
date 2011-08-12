@@ -45,7 +45,7 @@ component implements="cfide.orm.INamingStrategy" {
    			newName = left(newName, len(newName) - 3) & "_ID";
   		}
   		
-  		nameName = replace(newName, "__", "_", "all");
+  		newName = replace(newName, "__", "_", "all");
 
   		return newName;
 

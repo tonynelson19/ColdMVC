@@ -39,7 +39,7 @@ component implements="cfide.orm.INamingStrategy" {
 
   		var newName = arrayToList(array, "");
 
-  		if (newName == "Id") {
+  		if (newName == "Id" || newName == "I_D") {
    			newName = "ID";
   		} else if (right(newName, 3) == "_Id") {
    			newName = left(newName, len(newName) - 3) & "_ID";

@@ -4,7 +4,6 @@
 component {
 
 	property beanFactory;
-	property fileSystemFacade;
 	property metaDataFlattener;
 	property pluginManager;
 

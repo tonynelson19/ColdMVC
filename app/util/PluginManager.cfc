@@ -14,7 +14,7 @@ component {
 			requires = {}
 		};
 
-		variables.fileSystemFacade = new coldmvc.app.util.FileSystemFacade();
+		variables.fileSystem = new coldmvc.app.util.FileSystem();
 
 		return this;
 
@@ -22,7 +22,7 @@ component {
 
 	public void function loadPlugins() {
 
-		if (fileSystemFacade.fileExists(expandPath(variables.configPath))) {
+		if (fileSystem.fileExists(expandPath(variables.configPath))) {
 			include variables.configPath;
 		}
 
@@ -43,19 +43,19 @@ component {
 
 			var original = plugin.path;
 
-			if (!fileSystemFacade.directoryExists(plugin.path)) {
+			if (!fileSystem.directoryExists(plugin.path)) {
 				plugin.path = expandPath(plugin.path);
 			}
 
-			if (!fileSystemFacade.directoryExists(plugin.path)) {
+			if (!fileSystem.directoryExists(plugin.path)) {
 				plugin.path = expandPath("/plugins/" & original);
 			}
 
-			if (!fileSystemFacade.directoryExists(plugin.path)) {
+			if (!fileSystem.directoryExists(plugin.path)) {
 				plugin.path = expandPath("/coldmvc" & original);
 			}
 
-			if (!fileSystemFacade.directoryExists(plugin.path)) {
+			if (!fileSystem.directoryExists(plugin.path)) {
 				throw("Invalid plugin path: #original#");
 			}
 
@@ -75,13 +75,13 @@ component {
 			var rootPath = sanitize(expandPath("/plugins/"));
 			var mappedPlugins = "/plugins/" & replaceNoCase(config, rootPath, "");
 
-			if (fileSystemFacade.fileExists(config)) {
+			if (fileSystem.fileExists(config)) {
 				include mappedPlugins;
 			}
 
 			var version = plugin.path & "version.txt";
 
-			if (fileSystemFacade.fileExists(version)) {
+			if (fileSystem.fileExists(version)) {
 				plugin.version = fileRead(version);
 			} else {
 				plugin.version = "";

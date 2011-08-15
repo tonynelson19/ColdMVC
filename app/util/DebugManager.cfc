@@ -3,7 +3,7 @@
  */
 component {
 
-	property fileSystemFacade;
+	property fileSystem;
 	property templates;
 
 	public any function init() {
@@ -174,7 +174,7 @@ component {
 
 			var filePath = expandPath("/app/../version.txt");
 
-			if (fileSystemFacade.fileExists(filePath)) {
+			if (fileSystem.fileExists(filePath)) {
 				variables.appVersion = fileRead(filePath);
 			} else {
 				variables.appVersion = "";

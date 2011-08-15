@@ -6,7 +6,7 @@ component {
 	property beanFactory;
 	property debugManager;
 	property development;
-	property fileSystemFacade;
+	property fileSystem;
 	property observers;
 	property pluginManager;
 
@@ -36,11 +36,11 @@ component {
 
 	public void function loadXML(required string filePath) {
 
-		if (!fileSystemFacade.fileExists(arguments.filePath)) {
+		if (!fileSystem.fileExists(arguments.filePath)) {
 			arguments.filePath = expandPath(arguments.filePath);
 		}
 
-		if (fileSystemFacade.fileExists(arguments.filePath)) {
+		if (fileSystem.fileExists(arguments.filePath)) {
 
 			var xml = xmlParse(fileRead(arguments.filePath));
 			var i = "";

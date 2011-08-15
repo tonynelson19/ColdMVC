@@ -7,7 +7,7 @@ component {
 	property beanFactory;
 	property debugManager;
 	property development;
-	property fileSystemFacade;
+	property fileSystem;
 	property modelManager;
 	property pluginManager;
 	property viewHelperManager;
@@ -45,7 +45,7 @@ component {
 
 	private void function includeConfigPath(required string configPath) {
 
-		if (fileSystemFacade.fileExists(expandPath(arguments.configPath))) {
+		if (fileSystem.fileExists(expandPath(arguments.configPath))) {
 			createObject("component", "coldmvc.app.util.RouteFile").init(this, arguments.configPath);
 		}
 

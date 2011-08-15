@@ -5,7 +5,7 @@ component {
 
 	property defaultModule;
 	property pluginManager;
-	property fileSystemFacade;
+	property fileSystem;
 
 	public any function init() {
 
@@ -31,7 +31,7 @@ component {
 
 				var directory = directories[i];
 
-				if (fileSystemFacade.directoryExists(expandPath(directory))) {
+				if (fileSystem.directoryExists(expandPath(directory))) {
 
 					var files = directoryList(expandPath(directory), false, "query");
 					var j = "";

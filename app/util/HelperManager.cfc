@@ -5,7 +5,7 @@ component {
 
 	property beanFactory;
 	property config;
-	property fileSystemFacade;
+	property fileSystem;
 	property pluginManager;
 
 	public HelperManager function init() {
@@ -84,7 +84,7 @@ component {
 
 			var directory = expandPath(variables.directories[i]);
 
-			if (fileSystemFacade.directoryExists(directory)) {
+			if (fileSystem.directoryExists(directory)) {
 
 				var files = directoryList(directory, false, "query", "*.cfc");
 

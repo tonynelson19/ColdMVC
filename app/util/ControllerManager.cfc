@@ -9,7 +9,7 @@ component {
 	property defaultController;
 	property defaultLayout;
 	property eventDispatcher;
-	property fileSystemFacade;
+	property fileSystem;
 	property metaDataFlattener;
 	property moduleManager;
 	property templateManager;
@@ -298,7 +298,7 @@ component {
 		var directory = expandPath(arguments.path);
 		var length = len("Controller");
 
-		if (fileSystemFacade.directoryExists(directory)) {
+		if (fileSystem.directoryExists(directory)) {
 
 			var files = directoryList(directory, false, "query", "*Controller.cfc");
 			var i = "";
@@ -353,65 +353,76 @@ component {
 
 	private struct function getActions(required struct controller, required struct metaData) {
 
-		var actions = {};
+		if (structKeyExists(arguments.metaData, "actions")) {
+			var allowedActions = replace(arguments.metaData.actions, " ", "", "all");
+		} else {
+			var allowedActions = "";
+		}
+
 		var key = "";
+		var availableActions = [];
 
-		for (key in metaData.functions) {
-
-			// valid actions must contain at least 1 lowercase letter (auto-generated property getters and setters will be in all caps)
-			if (reFind("[a-z]", key)) {
-
-				var method = metaData.functions[key];
-				var name = key;
-				var action = {};
-				action["name"] = method.name;
-				action["access"] = method.access;
-
-				if (structKeyExists(method, "action")) {
-					action["key"] = method.action;
-				} else {
-					action["key"] = coldmvc.string.underscore(name);
-				}
-
-				if (structKeyExists(method, "view")) {
-					action["view"] = method.view;
-				} else {
-					action["view"] = buildView(arguments.controller.key, action.key);
-				}
-
-				if (structKeyExists(method, "layout")) {
-					action["layout"] = method.layout;
-				} else {
-					action["layout"] = arguments.controller.layout;
-				}
-
-				if (structKeyExists(method, "ajaxLayout")) {
-					action["ajaxLayout"] = method.ajaxLayout;
-				} else {
-					action["ajaxLayout"] = arguments.controller.ajaxLayout;
-				}
-
-				if (structKeyExists(method, "formats")) {
-					action["formats"] = replace(method.formats, " ", "", "all");
-				} else {
-					action["formats"] = arguments.controller.formats;
-				}
-
-				if (structKeyExists(method, "methods")) {
-					action["methods"] = replace(method.methods, " ", "", "all");
-				} else {
-					action["methods"] = "";
-				}
-
-				if (structKeyExists(method, "params")) {
-					action["params"] = listToArray(replace(method.params, " ", "", "all"));
-				} else {
-					action["params"] = [];
-				}
-
-				actions[action.key] = action;
-
+		// valid actions must contain at least 1 lowercase letter (auto-generated property getters and setters will be in all caps)
+		for (key in arguments.metaData.functions) {
+			if (arguments.metaData.functions[key].access == "public" && ((allowedActions == "" && reFind("[a-z]", key)) || listFindNoCase(allowedActions, key))) {
+				arrayAppend(availableActions, key);
 			}
+		}
+
+		var actions = {};
+		var i = "";
+
+		for (i = 1; i <= arrayLen(availableActions); i++) {
+
+			var method = arguments.metaData.functions[availableActions[i]];
+			var action = {};
+
+			action["name"] = method.name;
+			action["access"] = method.access;
+
+			if (structKeyExists(method, "action")) {
+				action["key"] = method.action;
+			} else {
+				action["key"] = coldmvc.string.underscore(method.name);
+			}
+
+			if (structKeyExists(method, "view")) {
+				action["view"] = method.view;
+			} else {
+				action["view"] = buildView(arguments.controller.key, action.key);
+			}
+
+			if (structKeyExists(method, "layout")) {
+				action["layout"] = method.layout;
+			} else {
+				action["layout"] = arguments.controller.layout;
+			}
+
+			if (structKeyExists(method, "ajaxLayout")) {
+				action["ajaxLayout"] = method.ajaxLayout;
+			} else {
+				action["ajaxLayout"] = arguments.controller.ajaxLayout;
+			}
+
+			if (structKeyExists(method, "formats")) {
+				action["formats"] = replace(method.formats, " ", "", "all");
+			} else {
+				action["formats"] = arguments.controller.formats;
+			}
+
+			if (structKeyExists(method, "methods")) {
+				action["methods"] = replace(method.methods, " ", "", "all");
+			} else {
+				action["methods"] = "";
+			}
+
+			if (structKeyExists(method, "params")) {
+				action["params"] = listToArray(replace(method.params, " ", "", "all"));
+			} else {
+				action["params"] = [];
+			}
+
+			actions[action.key] = action;
 
 		}
 

@@ -8,7 +8,7 @@ component {
 		var result = false;
 
 		try {
-			result = directoryExists(directoryPath);
+			result = directoryExists(arguments.directoryPath);
 		}
 		catch (any e) {}
 
@@ -19,14 +19,14 @@ component {
 	public boolean function directoryCopy(required string source, required string destination) {
 
 		var result = true;
-		source = sanitizePath(source);
-		destination = sanitizePath(destination);
+		arguments.source = sanitizePath(arguments.source);
+		arguments.destination = sanitizePath(arguments.destination);
 
-		if (!this.directoryExists(destination)) {
-			directoryCreate(destination);
+		if (!this.directoryExists(arguments.destination)) {
+			directoryCreate(arguments.destination);
 		}
 
-		var files = directoryList(source, true, "query");
+		var files = directoryList(arguments.source, true, "query");
 		var i = "";
 
 		for (i = 1; i <= files.recordCount; i++) {
@@ -34,8 +34,8 @@ component {
 			if (files.type[i] == "file") {
 
 				var path = sanitizePath(files.directory[i] & "/" & files.name[i]);
-				var name = replace(path, source, "");
-				var target = destination & name;
+				var name = replace(path, arguments.source, "");
+				var target = arguments.destination & name;
 				var dir = getDirectoryFromPath(target);
 
 				if (!this.directoryExists(dir)) {
@@ -57,7 +57,7 @@ component {
 		var result = false;
 
 		try {
-			result = fileExists(filePath);
+			result = fileExists(arguments.filePath);
 		}
 		catch (any e) { }
 
@@ -67,7 +67,7 @@ component {
 
 	public string function sanitizePath(required string path) {
 
-		return replace(path, "\", "/", "all");
+		return replace(arguments.path, "\", "/", "all");
 
 	}
 

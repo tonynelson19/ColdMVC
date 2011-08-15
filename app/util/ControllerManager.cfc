@@ -72,11 +72,7 @@ component {
 	public string function getName(required string module, required string controller) {
 
 		if (controllerExists(arguments.module, arguments.controller)) {
-
-			var controllerDef = getController(arguments.module, arguments.controller);
-
-			return controllerDef.name;
-
+			return getController(arguments.module, arguments.controller).name;
 		}
 
 		return "";
@@ -86,27 +82,17 @@ component {
 	public string function getAction(required string module, required string controller) {
 
 		if (controllerExists(arguments.module, arguments.controller)) {
-
-			var controllerDef = getController(arguments.module, arguments.controller);
-
-			return controllerDef.action;
-
-		} else {
-
-			return "";
-
+			return getController(arguments.module, arguments.controller).action;
 		}
+			
+		return "index";
 
 	}
 
 	public string function getClassPath(required string module, required string controller) {
 
 		if (controllerExists(arguments.module, arguments.controller)) {
-
-			var controllerDef = getController(arguments.module, arguments.controller);
-
-			return controllerDef.class;
-
+			return getController(arguments.module, arguments.controller).class;
 		}
 
 		return "";
@@ -118,13 +104,10 @@ component {
 		var key = arguments.module & "." & arguments.controller;
 
 		if (!structKeyExists(variables.instances, key)) {
-
-			var classPath = getClassPath(arguments.module, arguments.controller);
-
-			var instance = beanFactory.new(classPath, {}, arguments.controller & "Controller");
-
+			
+			var controllerDef = getController(arguments.module, arguments.controller);			
+			var instance = beanFactory.new(controllerDef.class, {}, controllerDef.name);
 			actionHelperManager.autowire(instance);
-
 			variables.instances[key] = instance;
 
 		}
@@ -230,11 +213,8 @@ component {
 	public boolean function hasAction(required string module, required string controller, required string action) {
 
 		if (controllerExists(arguments.module, arguments.controller)) {
-
 			var controllerDef = getController(arguments.module, arguments.controller);
-
 			return structKeyExists(controllerDef.actions, arguments.action);
-
 		}
 
 		return false;
@@ -309,7 +289,7 @@ component {
 				var name = listFirst(files.name[i], ".");
 				controller["module"] = arguments.module;
 				controller["class"] = classPath & "." & name;
-				controller["name"] = files.name[i];
+				controller["name"] = listFirst(files.name[i], ".");
 
 				var metaData = metaDataFlattener.flattenMetaData(controller.class);
 

@@ -6,9 +6,8 @@ component {
 
 		lock name="coldmvc.Application" type="exclusive" timeout="5" throwontimeout="true" {
 
+			structDelete(server, this.name);
 			structDelete(application, "coldmvc");
-
-			setupSettings();
 
 			var pluginManager = createPluginManager();
 
@@ -44,7 +43,11 @@ component {
 
 		var reloadKey = getSetting("reloadKey");
 
-		if (structKeyExists(url, reloadKey)) {
+		if (getSetting("autoReload")) {
+
+			reload();
+
+		} else if (structKeyExists(url, reloadKey)) {
 
 			var reloadPassword = getSetting("reloadPassword");
 
@@ -52,8 +55,6 @@ component {
 				reload();
 			}
 
-		} else if (getSetting("autoReload")) {
-			reload();
 		}
 
 		// add a mapping for each plugin
@@ -107,7 +108,7 @@ component {
 		addBeans(beans, "/config/coldspring.xml");
 
 		// now loop over all the plugins and add their beans
-		var plugins = pluginManager.getPlugins();
+		var plugins = arguments.pluginManager.getPlugins();
 		var i = "";
 		for (i = 1; i <= arrayLen(plugins); i++) {
 			addBeans(beans, plugins[i].path & "/config/coldspring.xml");
@@ -127,7 +128,7 @@ component {
 		}
 
 		var beanFactory = new coldmvc.app.util.BeanFactory(xml, settings, {
-			"pluginManager" = pluginManager
+			"pluginManager" = arguments.pluginManager
 		});
 
 		return beanFactory;
@@ -136,13 +137,13 @@ component {
 
 	private any function addBeans(required xml beans, required string configPath) {
 
-		if (!_fileExists(configPath)) {
-			configPath = expandPath(configPath);
+		if (!_fileExists(arguments.configPath)) {
+			arguments.configPath = expandPath(arguments.configPath);
 		}
 
-		if (_fileExists(configPath)) {
+		if (_fileExists(arguments.configPath)) {
 
-			var content = fileRead(configPath);
+			var content = fileRead(arguments.configPath);
 
 			if (isXML(content)) {
 
@@ -155,14 +156,14 @@ component {
 				for (i = 1; i <= arrayLen(beanDefs); i++) {
 
 					var bean = beanDefs[i];
-					var exists = xmlSearch(beans, "beans/bean[@id='#bean.xmlAttributes.id#']");
+					var exists = xmlSearch(arguments.beans, "beans/bean[@id='#bean.xmlAttributes.id#']");
 
 					if (arrayLen(exists) == 0) {
 
-						var imported = xmlImport(beans, bean);
+						var imported = xmlImport(arguments.beans, bean);
 
 						for (j = 1; j <= arrayLen(imported); j++) {
-							arrayAppend(beans.xmlRoot.xmlChildren, imported[j]);
+							arrayAppend(arguments.beans.xmlRoot.xmlChildren, imported[j]);
 						}
 
 					}
@@ -172,7 +173,7 @@ component {
 				var imports = xmlSearch(xml, "/beans/import");
 
 				for (i = 1; i <= arrayLen(imports); i++) {
-					addBeans(beans, imports[i].xmlAttributes.resource);
+					addBeans(arguments.beans, imports[i].xmlAttributes.resource);
 				}
 
 			}
@@ -339,46 +340,75 @@ component {
 
 	}
 
-	private struct function setupSettings() {
+	private struct function getSettings() {
 
-		if (!structKeyExists(variables, "settings")) {
+		// the application scope isn't defined within the pseudo-constructor
+		if (isDefined("application") && structKeyExists(application, "coldmvc") && structKeyExists(application.coldmvc, "settings")) {
+			return application.coldmvc.settings;
+		}
 
-			variables.settings = {};
-			variables.environment = "";
+		// server scope... eww...
+		if (structKeyExists(server, this.name) && structKeyExists(server[this.name], "settings")) {
+			return server[this.name].settings;
+		}
 
-			var configPath = this.rootPath & "config/config.ini";
+		// make sure we're only parsing once, which should be the case once we're adding this to the server scope
+		if (!structKeyExists(this, "settings")) {
+			this.settings = loadSettings();
+		}
 
-			// check to see if there's a config file
-			if (_fileExists(configPath)) {
+		// only add it if it's defined, otherwise it's treated as variables.application
+		if (isDefined("application")) {
+			application.coldmvc.settings = this.settings;
+		}
 
-				// make sure the mapping works
-				if (_fileExists(expandPath("/coldmvc/app/util/Ini.cfc"))) {
-					var ini = new coldmvc.app.util.Ini(configPath);
-				} else {
-					var ini = new app.util.Ini(configPath);
-				}
+		// make sure the application's unique namespace exists on the server
+		if (!structKeyExists(server, this.name)) {
+			server[this.name] = {};
+		}
 
-				// load the default section first
-				var section = ini.getSection("default");
+		// add the server setting for subsequent requests
+		server[this.name].settings = this.settings;
 
-				// append the section to the settings
-				structAppend(variables.settings, section);
+		return this.settings;
 
-				// check to see if there's an environment file
-				var environmentPath = this.rootPath & "config/environment.txt";
+	}
 
-				if (_fileExists(environmentPath)) {
+	private struct function loadSettings() {
 
-					// read the environment
-					variables.environment = fileRead(environmentPath);
+		var settings = {};
+		var environment = "";
+		var configPath = this.rootPath & "config/config.ini";
 
-					// get the config settings
-					section = ini.getSection(environment);
+		// check to see if there's a config file
+		if (_fileExists(configPath)) {
 
-					// adding the environments settings, overriding any default settings
-					structAppend(variables.settings, section, true);
+			// make sure the mapping works
+			if (_fileExists(expandPath("/coldmvc/app/util/Ini.cfc"))) {
+				var ini = new coldmvc.app.util.Ini(configPath);
+			} else {
+				var ini = new app.util.Ini(configPath);
+			}
 
-				}
+			// load the default section first
+			var section = ini.getSection("default");
+
+			// append the section to the settings
+			structAppend(settings, section);
+
+			// check to see if there's an environment file
+			var environmentPath = this.rootPath & "config/environment.txt";
+
+			if (_fileExists(environmentPath)) {
+
+				// read the environment
+				environment = fileRead(environmentPath);
+
+				// get the config settings
+				section = ini.getSection(environment);
+
+				// adding the environments settings, overriding any default settings
+				structAppend(settings, section, true);
 
 			}
 
@@ -389,7 +419,7 @@ component {
 			"controller" = "index",
 			"debug" = true,
 			"development" = false,
-			"environment" = variables.environment,
+			"environment" = environment,
 			"https" = "auto",
 			"layout" = "index",
 			"reloadKey" = "init",
@@ -399,21 +429,21 @@ component {
 		};
 
 		// override any default variables
-		structAppend(variables.settings, defaults, false);
+		structAppend(settings, defaults, false);
 
-		if (!structKeyExists(variables.settings, "urlPath")) {
+		if (!structKeyExists(settings, "urlPath")) {
 
-			if (variables.settings["sesURLs"]) {
-				variables.settings["urlPath"] = replaceNoCase(cgi.script_name, "/index.cfm", "");
+			if (settings["sesURLs"]) {
+				settings["urlPath"] = replaceNoCase(cgi.script_name, "/index.cfm", "");
 			} else {
-				variables.settings["urlPath"] = cgi.script_name;
+				settings["urlPath"] = cgi.script_name;
 			}
 
 		}
 
-		if (!structKeyExists(variables.settings, "assetPath")) {
+		if (!structKeyExists(settings, "assetPath")) {
 
-			var assetPath = replaceNoCase(variables.settings["urlPath"], "index.cfm", "");
+			var assetPath = replaceNoCase(settings["urlPath"], "index.cfm", "");
 
 			if (assetPath == "/") {
 				assetPath = "";
@@ -421,24 +451,11 @@ component {
 				assetPath = left(assetPath, len(assetPath) - 1);
 			}
 
-			variables.settings["assetPath"] = assetPath;
+			settings["assetPath"] = assetPath;
 
 		}
 
-		application["coldmvc"] = {};
-		application["coldmvc"].settings = variables.settings;
-
-		return variables.settings;
-
-	}
-
-	private struct function getSettings() {
-
-		if (!isDefined("application") || !structKeyExists(application, "coldmvc") || !structKeyExists(application.coldmvc, "settings")) {
-			return setupSettings();
-		}
-
-		return application.coldmvc.settings;
+		return settings;
 
 	}
 
@@ -446,11 +463,11 @@ component {
 
 		var settings = getSettings();
 
-		if (structKeyExists(settings, key)) {
-			return settings[key];
+		if (structKeyExists(settings, arguments.key)) {
+			return settings[arguments.key];
+		} else {
+			return "";
 		}
-
-		return "";
 
 	}
 
@@ -471,7 +488,7 @@ component {
 		var result = false;
 
 		try {
-			result = fileExists(filePath);
+			result = fileExists(arguments.filePath);
 		}
 		catch (any e) {
 		}
@@ -485,7 +502,7 @@ component {
 		var result = false;
 
 		try {
-			result = directoryExists(directoryPath);
+			result = directoryExists(arguments.directoryPath);
 		}
 		catch (any e) {}
 

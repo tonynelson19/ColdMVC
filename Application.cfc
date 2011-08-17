@@ -6,7 +6,6 @@ component {
 
 		lock name="coldmvc.Application" type="exclusive" timeout="5" throwontimeout="true" {
 
-			structDelete(server, this.name);
 			structDelete(application, "coldmvc");
 
 			var pluginManager = createPluginManager();
@@ -347,12 +346,7 @@ component {
 			return application.coldmvc.settings;
 		}
 
-		// server scope... eww...
-		if (structKeyExists(server, this.name) && structKeyExists(server[this.name], "settings")) {
-			return server[this.name].settings;
-		}
-
-		// make sure we're only parsing once, which should be the case once we're adding this to the server scope
+		// make sure we're only parsing once
 		if (!structKeyExists(this, "settings")) {
 			this.settings = loadSettings();
 		}
@@ -361,14 +355,6 @@ component {
 		if (isDefined("application")) {
 			application.coldmvc.settings = this.settings;
 		}
-
-		// make sure the application's unique namespace exists on the server
-		if (!structKeyExists(server, this.name)) {
-			server[this.name] = {};
-		}
-
-		// add the server setting for subsequent requests
-		server[this.name].settings = this.settings;
 
 		return this.settings;
 

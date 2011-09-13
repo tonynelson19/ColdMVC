@@ -8,28 +8,27 @@ component {
 	public any function init(required string xml, required struct config, struct beans) {
 
 		variables.config = arguments.config;
-
-		beanDefinitions = {};
-		beanInstances = {};
-		factoryPostProcessors = [];
-		beanPostProcessors = [];
-		singletons = {};
+		variables.beanDefinitions = {};
+		variables.beanInstances = {};
+		variables.factoryPostProcessors = [];
+		variables.beanPostProcessors = [];
+		variables.singletons = {};
 
 		var setting = "";
-		for (setting in config) {
-			if (isSimpleValue(config[setting])) {
-				xml = replaceNoCase(xml, "${#setting#}", config[setting], "all");
+		for (setting in arguments.config) {
+			if (isSimpleValue(arguments.config[setting])) {
+				arguments.xml = replaceNoCase(arguments.xml, "${#setting#}", arguments.config[setting], "all");
 			}
 		}
 
 		if (structKeyExists(arguments, "beans")) {
 			var bean = "";
-			for (bean in beans) {
-				setBean(bean, beans[bean]);
+			for (bean in arguments.beans) {
+				setBean(bean, arguments.beans[bean]);
 			}
 		}
 
-		loadBeans(xmlParse(xml));
+		loadBeans(xmlParse(arguments.xml));
 
 		return this;
 
@@ -39,7 +38,7 @@ component {
 
 		var i = "";
 
-		for (i = 1; i <= arrayLen(xml.beans.xmlChildren); i++) {
+		for (i = 1; i <= arrayLen(arguments.xml.beans.xmlChildren); i++) {
 
 			var xmlBean = xml.beans.xmlChildren[i];
 
@@ -49,23 +48,40 @@ component {
 				initMethod = getXMLAttribute(xmlBean, "init-method", ""),
 				constructed = false,
 				autowired = false,
+				constructorArgs = {},
 				properties = {}
 			};
 
 			for (j = 1; j <= arrayLen(xmlBean.xmlChildren); j++) {
-				bean.properties[xmlBean.xmlChildren[j].xmlAttributes.name] = xmlBean.xmlChildren[j].xmlChildren[1];
+
+				var child = xmlBean.xmlChildren[j];
+
+				switch(child.xmlName) {
+
+					case "constructor-arg": {
+						bean.constructorArgs[child.xmlAttributes.name] = child.xmlChildren[1];
+						break;
+					}
+
+					case "property": {
+						bean.properties[child.xmlAttributes.name] = child.xmlChildren[1];
+						break;
+					}
+
+				}
+
 			}
 
 			if (getXMLAttribute(xmlBean, "factory-post-processor", false)) {
-				arrayAppend(factoryPostProcessors, bean.id);
+				arrayAppend(variables.factoryPostProcessors, bean.id);
 			}
 
 			if (getXMLAttribute(xmlBean, "bean-post-processor", false)) {
-				arrayAppend(beanPostProcessors, bean.id);
+				arrayAppend(variables.beanPostProcessors, bean.id);
 			}
 
-			singletons[bean.id] = bean.class;
-			beanDefinitions[bean.id] = bean;
+			variables.singletons[bean.id] = bean.class;
+			variables.beanDefinitions[bean.id] = bean;
 
 		}
 
@@ -75,10 +91,10 @@ component {
 
 	private string function getXMLAttribute(required xml xml, required string key, string def="") {
 
-		if (structKeyExists(xml.xmlAttributes, key)) {
-			return xml.xmlAttributes[key];
+		if (structKeyExists(arguments.xml.xmlAttributes, arguments.key)) {
+			return arguments.xml.xmlAttributes[arguments.key];
 		} else {
-			return def;
+			return arguments.def;
 		}
 
 	}
@@ -87,9 +103,9 @@ component {
 
 		var i = "";
 
-		for (i = 1; i <= arrayLen(beanPostProcessors); i++) {
-			var postProcessor = getBean(beanPostProcessors[i]);
-			postProcessor.postProcessAfterInitialization(bean, beanName);
+		for (i = 1; i <= arrayLen(variables.beanPostProcessors); i++) {
+			var postProcessor = getBean(variables.beanPostProcessors[i]);
+			postProcessor.postProcessAfterInitialization(arguments.bean, arguments.beanName);
 		}
 
 	}
@@ -98,8 +114,8 @@ component {
 
 		var i = "";
 
-		for (i = 1; i <= arrayLen(factoryPostProcessors); i++) {
-			var postProcessor = getBean(factoryPostProcessors[i]);
+		for (i = 1; i <= arrayLen(variables.factoryPostProcessors); i++) {
+			var postProcessor = getBean(variables.factoryPostProcessors[i]);
 			postProcessor.postProcessBeanFactory(this);
 		}
 
@@ -107,70 +123,77 @@ component {
 
 	public any function getBean(required string beanName) {
 
-		var beanDef = beanDefinitions[beanName];
+		var beanDefinition = variables.beanDefinitions[arguments.beanName];
 
-		if (!beanDef.constructed) {
-			constructBean(beanName);
+		if (!beanDefinition.constructed) {
+			constructBean(arguments.beanName);
 		}
 
-		return beanInstances[beanName];
+		return variables.beanInstances[arguments.beanName];
 
 	}
 
 	private void function constructBean(required string beanName) {
 
-		var property = "";
 		var i = "";
-		var dependencies = findDependencies(beanName, beanName);
+		var dependencies = listToArray(findDependencies(arguments.beanName, arguments.beanName));
 		var initMethods = [];
+		var constructed = [];
 
-		for (i = 1; i <= listLen(dependencies); i++) {
+		for (i = 1; i <= arrayLen(dependencies); i++) {
 
-			var id = listGetAt(dependencies, i);
+			var id = dependencies[i];
 
-			lock name="coldmvc.app.util.SimpleBeanFactory.constructBean.#id#" type="exclusive" timeout="5" throwontimeout="true" {
+			lock name="coldmvc.app.util.BeanFactory.constructBean.#id#" type="exclusive" timeout="5" throwontimeout="true" {
 
-				var beanDef = beanDefinitions[id];
+				var beanDefinition = variables.beanDefinitions[id];
 
-				if (!beanDef.constructed) {
+				if (!beanDefinition.constructed) {
 
-					var beanInstance = getBeanInstance(beanDef.id);
+					var beanInstance = getBeanInstance(beanDefinition.id);
 
 					if (structKeyExists(beanInstance, "setBeanFactory")) {
 						beanInstance.setBeanFactory(this);
 					}
 
 					if (structKeyExists(beanInstance, "setBeanName")) {
-						beanInstance.setBeanName(beanDef.id);
+						beanInstance.setBeanName(beanDefinition.id);
 					}
 
-					for (property in beanDef.properties) {
-						var value = parseProperty(beanDef.properties[property]);
-						evaluate("beanInstance.set#property#(value)");
+					var key = "";
+					for (key in beanDefinition.properties) {
+						var value = parseNode(beanDefinition.properties[key]);
+						evaluate("beanInstance.set#key#(value)");
 					}
 
-					if (structKeyExists(variables.config, beanDef.id)) {
-						for (property in variables.config[beanDef.id]) {
+					// check for config based properties using the bean name (fooService.bar = baz)
+					if (structKeyExists(variables.config, beanDefinition.id)) {
+						for (property in variables.config[beanDefinition.id]) {
 							if (structKeyExists(beanInstance, "set#property#")) {
-								evaluate("beanInstance.set#property#(variables.config[beanDef.id][property])");
+								evaluate("beanInstance.set#property#(variables.config[beanDefinition.id][property])");
 							}
 						}
 					}
 
-					autowireClassPath(beanInstance, beanDef.class);
+					autowireClassPath(beanInstance, beanDefinition.class);
 
-					if (beanDef.initMethod != "") {
+					// check for init methods
+					if (beanDefinition.initMethod != "") {
 
 						arrayAppend(initMethods, {
 							bean = beanInstance,
-							initMethod = beanDef.initMethod
+							initMethod = beanDefinition.initMethod
 						});
 
 					}
 
-					beanDef.constructed = true;
+					// keep track of all of the beans that have been constructed
+					arrayAppend(constructed, {
+						bean = beanInstance,
+						id = beanDefinition.id
+					});
 
-					processBeanPostProcessors(beanInstance, beanDef.id);
+					beanDefinition.constructed = true;
 
 				}
 
@@ -179,40 +202,51 @@ component {
 		}
 
 		for (i = 1; i <= arrayLen(initMethods); i++) {
-
 			evaluate("initMethods[i].bean.#initMethods[i].initMethod#()");
+		}
 
+		for (i = 1; i <= arrayLen(constructed); i++) {
+			processBeanPostProcessors(constructed[i].bean, constructed[i].id);
 		}
 
 	}
 
 	private any function getBeanInstance(required string beanName) {
 
-		lock name="coldmvc.app.util.SimpleBeanFactory.getBeanInstance.#beanName#" type="exclusive" timeout="5" throwontimeout="true" {
+		lock name="coldmvc.app.util.BeanFactory.getBeanInstance.#arguments.beanName#" type="exclusive" timeout="5" throwontimeout="true" {
 
-			if (!structKeyExists(beanInstances, beanName)) {
+			if (!structKeyExists(variables.beanInstances, arguments.beanName)) {
 
-				beanInstances[beanName] = createObject("component", beanDefinitions[beanName].class);
+				var beanDefinition = variables.beanDefinitions[arguments.beanName];
+				var beanInstance = createObject("component", beanDefinition.class);
 
-				if (structKeyExists(beanInstances[beanName], "init")) {
-					beanInstances[beanName].init();
+				var constructorArgs = {};
+				var key = "";
+				for (key in beanDefinition.constructorArgs) {
+					constructorArgs[key] = parseNode(beanDefinition.constructorArgs[key]);
 				}
+
+				if (structKeyExists(beanInstance, "init")) {
+					beanInstance.init(argumentCollection=constructorArgs);
+				}
+
+				variables.beanInstances[arguments.beanName] = beanInstance;
 
 			}
 
 		}
 
-		return beanInstances[beanName];
+		return variables.beanInstances[arguments.beanName];
 
 	}
 
 	private struct function findFunctions(required string beanName) {
 
-		var beanDef = beanDefinitions[beanName];
+		var beanDefinition = variables.beanDefinitions[arguments.beanName];
 
-		if (!structKeyExists(beanDef, "functions")) {
+		if (!structKeyExists(beanDefinition, "functions")) {
 
-			var metaData = getComponentMetaData(beanDef.class);
+			var metaData = getComponentMetaData(beanDefinition.class);
 			var functions = {};
 			var access = "";
 			var i = "";
@@ -243,32 +277,32 @@ component {
 
 			}
 
-			beanDef.functions = functions;
+			beanDefinition.functions = functions;
 
 		}
 
-		return beanDef.functions;
+		return beanDefinition.functions;
 
 	}
 
 	private string function findDependencies(required string beanName, required string dependencies) {
 
-		addAutowiredProperties(beanName);
+		addAutowiredProperties(arguments.beanName);
 
-		var beanDef = beanDefinitions[beanName];
+		var beanDefinition = variables.beanDefinitions[arguments.beanName];
 		var property = "";
 
-		for (property in beanDef.properties) {
+		for (property in beanDefinition.properties) {
 
-			var xml = beanDef.properties[property];
+			var xml = beanDefinition.properties[property];
 
 			if (xml.xmlName == "ref") {
 
 				var dependency = xml.xmlAttributes.bean;
 
-				if (!listFindNoCase(dependencies, dependency)) {
-					dependencies = listAppend(dependencies, dependency);
-					dependencies = findDependencies(dependency, dependencies);
+				if (!listFindNoCase(arguments.dependencies, dependency)) {
+					arguments.dependencies = listAppend(arguments.dependencies, dependency);
+					arguments.dependencies = findDependencies(dependency, arguments.dependencies);
 				}
 
 			}
@@ -281,11 +315,11 @@ component {
 
 	private void function addAutowiredProperties(required string beanName) {
 
-		var beanDef = beanDefinitions[beanName];
+		var beanDefinition = variables.beanDefinitions[arguments.beanName];
 
-		if (!beanDef.autowired) {
+		if (!beanDefinition.autowired) {
 
-			var functions = findFunctions(beanName);
+			var functions = findFunctions(arguments.beanName);
 			var func = "";
 
 			for (func in functions) {
@@ -294,13 +328,13 @@ component {
 
 					var property = replaceNoCase(func, "set", "");
 
-					if (!structKeyExists(beanDef.properties, property) && containsBean(property)) {
+					if (!structKeyExists(beanDefinition.properties, property) && containsBean(property)) {
 
 						var xml = xmlNew();
 						xml.xmlRoot = xmlElemNew(xml, "ref");
 						xml.xmlRoot.xmlAttributes["bean"] = property;
 
-						beanDef.properties[property] = xml.xmlRoot;
+						beanDefinition.properties[property] = xml.xmlRoot;
 
 					}
 
@@ -308,7 +342,7 @@ component {
 
 			}
 
-			beanDef.autowired = true;
+			beanDefinition.autowired = true;
 
 		}
 
@@ -316,11 +350,11 @@ component {
 
 	public boolean function containsBean(required string beanName) {
 
-		return structKeyExists(beanDefinitions, beanName);
+		return structKeyExists(variables.beanDefinitions, arguments.beanName);
 
 	}
 
-	private any function parseProperty(required xml xml, struct result) {
+	private any function parseNode(required xml xml, struct result) {
 
 		var i = "";
 
@@ -331,7 +365,7 @@ component {
 		switch(xml.xmlName) {
 
 			case "property": {
-				result[xml.xmlAttributes.name] = parseProperty(xml.xmlChildren[1], result);
+				result[xml.xmlAttributes.name] = parseNode(xml.xmlChildren[1], result);
 				break;
 			}
 
@@ -344,7 +378,7 @@ component {
 				var array = [];
 
 				for (i = 1; i <= arrayLen(xml.xmlChildren); i++) {
-					var value = parseProperty(xml.xmlChildren[i], result);
+					var value = parseNode(xml.xmlChildren[i], result);
 					arrayAppend(array, value);
 				}
 
@@ -357,7 +391,7 @@ component {
 				var struct = {};
 
 				for (i = 1; i <= arrayLen(xml.xmlChildren); i++) {
-					var value = parseProperty(xml.xmlChildren[i].xmlChildren[1], result);
+					var value = parseNode(xml.xmlChildren[i].xmlChildren[1], result);
 					struct[xml.xmlChildren[i].xmlAttributes.key] = value;
 				}
 
@@ -372,7 +406,7 @@ component {
 			default: {
 
 				for (i = 1; i <= arrayLen(xml.xmlRoot.xmlChildren); i++) {
-					parseProperty(xml.xmlRoot.xmlChildren[i], result);
+					parseNode(xml.xmlRoot.xmlChildren[i], result);
 				}
 
 		  	}
@@ -385,7 +419,7 @@ component {
 
 	public void function addBean(required string id, required string class) {
 
-		var metaData = getComponentMetaData(class);
+		var metaData = getComponentMetaData(arguments.class);
 		var initMethod = "";
 
 		while (structKeyExists(metaData, "extends")) {
@@ -399,14 +433,15 @@ component {
 
 		}
 
-		singletons[id] = class;
+		variables.singletons[arguments.id] = class;
 
-		beanDefinitions[id] = {
-			id = id,
-			class = class,
+		variables.beanDefinitions[arguments.id] = {
+			id = arguments.id,
+			class = arguments.class,
 			initMethod = initMethod,
 			constructed = false,
 			autowired = false,
+			constructorArgs = {},
 			properties = {}
 		};
 
@@ -414,16 +449,17 @@ component {
 
 	public void function setBean(required string id, required any object) {
 
-		var class = getMetaData(object).name;
-		singletons[id] = class;
-		beanInstances[id] = object;
+		var class = getMetaData(arguments.object).name;
+		variables.singletons[id] = class;
+		variables.beanInstances[id] = arguments.object;
 
-		beanDefinitions[id] = {
-			id = id,
-			class = getMetaData(object).name,
+		variables.beanDefinitions[id] = {
+			id = arguments.id,
+			class = class,
 			initMethod = "",
 			constructed = true,
 			autowired = true,
+			constructorArgs = {},
 			properties = {}
 		};
 
@@ -431,7 +467,7 @@ component {
 
 	public struct function getBeanDefinitions() {
 
-		return singletons;
+		return variables.singletons;
 
 	}
 
@@ -466,13 +502,17 @@ component {
 
 	}
 
-	public any function new(required string classPath, struct constructorArgs, string beanName="") {
-
-		var object = createObject("component", arguments.classPath);
+	public any function new(required string classPath, struct constructorArgs, struct properties, string beanName="") {
 
 		if (!structKeyExists(arguments, "constructorArgs")) {
 			arguments.constructorArgs = {};
 		}
+
+		if (!structKeyExists(arguments, "properties")) {
+			arguments.properties = {};
+		}
+
+		var object = createObject("component", arguments.classPath);
 
 		if (structKeyExists(object, "init")) {
 			object.init(argumentCollection=arguments.constructorArgs);
@@ -485,6 +525,14 @@ component {
 		getBean("beanInjector").autowire(object);
 
 		autowireClassPath(object, arguments.classPath);
+
+		// pass in the properties after autowiring
+		var key = "";
+		for (key in arguments.properties) {
+			if (structKeyExists(object, "set#key#")) {
+				evaluate("object.set#key#(arguments.properties[key])");
+			}
+		}
 
 		processBeanPostProcessors(object, arguments.beanName);
 

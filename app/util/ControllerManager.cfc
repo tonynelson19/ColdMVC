@@ -84,7 +84,7 @@ component {
 		if (controllerExists(arguments.module, arguments.controller)) {
 			return getController(arguments.module, arguments.controller).action;
 		}
-			
+
 		return "index";
 
 	}
@@ -104,9 +104,9 @@ component {
 		var key = arguments.module & "." & arguments.controller;
 
 		if (!structKeyExists(variables.instances, key)) {
-			
-			var controllerDef = getController(arguments.module, arguments.controller);			
-			var instance = beanFactory.new(controllerDef.class, {}, controllerDef.name);
+
+			var controllerDef = getController(arguments.module, arguments.controller);
+			var instance = beanFactory.new(controllerDef.class, {}, {}, controllerDef.name);
 			actionHelperManager.autowire(instance);
 			variables.instances[key] = instance;
 

@@ -288,6 +288,7 @@ component {
 			flushAtRequestEnd = false
 		};
 
+		// these conditionals should be deprecated in the future
 		if (structKeyExists(settings, "ormDialect")) {
 			this.ormSettings.dialect = settings.ormDialect;
 		}
@@ -332,6 +333,35 @@ component {
 
 				// don't generate the mapping files if they have one
 				this.ormSettings.saveMapping = false;
+
+			}
+
+		}
+
+		// check to see if any application settings are specified inside the config
+		if (structKeyExists(settings, "this")) {
+
+			var key = "";
+			var value = "";
+
+			for (key in settings.this) {
+
+				value = settings.this[key];
+
+				if (isSimpleValue(value)) {
+
+					// allow for simple settings like timeouts
+					this[key] = value;
+
+				} else if (isStruct(value)) {
+
+					// allow for handling of nested structs like ormSettings
+					if (!structKeyExists(this, key)) {
+						this[key] = {};
+					}
+
+					structAppend(this[key], value, true);
+				}
 
 			}
 
@@ -401,9 +431,7 @@ component {
 		}
 
 		var defaults = {
-			"autoReload" = false,
 			"controller" = "index",
-			"debug" = true,
 			"development" = false,
 			"environment" = environment,
 			"https" = "auto",
@@ -414,8 +442,16 @@ component {
 			"sesURLs" = false
 		};
 
-		// override any default variables
+		// override any default settings
 		structAppend(settings, defaults, false);
+
+		if (!structKeyExists(settings, "autoReload")) {
+			settings["autoReload"] = settings["development"];
+		}
+
+		if (!structKeyExists(settings, "debug")) {
+			settings["debug"] = settings["development"];
+		}
 
 		if (!structKeyExists(settings, "urlPath")) {
 

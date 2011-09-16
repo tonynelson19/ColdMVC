@@ -18,6 +18,8 @@
 	
 	<bean id="collectionParser" class="coldmvc.app.util.CollectionParser" />
 	
+	<bean id="componentLocator" class="coldmvc.app.util.ComponentLocator" />
+	
 	<bean id="config" class="coldmvc.app.util.Config" />
 	
 	<bean id="controllerManager" class="coldmvc.app.util.ControllerManager" init-method="setup">

@@ -20,6 +20,8 @@ component {
 			arrayAppend(directories, plugins[i].mapping & arguments.path);
 		}
 
+		arrayAppend(directories, "/coldmvc" & arguments.path);
+
 		for (i = 1; i <= arrayLen(directories); i++) {
 
 			var directory = expandPath(directories[i]);

@@ -4,38 +4,14 @@
 component {
 
 	property beanFactory;
+	property componentLocator;
 	property config;
-	property fileSystem;
-	property pluginManager;
 
 	public HelperManager function init() {
 
 		variables.templates = {};
-		variables.directories = [];
 
 		return this;
-
-	}
-
-	public void function setPluginManager(required any pluginManager) {
-
-		var plugins = arguments.pluginManager.getPlugins();
-		var i = "";
-		var path = "/app/helpers/";
-
-		addDirectory(path);
-
-		for (i = 1; i <= arrayLen(plugins); i++) {
-			addDirectory(plugins[i].mapping & path);
-		}
-
-		addDirectory("/coldmvc" & path);
-
-	}
-
-	public void function addDirectory(required string directory) {
-
-		arrayAppend(variables.directories, arguments.directory);
 
 	}
 
@@ -76,83 +52,54 @@ component {
 
 	private struct function loadHelpers() {
 
+		var globalConfig = beanFactory.getConfig();
+		var classes = componentLocator.locate("/app/helpers");
 		var helpers = {};
-		var i = "";
-		var j = "";
+		var key = "";
 
-		for (i = 1; i <= arrayLen(variables.directories); i++) {
+		for (key in classes) {
 
-			var directory = expandPath(variables.directories[i]);
+			var class = classes[key];
+			var name = key;
+			var metaData = getComponentMetaData(class);
 
-			if (fileSystem.directoryExists(directory)) {
+			while (structKeyExists(metaData, "extends")) {
+				if (structKeyExists(metaData, "helper")) {
+					name = metaData.helper;
+					break;
+				}
+				metaData = metaData.extends;
+			}
 
-				var files = directoryList(directory, false, "query", "*.cfc");
+			if (!structKeyExists(helpers, name)) {
 
-				for (j = 1; j <= files.recordCount; j++) {
+				var instance = beanFactory.new(class);
 
-					var helper = {};
-					helper.name = listFirst(files.name[j], ".");
-					helper.classPath = getClassPath(variables.directories[i], helper.name);
+				if (structKeyExists(globalConfig, "coldmvc") && structKeyExists(globalConfig["coldmvc"], name)) {
 
-					var metaData = getComponentMetaData(helper.classPath);
+					var settings = globalConfig["coldmvc"][name];
+					var setting = "";
 
-					while (structKeyExists(metaData, "extends")) {
-
-						if (structKeyExists(metaData, "helper")) {
-							helper.name = metaData.helper;
-							break;
+					for (setting in settings) {
+						if (structKeyExists(instance, "set#setting#")) {
+							evaluate("instance.set#setting#(settings[setting])");
 						}
-
-						metaData = metaData.extends;
-
-					}
-
-					if (!structKeyExists(helpers, helper.name)) {
-
-						helper.path = variables.directories[i] & files.name[j];
-						helper.object = beanFactory.new(helper.classPath);
-
-						var globalConfig = beanFactory.getConfig();
-
-						if (structKeyExists(globalConfig, "coldmvc") && structKeyExists(globalConfig["coldmvc"], helper.name)) {
-
-							var settings = globalConfig["coldmvc"][helper.name];
-							var key = "";
-
-							for (key in settings) {
-								if (structKeyExists(helper.object, "set#key#")) {
-									evaluate("helper.object.set#key#(settings[key])");
-								}
-							}
-
-						}
-
-						if (structKeyExists(variables, "config") && structKeyExists(helper.object, "setConfig")) {
-							helper.object.setConfig(variables.config);
-						}
-
-						variables.templates[helper.name] = helper.path;
-						helpers[helper.name] = helper.object;
-
 					}
 
 				}
+
+				if (structKeyExists(variables, "config") && structKeyExists(instance, "setConfig")) {
+					instance.setConfig(variables.config);
+				}
+
+				variables.templates[name] = class;
+				helpers[name] = instance;
 
 			}
 
 		}
 
 		return helpers;
-
-	}
-
-	private string function getClassPath(required string directory, required string name) {
-
-		arguments.directory = replace(arguments.directory, "\", "/", "all");
-
-		arguments.directory = arrayToList(listToArray(arguments.directory, "/"), ".");
-
-		return arguments.directory & "." & arguments.name;
 
 	}
 

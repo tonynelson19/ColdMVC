@@ -130,8 +130,21 @@
 		<cfset configure(arguments) />
 
 		<cfset arguments.url = getURL(arguments) />
+		
+		<cfset var attributes = [] />
+		<cfset arrayAppend(attributes, 'action="#arguments.url#"') />
+		<cfset arrayAppend(attributes, 'method="#arguments.method#"') />
+		<cfset arrayAppend(attributes, 'enctype="multipart/form-data"') />
+		<cfset arrayAppend(attributes, arguments.common) />
+		
+		<cfif structKeyExists(arguments, "novalidate")>
+			<cfif isBoolean(arguments.novalidate) and arguments.novalidate>
+				<cfset arguments.novalidate = "novalidate" />
+			</cfif>
+			<cfset arrayAppend(attributes, 'novalidate="#arguments.novalidate#"') />
+		</cfif>
 
-		<cfreturn '<form action="#arguments.url#" method="#arguments.method#" enctype="multipart/form-data" #arguments.common#>' />
+		<cfreturn '<form #arrayToList(attributes, " ")#>' />
 
 	</cffunction>
 

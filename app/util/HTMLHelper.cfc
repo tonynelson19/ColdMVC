@@ -50,14 +50,14 @@
 		<cfset arguments.args.disabled = getKey(arguments.args, "disabled", false) />
 		<cfset arguments.args.visible = getKey(arguments.args, "visible", true) />
 
-		<cfloop list="class,style,instructions,placeholder,#arguments.commonKeys#" index="i">
+		<cfloop list="class,style,instructions,placeholder,autocomplete,#arguments.commonKeys#" index="i">
 			<cfset arguments.args[i] = getKey(arguments.args, i) />
 		</cfloop>
 
 		<cfset arguments.args.common = [] />
 
 		<!--- check for common attributes --->
-		<cfloop list="name,id,title,class,placeholder,#arguments.commonKeys#" index="i">
+		<cfloop list="name,id,title,class,placeholder,autocomplete,#arguments.commonKeys#" index="i">
 			<cfif arguments.args[i] neq "">
 				<cfset arrayAppend(arguments.args.common, '#i#="#htmlEditFormat(arguments.args[i])#"') />
 			</cfif>

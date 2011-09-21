@@ -7,65 +7,16 @@ component {
 	property fileSystem;
 	property pluginManager;
 	property templateManager;
+	property tags;
+	property libraries;
 
 	public TagManager function init() {
 
-		variables.tagLibraries = {
-			"c" = "/tags/"
-		};
-
-		variables.directory = expandPath("/tags/");
-		variables.directories = [];
+		variables.tags = {};
+		variables.libraries = {};		
 		variables.loaded = false;
 
 		return this;
-
-	}
-
-	public void function setPluginManager(required any pluginManager) {
-
-		var plugins = arguments.pluginManager.getPlugins();
-		var i = "";
-		var path = "/app/tags/";
-
-		arrayAppend(variables.directories, path);
-
-		for (i = 1; i <= arrayLen(plugins); i++) {
-			arrayAppend(variables.directories, plugins[i].mapping & path);
-		}
-
-		arrayAppend(variables.directories, "/coldmvc" & path);
-
-	}
-
-	public struct function getTagLibraries() {
-
-		return variables.tagLibraries;
-
-	}
-
-	public void function setTagLibrary(required string prefix, required string path) {
-
-		if (right(arguments.path, 1) != "/") {
-			arguments.path = arguments.path & "/";
-		}
-
-		variables.tagLibraries[arguments.prefix] = arguments.path;
-
-	}
-
-	private void function generateFiles() {
-
-		if (fileSystem.directoryExists(variables.directory)) {
-			directoryDelete(variables.directory, true);
-		}
-
-		directoryCreate(variables.directory);
-
-		var template = "";
-		for (template in config.templates) {
-			fileWrite(config.templates[template].file, templateManager.generateContent(fileRead(expandPath(config.templates[template].path))));
-		}
 
 	}
 
@@ -86,45 +37,97 @@ component {
 	}
 
 	private void function loadConfig() {
-
-		var result = {};
+		
+		var tags = {};
+		var libraries = {};
+		var directories = [];
+		var plugins = variables.pluginManager.getPlugins();
 		var i = "";
-		result.templates = {};
+		var path = "/app/tags";
 
-		for (i = 1; i <= arrayLen(variables.directories); i++) {
+		arrayAppend(directories, path);
 
-			var library = {};
-			library.path = replace(variables.directories[i], "\", "/", "all");
-			library.directory = expandPath(library.path);
+		for (i = 1; i <= arrayLen(plugins); i++) {
+			arrayAppend(directories, plugins[i].mapping & path);
+		}
 
-			if (fileSystem.directoryExists(library.directory)) {
+		arrayAppend(directories, "/coldmvc" & path);
 
-				var templates = directoryList(library.directory, true, "path", "*.cfm");
+		for (i = 1; i <= arrayLen(directories); i++) {
+			
+			var directory = directories[i];
+			var expandedDirectory = expandPath(directory);
+			
+			if (fileSystem.directoryExists(expandedDirectory)) {
+
+				var files = directoryList(expandedDirectory, true, "query", "*.cfm");				
 				var j = "";
-				for (j = 1; j <= arrayLen(templates); j++) {
-
-					var template = {};
-					template.name = getFileFromPath(templates[j]);
-					template.path = library.path & template.name;
-					template.file = expandPath("/tags/" & template.name);
-
-					if (!structKeyExists(result.templates, template.name)) {
-						result.templates[template.name] = template;
+				
+				for (j = 1; j <= files.recordCount; j++) {
+					
+					var name = listFirst(files.name[j], ".");
+					var library = getFileFromPath(replaceNoCase(files.directory[j], expandedDirectory, ""));
+					
+					if (library == "") {						
+						var library = "c";
+						var destination = "/tags/";						
+					} else {
+						var destination = "/tags/#library#/";
 					}
-
+									
+					var key = library & ":" & name;		
+					var template = replace(sanitize(files.directory[j] & "/" & files.name[j]), sanitize(expandedDirectory), "");
+					var source = directory & template;
+					
+					if (!structKeyExists(tags, key)) {
+						
+						if (!structKeyExists(libraries, library)) {
+							libraries[library] = destination;
+						}
+						
+						tags[key] = {
+							source = source,
+							destination = destination & "#name#.cfm"
+						};
+					
+					}
 				}
 
 			}
 
 		}
-
-		variables.config = result;
+		
+		variables.tags = tags;
+		variables.libraries = libraries;
 
 	}
+	
+	private string function sanitize(required string path) {
+		
+		return replace(arguments.path, "\", "/", "all");
+		
+	}
 
-	public struct function getTemplates() {
+	private void function generateFiles() {
 
-		return config.templates;
+		var key = "";
+		for (key in variables.libraries) {			
+			if (fileSystem.directoryExists(variables.libraries[key])) {
+				directoryDelete(variables.libraries[key], true);
+			}			
+		}
+		
+		for (key in variables.libraries) {
+			if (!fileSystem.directoryExists(variables.libraries[key])) {
+				directoryCreate(variables.libraries[key]);
+			}	
+		}
+		
+		for (key in variables.tags) {
+			var tag = variables.tags[key];
+			var content = templateManager.generateContent(fileRead(expandPath(tag.source)));				
+			fileWrite(expandPath(tag.destination), content);		
+		}
 
 	}
 
@@ -134,9 +137,9 @@ component {
 		var key = "";
 
 		// only append the library if the content is referencing it
-		for (key in variables.tagLibraries) {
+		for (key in variables.libraries) {
 			if (findNoCase("<#key#:", arguments.content)) {
-				arrayAppend(array, '<cfimport prefix="#key#" taglib="#variables.tagLibraries[key]#" />');
+				arrayAppend(array, '<cfimport prefix="#key#" taglib="#variables.libraries[key]#" />');
 			}
 		}
 

@@ -138,7 +138,7 @@ component {
 		var i = "";
 		var dependencies = listToArray(findDependencies(arguments.beanName, arguments.beanName));
 		var initMethods = [];
-		var constructed = [];
+		var constructed = [];		
 
 		for (i = 1; i <= arrayLen(dependencies); i++) {
 
@@ -167,10 +167,10 @@ component {
 					}
 
 					// check for config based properties using the bean name (fooService.bar = baz)
-					if (structKeyExists(variables.config, beanDefinition.id)) {
-						for (property in variables.config[beanDefinition.id]) {
-							if (structKeyExists(beanInstance, "set#property#")) {
-								evaluate("beanInstance.set#property#(variables.config[beanDefinition.id][property])");
+					if (structKeyExists(variables.config, beanDefinition.id)) {						
+						for (key in variables.config[beanDefinition.id]) {
+							if (structKeyExists(beanInstance, "set#key#")) {
+								evaluate("beanInstance.set#key#(variables.config[beanDefinition.id][key])");
 							}
 						}
 					}
@@ -179,12 +179,10 @@ component {
 
 					// check for init methods
 					if (beanDefinition.initMethod != "") {
-
 						arrayAppend(initMethods, {
 							bean = beanInstance,
 							initMethod = beanDefinition.initMethod
 						});
-
 					}
 
 					// keep track of all of the beans that have been constructed

@@ -109,7 +109,11 @@ component {
 			if (isSimpleValue(value)) {
 
 				value = trim(value);
-
+				
+				if (value == '""') {
+					value = "";
+				}
+				
 				// apparently ColdFusion doesn't allow wrapping values in double quotes...
 				if (left(value, 1) == '"' && right(value, 1) == '"') {
 					value = replace(value, '"', "", "one");

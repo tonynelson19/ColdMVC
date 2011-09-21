@@ -1,8 +1,80 @@
 <cfcomponent extends="coldmvc.Helper">
+	
+	<!------>
 
-	<!--- to add to this list, use setAllowBinding("mytag") --->
-	<cfset this.bindTags = "checkbox,color,date,email,hidden,input,number,password,phone,radio,range,search,select,text,textarea,time,upload,url" />
-
+	<cffunction name="init" access="public" output="false" returntype="any">
+		
+		<cfset super.init() />
+		
+		<!--- to add to this list, use setAllowBinding("mytag") --->
+		<cfset variables.allowBinding = {
+			checkbox = true,
+			color = true,
+			date = true,
+			email = true,
+			hidden = true,
+			input = true,
+			number = true,
+			password = true,
+			phone = true,
+			radio = true,
+			range = true,
+			search = true,
+			select = true,
+			text = true,
+			textarea = true,
+			time = true,
+			upload = true,
+			url = true		
+		} />
+		
+		<cfset variables.options = {
+			wrapper = {
+				display = true,
+				tag = "div",
+				class = "wrapper"
+			},			
+			label = {
+				display = true,
+				tag = "div",
+				class = "label"
+			},			
+			field = {
+				display = true,
+				tag = "div",
+				class = "field"
+			},
+			description = {
+				display = true,
+				tag = "div",
+				class = "description"
+			},
+			instructions = {
+				display = true,
+				tag = "div",
+				class = "instructions"
+			}
+		} />
+		
+		<cfreturn this />
+			
+	</cffunction>
+	
+	<!------>
+		
+	<cffunction name="setOptions" access="public" output="false" returntype="any">
+		<cfargument name="options" required="true" type="struct" />
+		
+		<cfset var key = "" />
+		
+		<cfloop collection="#arguments.options#" item="key">
+			<cfset structAppend(variables.options[key], arguments.options[key], true) />				
+		</cfloop>
+		
+		<cfreturn this />
+			
+	</cffunction>
+	
 	<!------>
 
 	<cffunction name="append" access="private" output="false" returntype="void">
@@ -50,7 +122,7 @@
 		<cfset arguments.args.disabled = getKey(arguments.args, "disabled", false) />
 		<cfset arguments.args.visible = getKey(arguments.args, "visible", true) />
 
-		<cfloop list="class,style,instructions,placeholder,autocomplete,#arguments.commonKeys#" index="i">
+		<cfloop list="class,style,description,instructions,placeholder,autocomplete,#arguments.commonKeys#" index="i">
 			<cfset arguments.args[i] = getKey(arguments.args, i) />
 		</cfloop>
 
@@ -271,10 +343,8 @@
 
 	<cffunction name="setAllowBinding" access="private" output="false" returntype="void">
 		<cfargument name="tag" required="true" type="string" />
-
-		<cfif not listFindNoCase(this.bindTags, arguments.tag)>
-			<cfset this.bindTags = listAppend(this.bindTags, arguments.tag) />
-		</cfif>
+		
+		<cfset variables.allowBinding[arguments.tag] = true />
 
 	</cffunction>
 
@@ -283,11 +353,7 @@
 	<cffunction name="getAllowBinding" access="private" output="false" returntype="boolean">
 		<cfargument name="args" required="true" type="struct" />
 
-		<cfif listFindNoCase(this.bindTags, arguments.args.tag)>
-			<cfreturn true />
-		</cfif>
-
-		<cfreturn false />
+		<cfreturn structKeyExists(variables.allowBinding, arguments.args.tag) />
 
 	</cffunction>
 
@@ -526,48 +592,85 @@
 
 		<cfset configure(arguments) />
 
-		<cfoutput>
 		<cfif not arguments.wrapper>
-
-			<cfreturn trim(arguments.field) />
-
-		<cfelse>
-
-			<cfsavecontent variable="local.string">
-				<div #_wrapper(arguments)#>
-					<div class="label">
-						<label for="#arguments.id#" title="#htmlEditFormat(arguments.title)#">#htmlEditFormat(arguments.label)#:</label>
-					</div>
-					<div class="field">
-						#trim(arguments.field)#
-						<cfif arguments.instructions neq "">
-							<div class="instructions">
-								#arguments.instructions#
-							</div>
-						</cfif>
-					</div>
-				</div>
-			</cfsavecontent>
-
+			<cfreturn trim(arguments.field) />		
 		</cfif>
+			
+		<cfset var result = "" />
+		
+		<cfoutput>
+		<cfsavecontent variable="result">
+			#trim(arguments.field)#
+			<cfif arguments.instructions neq "" and variables.options.instructions.display>
+				<#variables.options.instructions.tag# class="#variables.options.instructions.class#">
+					#arguments.instructions#
+				</#variables.options.instructions.tag#>
+			</cfif>
+			<cfif arguments.description neq "" and variables.options.description.display>
+				<#variables.options.description.tag# class="#variables.options.description.class#">
+					#arguments.description#
+				</#variables.options.description.tag#>
+			</cfif>
+		</cfsavecontent>
 		</cfoutput>
+		
+		<cfif variables.options.field.display>
+			<cfoutput>
+			<cfsavecontent variable="result">
+				<#variables.options.field.tag# class="#variables.options.field.class#">
+					#result#
+				</#variables.options.field.tag#>
+			</cfsavecontent>
+			</cfoutput>
+		</cfif>
+		
+		<cfif variables.options.label.display>
+			
+			<cfset var labelHTML = '<label for="#arguments.id#" title="#htmlEditFormat(arguments.title)#">#htmlEditFormat(arguments.label)#:</label>' />
+			
+			<cfif variables.options.label.tag neq "">
+				
+				<cfoutput>
+				<cfsavecontent variable="result">
+					<#variables.options.field.tag# class="#variables.options.label.class#">
+						#labelHTML#
+					</#variables.options.field.tag#>
+					#result#
+				</cfsavecontent>
+				</cfoutput>
+				
+			<cfelse>
+				
+				<cfoutput>
+				<cfsavecontent variable="result">
+					#labelHTML#
+					#result#
+				</cfsavecontent>
+				</cfoutput>
+				
+			</cfif>
+		
+		</cfif>
+		
+		<cfif variables.options.wrapper.display>
+			
+			<cfset var wrapperAttributes = 'class="#variables.options.wrapper.class#"' />
 
-		<cfreturn trim(local.string) />
-
-	</cffunction>
-
-	<!------>
-
-	<cffunction name="_wrapper" access="private" output="false" returntype="string">
-		<cfargument name="args" required="true" type="struct" />
-g
-		<cfset var string = 'class="wrapper"' />
-
-		<cfif not arguments.args.visible>
-			<cfset string = string & ' style="display:none;"' />
+			<cfif not arguments.visible>
+				<cfset wrapperAttributes = wrapperAttributes & ' style="display:none;"' />
+			</cfif>
+				
+			<cfoutput>
+			<cfsavecontent variable="result">
+				<#variables.options.wrapper.tag# #wrapperAttributes#>
+					#result#
+				</#variables.options.wrapper.tag#>
+			</cfsavecontent>
+			</cfoutput>
+		
 		</cfif>
 
-		<cfreturn string />
+		<cfreturn trim(result) />
 
 	</cffunction>
 

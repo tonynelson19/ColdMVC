@@ -13,7 +13,7 @@ component {
 	public TagManager function init() {
 
 		variables.tags = {};
-		variables.libraries = {};		
+		variables.libraries = {};
 		variables.loaded = false;
 
 		return this;
@@ -37,7 +37,7 @@ component {
 	}
 
 	private void function loadConfig() {
-		
+
 		var tags = {};
 		var libraries = {};
 		var directories = [];
@@ -54,79 +54,89 @@ component {
 		arrayAppend(directories, "/coldmvc" & path);
 
 		for (i = 1; i <= arrayLen(directories); i++) {
-			
+
 			var directory = directories[i];
 			var expandedDirectory = expandPath(directory);
-			
+
 			if (fileSystem.directoryExists(expandedDirectory)) {
 
-				var files = directoryList(expandedDirectory, true, "query", "*.cfm");				
+				var files = directoryList(expandedDirectory, true, "query", "*.cfm");
 				var j = "";
-				
+
 				for (j = 1; j <= files.recordCount; j++) {
-					
+
 					var name = listFirst(files.name[j], ".");
 					var library = getFileFromPath(replaceNoCase(files.directory[j], expandedDirectory, ""));
-					
-					if (library == "") {						
+
+					if (library == "") {
 						var library = "c";
-						var destination = "/tags/";						
+						var destination = "/tags/";
 					} else {
 						var destination = "/tags/#library#/";
 					}
-									
-					var key = library & ":" & name;		
+
+					var key = library & ":" & name;
 					var template = replace(sanitize(files.directory[j] & "/" & files.name[j]), sanitize(expandedDirectory), "");
 					var source = directory & template;
-					
+
 					if (!structKeyExists(tags, key)) {
-						
+
 						if (!structKeyExists(libraries, library)) {
 							libraries[library] = destination;
 						}
-						
+
 						tags[key] = {
 							source = source,
 							destination = destination & "#name#.cfm"
 						};
-					
+
 					}
 				}
 
 			}
 
 		}
-		
+
 		variables.tags = tags;
 		variables.libraries = libraries;
 
 	}
-	
+
 	private string function sanitize(required string path) {
-		
+
 		return replace(arguments.path, "\", "/", "all");
-		
+
 	}
 
 	private void function generateFiles() {
 
 		var key = "";
-		for (key in variables.libraries) {			
+		for (key in variables.libraries) {
 			if (fileSystem.directoryExists(variables.libraries[key])) {
 				directoryDelete(variables.libraries[key], true);
-			}			
+			}
 		}
-		
+
 		for (key in variables.libraries) {
 			if (!fileSystem.directoryExists(variables.libraries[key])) {
 				directoryCreate(variables.libraries[key]);
-			}	
+			}
 		}
-		
+
 		for (key in variables.tags) {
 			var tag = variables.tags[key];
-			var content = templateManager.generateContent(fileRead(expandPath(tag.source)));				
-			fileWrite(expandPath(tag.destination), content);		
+			var source = expandPath(tag.source);
+			var destination = expandPath(tag.destination);
+			var content = templateManager.generateContent(fileRead(source));
+			var directory = getDirectoryFromPath(destination);
+
+			if (!directoryExists(directory)) {
+				if (!fileSystem.directoryExists(directory)) {
+					directoryCreate(directory);
+				}
+			}
+
+			fileWrite(destination, content);
 		}
 
 	}

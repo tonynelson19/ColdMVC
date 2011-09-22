@@ -4,74 +4,76 @@
 
 <style type="text/css">
 	div#coldmvc_debug {
-		background-color: #fff;
-		color: #555;
-		font-size: 14px;
-		margin-top: 30px;
-		padding: 5px 30px;
-		line-height: 20px;
-		font-family: Arial, Verdana, Helvetica, sans-serif;
-		border-top: 1px solid #666;
-		text-align: left;
+		background-color: #fff !important;
+		color: #555 !important;
+		font-size: 14px !important;
+		margin-top: 30px !important;
+		padding: 5px 30px !important;
+		line-height: 20px !important;
+		font-family: Arial, Verdana, Helvetica, sans-serif !important;
+		border-top: 1px solid #666 !important;
+		text-align: left !important;
 	}
 
 	div#coldmvc_debug * {
-		padding: 0;
-		margin: 0;
-		text-align: left;
-		color: #555;
+		padding: 0 !important;
+		margin: 0 !important;
+		text-align: left !important;
+		color: #555 !important;
+		line-height: 20px !important;
 	}
 
 	div#coldmvc_debug h2 {
-		font-weight: bold;
-		padding: 5px;
-		font-size: 14px;
+		font-weight: bold !important;
+		padding: 5px !important;
+		font-size: 14px !important;
 	}
 
 	div#coldmvc_debug div.coldmvc_debug_section {
-		padding-left: 15px;
-		padding-bottom: 5px;
-		border-bottom: 1px solid #bbb;
+		padding-left: 15px !important;
+		padding-bottom: 5px !important;
+		border-bottom: 1px solid #bbb !important;
 	}
 
 	div#coldmvc_debug td.coldmvc_label,
 	div#coldmvc_debug td.coldmvc_field {
-		vertical-align: top;
+		vertical-align: top !important;
+		border: 0 !important;
 	}
 
 	div#coldmvc_debug td.coldmvc_label {
-		width: 170px;
-		color: #777;
-		padding-right: 3px;
+		width: 170px !important;
+		color: #777 !important;
+		padding-right: 3px !important;
 	}
 
 	div#coldmvc_debug td.coldmvc_label.coldmvc_field {
-		width: auto;
+		width: auto !important;
 	}
 
 	div#coldmvc_debug h4 {
-		font-weight: bold;
+		font-weight: bold !important;
 	}
 
 	div#coldmvc_debug ul li {
-		list-style-type: none;
+		list-style-type: none !important;
 	}
 
 	div#coldmvc_debug ul li.coldmvc_debug_query {
-		padding-bottom: 20px;
+		padding-bottom: 20px !important;
 	}
 
 	div#coldmvc_debug ul li.coldmvc_debug_query h4 {
-		padding-top: 5px;
-		padding-left: 20px;
+		padding-top: 5px !important;
+		padding-left: 20px !important;
 	}
 
 	div#coldmvc_debug ul li.coldmvc_debug_query ul {
-		padding-left: 30px;
+		padding-left: 30px !important;
 	}
 
 	div#coldmvc_debug ul li.coldmvc_debug_query ul li span {
-		color: #777;
+		color: #777 !important;
 	}
 </style>
 

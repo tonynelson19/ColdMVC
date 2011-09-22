@@ -39,4 +39,10 @@ component {
 
 	}
 
+	public struct function toStruct(required string list, string delimiter=",") {
+
+		return coldmvc.array.toStruct(listToArray(arguments.list, arguments.delimiter));
+
+	}
+
 }

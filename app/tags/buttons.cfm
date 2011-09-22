@@ -1,5 +1,7 @@
+<cfoutput>
 <cfif thisTag.executionMode eq "start">
-	<div class="buttons">
+	<#coldmvc.form.getOption('buttons', 'tag')# class="#coldmvc.form.getOption('buttons', 'class')#">
 <cfelse>
-	</div>
+	</#coldmvc.form.getOption('buttons', 'tag')#>
 </cfif>
+</cfoutput>

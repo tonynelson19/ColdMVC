@@ -4,27 +4,7 @@
 
 	<cffunction name="button" access="public" output="false" returntype="string">
 
-		<cfset arguments.tag = "button" />
-
-		<cfset append(arguments, "class", "button") />
-
-		<cfset arguments.url = getURL(arguments) />
-
-		<cfif arguments.url neq "">
-			<cfset arguments.onclick = "window.location='#htmlEditFormat(arguments.url)#';" />
-		</cfif>
-
-		<cfset configure(arguments) />
-
-		<cfoutput>
-		<cfsavecontent variable="arguments.field">
-			<span class="button">
-				<input type="button" #arguments.common# value="#htmlEditFormat(arguments.label)#" />
-			</span>
-		</cfsavecontent>
-		</cfoutput>
-
-		<cfreturn arguments.field />
+		<cfreturn renderButton("button", arguments) />
 
 	</cffunction>
 
@@ -130,13 +110,13 @@
 		<cfset configure(arguments) />
 
 		<cfset arguments.url = getURL(arguments) />
-		
+
 		<cfset var attributes = [] />
 		<cfset arrayAppend(attributes, 'action="#arguments.url#"') />
 		<cfset arrayAppend(attributes, 'method="#arguments.method#"') />
 		<cfset arrayAppend(attributes, 'enctype="multipart/form-data"') />
 		<cfset arrayAppend(attributes, arguments.common) />
-		
+
 		<cfif structKeyExists(arguments, "novalidate")>
 			<cfif isBoolean(arguments.novalidate) and arguments.novalidate>
 				<cfset arguments.novalidate = "novalidate" />
@@ -279,8 +259,16 @@
 			</cfif>
 		</cfif>
 
+		<cfif not structKeyExists(arguments.args, "hiddenField")>
+			<cfset arguments.args.hiddenField = true />
+		</cfif>
+
 		<cfoutput>
 		<cfsavecontent variable="arguments.args.field">
+			<cfif arguments.args.hiddenField>
+				<!--- make sure the form field gets even if a value isn't selected --->
+				<input type="hidden" name="#arguments.args.name#" value="" />
+			</cfif>
 			<ul class="#type# #arguments.args.align#">
 				<cfloop from="1" to="#length#" index="i">
 					<li <cfif i eq 1>class="first"<cfelseif i eq local.length>class="last"</cfif>>
@@ -319,6 +307,48 @@
 
 	<!------>
 
+	<cffunction name="renderButton" access="private" output="false" returntype="string">
+		<cfargument name="type" required="true" type="string" />
+		<cfargument name="args" required="true" type="struct" />
+
+		<cfset arguments.args.tag = arguments.type />
+		<cfset append(arguments.args, "class", variables.options.button.class) />
+
+		<cfset arguments.args.url = getURL(arguments.args) />
+		<cfif arguments.args.url neq "">
+			<cfset arguments.args.onclick = "window.location='#htmlEditFormat(arguments.args.url)#';" />
+		</cfif>
+
+		<cfset configure(arguments.args) />
+
+		<cfset var result = '<input type="#arguments.type#" #arguments.args.common# value="#htmlEditFormat(arguments.args.label)#" />' />
+
+		<cfif variables.options.button.display>
+
+			<cfoutput>
+			<cfsavecontent variable="result">
+				<#variables.options.button.tag# class="#variables.options.button.class#">
+					#result#
+				</#variables.options.button.tag#>
+			</cfsavecontent>
+			</cfoutput>
+
+		</cfif>
+
+		<cfreturn result />
+
+	</cffunction>
+
+	<!------>
+
+	<cffunction name="reset" access="public" output="false" returntype="string">
+
+		<cfreturn renderButton("reset", arguments) />
+
+	</cffunction>
+
+	<!------>
+
 	<cffunction name="search" access="public" output="false" returntype="string">
 
 		<cfset arguments.tag = "search" />
@@ -339,12 +369,30 @@
 	<!------>
 
 	<cffunction name="select" access="public" output="false" returntype="string">
-		<cfargument name="blank" required="false" default="true" type="boolean" />
 		<cfargument name="blankKey" required="false" default="" type="string" />
+		<cfargument name="multiple" required="false" default="false" />
 
 		<cfset var option = "" />
 
 		<cfset arguments.tag = "select" />
+
+		<cfset var attributes = [] />
+
+		<cfif arguments.multiple>
+
+			<cfif not structKeyExists(arguments, "size")>
+				<cfset arguments.size = 5 />
+			</cfif>
+
+			<cfif not structKeyExists(arguments, "blank")>
+				<cfset arguments.blank = false />
+			</cfif>
+
+		</cfif>
+
+		<cfif not structKeyExists(arguments, "blank")>
+			<cfset arguments.blank = true />
+		</cfif>
 
 		<cfset configure(arguments) />
 		<cfset configureOptions(arguments) />
@@ -357,14 +405,37 @@
 			<cfset arguments.blankTitle = arguments.label />
 		</cfif>
 
+		<cfset var attributes = [ arguments.common ] />
+
+		<cfif arguments.multiple>
+
+			<cfset arrayAppend(attributes, 'multiple="true"') />
+
+			<cfset var selected = coldmvc.list.toStruct(arguments.value) />
+
+		<cfelse>
+
+			<cfset var selected = {} />
+			<cfset selected[arguments.value] = true />
+
+		</cfif>
+
+		<cfif not structKeyExists(arguments, "hiddenField")>
+			<cfset arguments.hiddenField = true />
+		</cfif>
+
 		<cfoutput>
 		<cfsavecontent variable="arguments.field">
-			<select #arguments.common#>
+			<cfif arguments.multiple and arguments.hiddenField>
+				<!--- make sure the form field gets even if a value isn't selected --->
+				<input type="hidden" name="#arguments.name#" value="" />
+			</cfif>
+			<select #arrayToList(attributes, " ")#>
 				<cfif arguments.blank>
 					<option value="#htmlEditFormat(arguments.blankKey)#" title="#htmlEditFormat(arguments.blankTitle)#">#htmlEditFormat(arguments.blankValue)#</option>
 				</cfif>
 				<cfloop array="#arguments.options#" index="option">
-					<option value="#htmlEditFormat(option.id)#" title="#htmlEditFormat(option.title)#" <cfif arguments.value eq htmlEditFormat(option.id)>selected</cfif>>#htmlEditFormat(option.name)#</option>
+					<option value="#htmlEditFormat(option.id)#" title="#htmlEditFormat(option.title)#" <cfif structKeyExists(selected, option.id)>selected</cfif>>#htmlEditFormat(option.name)#</option>
 				</cfloop>
 			</select>
 		</cfsavecontent>
@@ -380,19 +451,25 @@
 		<cfargument name="name" required="false" default="save" />
 
 		<cfset arguments.tag = "submit" />
-		<cfset append(arguments, "class", "button") />
+		<cfset append(arguments, "class", variables.options.button.class) />
 
 		<cfset configure(arguments) />
 
-		<cfoutput>
-		<cfsavecontent variable="arguments.field">
-			<span class="button">
-				<input type="submit" #arguments.common# value="#htmlEditFormat(arguments.label)#" />
-			</span>
-		</cfsavecontent>
-		</cfoutput>
+		<cfset var result = '<input type="submit" #arguments.common# value="#htmlEditFormat(arguments.label)#" />' />
 
-		<cfreturn arguments.field />
+		<cfif variables.options.button.display>
+
+			<cfoutput>
+			<cfsavecontent variable="result">
+				<#variables.options.button.tag# class="#variables.options.button.class#">
+					#result#
+				</#variables.options.button.tag#>
+			</cfsavecontent>
+			</cfoutput>
+
+		</cfif>
+
+		<cfreturn result />
 
 	</cffunction>
 

@@ -111,15 +111,18 @@ component {
 	private void function generateFiles() {
 
 		var key = "";
+		var directory = "";
 		for (key in variables.libraries) {
-			if (fileSystem.directoryExists(variables.libraries[key])) {
-				directoryDelete(variables.libraries[key], true);
+			directory = expandPath(variables.libraries[key]);
+			if (fileSystem.directoryExists(directory)) {
+				directoryDelete(directory, true);
 			}
 		}
 
 		for (key in variables.libraries) {
-			if (!fileSystem.directoryExists(variables.libraries[key])) {
-				directoryCreate(variables.libraries[key]);
+			directory = expandPath(variables.libraries[key]);
+			if (!fileSystem.directoryExists(directory)) {
+				directoryCreate(directory);
 			}
 		}
 
@@ -128,14 +131,6 @@ component {
 			var source = expandPath(tag.source);
 			var destination = expandPath(tag.destination);
 			var content = templateManager.generateContent(fileRead(source));
-			var directory = getDirectoryFromPath(destination);
-
-			if (!directoryExists(directory)) {
-				if (!fileSystem.directoryExists(directory)) {
-					directoryCreate(directory);
-				}
-			}
-
 			fileWrite(destination, content);
 		}
 

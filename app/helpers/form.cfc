@@ -98,8 +98,9 @@
 	<!------>
 
 	<cffunction name="form" access="public" output="false" returntype="string">
-		<cfargument name="id" required="false" default="form" />
-		<cfargument name="method" required="false" default="post" />
+		<cfargument name="id" type="string" required="false" default="form" />
+		<cfargument name="method" type="string" required="false" default="post" />
+		<cfargument name="enctype" type="string" required="false" default="multipart/form-data" />
 
 		<cfset arguments.tag = "form" />
 
@@ -108,20 +109,23 @@
 		<cfset arguments.title = "" />
 
 		<cfset configure(arguments) />
-
-		<cfset arguments.url = getURL(arguments) />
-
+		
 		<cfset var attributes = [] />
-		<cfset arrayAppend(attributes, 'action="#arguments.url#"') />
-		<cfset arrayAppend(attributes, 'method="#arguments.method#"') />
-		<cfset arrayAppend(attributes, 'enctype="multipart/form-data"') />
-		<cfset arrayAppend(attributes, arguments.common) />
+		
+		<cfset arguments.url = getURL(arguments) />		
+		<cfif arguments.url neq "">
+			<cfset arrayAppend(attributes, 'action="#arguments.url#"') />
+		</cfif>
+		
+		<cfset var key = "" />
+		<cfloop list="method,enctype" index="i">
+			<cfif arguments[i] neq "">
+				<cfset arrayAppend(attributes, '#i#="#arguments[i]#"') />
+			</cfif>
+		</cfloop>
 
 		<cfif structKeyExists(arguments, "novalidate")>
-			<cfif isBoolean(arguments.novalidate) and arguments.novalidate>
-				<cfset arguments.novalidate = "novalidate" />
-			</cfif>
-			<cfset arrayAppend(attributes, 'novalidate="#arguments.novalidate#"') />
+			<cfset arrayAppend(attributes, "novalidate") />
 		</cfif>
 
 		<cfreturn '<form #arrayToList(attributes, " ")#>' />

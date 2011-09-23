@@ -159,6 +159,13 @@
 				<cfset arrayAppend(arguments.args.common, '#i#="#htmlEditFormat(arguments.args[i])#"') />
 			</cfif>
 		</cfloop>
+		
+		<!--- check for boolean-only attributes --->
+		<cfloop list="required,autofocus" index="i">
+			<cfif structKeyExists(arguments.args, i)>
+				<cfset arrayAppend(arguments.args.common, i) />
+			</cfif>
+		</cfloop>
 
 		<!--- check for data attributes --->
 		<cfloop collection="#arguments.args#" item="key">

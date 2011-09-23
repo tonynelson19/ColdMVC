@@ -598,6 +598,7 @@
 		<cfif not structKeyExists(arguments.args, "url")>
 
 			<cfif structKeyExists(arguments.args, "parameters")
+				or structKeyExists(arguments.args, "module")
 				or structKeyExists(arguments.args, "controller")
 				or structKeyExists(arguments.args, "action")
 				or structKeyExists(arguments.args, "querystring")>
@@ -605,7 +606,8 @@
 				<cfset arguments.args.querystring = getKey(arguments.args, "querystring") />
 
 				<cfif not structKeyExists(arguments.args, "parameters")>
-
+					
+					<cfset arguments.args.parameters.module = getKey(arguments.args, "module", coldmvc.event.getModule()) />
 					<cfset arguments.args.parameters.controller = getKey(arguments.args, "controller", coldmvc.event.getController()) />
 					<cfset arguments.args.parameters.action = getKey(arguments.args, "action", coldmvc.event.getAction()) />
 

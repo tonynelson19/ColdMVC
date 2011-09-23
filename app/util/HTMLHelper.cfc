@@ -48,6 +48,10 @@
 				tag = "div",
 				class = "field"
 			},
+			form = {
+				class = "",
+				enctype = "multipart/form-data"
+			},
 			instructions = {
 				display = true,
 				tag = "div",
@@ -106,11 +110,15 @@
 		<cfargument name="args" required="true" type="struct" />
 		<cfargument name="attribute" required="true" type="string" />
 		<cfargument name="value" required="true" type="string" />
-
-		<cfif structKeyExists(arguments.args, arguments.attribute)>
-			<cfset arguments.args[arguments.attribute] = arguments.args[arguments.attribute] & " " & arguments.value />
-		<cfelse>
-			<cfset arguments.args[arguments.attribute] = arguments.value />
+		
+		<cfif arguments.value neq "">
+		
+			<cfif structKeyExists(arguments.args, arguments.attribute)>
+				<cfset arguments.args[arguments.attribute] = arguments.args[arguments.attribute] & " " & arguments.value />
+			<cfelse>
+				<cfset arguments.args[arguments.attribute] = arguments.value />
+			</cfif>
+		
 		</cfif>
 
 	</cffunction>

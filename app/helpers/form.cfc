@@ -100,14 +100,15 @@
 	<cffunction name="form" access="public" output="false" returntype="string">
 		<cfargument name="id" type="string" required="false" default="form" />
 		<cfargument name="method" type="string" required="false" default="post" />
-		<cfargument name="enctype" type="string" required="false" default="multipart/form-data" />
 
 		<cfset arguments.tag = "form" />
 
 		<!--- prevent the form tag from having unnecessary attributes --->
 		<cfset arguments.name = "" />
 		<cfset arguments.title = "" />
-
+		
+		<cfset append(arguments, "class", variables.options.form.class) />
+		
 		<cfset configure(arguments) />
 		
 		<cfset var attributes = [] />
@@ -117,12 +118,20 @@
 			<cfset arrayAppend(attributes, 'action="#arguments.url#"') />
 		</cfif>
 		
+		<cfif not structKeyExists(arguments, "enctype")>
+			<cfset arguments.enctype = variables.options.form.enctype />
+		</cfif>
+		
 		<cfset var key = "" />
 		<cfloop list="method,enctype" index="i">
 			<cfif arguments[i] neq "">
 				<cfset arrayAppend(attributes, '#i#="#arguments[i]#"') />
 			</cfif>
 		</cfloop>
+		
+		<cfif arguments.common neq "">
+			<cfset arrayAppend(attributes, arguments.common) />
+		</cfif>
 
 		<cfif structKeyExists(arguments, "novalidate")>
 			<cfset arrayAppend(attributes, "novalidate") />

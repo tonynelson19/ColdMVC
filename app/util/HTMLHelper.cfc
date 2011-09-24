@@ -110,15 +110,15 @@
 		<cfargument name="args" required="true" type="struct" />
 		<cfargument name="attribute" required="true" type="string" />
 		<cfargument name="value" required="true" type="string" />
-		
+
 		<cfif arguments.value neq "">
-		
+
 			<cfif structKeyExists(arguments.args, arguments.attribute)>
 				<cfset arguments.args[arguments.attribute] = arguments.args[arguments.attribute] & " " & arguments.value />
 			<cfelse>
 				<cfset arguments.args[arguments.attribute] = arguments.value />
 			</cfif>
-		
+
 		</cfif>
 
 	</cffunction>
@@ -167,7 +167,7 @@
 				<cfset arrayAppend(arguments.args.common, '#i#="#htmlEditFormat(arguments.args[i])#"') />
 			</cfif>
 		</cfloop>
-		
+
 		<!--- check for boolean-only attributes --->
 		<cfloop list="required,autofocus" index="i">
 			<cfif structKeyExists(arguments.args, i)>
@@ -606,10 +606,15 @@
 				<cfset arguments.args.querystring = getKey(arguments.args, "querystring") />
 
 				<cfif not structKeyExists(arguments.args, "parameters")>
-					
-					<cfset arguments.args.parameters.module = getKey(arguments.args, "module", coldmvc.event.getModule()) />
-					<cfset arguments.args.parameters.controller = getKey(arguments.args, "controller", coldmvc.event.getController()) />
-					<cfset arguments.args.parameters.action = getKey(arguments.args, "action", coldmvc.event.getAction()) />
+
+					<cfset arguments.args.parameters = {} />
+
+					<cfset var i = "" />
+					<cfloop list="module,controller,action" index="i">
+						<cfif structKeyExists(arguments.args, i)>
+							<cfset arguments.args.parameters[i] = arguments.args[i] />
+						</cfif>
+					</cfloop>
 
 				</cfif>
 

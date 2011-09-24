@@ -4,6 +4,7 @@
 component {
 
 	property modelFactory;
+	property metaDataFlattener;
 
 	public any function init() {
 
@@ -51,7 +52,7 @@ component {
 				arguments.model = modelFactory.get(name);
 			}
 
-			var metaData = getMetaData(arguments.model);
+			var metaData = metaDataFlattener.flattenMetaData(arguments.model);
 			var classMetaData = ormGetSessionFactory().getClassMetaData(name);
 
 			var result = {};
@@ -64,6 +65,8 @@ component {
 			result.relationships = {};
 			result.propertyNames = [];
 			result.id = classMetaData.getIdentifierPropertyName();
+			result.sort = structKeyExists(metaData, "sort") ? metaData.sort : "";
+			result.order = structKeyExists(metaData, "order") ? metaData.order : "";
 
 			var propertyTypes = classMetaData.getPropertyTypes();
 
@@ -270,6 +273,18 @@ component {
 		}
 
 		return "";
+
+	}
+
+	public string function getSort(required any model) {
+
+		return getModel(arguments.model).sort;
+
+	}
+
+	public string function getOrder(required any model) {
+
+		return getModel(arguments.model).order;
 
 	}
 

@@ -4,29 +4,31 @@
 component {
 
 	public any function init() {
-		cache = {};
+
+		variables.cache = {};
 		return this;
+
 	}
 
 	public struct function flattenMetaData(required any object) {
 
-		if (isSimpleValue(object)) {
-			var classPath = object;
+		if (isSimpleValue(arguments.object)) {
+			var classPath = arguments.object;
 		} else {
-			var classPath = getMetaData(object).fullname;
+			var classPath = getMetaData(arguments.object).fullname;
 		}
 
-		if (!structKeyExists(cache, classPath)) {
-			cache[classPath] = flatten(classPath);
+		if (!structKeyExists(variables.cache, classPath)) {
+			variables.cache[classPath] = flatten(classPath);
 		}
 
-		return cache[classPath];
+		return variables.cache[classPath];
 
 	}
 
 	public struct function flatten(required string classPath) {
 
-		var metaData = getComponentMetaData(classPath);
+		var metaData = getComponentMetaData(arguments.classPath);
 
 		var result = {};
 		result.properties = {};

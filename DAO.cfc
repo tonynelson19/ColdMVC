@@ -247,6 +247,32 @@ component {
 
 	}
 
+	private struct function checkOptions(required any model, required struct options) {
+
+		if (!structKeyExists(arguments.options, "sort")) {
+
+			var sort = modelManager.getSort(arguments.model);
+
+			if (sort != "") {
+				arguments.options.sort = sort;
+			}
+
+		}
+
+		if (!structKeyExists(arguments.options, "order")) {
+
+			var order = modelManager.getOrder(arguments.model);
+
+			if (order != "") {
+				arguments.options.order = order;
+			}
+
+		}
+
+		return arguments.options;
+
+	}
+
 	private string function cleanProperty(required string alias, required string property) {
 
 		arguments.property = trim(arguments.property);
@@ -505,6 +531,8 @@ component {
 		var alias = modelManager.getAlias(arguments.model);
 		var query = buildDynamicQuery(arguments.model, arguments.method, arguments.data, "select #alias# from #name# #alias#");
 
+		checkOptions(arguments.model, query.options);
+
 		if (arguments.prefix == "findBy") {
 			return this.find(arguments.model, query.hql, query.parameters, query.options);
 		} else if (arguments.prefix == "findAllBy") {
@@ -518,6 +546,8 @@ component {
 		var name = modelManager.getName(arguments.model);
 		var alias = modelManager.getAlias(arguments.model);
 		var query = buildQuery(arguments.model, arguments.parameters, arguments.options, "select #alias# from #name# #alias#");
+
+		checkOptions(arguments.model, arguments.options);
 
 		return findDelegate(arguments.model, query.hql, query.parameters, query.options);
 
@@ -659,6 +689,8 @@ component {
 		arrayAppend(query, "select #alias# from #name# #alias#");
 
 		query = arrayToList(query, " ");
+
+		checkOptions(arguments.model, arguments.options);
 
 		return findAll(arguments.model, query, {}, arguments.options);
 

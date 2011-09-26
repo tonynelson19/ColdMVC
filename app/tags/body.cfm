@@ -20,6 +20,7 @@
 <cfsavecontent variable="thisTag.generatedContent">
 <body class="#classes#">
 	#thisTag.generatedContent#
+	#coldmvc.page.renderHTMLBody()#
 </body>
 </cfsavecontent>
 </cfoutput>

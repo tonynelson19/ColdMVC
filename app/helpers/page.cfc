@@ -42,13 +42,7 @@ component {
 
 	public string function generateTitle() {
 
-		var namespace = getNamespace();
-
-		if (structKeyExists(namespace, "title")) {
-			var array = namespace["title"];
-		} else {
-			var array = [];
-		}
+		var array = getData("title", []);
 
 		if (variables.title != "") {
 
@@ -70,13 +64,7 @@ component {
 
 		if (arguments.title != "") {
 
-			var namespace = coldmvc.request.getNamespace("page");
-
-			if (structKeyExists(namespace, "title")) {
-				var array = namespace["title"];
-			} else {
-				var array = [];
-			}
+			var array = getData("title", []);
 
 			if (arguments.type == "append") {
 				arrayAppend(array, arguments.title);
@@ -84,7 +72,7 @@ component {
 				arrayPrepend(array, arguments.title);
 			}
 
-			namespace["title"] = array;
+			setData("title", array);
 
 		}
 
@@ -107,21 +95,19 @@ component {
 
 	public struct function getSections() {
 
-		var namespace = getNamespace();
-
-		if (!structKeyExists(namespace, "sections")) {
-			namespace["sections"] = {};
-		}
-
-		return namespace["sections"];
+		return getData("sections", {});
 
 	}
 
-	public void function setContent(required string key, required string content) {
+	public any function setContent(required string key, required string content) {
 
 		var sections = getSections();
 
 		sections[arguments.key] = arguments.content;
+
+		setData("sections", sections);
+
+		return this;
 
 	}
 
@@ -134,6 +120,60 @@ component {
 		} else {
 			return "";
 		}
+
+	}
+
+	public array function getHTMLBody() {
+
+		return getData("htmlBody", []);
+
+	}
+
+	public any function addHTMLBody(required string content) {
+
+		var htmlBody = getHTMLBody();
+
+		arrayAppend(htmlBody, arguments.content);
+
+		setData("htmlBody", htmlBody);
+
+		return this;
+
+	}
+
+	public any function clearHTMLBody() {
+
+		setData("htmlBody", []);
+
+		return this;
+
+	}
+
+	public string function renderHTMLBody() {
+
+		return arrayToList(getHTMLBody(), chr(10));
+
+	}
+
+	private any function getData(required string key, required any def) {
+
+		var namespace = getNamespace();
+
+		if (!structKeyExists(namespace, arguments.key)) {
+			namespace[arguments.key] = arguments.def;
+		}
+
+		return namespace[arguments.key];
+
+	}
+
+	private any function setData(required string key, required any value) {
+
+		var namespace = getNamespace();
+
+		namespace[arguments.key] = arguments.value;
+
+		return this;
 
 	}
 

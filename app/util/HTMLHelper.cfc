@@ -686,18 +686,22 @@
 			
 			<cfset var labelText = htmlEditFormat(arguments.label) & variables.options.label.suffix />
 			
-			<cfif arguments.required and variables.options.required.display>
+			<cfif arguments.required>
 				
-				<cfif variables.options.required.tag neq "">
-					<cfset var labelRequired = '<#variables.options.required.tag# class="#variables.options.required.class#">#variables.options.required.content#</#variables.options.required.tag#>' />
-				<cfelse>
-					<cfset var labelRequired = variables.options.required.content />
-				</cfif>				
+				<cfif variables.options.required.display>
 				
-				<cfif variables.options.required.placement eq "append">
-					<cfset labelText = labelRequired & variables.options.required.separator & labelText />
-				<cfelse>
-					<cfset labelText = labelText & variables.options.required.separator & labelRequired />
+					<cfif variables.options.required.tag neq "">
+						<cfset var labelRequired = '<#variables.options.required.tag# class="#variables.options.required.class#">#variables.options.required.content#</#variables.options.required.tag#>' />
+					<cfelse>
+						<cfset var labelRequired = variables.options.required.content />
+					</cfif>				
+					
+					<cfif variables.options.required.placement eq "append">
+						<cfset labelText = labelRequired & variables.options.required.separator & labelText />
+					<cfelse>
+						<cfset labelText = labelText & variables.options.required.separator & labelRequired />
+					</cfif>
+				
 				</cfif>
 				
 			</cfif>
@@ -729,8 +733,14 @@
 		</cfif>
 
 		<cfif variables.options.wrapper.display>
-
-			<cfset var wrapperAttributes = 'class="#variables.options.wrapper.class#"' />
+			
+			<cfset var wrapperClass = variables.options.wrapper.class />
+			
+			<cfif arguments.required>
+				<cfset wrapperClass = wrapperClass & " " & variables.options.required.class />
+			</cfif>
+			
+			<cfset var wrapperAttributes = 'class="#trim(wrapperClass)#"' />
 
 			<cfif not arguments.visible>
 				<cfset wrapperAttributes = wrapperAttributes & ' style="display:none;"' />

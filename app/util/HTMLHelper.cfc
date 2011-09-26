@@ -30,42 +30,51 @@
 
 		<cfset variables.options = {
 			button = {
+				class = "button",
 				display = true,
-				tag = "span",
-				class = "button"
+				tag = "span"
 			},
 			buttons = {
-				tag = "div",
-				class = "buttons"
+				class = "buttons",
+				tag = "div"
 			},
 			description = {
+				class = "description",
 				display = true,
-				tag = "div",
-				class = "description"
+				tag = "div"
 			},
 			field = {
+				class = "field",
 				display = true,
-				tag = "div",
-				class = "field"
+				tag = "div"
 			},
 			form = {
 				class = "",
 				enctype = "multipart/form-data"
 			},
 			instructions = {
+				class = "instructions",
 				display = true,
-				tag = "div",
-				class = "instructions"
+				tag = "div"
 			},
 			label = {
+				class = "label",
 				display = true,
-				tag = "div",
-				class = "label"
+				suffix = ":",
+				tag = "div"
+			},
+			required = {
+				class = "required",
+				content = "*",
+				display = true,
+				placement = "after",
+				separator = "",
+				tag = "span"
 			},
 			wrapper = {
+				class = "wrapper",
 				display = true,
-				tag = "div",
-				class = "wrapper"
+				tag = "div"
 			}
 		} />
 
@@ -154,6 +163,8 @@
 		<cfset arguments.args.readonly = getKey(arguments.args, "readonly", false) />
 		<cfset arguments.args.disabled = getKey(arguments.args, "disabled", false) />
 		<cfset arguments.args.visible = getKey(arguments.args, "visible", true) />
+		<cfset arguments.args.required = getKey(arguments.args, "required", false) />
+		<cfset arguments.args.autofocus = getKey(arguments.args, "autofocus", false) />
 
 		<cfloop list="class,style,description,instructions,placeholder,autocomplete,#arguments.commonKeys#" index="i">
 			<cfset arguments.args[i] = getKey(arguments.args, i) />
@@ -170,7 +181,7 @@
 
 		<!--- check for boolean-only attributes --->
 		<cfloop list="required,autofocus" index="i">
-			<cfif structKeyExists(arguments.args, i)>
+			<cfif isBoolean(arguments.args[i]) && arguments.args[i]>				
 				<cfset arrayAppend(arguments.args.common, i) />
 			</cfif>
 		</cfloop>
@@ -672,8 +683,26 @@
 		</cfif>
 
 		<cfif variables.options.label.display>
-
-			<cfset var labelHTML = '<label for="#arguments.id#" title="#htmlEditFormat(arguments.title)#">#htmlEditFormat(arguments.label)#:</label>' />
+			
+			<cfset var labelText = htmlEditFormat(arguments.label) & variables.options.label.suffix />
+			
+			<cfif arguments.required and variables.options.required.display>
+				
+				<cfif variables.options.required.tag neq "">
+					<cfset var labelRequired = '<#variables.options.required.tag# class="#variables.options.required.class#">#variables.options.required.content#</#variables.options.required.tag#>' />
+				<cfelse>
+					<cfset var labelRequired = variables.options.required.content />
+				</cfif>				
+				
+				<cfif variables.options.required.placement eq "append">
+					<cfset labelText = labelRequired & variables.options.required.separator & labelText />
+				<cfelse>
+					<cfset labelText = labelText & variables.options.required.separator & labelRequired />
+				</cfif>
+				
+			</cfif>
+			
+			<cfset var labelHTML = '<label for="#arguments.id#" title="#htmlEditFormat(arguments.title)#">#labelText#</label>' />
 
 			<cfif variables.options.label.tag neq "">
 

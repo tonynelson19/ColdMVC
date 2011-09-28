@@ -220,11 +220,6 @@ component {
 
 	private void function callMethods(required string module, required string controller, required string action, required string type) {
 
-		// possible TODO: after publishing each event,
-		// check to see if the current event's controller and action have changed,
-		// which could have happened if applying security filtering.
-		// depending on the changes, this method could maybe use some heavy refactoring...
-
 		if (controllerManager.controllerExists(arguments.module, arguments.controller)) {
 			var instance = controllerManager.getInstance(arguments.module, arguments.controller);
 		} else {
@@ -327,13 +322,16 @@ component {
 		var module = coldmvc.event.getModule();
 		var controller = coldmvc.event.getController();
 		var action = coldmvc.event.getAction();
+		
+		// make sure the request is an allowed format: html, pdf, json, xml
 		var currentFormat = coldmvc.event.getFormat();
 		var allowedFormats = controllerManager.getFormats(module, controller, action);
-
+		
 		if (!listFindNoCase(allowedFormats, currentFormat)) {
 			assertionManager.fail(403, "Format '#currentFormat#' not allowed");
 		}
-
+		
+		// make sure all of the required params exist
 		var requiredParams = controllerManager.getParams(module, controller, action);
 		var currentParams = coldmvc.params.get();
 		var i = "";
@@ -341,18 +339,21 @@ component {
 		for (i = 1; i <= arrayLen(requiredParams); i++) {
 			assertionManager.assertParamExists(requiredParams[i]);
 		}
-
+		
+		// make sure it's an allowed request method: get, post, put, delete
 		var validMethods = controllerManager.getMethods(module, controller, action);
 		var currentMethod = coldmvc.cgi.get("request_method");
 
 		if (validMethods != "" && !listFindNoCase(validMethods, currentMethod)) {
 			assertionManager.fail(405, "Method '#currentMethod#' not allowed");
 		}
-
+		
+		// check if the user is required to be logged in
 		if (controllerManager.getLoggedIn(module, controller, action)) {
 			assertionManager.assertLoggedIn();
 		}
 
+		// check if the user is required to be logged out
 		if (controllerManager.getNotLoggedIn(module, controller, action)) {
 			assertionManager.assertNotLoggedIn();
 		}

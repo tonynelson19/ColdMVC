@@ -116,6 +116,13 @@ component {
 
 		// add the default options
 		structAppend(route, defaultOptions, false);
+
+		// alias route.required as route.params
+		if (structKeyExists(route, "params")) {
+			structAppend(route.required, route.params, true);
+			structDelete(route, "params");
+		}
+
 		structAppend(route.defaults, route.required, false);
 		structAppend(route.requirements, route.required, false);
 
@@ -305,8 +312,10 @@ component {
 						var route = variables.models[model][i];
 						var combinedParameters = combineParameters(arguments.parameters, route);
 
-						if (route.defaults.action == combinedParameters.action) {
-							return populatePathForModel(route.generates, combinedParameters);
+						if (structKeyExists(route.defaults, "action")) {
+							if (route.defaults.action == combinedParameters.action) {
+								return populatePathForModel(route.generates, combinedParameters);
+							}
 						}
 
 					}
@@ -452,6 +461,14 @@ component {
 			// evaluate the parameter (:id.name())
 			var value = evaluate("arguments.parameters.#substring#");
 
+			if (isObject(value)) {
+				if (structKeyExists(value, "toParam")) {
+					value = value.toParam();
+				} else {
+					value = value.getID();
+				}
+			}
+
 			// build an array of all the values you'll need to replace
 			arrayAppend(replacements, {
 				substring = ":#substring#",
@@ -482,8 +499,8 @@ component {
 	private struct function combineParameters(required struct parameters, required struct route) {
 
 		var combined = {};
-		structAppend(combined, arguments.parameters, false);
-		structAppend(combined, arguments.route.defaults, false);
+		structAppend(combined, arguments.route.defaults);
+		structAppend(combined, arguments.parameters, true);
 		return combined;
 
 	}

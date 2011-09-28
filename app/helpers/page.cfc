@@ -155,6 +155,30 @@ component {
 
 	}
 
+	public any function setMeta(required string key, required string value) {
+
+		var meta = getData("meta", {});
+
+		meta[arguments.key] = arguments.value;
+
+		setData("meta", meta);
+
+		return this;
+
+	}
+
+	public string function getMeta(required string key, string def="") {
+
+		var meta = getData("meta", {});
+
+		if (!structKeyExists(meta, arguments.key)) {
+			meta[arguments.key] = arguments.def;
+		}
+
+		return meta[arguments.key];
+
+	}
+
 	private any function getData(required string key, required any def) {
 
 		var namespace = getNamespace();

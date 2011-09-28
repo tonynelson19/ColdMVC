@@ -247,7 +247,7 @@ component {
 
 	}
 
-	private struct function checkOptions(required any model, required struct options) {
+	public struct function checkOptions(required any model, required struct options) {
 
 		if (!structKeyExists(arguments.options, "sort")) {
 

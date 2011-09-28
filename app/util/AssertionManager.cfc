@@ -47,7 +47,24 @@ component {
 		if (!coldmvc.user.isLoggedIn()) {
 
 			if (!structKeyExists(arguments, "message")) {
-				arguments.message = "User not logged in";
+				arguments.message = "You must be logged in to see that page";
+			}
+
+			fail(401, arguments.message);
+
+		}
+
+	}
+
+	/**
+	 * @actionHelper assertNotLoggedIn
+	 */
+	public void function assertNotLoggedIn(string message) {
+
+		if (coldmvc.user.isLoggedIn()) {
+
+			if (!structKeyExists(arguments, "message")) {
+				arguments.message = "You must be logged out to see that page";
 			}
 
 			fail(401, arguments.message);

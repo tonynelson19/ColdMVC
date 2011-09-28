@@ -3,9 +3,10 @@
  */
 component {
 
-	property development;
+	property assertionManager;
 	property beanFactory;
 	property controllerManager;
+	property development;
 	property eventDispatcher;
 	property moduleManager;
 	property pdfRenderer;
@@ -330,7 +331,7 @@ component {
 		var allowedFormats = controllerManager.getFormats(module, controller, action);
 
 		if (!listFindNoCase(allowedFormats, currentFormat)) {
-			fail(403, "Format '#currentFormat#' not allowed");
+			assertionManager.fail(403, "Format '#currentFormat#' not allowed");
 		}
 
 		var requiredParams = controllerManager.getParams(module, controller, action);
@@ -338,26 +339,23 @@ component {
 		var i = "";
 
 		for (i = 1; i <= arrayLen(requiredParams); i++) {
-			if (!structKeyExists(currentParams, requiredParams[i])) {
-				fail(404, "Parameter '#requiredParams[i]#' not found");
-			}
+			assertionManager.assertParamExists(requiredParams[i]);
 		}
 
 		var validMethods = controllerManager.getMethods(module, controller, action);
 		var currentMethod = coldmvc.cgi.get("request_method");
 
 		if (validMethods != "" && !listFindNoCase(validMethods, currentMethod)) {
-			fail(405, "Method '#currentMethod#' not allowed");
+			assertionManager.fail(405, "Method '#currentMethod#' not allowed");
 		}
 
-	}
+		if (controllerManager.getLoggedIn(module, controller, action)) {
+			assertionManager.assertLoggedIn();
+		}
 
-	private void function fail(required numeric statusCode, required string message) {
-
-		var text = coldmvc.request.getStatusText(arguments.statusCode);
-		var type = coldmvc.string.pascalize(text);
-
-		throw(arguments.statusCode & " " & text, "coldmvc.exception.#type#", arguments.message, arguments.statusCode);
+		if (controllerManager.getNotLoggedIn(module, controller, action)) {
+			assertionManager.assertNotLoggedIn();
+		}
 
 	}
 

@@ -180,9 +180,21 @@ component {
 
 	}
 
+	public boolean function getLoggedIn(required string module, required string controller, required string action) {
+
+		return getMethodAnnotation(arguments.module, arguments.controller, arguments.action, "loggedIn", "false");
+
+	}
+
 	public string function getMethods(required string module, required string controller, required string action) {
 
 		return getMethodAnnotation(arguments.module, arguments.controller, arguments.action, "methods", "");
+
+	}
+
+	public boolean function getNotLoggedIn(required string module, required string controller, required string action) {
+
+		return getMethodAnnotation(arguments.module, arguments.controller, arguments.action, "notLoggedIn", "false");
 
 	}
 
@@ -321,6 +333,18 @@ component {
 
 				controller["formats"] = replace(controller.formats, " ", "", "all");
 
+				if (structKeyExists(metaData, "loggedIn")) {
+					controller["loggedIn"] = metaData.loggedIn;
+				} else {
+					controller["loggedIn"] = false;
+				}
+
+				if (structKeyExists(metaData, "notLoggedIn")) {
+					controller["notLoggedIn"] = metaData.notLoggedIn;
+				} else {
+					controller["notLoggedIn"] = false;
+				}
+
 				controllers[controller.key] = controller;
 
 			}
@@ -400,6 +424,18 @@ component {
 				action["params"] = listToArray(replace(method.params, " ", "", "all"));
 			} else {
 				action["params"] = [];
+			}
+
+			if (structKeyExists(method, "loggedIn")) {
+				action["loggedIn"] = method.loggedIn;
+			} else {
+				action["loggedIn"] = arguments.controller.loggedIn;
+			}
+
+			if (structKeyExists(method, "notLoggedIn")) {
+				action["notLoggedIn"] = method.notLoggedIn;
+			} else {
+				action["notLoggedIn"] = arguments.controller.notLoggedIn;
 			}
 
 			actions[action.key] = action;

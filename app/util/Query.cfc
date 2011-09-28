@@ -159,11 +159,15 @@ component {
 
 	public any function list(struct options) {
 
-		if (structKeyExists(arguments, "options")) {
-			structAppend(variables.options, arguments.options, true);
+		if (!structKeyExists(arguments, "options")) {
+			arguments.options = {};
 		}
 
+		structAppend(variables.options, arguments.options, true);
+
 		unique(false);
+
+		variables.dao.checkOptions(variables.model, variables.options);
 
 		return getResults();
 

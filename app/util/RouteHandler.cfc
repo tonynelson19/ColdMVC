@@ -71,7 +71,7 @@ component {
 			var parameters = {};
 			parameters.module = moduleManager.getDefaultModule();
 			parameters.controller = controllerManager.getDefaultController();
-			parameters.action = controllerManager.getAction(parameters.controller);
+			parameters.action = controllerManager.getAction(parameters.module, parameters.controller);
 		} else {
 			// build the parameters from the path
 			var parameters = router.recognize(path);

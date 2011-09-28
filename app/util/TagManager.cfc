@@ -131,6 +131,10 @@ component {
 			var source = expandPath(tag.source);
 			var destination = expandPath(tag.destination);
 			var content = templateManager.generateContent(fileRead(source));
+			directory = getDirectoryFromPath(destination);
+			if (!fileSystem.directoryExists(directory)) {
+				directoryCreate(directory);
+			}
 			fileWrite(destination, content);
 		}
 

@@ -22,10 +22,10 @@ For further guidance, check out the Quick Start (http://www.coldmvc.com/quicksta
 Contact
 -------
  
-Website: http://www.coldmvc.com/
-Google Group: http://groups.google.com/group/coldmvc
-Email: coldmvc@gmail.com
-Twitter: http://twitter.com/coldmvc
+Website: http://www.coldmvc.com/  
+Google Group: http://groups.google.com/group/coldmvc  
+Email: coldmvc@gmail.com  
+Twitter: http://twitter.com/coldmvc  
 
 Copyright and License
 ---------------------

@@ -11,11 +11,11 @@ Adobe ColdFusion 9.
 Installation
 ------------
 
-	1. Download ColdMVC
-	2. Create a server mapping in ColdFusion administrator for ColdMVC or put it your server's webroot
-	3. Create a new ColdFusion project
-	4. Create a new datasource in ColdFusion administrator with the same name as your project
-	5. Start building your applications
+1. Download ColdMVC
+2. Create a server mapping in ColdFusion administrator for ColdMVC or put it your server's webroot
+3. Create a new ColdFusion project
+4. Create a new datasource in ColdFusion administrator with the same name as your project
+5. Start building your applications
 
 For further guidance, check out the Quick Start (http://www.coldmvc.com/quickstart) and sample applications (https://github.com/tonynelson19/ColdMVC-Samples).
 

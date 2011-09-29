@@ -99,6 +99,10 @@ component {
 
 	}
 
+	/**
+	 * @actionHelper setContent
+	 * @viewHelper setContent
+	 */
 	public any function setContent(required string key, required string content) {
 
 		var sections = getSections();
@@ -111,6 +115,10 @@ component {
 
 	}
 
+	/**
+	 * @actionHelper getContent
+	 * @viewHelper getContent
+	 */
 	public string function getContent(required string key) {
 
 		var sections = getSections();

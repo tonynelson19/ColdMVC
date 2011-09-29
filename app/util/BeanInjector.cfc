@@ -21,7 +21,7 @@ component {
 		if (!structKeyExists(cache, classPath)) {
 
 			// prevent race conditions
-			lock name="coldmvc.app.util.BeanInjector_#classPath#" type="exclusive" timeout="5" throwontimeout="true" {
+			lock name="coldmvc.app.util.BeanInjector_#classPath#" type="exclusive" timeout="10" {
 
 				// double-check just to be sure
 				if (!structKeyExists(cache, classPath)) {

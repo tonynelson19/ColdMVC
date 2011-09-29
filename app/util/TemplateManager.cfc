@@ -52,7 +52,7 @@ component {
 
 	private void function deleteFiles() {
 
-		lock name="coldmvc.app.util.TemplateManager" type="exclusive" timeout="5" throwontimeout="true" {
+		lock name="coldmvc.app.util.TemplateManager" type="exclusive" timeout="10" {
 			deleteDirectory("views");
 			deleteDirectory("layouts");
 		}

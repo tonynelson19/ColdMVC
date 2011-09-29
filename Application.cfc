@@ -4,25 +4,18 @@ component {
 
 	public any function onApplicationStart() {
 
-		lock name="coldmvc.Application" type="exclusive" timeout="5" throwontimeout="true" {
+		var pluginManager = createPluginManager();
 
-			structDelete(application, "coldmvc");
+		structAppend(this.mappings, pluginManager.getMappings(), false);
 
-			var pluginManager = createPluginManager();
+		application.coldmvc.mappings = structCopy(this.mappings);
 
-			// add a mapping for each plugin
-			structAppend(this.mappings, pluginManager.getMappings(), false);
+		var beanFactory = createBeanFactory(pluginManager);
+		setBeanFactory(beanFactory);
+		beanFactory.getBean("config").setSettings(getSettings());
 
-			application.coldmvc.mappings = structCopy(this.mappings);
-
-			var beanFactory = createBeanFactory(pluginManager);
-			setBeanFactory(beanFactory);
-			beanFactory.getBean("config").setSettings(getSettings());
-
-			dispatchEvent("preApplication");
-			dispatchEvent("applicationStart");
-
-		}
+		dispatchEvent("preApplication");
+		dispatchEvent("applicationStart");
 
 	}
 
@@ -56,9 +49,6 @@ component {
 
 		}
 
-		// add a mapping for each plugin
-		structAppend(this.mappings, application.coldmvc.pluginManager.getMappings(), false);
-
 		dispatchEvent("preRequest");
 		dispatchEvent("requestStart");
 
@@ -66,10 +56,25 @@ component {
 
 	private void function reload() {
 
-		ormReload();
-		onApplicationStart();
-		dispatchEvent("postReload");
-		coldmvc.debug.set("reloaded", true);
+		if (!structKeyExists(application, "loading")) {
+
+			lock name="coldmvc.Application.reload.#this.name#" type="exclusive" timeout="30" throwontimeout="true" {
+
+				if (!structKeyExists(application, "loading")) {
+
+					application.loading = true;
+
+					ormReload();
+					onApplicationStart();
+					dispatchEvent("postReload");
+					coldmvc.debug.set("reloaded", true);
+
+					structDelete(application, "loading");
+
+				}
+
+			}
+		}
 
 	}
 

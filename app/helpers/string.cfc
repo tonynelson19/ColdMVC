@@ -12,11 +12,12 @@ component {
 	}
 
 	/**
+	 * @actionHelper escape
 	 * @viewHelper escape
 	 */
 	public string function escape(required string string) {
 
-		return htmlEditFormat(arguments.string);
+		return replace(htmlEditFormat(arguments.string), chr(10), '<br />', 'all');
 
 	}
 

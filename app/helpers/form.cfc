@@ -106,29 +106,29 @@
 		<!--- prevent the form tag from having unnecessary attributes --->
 		<cfset arguments.name = "" />
 		<cfset arguments.title = "" />
-		
+
 		<cfset append(arguments, "class", variables.options.form.class) />
-		
+
 		<cfset configure(arguments) />
-		
+
 		<cfset var attributes = [] />
-		
-		<cfset arguments.url = getURL(arguments) />		
+
+		<cfset arguments.url = getURL(arguments) />
 		<cfif arguments.url neq "">
 			<cfset arrayAppend(attributes, 'action="#arguments.url#"') />
 		</cfif>
-		
+
 		<cfif not structKeyExists(arguments, "enctype")>
 			<cfset arguments.enctype = variables.options.form.enctype />
 		</cfif>
-		
+
 		<cfset var key = "" />
 		<cfloop list="method,enctype" index="i">
 			<cfif arguments[i] neq "">
 				<cfset arrayAppend(attributes, '#i#="#arguments[i]#"') />
 			</cfif>
 		</cfloop>
-		
+
 		<cfif arguments.common neq "">
 			<cfset arrayAppend(attributes, arguments.common) />
 		</cfif>
@@ -496,7 +496,7 @@
 
 		<cfoutput>
 		<cfsavecontent variable="arguments.field">
-			#htmlEditFormat(arguments.value)#
+			#coldmvc.string.escape(arguments.value)#
 		</cfsavecontent>
 		</cfoutput>
 

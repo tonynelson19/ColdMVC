@@ -18,7 +18,7 @@ component {
 
 		var metaData = getMetaData(arguments.object);
 
-		lock name="coldmvc.app.util.ActionHelperManager.#metaData.fullName#" type="exclusive" timeout="5" throwontimeout="true" {
+		lock name="coldmvc.app.util.ActionHelperManager.#metaData.fullName#" type="exclusive" timeout="10" {
 
 			arguments.object.__setVariable = __setVariable;
 

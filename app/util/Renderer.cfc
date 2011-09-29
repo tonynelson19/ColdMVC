@@ -25,15 +25,24 @@ component {
 	}
 
 	/**
-	 * @actionHelper render
+	 * @actionHelper renderPartial
 	 */
-	public string function render(required string view, string module) {
+	public string function renderPartial(required string view, any module, any parameters) {
+
+		if (structKeyExists(arguments, "module") && isStruct(arguments.module)) {
+			arguments.parameters = arguments.module;
+			structDelete(arguments, "module");
+		}
 
 		if (!structKeyExists(arguments, "module")) {
 			arguments.module = coldmvc.event.getModule();
 		}
 
-		return renderView(arguments.module, arguments.view);
+		if (!structKeyExists(arguments, "parameters")) {
+			arguments.parameters = {};
+		}
+
+		return renderTemplate("views", arguments.module, arguments.view, arguments.parameters);
 
 	}
 
@@ -47,7 +56,11 @@ component {
 
 	}
 
-	private string function renderTemplate(required string directory, required string module, required string path) {
+	private string function renderTemplate(required string directory, required string module, required string path, struct parameters) {
+
+		if (!structKeyExists(arguments, "parameters")) {
+			arguments.parameters = {};
+		}
 
 		var output = "";
 
@@ -55,7 +68,7 @@ component {
 
 			var template = templateManager.generate(arguments.module, arguments.directory, arguments.path);
 
-			output = createObject("component", "coldmvc.app.util.Template").init(template);
+			output = createObject("component", "coldmvc.app.util.Template").init(template, arguments.parameters);
 
 		}
 

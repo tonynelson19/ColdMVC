@@ -27,7 +27,7 @@ component {
 		}
 
 		if (!variables.loaded || variables.development) {
-			lock name="coldmvc.app.util.TagManager" type="exclusive" timeout="5" throwontimeout="true" {
+			lock name="coldmvc.app.util.TagManager" type="exclusive" timeout="10" {
 				generateFiles();
 			}
 		}

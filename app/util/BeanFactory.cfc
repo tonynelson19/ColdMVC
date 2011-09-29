@@ -138,13 +138,13 @@ component {
 		var i = "";
 		var dependencies = listToArray(findDependencies(arguments.beanName, arguments.beanName));
 		var initMethods = [];
-		var constructed = [];		
+		var constructed = [];
 
 		for (i = 1; i <= arrayLen(dependencies); i++) {
 
 			var id = dependencies[i];
 
-			lock name="coldmvc.app.util.BeanFactory.constructBean.#id#" type="exclusive" timeout="5" throwontimeout="true" {
+			lock name="coldmvc.app.util.BeanFactory.constructBean.#id#" type="exclusive" timeout="10" {
 
 				var beanDefinition = variables.beanDefinitions[id];
 
@@ -167,7 +167,7 @@ component {
 					}
 
 					// check for config based properties using the bean name (fooService.bar = baz)
-					if (structKeyExists(variables.config, beanDefinition.id)) {						
+					if (structKeyExists(variables.config, beanDefinition.id)) {
 						for (key in variables.config[beanDefinition.id]) {
 							if (structKeyExists(beanInstance, "set#key#")) {
 								evaluate("beanInstance.set#key#(variables.config[beanDefinition.id][key])");

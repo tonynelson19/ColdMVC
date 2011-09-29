@@ -4,6 +4,8 @@ component {
 
 	public any function onApplicationStart() {
 
+		structDelete(application, "coldmvc");
+
 		var pluginManager = createPluginManager();
 
 		structAppend(this.mappings, pluginManager.getMappings(), false);

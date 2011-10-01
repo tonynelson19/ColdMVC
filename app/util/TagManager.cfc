@@ -70,9 +70,9 @@ component {
 
 					if (library == "") {
 						var library = "c";
-						var destination = "/tags/";
+						var destination = "/generated/tags/";
 					} else {
-						var destination = "/tags/#library#/";
+						var destination = "/generated/tags/#library#/";
 					}
 
 					var key = library & ":" & name;
@@ -131,10 +131,6 @@ component {
 			var source = expandPath(tag.source);
 			var destination = expandPath(tag.destination);
 			var content = templateManager.generateContent(fileRead(source));
-			directory = getDirectoryFromPath(destination);
-			if (!fileSystem.directoryExists(directory)) {
-				directoryCreate(directory);
-			}
 			fileWrite(destination, content);
 		}
 

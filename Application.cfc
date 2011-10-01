@@ -51,6 +51,8 @@ component {
 
 		}
 
+		structAppend(this.mappings, application.coldmvc.pluginManager.getMappings(), false);
+
 		dispatchEvent("preRequest");
 		dispatchEvent("requestStart");
 

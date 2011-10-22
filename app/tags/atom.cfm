@@ -1,7 +1,7 @@
 <cfif thisTag.executionMode eq "end">
 
 	<cfif not structKeyExists(attributes, "url")>
-		<cfset attributes.url = coldmvc.link.to("/atom") />
+		<cfset attributes.url = linkTo("/atom") />
 	</cfif>
 
 	<cfoutput>

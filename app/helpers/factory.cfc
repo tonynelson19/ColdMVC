@@ -1,49 +1,53 @@
 /**
  * @accessors true
- * @extends coldmvc.Helper
  */
 component {
 
-	property beanFactory;
+	public any function getBeanFactory() {
 
-	public any function get(string beanName) {
+		return application.coldmvc.framework.getApplication();
 
-		var factory = getBeanFactory();
-
-		if (structKeyExists(arguments, "beanName")) {
-			return factory.getBean(beanName);
-		}
-
-		return factory;
 	}
 
-	public boolean function has(required string beanName) {
+	public any function getBean(required string beanName) {
+
+		return getBeanFactory().getBean(beanName);
+
+	}
+
+	public boolean function containsBean(required string beanName) {
 
 		return getBeanFactory().containsBean(arguments.beanName);
 
 	}
 
-	public struct function definitions() {
+	public struct function getBeanDefinitions() {
 
 		return getBeanFactory().getBeanDefinitions();
 
 	}
 
-	public void function autowire(required any entity) {
+	public any function autowire(required any entity) {
 
-		get("beanInjector").autowire(arguments.entity);
-		get("modelInjector").autowire(arguments.entity);
+		coldmvc.framework.autowire(arguments.entity);
+
+		return this;
 
 	}
 
-	private any function getBeanFactory() {
+	public any function get(string beanName) {
 
-		if (structKeyExists(variables, "beanFactory")) {
-			return variables.beanFactory;
-		} else {
-			return application.coldmvc.beanFactory;
+		if (structKeyExists(arguments, "beanName")) {
+			return getBeanFactory().getBean(beanName);
 		}
 
+		return getBeanFactory();
+
+	}
+
+	public boolean function has(required string beanName) {
+
+		return getBeanFactory().containsBean(arguments.beanName);
 
 	}
 

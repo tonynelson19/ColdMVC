@@ -1,16 +1,13 @@
-/**
- * @extends coldmvc.Helper
- */
 component {
 
 	public string function get(required xml xml, required string key, string def="") {
 
-		var value = def;
+		var value = arguments.def;
 
-		if (structKeyExists(xml, key)) {
-			value = xml[key].xmlText;
-		} else if (structKeyExists(xml, "xmlAttributes") && structKeyExists(xml.xmlAttributes, key)) {
-			value = xml.xmlAttributes[key];
+		if (structKeyExists(arguments.xml, arguments.key)) {
+			value = arguments.xml[arguments.key].xmlText;
+		} else if (structKeyExists(arguments.xml, "xmlAttributes") && structKeyExists(arguments.xml.xmlAttributes, arguments.key)) {
+			value = arguments.xml.xmlAttributes[arguments.key];
 		}
 
 		return value;

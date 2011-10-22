@@ -1,51 +1,35 @@
 /**
- * @extends coldmvc.Scope
+ * @extends coldmvc.scopes.SessionScope
  */
 component {
 
 	private struct function getScope() {
 
-		return session;
+		return super.getScope("user");
 
 	}
 
 	/**
 	 * @actionHelper getUserID
 	 */
-	public string function getUserID() {
+	public string function getID() {
 
-		return get("id");
+		return getValue("id");
 
 	}
 
 	/**
 	 * @actionHelper setUserID
 	 */
-	public any function setUserID(required string id) {
+	public any function setID(required string id) {
 
-		return set("id", arguments.id);
-
-	}
-
-	public any function id() {
-
-		if (structIsEmpty(arguments)) {
-			return getUserID();
-		} else {
-			return setUserID(arguments[1]);
-		}
+		return setValue("id", arguments.id);
 
 	}
 
 	public void function clearID() {
 
-		clear("id");
-
-	}
-
-	public any function name() {
-
-		return getOrSet("name", arguments);
+		return setID("");
 
 	}
 

@@ -1,13 +1,18 @@
-/**
- * @extends coldmvc.Helper
- */
 component {
-
+	
+	private any function getRequestContext() {
+		
+		return coldmvc.framework.getBean("requestManager").getRequestContext();
+		
+	}
+	
 	private string function buildLink(required string querystring, required string pars) {
 
 		arguments.pars = (arguments.querystring == "") ? arguments.pars : arguments.querystring & "&" & arguments.pars;
-
-		return coldmvc.link.to(coldmvc.event.getPath(), arguments.pars);
+		
+		var path = getRequestContext().getPath();
+		
+		return coldmvc.link.to(path, arguments.pars);
 
 	}
 
@@ -109,8 +114,8 @@ component {
 	}
 
 	public string function page(struct collection) {
-
-		var value = coldmvc.params.get("page", 1);
+		
+		var page = getRequestContext().getParam("page", 1);
 
 		if (structKeyExists(arguments, "collection")) {
 

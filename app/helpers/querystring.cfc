@@ -1,13 +1,10 @@
-/**
- * @extends coldmvc.Helper
- */
 component {
 
 	public struct function toStruct(required string data) {
 
 		var struct = {};
 		var i = "";
-		var array = listToArray(data, "&");
+		var array = listToArray(arguments.data, "&");
 
 		for (i = 1; i <= arrayLen(array); i++) {
 

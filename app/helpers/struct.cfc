@@ -1,6 +1,3 @@
-/**
- * @extends coldmvc.Helper
- */
 component {
 
 	public array function sortKeys(required struct struct) {

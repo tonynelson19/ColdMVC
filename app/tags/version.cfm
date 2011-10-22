@@ -1,6 +1,6 @@
 <cfif thisTag.executionMode eq "end">
 
-	<cfset debugManager = coldmvc.factory.get("debugManager") />
+	<cfset debugManager = coldmvc.framework.getBean("debugManager") />
 	<cfset appVersion = debugManager.getAppVersion() />
 
 	<cfif appVersion neq "">

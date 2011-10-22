@@ -5,7 +5,7 @@
 	<cfparam name="attributes.id" default="" />
 	<cfparam name="attributes.class" default="flash" />
 
-	<cfif coldmvc.flash.isValidKey(attributes.key)>
+	<cfif coldmvc.framework.getBean("flashManager").isValidKey(attributes.key)>
 		<div<cfif attributes.id neq ""> id="#attributes.id#"</cfif><cfif attributes.class neq ""> class="#attributes.class#"</cfif>>
 			#escape(params[attributes.key])#
 		</div>

@@ -1,7 +1,3 @@
-/**
- * @accessors true
- * @extends coldmvc.Helper
- */
 component {
 
 	property title;
@@ -10,69 +6,34 @@ component {
 
 	public any function init() {
 
-		variables.title = "";
-		variables.titleSeparator = " | ";
-		variables.titleType = "prepend";
+		variables.options = {
+			meta = {
+				author = "",
+				description = "",
+				value = ""
+			},
+			title = {
+				prefix = "",
+				suffix = "",
+				separator = "-"
+			}
+		};
 
 		return this;
 
 	}
 
-	public any function addTitle(required string title, string type) {
+	public any function setOptions(required struct options) {
 
-		if (!structKeyExists(arguments, "type")) {
-			arguments.type = variables.titleType;
-		}
+		var key = "";
 
-		return buildTitle(arguments.title, arguments.type);
+		for (key in arguments.options) {
 
-	}
-
-	public any function prependTitle(required string title) {
-
-		return buildTitle(arguments.title, "prepend");
-
-	}
-
-	public any function appendTitle(required string title) {
-
-		return buildTitle(arguments.title, "append");
-
-	}
-
-	public string function generateTitle() {
-
-		var array = getData("title", []);
-
-		if (variables.title != "") {
-
-			if (variables.titleType == "append") {
-				arrayPrepend(array, variables.title);
-			} else {
-				arrayAppend(array, variables.title);
+			if (!structKeyExists(variables.options, key)) {
+				variables.options[key] = {};
 			}
 
-		}
-
-		return arrayToList(array, variables.titleSeparator);
-
-	}
-
-	private any function buildTitle(required string title, required string type) {
-
-		arguments.title = trim(arguments.title);
-
-		if (arguments.title != "") {
-
-			var array = getData("title", []);
-
-			if (arguments.type == "append") {
-				arrayAppend(array, arguments.title);
-			} else {
-				arrayPrepend(array, arguments.title);
-			}
-
-			setData("title", array);
+			structAppend(variables.options[key], arguments.options[key], true);
 
 		}
 
@@ -131,6 +92,18 @@ component {
 
 	}
 
+	/**
+	 * @actionHelper hasContent
+	 * @viewHelper hasContent
+	 */
+	public boolean function hasContent(required string key) {
+
+		var sections = getSections();
+
+		return structKeyExists(sections, arguments.key) && sections[arguments.key] != "";
+
+	}
+
 	public array function getHTMLBody() {
 
 		return getData("htmlBody", []);
@@ -163,6 +136,64 @@ component {
 
 	}
 
+	/**
+	 * @viewHelper setTitle
+	 */
+	public any function setTitle(required string title) {
+
+		return setData("title", arguments.title);
+
+	}
+
+	public string function getTitle() {
+
+		var title = getData("title", "");
+
+		var result = [];
+
+		if (variables.options.title.prefix != "") {
+			arrayAppend(result, variables.options.title.prefix);
+		}
+
+		if (title != "") {
+			arrayAppend(result, title);
+		}
+
+		if (variables.options.title.suffix != "") {
+			arrayAppend(result, variables.options.title.suffix);
+		}
+
+		return arrayToList(result, variables.options.title.separator);
+
+	}
+
+	/**
+	 * @viewHelper setAuthor
+	 */
+	public any function setAuthor(required string author) {
+
+		return setMeta("author", arguments.author);
+
+	}
+
+	/**
+	 * @viewHelper setDescription
+	 */
+	public any function setDescription(required string description) {
+
+		return setMeta("description", arguments.description);
+
+	}
+
+	/**
+	 * @viewHelper setKeywords
+	 */
+	public any function setKeywords(required string keywords) {
+
+		return setMeta("keywords", arguments.keywords);
+
+	}
+
 	public any function setMeta(required string key, required string value) {
 
 		var meta = getData("meta", {});
@@ -175,43 +206,42 @@ component {
 
 	}
 
-	public string function getMeta(required string key, string def="") {
+	public string function getMeta(required string key, string defaultValue="") {
 
 		var meta = getData("meta", {});
+		var value = arguments.defaultValue;
 
-		if (!structKeyExists(meta, arguments.key)) {
-			meta[arguments.key] = arguments.def;
+		if (structKeyExists(meta, arguments.key)) {
+			value = meta[arguments.key];
+		} else if (structKeyExists(variables.options.meta, arguments.key) && variables.options.meta[arguments.key] != "") {
+			value = variables.options.meta[arguments.key];
 		}
 
-		return meta[arguments.key];
+		return value;
 
 	}
 
-	private any function getData(required string key, required any def) {
+	private any function getData(required string key, required any defaultValue) {
 
-		var namespace = getNamespace();
+		var cache = getCache();
 
-		if (!structKeyExists(namespace, arguments.key)) {
-			namespace[arguments.key] = arguments.def;
-		}
-
-		return namespace[arguments.key];
+		return cache.getValue(arguments.key, arguments.defaultValue);
 
 	}
 
 	private any function setData(required string key, required any value) {
 
-		var namespace = getNamespace();
+		var cache = getCache();
 
-		namespace[arguments.key] = arguments.value;
+		cache.setValue(arguments.key, arguments.value);
 
 		return this;
 
 	}
 
-	private struct function getNamespace() {
+	private struct function getCache() {
 
-		return coldmvc.request.getNamespace("page");;
+		return coldmvc.framework.getBean("requestScope").getNamespace("page");
 
 	}
 

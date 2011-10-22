@@ -1,19 +1,16 @@
-/**
- * @extends coldmvc.Helper
- */
 component {
 
 	public string function type(required any data) {
 
-		if (isObject(data)) {
+		if (isObject(arguments.data)) {
 			return "object";
-		} else if (isArray(data)) {
+		} else if (isArray(arguments.data)) {
 			return "array";
-		} else if (isStruct(data)) {
+		} else if (isStruct(arguments.data)) {
 			return "struct";
-		} else if (isQuery(data)) {
+		} else if (isQuery(arguments.data)) {
 			return "query";
-		} else if (isXML(data)) {
+		} else if (isXML(arguments.data)) {
 			return "xml";
 		} else {
 			return "string";
@@ -23,22 +20,22 @@ component {
 
 	public numeric function count(required any data, string delimiter="") {
 
-		switch(type(data)) {
+		switch(type(arguments.data)) {
 
 			case "array": {
-				return arrayLen(data);
+				return arrayLen(arguments.data);
 			}
 
 			case "struct": {
-				return structCount(data);
+				return structCount(arguments.data);
 			}
 
 			case "query": {
-				return data.recordCount;
+				return arguments.data.recordCount;
 			}
 
 			case "string": {
-				return listLen(data, delimiter);
+				return listLen(arguments.data, arguments.delimiter);
 			}
 
 		}
@@ -47,14 +44,14 @@ component {
 
 	public string function key(required any data, numeric index="1", string delimiter="") {
 
-		switch(type(data)) {
+		switch(type(arguments.data)) {
 
 			case "array": {
 				return index;
 			}
 
 			case "struct": {
-				return coldmvc.struct.sortKeys(data)[index];
+				return coldmvc.struct.sortKeys(arguments.data)[arguments.index];
 			}
 
 			case "query": {
@@ -62,7 +59,7 @@ component {
 			}
 
 			case "string": {
-				return listGetAt(data, index, delimiter);
+				return listGetAt(arguments.data, arguments.index, arguments.delimiter);
 			}
 
 		}
@@ -71,22 +68,22 @@ component {
 
 	public any function value(required any data, numeric index="1", string delimiter="") {
 
-		switch(type(data)) {
+		switch(type(arguments.data)) {
 
 			case "array": {
-				return data[index];
+				return arguments.data[arguments.index];
 			}
 
 			case "struct": {
-				return data[coldmvc.struct.sortKeys(data)[index]];
+				return arguments.data[coldmvc.struct.sortKeys(arguments.data)[arguments.index]];
 			}
 
 			case "query": {
-				return coldmvc.query.toStruct(data, index);
+				return coldmvc.query.toStruct(arguments.data, arguments.index);
 			}
 
 			case "string": {
-				return listGetAt(data, index, delimiter);
+				return listGetAt(arguments.data, arguments.index, arguments.delimiter);
 			}
 
 		}
@@ -98,26 +95,26 @@ component {
 		var result = [];
 		var i = "";
 
-		if (querystring != "") {
-			arrayAppend(result, querystring);
+		if (arguments.querystring != "") {
+			arrayAppend(result, arguments.querystring);
 		}
 
-		switch(type(data)) {
+		switch(type(arguments.data)) {
 
 			case "array": {
-				for (i = 1; i <= arrayLen(data); i++) {
-					arrayAppend(result, toQueryString(data[i], querystring));
+				for (i = 1; i <= arrayLen(arguments.data); i++) {
+					arrayAppend(result, toQueryString(arguments.data[i], arguments.querystring));
 				}
 				break;
 			}
 
 			case "struct": {
-				arrayAppend(result, coldmvc.struct.toQueryString(data));
+				arrayAppend(result, coldmvc.struct.toQueryString(arguments.data));
 				break;
 			}
 
 			case "string": {
-				arrayAppend(result, data);
+				arrayAppend(result, arguments.data);
 				break;
 			}
 

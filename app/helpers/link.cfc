@@ -1,52 +1,59 @@
 /**
  * @accessors true
- * @extends coldmvc.Helper
  */
 component {
 
-	property beanFactory;
-
 	/**
+	 * linkTo({controller="foo", action="bar"}, true)
+	 * linkTo("user-list", {}, true)
+	 * linkTo("/users/list")
+	 *
 	 * @viewHelper linkTo
 	 */
-	public string function to(any parameters, string querystring, string name="") {
+	public string function to(any name="", any params="", path="", boolean reset=false) {
 
-		return buildURL(arguments);
+		return generate(argumentCollection=arguments);
 
 	}
 
 	/**
 	 * @actionHelper redirect
 	 */
-	public void function redirect(any parameters, string querystring, string name="") {
+	public void function redirect(any name="", any params="", path="", boolean reset=false) {
 
-		location(buildURL(arguments), false);
+		location(generate(arargumentCollection=arguments), false);
 
 	}
 
-	private string function buildURL(required struct args) {
+	private string function generate(any name, any params, any path="", boolean reset=false) {
 
-		if (!structKeyExists(arguments.args, "querystring")) {
-			arguments.args.querystring = "";
-		}
-
-		if (isSimpleValue(arguments.args.parameters)) {
-
-			if (left(arguments.args.parameters, 1) == "/" && arguments.args.querystring != "") {
-				arguments.args.querystring = arguments.args.parameters & "?" & arguments.args.querystring;
-			} else {
-				arguments.args.querystring = arguments.args.parameters;
+		if (structKeyExists(arguments, "params")) {
+			if (isBoolean(arguments.params)) {
+				arguments.reset = arguments.params;
+				arguments.params = {};
 			}
-
-			arguments.args.parameters = {};
-
+		} else {
+			arguments.params = {};
 		}
 
-		if (!structKeyExists(arguments.args, "parameters")) {
-			arguments.args.parameters = {};
+		if (structKeyExists(arguments, "name")) {
+			if (isStruct(arguments.name)) {
+				var parameters = arguments.name;
+				arguments.name = arguments.params;
+				arguments.params = parameters;
+			}
 		}
 
-		return beanFactory.getBean("routeHandler").buildURL(name=arguments.args.name, parameters=arguments.args.parameters, querystring=arguments.args.querystring);
+		if (left(arguments.name, 1) == "/") {
+			arguments.path = arguments.name;
+			arguments.name = "";
+		}
+
+		if (!isStruct(arguments.params)) {
+			arguments.params = {};
+		}
+
+		return coldmvc.framework.getBean("router").generate(argumentCollection=arguments);
 
 	}
 

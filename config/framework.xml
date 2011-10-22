@@ -1,0 +1,202 @@
+<beans default-autowire="byName">
+	
+	<bean id="acl" class="coldmvc.acl.ACL" />	
+		
+	<bean id="actionHelperManager" class="coldmvc.helpers.ActionHelperManager" />
+		
+	<bean id="applicationScope" class="coldmvc.scopes.ApplicationScope" />	
+	
+	<bean id="assertionManager" class="coldmvc.system.AssertionManager" />
+	
+	<bean id="beanInjector" class="coldmvc.beans.BeanInjector" />
+	
+	<bean id="beanFinder" class="coldmvc.beans.BeanFinder" init-method="setup" />
+		
+	<bean id="cgiScope" class="coldmvc.scopes.CGIScope" />	
+	
+	<bean id="collectionParser" class="coldmvc.util.CollectionParser" />
+	
+	<bean id="componentLocator" class="coldmvc.util.ComponentLocator" />
+	
+	<bean id="config" class="coldmvc.config.Config" />
+	
+	<bean id="coldmvc" factory-bean="helperManager" factory-method="getHelpers" />
+	
+	<bean id="$" factory-bean="helperManager" factory-method="getHelpers" />
+	
+	<bean id="controllerManager" class="coldmvc.system.ControllerManager" />
+		
+	<bean id="cookieScope" class="coldmvc.scopes.CookieScope" />
+	
+	<bean id="dao" class="coldmvc.orm.DAO" init-method="setup">
+		<property name="development">
+			<value>${development}</value>
+		</property>
+	</bean>
+	
+	<bean id="debugManager" class="coldmvc.system.DebugManager">
+		<property name="templates">
+			<list>
+				<value>/coldmvc/debug/info.cfm</value>
+				<value>/coldmvc/debug/queries.cfm</value>
+				<value>/coldmvc/debug/mappings.cfm</value>
+				<value>/coldmvc/debug/plugins.cfm</value>
+				<value>/coldmvc/debug/modules.cfm</value>
+				<value>/coldmvc/debug/controllers.cfm</value>
+				<value>/coldmvc/debug/models.cfm</value>
+				<value>/coldmvc/debug/helpers.cfm</value>
+				<value>/coldmvc/debug/tags.cfm</value>
+				<value>/coldmvc/debug/actionhelpers.cfm</value>
+				<value>/coldmvc/debug/modelhelpers.cfm</value>
+				<value>/coldmvc/debug/viewhelpers.cfm</value>
+				<value>/coldmvc/debug/beans.cfm</value>
+				<value>/coldmvc/debug/events.cfm</value>
+				<value>/coldmvc/debug/routes.cfm</value>
+				<value>/coldmvc/debug/acl.cfm</value>
+				<value>/coldmvc/debug/constraints.cfm</value>
+				<value>/coldmvc/debug/config.cfm</value>
+			</list>
+		</property>
+	</bean>
+	
+	<bean id="eventDispatcher" class="coldmvc.events.EventDispatcher">
+		<property name="observers">
+			<map>
+				<entry key="preApplication">
+					<list>
+						<value>requestManager.startRequest</value>
+					</list>
+				</entry>
+				<entry key="applicationStart">
+					<list>
+						<value>routeManager.setup</value>
+						<value>actionHelperManager.findHelpers</value>
+						<value>modelHelperManager.findHelpers</value>
+						<value>viewHelperManager.findHelpers</value>
+						<value>templateManager.loadTemplates</value>
+						<value>acl.loadConfig</value>
+					</list>
+				</entry>
+				<entry key="preRequest">
+					<list>
+						<value>modelFactory.clearCache</value>
+						<value>tagManager.generateTags</value>
+						<value>templateManager.generateTemplates</value>
+						<value>requestManager.startRequest</value>
+						<value>flashManager.startRequest</value>
+						<value>viewHelperManager.clearParams</value>
+						<value>filterManager.enableFilters</value>
+						<value>routeHandler.parseRequest</value>
+					</list>
+				</entry>
+				<entry key="request">
+					<list>
+						<value>routeHandler.handleRequest</value>
+						<value>requestDispatcher.outputRequest</value>
+					</list>
+				</entry>
+				<entry key="postRequest">
+					<list>
+						<value>flashManager.endRequest</value>
+					</list>
+				</entry>
+				<entry key="preLoad">
+					<list>
+						<value>modelHelperManager.addHelpers</value>
+					</list>
+				</entry>
+			</map>
+		</property>
+	</bean>
+	
+	<bean id="flashManager" class="coldmvc.request.FlashManager" />
+	
+	<bean id="fileSystem" class="coldmvc.util.FileSystem" />
+	
+	<bean id="filterManager" class="coldmvc.orm.FilterManager">
+		<property name="filters">
+			<list>
+				<value>softDeletes</value>
+			</list>
+		</property>
+	</bean>
+	
+	<bean id="formFactory" class="coldmvc.forms.FormFactory" init-method="setup" />
+		
+	<bean id="formScope" class="coldmvc.scopes.FormScope" />
+	
+	<bean id="frameworkBeanInjector" class="coldmvc.beans.FrameworkBeanInjector" />	
+	
+	<bean id="helperManager" class="coldmvc.helpers.HelperManager" />
+	
+	<bean id="metaDataFlattener" class="coldmvc.metadata.MetaDataFlattener" />
+	
+	<bean id="modelFactory" class="coldmvc.model.ModelFactory">
+		<property name="development">
+			<value>${development}</value>
+		</property>
+	</bean>
+	
+	<bean id="modelHelperManager" class="coldmvc.helpers.ModelHelperManager" />
+	
+	<bean id="modelInjector" class="coldmvc.model.ModelInjector" />
+	
+	<bean id="modelManager" class="coldmvc.model.ModelManager" />
+	
+	<bean id="modelSerializer" class="coldmvc.model.ModelSerializer" />
+	
+	<bean id="moduleManager" class="coldmvc.system.ModuleManager" />
+	
+	<bean id="navigation" class="coldmvc.navigation.Navigation" />	
+	
+	<bean id="paginatorFactory" class="coldmvc.pagination.PaginatorFactory" />
+	
+	<bean id="pdfRenderer" class="coldmvc.rendering.PDFRenderer" />
+	
+	<bean id="renderer" class="coldmvc.rendering.Renderer" />
+	
+	<bean id="requestDispatcher" class="coldmvc.request.RequestDispatcher">
+		<property name="development">
+			<value>${development}</value>
+		</property>		
+	</bean>
+	
+	<bean id="requestManager" class="coldmvc.request.RequestManager" />
+		
+	<bean id="requestScope" class="coldmvc.scopes.RequestScope" />	
+	
+	<bean id="routeHandler" class="coldmvc.routing.RouteHandler" />
+	
+	<bean id="routeSerializer" class="coldmvc.routing.RouteSerializer" />
+	
+	<bean id="routeManager" class="coldmvc.routing.RouteManager" />
+	
+	<bean id="router" class="coldmvc.routing.Router" />	
+		
+	<bean id="serverScope" class="coldmvc.scopes.ServerScope" />
+		
+	<bean id="sessionScope" class="coldmvc.scopes.SessionScope" />	
+	
+	<bean id="tableSorterFactory" class="coldmvc.tablesorter.TableSorterFactory" />
+	
+	<bean id="tagInvoker" class="coldmvc.tags.TagInvoker" init-method="setup" />
+	
+	<bean id="tagManager" class="coldmvc.tags.TagManager">
+		<property name="development">
+			<value>${development}</value>
+		</property>
+	</bean>
+	
+	<bean id="templateManager" class="coldmvc.rendering.TemplateManager">
+		<property name="development">
+			<value>${development}</value>
+		</property>
+	</bean>
+		
+	<bean id="urlScope" class="coldmvc.scopes.URLScope" />	
+		
+	<bean id="validator" class="coldmvc.validation.Validator" init-method="setup" />
+	
+	<bean id="viewHelperManager" class="coldmvc.helpers.ViewHelperManager" />
+	
+</beans>

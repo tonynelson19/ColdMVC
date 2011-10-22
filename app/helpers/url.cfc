@@ -1,6 +1,3 @@
-/**
- * @extends coldmvc.Helper
- */
 component {
 
 	public string function addQueryString(required string url, required string querystring) {

@@ -1,6 +1,3 @@
-/**
- * @extends coldmvc.Helper
- */
 component {
 
 	public struct function toStruct(required array array, string key="id") {

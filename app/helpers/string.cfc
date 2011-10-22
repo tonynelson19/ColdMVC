@@ -1,6 +1,3 @@
-/**
- * @extends coldmvc.Helper
- */
 component {
 
 	public any function init() {
@@ -160,7 +157,7 @@ component {
 	}
 
 	/**
-	 * @viewHelper propercase
+	 * @viewHelper capitalize
 	 */
 	public string function capitalize(required string string) {
 

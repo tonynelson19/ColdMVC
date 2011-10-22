@@ -1,6 +1,3 @@
-/**
- * @extends coldmvc.Helper
- */
 component {
 
 	public boolean function array(required any value) {

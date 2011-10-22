@@ -1,8 +1,8 @@
 <cfif thisTag.executionMode eq "end">
-
-	<cfset module = coldmvc.event.getModule() />
-	<cfset controller = coldmvc.event.getController() />
-	<cfset action = coldmvc.event.getAction() />
+	
+	<cfset module = getModule() />
+	<cfset controller = getController() />
+	<cfset action = getAction() />
 
 	<cfset classes = [
 		"#module#",

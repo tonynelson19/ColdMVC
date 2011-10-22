@@ -1,6 +1,3 @@
-/**
- * @extends coldmvc.Helper
- */
 component {
 
 	/**
@@ -114,12 +111,17 @@ component {
 
 	public string function getVersion() {
 
-
-
 		if (coldmvc.config.get("development")) {
+
 			var timestamp = now();
+
 		} else {
-			var timestamp = coldmvc.application.get("timestamp", now());
+
+			if (!structKeyExists(variables, "timestamp")) {
+				variables.timestamp = now();
+			}
+
+			var timestamp = variables.timestamp;
 		}
 
 		return dateFormat(timestamp, "mmddyyyy") & timeFormat(timestamp, "hhmmss");
@@ -128,23 +130,23 @@ component {
 
 	private void function markRendered(required string type, required string name) {
 
-		var cache = getAssetCache(arguments.type);
+		var cache = getCache(arguments.type);
 
-		cache[arguments.name] = now();
+		cache.setValue(arguments.name, now());
 
 	}
 
 	private boolean function alreadyRendered(required string type, required string name) {
 
-		var cache = getAssetCache(arguments.type);
+		var cache = getCache(arguments.type);
 
-		return structKeyExists(cache, arguments.name);
+		return cache.hasValue(arguments.name);
 
 	}
 
-	private struct function getAssetCache(required string type) {
+	private struct function getCache(required string type) {
 
-		return coldmvc.request.get("helpers.asset.#arguments.type#", {});
+		return coldmvc.framework.getBean("requestScope").getNamespace(arguments.type);
 
 	}
 

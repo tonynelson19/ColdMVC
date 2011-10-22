@@ -1,6 +1,5 @@
 /**
  * @accessors true
- * @extends coldmvc.Component
  */
 component {
 

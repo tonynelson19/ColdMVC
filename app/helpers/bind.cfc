@@ -1,15 +1,6 @@
-/**
- * @extends coldmvc.Scope
- */
 component {
 
-	private struct function getScope() {
-
-		return request;
-
-	}
-
-	public void function start(required string key, string index="") {
+	public any function start(required string key, string index="") {
 
 		var binds = getAll();
 
@@ -18,11 +9,11 @@ component {
 			index = arguments.index
 		});
 
-		set(binds);
+		return getCache().setValues(binds);
 
 	}
 
-	public void function stop(required string key) {
+	public any function stop(required string key) {
 
 		var binds = getAll();
 		var i = "";
@@ -34,7 +25,7 @@ component {
 			}
 		}
 
-		set(binds);
+		return getCache().setValues(binds);
 
 	}
 
@@ -53,13 +44,19 @@ component {
 
 	public any function set(required any value) {
 
-		return super.set("bindings", arguments.value);
+		return getCache().setValue("bindings", arguments.value);
 
 	}
 
 	public array function getAll() {
 
-		return super.get("bindings", []);
+		return getCache().getValue("bindings", []);
+
+	}
+
+	private struct function getCache() {
+
+		return coldmvc.framework.getBean("requestScope").getNamespace("bind");
 
 	}
 

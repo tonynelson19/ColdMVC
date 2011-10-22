@@ -1,11 +1,14 @@
 /**
- * @extends coldmvc.Scope
+ * @extends coldmvc.scopes.Cache
  */
 component {
 
-	private struct function getScope() {
+	public any function init() {
 
-		return request;
+		variables.scope = "request";
+		variables.namespace = "debug";
+
+		return this;
 
 	}
 

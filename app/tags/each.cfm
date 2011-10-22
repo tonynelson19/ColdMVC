@@ -13,8 +13,8 @@
 	<cfif attributes.bind neq "">
 
 		<cfif not structKeyExists(attributes, "in")>
-			<cfif coldmvc.params.has(attributes.bind)>
-				<cfset attributes.in = coldmvc.params.get(attributes.bind) />
+			<cfif hasParam(attributes.bind)>
+				<cfset attributes.in = getParam(attributes.bind) />
 			</cfif>
 		</cfif>
 
@@ -29,6 +29,10 @@
 	<cfparam name="attributes.start" default="1" />
 	<cfparam name="attributes.delimeter" default="," />
 	<cfparam name="attributes.class" default="" />
+
+	<cfif isInstanceOf(attributes.in, "coldmvc.pagination.Paginator")>
+		<cfset attributes.in = attributes.in.list() />
+	</cfif>
 
 	<cfset attributes.length = coldmvc.data.count(attributes.in, attributes.delimeter) />
 

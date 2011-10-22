@@ -8,6 +8,16 @@ component {
 	 */
 	property coldmvc;
 
+	/**
+	 * @inject coldmvc
+	 */
+	property validationService;
+
+	/**
+	 * @inject coldmvc
+	 */
+	property validatorFactory;
+
 	public any function init() {
 
 		variables.attributes = {};
@@ -237,47 +247,23 @@ component {
 		for (i = 1; i <= arrayLen(variables.validators); i++) {
 
 			var type = variables.validators[i];
+			var validator = variables.validatorFactory.getValidator(type);
+			var options = variables.validatorStruct[type];
+			var valid = validator.isValid(this.getValue(), options, getForm());
 
-			if (!variables.formFactory.hasValidator(type)) {
-				throw(message="Unknown validator '#type#' for element '#getName()#'.");
-			}
+			if (!valid) {
 
-			var validator = variables.formFactory.getValidator(type);
-			var attribs = variables.validatorStruct[type];
-
-			if (!validator.isValid(this, attribs)) {
-
-				if (structKeyExists(attribs, "message")) {
-
-					var message = attribs.message;
-
-				} else if (structKeyExists(validator, "getMessage")) {
-
-					var message = validator.getMessage(this, attribs);
-
+				if (structKeyExists(options, "message")) {
+					var message = options.message;
 				} else {
-
-					var message = variables.formFactory.getValidatorMessage(type);
-
-					if (find("${Property}", message)) {
-						message = replace(message, "${Property}", coldmvc.string.propercase(getName()), "all");
-					}
-
-					if (find("${property}", message)) {
-						message = replace(message, "${property}", lcase(coldmvc.string.propercase(getName())), "all");
-					}
-
-					var key = "";
-					for (key in attribs) {
-						if (key != "message" && findNoCase("${#key#}", message)) {
-							message = replaceNoCase(message, "${#key#}", attribs[key], "all");
-						}
-					}
-
+					var message = validator.getMessage(getValue(), options, getForm());
 				}
+
+				message = validationService.updateMessage(message, getName(), options);
 
 				addError(message);
 				break;
+
 			}
 
 		}

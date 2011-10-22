@@ -15,7 +15,7 @@
 		<cfsavecontent variable="thisTag.generatedContent">
 			<ul class="#attributes.class#">
 				<cfloop array="#attributes.errors#" index="error">
-					<li>#error.getMessage()#</li>
+					<li>#escape(error.getMessage())#</li>
 				</cfloop>
 			</ul>
 		</cfsavecontent>

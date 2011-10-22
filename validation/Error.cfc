@@ -4,11 +4,11 @@
 component {
 
 	property message;
-	property property;
+	property name;
 
-	public any function init(required string property, required string message) {
+	public any function init(required string name, required string message) {
 
-		variables.property = arguments.property;
+		variables.name = arguments.name;
 		variables.message = arguments.message;
 
 		return this;

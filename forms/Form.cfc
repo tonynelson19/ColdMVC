@@ -20,15 +20,14 @@ component {
 		variables.attributes = {};
 		variables.elements = [];
 		variables.elementStruct = {};
-		variables.errors = [];
 
 		return this;
 
 	}
 
-	public void function create() {
+	public any function create() {
 
-		return;
+		return this;
 
 	}
 
@@ -36,18 +35,6 @@ component {
 
 		var content = [];
 		var i = "";
-
-		if (hasErrors()) {
-
-			arrayAppend(content, '<ul class="errors">');
-
-			for (i = 1; i <= arrayLen(variables.errors); i++) {
-				arrayAppend(content, '<li>#variables.errors[i]#</li>');
-			}
-
-			arrayAppend(content, '</ul>');
-
-		}
 
 		for (i = 1; i <= arrayLen(variables.elements); i++) {
 			arrayAppend(content, variables.elements[i].render());
@@ -184,7 +171,6 @@ component {
 		var element = formFactory.createElement(arguments.type, arguments.attributes);
 
 		element.setForm(this);
-		element.setFormFactory(variables.formFactory);
 
 		return element;
 
@@ -253,51 +239,41 @@ component {
 
 	}
 
-	public boolean function isValid(struct data) {
-
-		clearErrors();
+	public any function validate(struct data) {
 
 		if (structKeyExists(arguments, "data")) {
 			populate(arguments.data);
 		}
+
+		var result = new coldmvc.validation.Result();
+		var i = "";
+		var j = "";
 
 		for (i = 1; i <= arrayLen(variables.elements); i++) {
 
 			var element = variables.elements[i];
 
 			if (!element.getIgnore() && !element.isValid()) {
-				addError(arrayToList(element.getErrors(), " "));
+
+				var errors = element.getErrors();
+
+				for (j = 1; j <= arrayLen(errors); j++) {
+					var error = new coldmvc.validation.Error(element.getName(), errors[j]);
+					result.addError(error);
+				}
 			}
 
 		}
 
-		return !hasErrors();
+		return result;
 
 	}
 
-	public array function getErrors() {
+	public boolean function isValid() {
 
-		return variables.errors;
+		var result = validate();
 
-	}
-
-	public any function addError(required string error) {
-
-		arrayAppend(variables.errors, arguments.error);
-
-		return this;
-
-	}
-
-	public boolean function hasErrors() {
-
-		return arrayLen(variables.errors) > 0;
-
-	}
-
-	public any function clearErrors() {
-
-		variables.errors = [];
+		return result.isValid();
 
 	}
 

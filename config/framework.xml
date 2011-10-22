@@ -53,7 +53,7 @@
 				<value>/coldmvc/debug/events.cfm</value>
 				<value>/coldmvc/debug/routes.cfm</value>
 				<value>/coldmvc/debug/acl.cfm</value>
-				<value>/coldmvc/debug/constraints.cfm</value>
+				<value>/coldmvc/debug/validators.cfm</value>
 				<value>/coldmvc/debug/config.cfm</value>
 			</list>
 		</property>
@@ -195,7 +195,9 @@
 		
 	<bean id="urlScope" class="coldmvc.scopes.URLScope" />	
 		
-	<bean id="validator" class="coldmvc.validation.Validator" init-method="setup" />
+	<bean id="validationService" class="coldmvc.validation.ValidationService" />
+		
+	<bean id="validatorFactory" class="coldmvc.validation.ValidatorFactory" init-method="setup" />
 	
 	<bean id="viewHelperManager" class="coldmvc.helpers.ViewHelperManager" />
 	

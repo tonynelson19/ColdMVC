@@ -151,6 +151,8 @@
 	
 	<bean id="paginatorFactory" class="coldmvc.pagination.PaginatorFactory" />
 	
+	<bean id="paginationRenderer" class="coldmvc.pagination.PaginationRenderer" init-method="setup" />
+	
 	<bean id="pdfRenderer" class="coldmvc.rendering.PDFRenderer" />
 	
 	<bean id="renderer" class="coldmvc.rendering.Renderer" />

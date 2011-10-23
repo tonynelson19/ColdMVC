@@ -25,23 +25,16 @@
 		<cfset class = "" />
 	</cfif>
 
-	<cfset queryString = coldmvc.framework.getBean("cgiScope").getValue("query_string") />
-	<cfset struct = coldmvc.querystring.toStruct(queryString) />
-	<cfset structDelete(struct, "sort") />
-	<cfset structDelete(struct, "order") />
+	<cfset params = {
+		sort = sort,
+		order = order
+	} />
 
-	<cfset sortString = "sort=#urlEncodedFormat(sort)#&order=#order#" />
-
-	<cfset queryString = coldmvc.struct.toQueryString(struct) />
-
-	<cfif queryString eq "">
-		<cfset queryString = sortString />
-	<cfelse>
-		<cfset queryString = queryString & "&" & sortString />
+	<cfif hasParam("page")>
+		<cfset params.page = 1 />
 	</cfif>
 
-	<cfset requestContext = coldmvc.framework.getBean("requestManager").getRequestContext() />
-	<cfset path = linkTo(requestContext.getPath()) & "?" & queryString />
+	<cfset link = linkTo(params) />
 
 	<cfif thisTag.generatedContent neq "">
 		<cfset label = thisTag.generatedContent />
@@ -49,6 +42,6 @@
 		<cfset label = column.label />
 	</cfif>
 
-	<cfset thisTag.generatedContent = '<th><a href="#path#"#class#>#label#</a></th>' />
+	<cfset thisTag.generatedContent = '<th><a href="#link#"#class#>#label#</a></th>' />
 
 </cfif>

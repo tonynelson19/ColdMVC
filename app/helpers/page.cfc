@@ -1,9 +1,5 @@
 component {
 
-	property title;
-	property titleSeparator;
-	property titleType;
-
 	public any function init() {
 
 		variables.options = {

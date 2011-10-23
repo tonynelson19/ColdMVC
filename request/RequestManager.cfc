@@ -199,7 +199,7 @@ component {
 	 * @actionHelper hasParam
 	 * @viewHelper hasParam
 	 */
-	public struct function hasParam(required string key) {
+	public boolean function hasParam(required string key) {
 
 		return getRequestContext().hasParam(arguments.key);
 

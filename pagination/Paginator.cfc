@@ -4,15 +4,14 @@
 component {
 
 	property data;
+	property adapter;
 	property page;
 	property max;
 
-	public any function init(required any data, required any adapter, required numeric page, required numeric max) {
+	public any function init() {
 
-		variables.data = arguments.data;
-		variables.adapter = arguments.adapter;
-		variables.max = arguments.max;
-		variables.page = arguments.page;
+		variables.max = "";
+		variables.defaultMax = 10;
 
 		return this;
 
@@ -49,6 +48,16 @@ component {
 
 	}
 
+	public numeric function getMax() {
+
+		if (isNumeric(variables.max)) {
+			return variables.max;
+		} else {
+			return variables.defaultMax;
+		}
+
+	}
+
 	public numeric function getStart() {
 
 		return ((getPage() - 1) * getMax()) + 1;
@@ -57,7 +66,14 @@ component {
 
 	public numeric function getEnd() {
 
-		return getStart() + getMax() - 1;
+		var end = getStart() + getMax() - 1;
+		var recordCount = getRecordCount();
+
+		if (end < recordCount) {
+			return end;
+		} else {
+			return recordCount;
+		}
 
 	}
 

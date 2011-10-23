@@ -483,6 +483,8 @@ component {
 						value = expiry[key];
 					} else if (placeholder.optional) {
 						value = "";
+					} else if (hasDefault(key)) {
+						value = getDefault(key);
 					} else {
 						throw("Param not specified: #key#");
 					}

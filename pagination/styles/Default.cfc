@@ -69,7 +69,7 @@
 					</cfif>
 					<cfloop from="#lowerBound#" to="#upperBound#" index="i">
 						<cfset link = generateLink(arguments.params, i) />
-						<li><a href="#link#" <cfif arguments.page eq i> class="active"</cfif>>#i#</a></li>
+						<li><a href="#link#"<cfif arguments.page eq i> class="active"</cfif>>#i#</a></li>
 					</cfloop>
 					<cfif arguments.options.next.display>
 						<cfif arguments.page eq arguments.pageCount>

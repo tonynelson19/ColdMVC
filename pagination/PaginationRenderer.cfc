@@ -4,6 +4,7 @@
 component {
 
 	property componentLocator;
+	property requestManager;
 	property framework;
 
 	public any function init() {
@@ -105,7 +106,7 @@ component {
 		}
 
 		if (!structKeyExists(arguments, "params")) {
-			arguments.params = {};
+			arguments.params = requestManager.getRequestContext().getRouteParams();
 		}
 
 		if (!structKeyExists(arguments, "style")) {

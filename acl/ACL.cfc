@@ -30,7 +30,9 @@ component {
 			var key = "";
 
 			for (key in models) {
-				addResource(key);
+				if (!hasResource(key)) {
+					addResource(key);
+				}
 			}
 
 		}

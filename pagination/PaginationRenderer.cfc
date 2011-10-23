@@ -3,6 +3,8 @@
  */
 component {
 
+	property cgiScope;
+	property coldmvc;
 	property componentLocator;
 	property requestManager;
 	property framework;
@@ -111,6 +113,26 @@ component {
 
 		if (!structKeyExists(arguments, "style")) {
 			arguments.style = variables.options.style.type;
+		}
+
+		if (!structKeyExists(arguments, "appendQueryString")) {
+			arguments.appendQueryString = true;
+		}
+
+		if (arguments.appendQueryString) {
+
+			if (!structKeyExists(arguments, "queryString")) {
+				arguments.queryString = cgiScope.getValue("query_string");
+			}
+
+			var struct = coldmvc.querystring.toStruct(arguments.queryString);
+			structDelete(struct, "page");
+			arguments.queryString = coldmvc.struct.toQueryString(struct);
+
+		} else {
+
+			arguments.queryString = "";
+
 		}
 
 		arguments.options = variables.options;

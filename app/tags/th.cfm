@@ -1,5 +1,7 @@
 <cfif thisTag.executionMode eq "end">
 
+	<cfparam name="attributes.appendQueryString" default="true" />
+
 	<cfif listFindNocase(getBaseTagList(), "cf_thead")>
 
 		<cfset thead = getBaseTagData("cf_thead") />
@@ -35,6 +37,23 @@
 	</cfif>
 
 	<cfset link = linkTo(params) />
+
+	<cfif attributes.appendQueryString>
+
+		<cfif not structKeyExists(attributes, "queryString")>
+			<cfset attributes.queryString = coldmvc.framework.getBean("cgiScope").getValue("query_string") />
+		</cfif>
+
+		<cfset struct = coldmvc.querystring.toStruct(attributes.queryString) />
+		<cfset structDelete(struct, "sort") />
+		<cfset structDelete(struct, "order") />
+		<cfset structDelete(struct, "page") />
+
+		<cfset queryString = coldmvc.struct.toQueryString(struct) />
+
+		<cfset link = coldmvc.url.appendQueryString(link, queryString) />
+
+	</cfif>
 
 	<cfif thisTag.generatedContent neq "">
 		<cfset label = thisTag.generatedContent />

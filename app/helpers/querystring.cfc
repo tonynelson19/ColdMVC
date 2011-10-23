@@ -30,36 +30,36 @@ component {
 
 	}
 
-	public string function combine(required string querystring1, required string querystring2) {
+	public string function combine(required string queryString1, required string queryString2) {
 
 		var result = "";
 
-		arguments.querystring1 = clean(arguments.querystring1);
-		arguments.querystring2 = clean(arguments.querystring2);
+		arguments.queryString1 = clean(arguments.queryString1);
+		arguments.queryString2 = clean(arguments.queryString2);
 
-		if (querystring1 == "") {
-			result = querystring2;
-		} else if (querystring2 == "") {
-			result = querystring1;
+		if (queryString1 == "") {
+			result = queryString2;
+		} else if (queryString2 == "") {
+			result = queryString1;
 		} else {
-			result = querystring1 & "&" & querystring2;
+			result = queryString1 & "&" & queryString2;
 		}
 
 		return result;
 
 	}
 
-	public string function clean(required string querystring) {
+	public string function clean(required string queryString) {
 
-		if (left(arguments.querystring, 1) == "?") {
-			arguments.querystring = replace(arguments.querystring, "?", "");
+		if (left(arguments.queryString, 1) == "?") {
+			arguments.queryString = replace(arguments.queryString, "?", "");
 		}
 
-		if (left(arguments.querystring, 1) == "&") {
-			arguments.querystring = replace(arguments.querystring, "&", "");
+		if (left(arguments.queryString, 1) == "&") {
+			arguments.queryString = replace(arguments.queryString, "&", "");
 		}
 
-		return arguments.querystring;
+		return arguments.queryString;
 
 	}
 

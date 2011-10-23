@@ -114,7 +114,7 @@ component {
 			reloadURL = reloadURL & eventPath;
 		}
 
-		return coldmvc.url.addQueryString(reloadURL, queryString);
+		return coldmvc.url.appendQueryString(reloadURL, queryString);
 
 	}
 

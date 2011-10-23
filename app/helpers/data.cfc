@@ -90,20 +90,20 @@ component {
 
 	}
 
-	public string function toQueryString(any data, string querystring="") {
+	public string function toQueryString(any data, string queryString="") {
 
 		var result = [];
 		var i = "";
 
-		if (arguments.querystring != "") {
-			arrayAppend(result, arguments.querystring);
+		if (arguments.queryString != "") {
+			arrayAppend(result, arguments.queryString);
 		}
 
 		switch(type(arguments.data)) {
 
 			case "array": {
 				for (i = 1; i <= arrayLen(arguments.data); i++) {
-					arrayAppend(result, toQueryString(arguments.data[i], arguments.querystring));
+					arrayAppend(result, toQueryString(arguments.data[i], arguments.queryString));
 				}
 				break;
 			}

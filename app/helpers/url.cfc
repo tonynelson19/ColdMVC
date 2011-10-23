@@ -1,18 +1,19 @@
 component {
 
-	public string function addQueryString(required string url, required string querystring) {
+	public string function appendQueryString(required string url, required string queryString) {
 
-		arguments.querystring = coldmvc.querystring.clean(arguments.querystring);
+		arguments.queryString = coldmvc.querystring.clean(arguments.queryString);
 
-		// if the querystring starts with a hash, don't add a question mark
-		if (left(arguments.querystring, 1) == "##") {
-			arguments.url = arguments.url & arguments.querystring;
-		} else {
-			if (find("?", arguments.url)) {
-				arguments.url = arguments.url & "&" & arguments.querystring;
+		if (arguments.queryString != "") {
+
+			if (left(arguments.queryString, 1) == "##") {
+				arguments.url = arguments.url & arguments.queryString;
+			} else if (find("?", arguments.url)) {
+				arguments.url = arguments.url & "&" & arguments.queryString;
 			} else {
-				arguments.url = arguments.url & "?" & arguments.querystring;
+				arguments.url = arguments.url & "?" & arguments.queryString;
 			}
+
 		}
 
 		return arguments.url;

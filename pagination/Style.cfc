@@ -8,18 +8,25 @@ component {
 	 */
 	property router;
 
+	/**
+	 * @inject coldmvc
+	 */
+	property coldmvc;
+
 	private string function linkTo(required struct options) {
 
 		return router.generate(params=arguments.options);
 
 	}
 
-	private string function generateLink(required struct params, required numeric page) {
+	private string function generateLink(required struct params, required string queryString, required numeric page) {
 
 		var pageParams = duplicate(params);
 		pageParams.page = arguments.page;
 
-		return linkTo(pageParams);
+		var link = linkTo(pageParams);
+
+		return coldmvc.url.appendQueryString(link, arguments.queryString);
 
 	}
 

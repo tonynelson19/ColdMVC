@@ -14,6 +14,7 @@
 		<cfargument name="recordCount" required="true" type="numeric" />
 		<cfargument name="start" required="true" type="numeric" />
 		<cfargument name="options" required="true" type="struct" />
+		<cfargument name="queryString" required="true" type="string" />
 
 		<cfset var result = "" />
 		<cfset var i = "" />
@@ -29,18 +30,18 @@
 
 		<cfif arguments.page - delta gt arguments.pageCount - range>
 
-            <cfset var lowerBound = arguments.pageCount - range + 1 />
-            <cfset var upperBound = arguments.pageCount />
+			<cfset var lowerBound = arguments.pageCount - range + 1 />
+			<cfset var upperBound = arguments.pageCount />
 
-	   	<cfelse>
+		<cfelse>
 
-            <cfif arguments.page - delta lt 0>
-                <cfset delta = arguments.page />
-            </cfif>
+		<cfif arguments.page - delta lt 0>
+			<cfset delta = arguments.page />
+		</cfif>
 
-            <cfset var offset     = arguments.page - delta />
-            <cfset var lowerBound = offset + 1 />
-            <cfset var upperBound = offset + range />
+		<cfset var offset = arguments.page - delta />
+		<cfset var lowerBound = offset + 1 />
+		<cfset var upperBound = offset + range />
 
 		</cfif>
 
@@ -57,32 +58,32 @@
 						<cfif arguments.page eq 1>
 							<li class="#arguments.options.first.class# disabled">#arguments.options.first.text#</li>
 						<cfelse>
-							<li class="#arguments.options.first.class#"><a href="#generateLink(arguments.params, 1)#">#arguments.options.first.text#</a></li>
+							<li class="#arguments.options.first.class#"><a href="#generateLink(arguments.params, arguments.queryString, 1)#">#arguments.options.first.text#</a></li>
 						</cfif>
 					</cfif>
 					<cfif arguments.options.previous.display>
 						<cfif arguments.page eq 1>
 							<li class="#arguments.options.previous.class# disabled">#arguments.options.previous.text#</li>
 						<cfelse>
-							<li class="#arguments.options.previous.class#"><a href="#generateLink(arguments.params, arguments.page - 1)#">#arguments.options.previous.text#</a></li>
+							<li class="#arguments.options.previous.class#"><a href="#generateLink(arguments.params, arguments.queryString, arguments.page - 1)#">#arguments.options.previous.text#</a></li>
 						</cfif>
 					</cfif>
 					<cfloop from="#lowerBound#" to="#upperBound#" index="i">
-						<cfset link = generateLink(arguments.params, i) />
+						<cfset link = generateLink(arguments.params, arguments.queryString, i) />
 						<li><a href="#link#"<cfif arguments.page eq i> class="active"</cfif>>#i#</a></li>
 					</cfloop>
 					<cfif arguments.options.next.display>
 						<cfif arguments.page eq arguments.pageCount>
 							<li class="#arguments.options.next.class# disabled">#arguments.options.next.text#</li>
 						<cfelse>
-							<li class="#arguments.options.next.class#"><a href="#generateLink(arguments.params, arguments.page + 1)#">#arguments.options.next.text#</a></li>
+							<li class="#arguments.options.next.class#"><a href="#generateLink(arguments.params, arguments.queryString, arguments.page + 1)#">#arguments.options.next.text#</a></li>
 						</cfif>
 					</cfif>
 					<cfif arguments.options.last.display>
 						<cfif arguments.page eq arguments.pageCount>
 							<li class="#arguments.options.last.class# disabled">#arguments.options.last.text#</li>
 						<cfelse>
-							<li class="#arguments.options.last.class#"><a href="#generateLink(arguments.params, arguments.pageCount)#">#arguments.options.last.text#</a></li>
+							<li class="#arguments.options.last.class#"><a href="#generateLink(arguments.params, arguments.queryString, arguments.pageCount)#">#arguments.options.last.text#</a></li>
 						</cfif>
 					</cfif>
 				</ul>

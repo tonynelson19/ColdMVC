@@ -40,19 +40,19 @@ component {
 
 		if (find("?", arguments.url)) {
 			var path = listFirst(arguments.url, "?");
-			var querystring = listRest(arguments.url, "?");
+			var queryString = listRest(arguments.url, "?");
 		} else {
 			var path = arguments.url;
-			var querystring = "";
+			var queryString = "";
 		}
 
 		getRequestContext().setPath(path);
 
 		cgiScope.setValue("path_info", path);
 		cgiScope.setValue("script_name", "");
-		cgiScope.setValue("query_string", querystring);
+		cgiScope.setValue("query_string", queryString);
 
-		var params = querystringToStruct(queryString);
+		var params = queryStringToStruct(queryString);
 
 		getRequestContext().appendParams(params, true);
 
@@ -60,11 +60,11 @@ component {
 
 	}
 
-	private struct function querystringToStruct(required string querystring) {
+	private struct function queryStringToStruct(required string queryString) {
 
 		var struct = {};
 		var i = "";
-		var pairs = listToArray(arguments.querystring, "&");
+		var pairs = listToArray(arguments.queryString, "&");
 
 		for (i = 1; i <= arrayLen(pairs); i++) {
 

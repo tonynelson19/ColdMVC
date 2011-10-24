@@ -4,10 +4,8 @@
 component {
 
 	property coldmvc;
-	property controllerManager;
 	property metaDataFlattener;
 	property modelManager;
-	property requestManager;
 	property validatorFactory;
 
 	public any function init() {
@@ -31,7 +29,7 @@ component {
 		var j = "";
 
 		if (!structKeyExists(arguments, "properties")) {
-			arguments.properties = loadProperties(arguments.model);
+			arguments.properties = modelManager.getPropertyNames(arguments.model);
 		} else {
 			arguments.properties = listToArray(arguments.properties);
 		}
@@ -147,35 +145,6 @@ component {
 		}
 
 		return rules;
-
-	}
-
-	private array function loadProperties(required any model) {
-
-		var requestContext = requestManager.getRequestContext();
-		var controller = controllerManager.getController(requestContext.getModule(), requestContext.getController());
-		var metaData = metaDataFlattener.flatten(controller.class);
-		var action = requestContext.getAction();
-
-		// check to see if the action has an @validate annotation
-		if (structKeyExists(metaData.functions, action) && structKeyExists(metaData.functions[action], "validate")) {
-
-			var validation = metaData.functions[action].validate;
-
-			if (isJSON(validation)) {
-
-				var deserialized = deserializeJSON(validation);
-				var name = modelManager.getName(arguments.model);
-
-				if (structKeyExists(deserialized, name)) {
-					return listToArray(deserialized[name]);
-				}
-
-			}
-
-		}
-
-		return modelManager.getPropertyNames(arguments.model);
 
 	}
 

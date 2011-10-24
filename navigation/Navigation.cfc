@@ -85,6 +85,7 @@ component {
 		var defaults = {
 			navigation = "navigation",
 			maxDepth = "",
+			minDepth = "1",
 			class = variables.options.menu.class,
 			id = variables.options.menu.id
 		};
@@ -93,13 +94,34 @@ component {
 
 		var navigation = getNavigation(arguments.options.navigation);
 		var attributes = buildAttributes(arguments.options);
-		var html = buildMenu([], navigation, 1, arguments.options.maxDepth, attributes);
+
+		var html = buildMenu([], navigation, 1, arguments.options.minDepth, arguments.options.maxDepth, attributes);
 
 		return arrayToList(html, chr(10));
 
 	}
 
-	private array function buildMenu(required array html, required any navigation, required numeric currentDepth, required any maxDepth, required string attributes) {
+	private array function buildMenu(required array html, required any navigation, required numeric currentDepth, required numeric minDepth, required any maxDepth, required string attributes) {
+
+		var i = "";
+
+		if (arguments.currentDepth < arguments.minDepth) {
+
+			var pages = arguments.navigation.getPages();
+
+			for (i = 1; i <= arrayLen(pages); i++) {
+
+				var page = pages[i];
+
+				if (page.isActive()) {
+					return buildMenu(arguments.html, page, arguments.currentDepth + 1, arguments.minDepth, arguments.maxDepth, arguments.attributes);
+				}
+
+			}
+
+			return arguments.html;
+
+		}
 
 		if (isNumeric(arguments.maxDepth) && arguments.currentDepth > arguments.maxDepth) {
 			return arguments.html;
@@ -158,7 +180,7 @@ component {
 
 			arrayAppend(arguments.html, indent & variables.padding & "<li#class#>");
 			arrayAppend(arguments.html, indent & variables.padding & variables.padding & page.render());
-			arguments.html = buildMenu(arguments.html, page, arguments.currentDepth + 1, arguments.maxDepth, '');
+			arguments.html = buildMenu(arguments.html, page, arguments.currentDepth + 1, arguments.minDepth, arguments.maxDepth, '');
 			arrayAppend(arguments.html,  indent & variables.padding &  "</li>");
 
 		}

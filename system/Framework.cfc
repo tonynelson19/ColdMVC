@@ -330,9 +330,7 @@ component {
 
 	public any function onApplicationStart() {
 
-		request.debug = false;
 		variables.internalBeanFactory = createInternalBeanFactory();
-		request.debug = true;
 		variables.applicationBeanFactory = createApplicationBeanFactory();
 
 		dispatchEvent("preApplication");
@@ -345,7 +343,7 @@ component {
 	public any function onApplicationReload() {
 
 		dispatchEvent("postReload");
-		getBean("helperManager").getHelper("debug").setValue("reloaded", true);
+		getBean("debugManager").setReloaded();
 
 		return this;
 

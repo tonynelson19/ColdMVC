@@ -76,7 +76,7 @@
 
 	<cfif attributes.length gt 0>
 
-		<cfset result = coldmvc.loop.each(attributes) />
+		<cfset result = _processEach(attributes) />
 
 		<cfset structAppend(caller, result) />
 
@@ -106,7 +106,7 @@
 
 	<cfif attributes.start lte attributes.end>
 
-		<cfset result = coldmvc.loop.each(attributes) />
+		<cfset result = _processEach(attributes) />
 
 		<cfset structAppend(caller, result) />
 
@@ -121,3 +121,44 @@
 	<cfset thisTag.generatedContent = arrayToList(content, "") />
 
 </cfif>
+
+<cffunction name="_processEach" access="private" output="false" returntype="struct">
+	<cfargument name="args" required="true" type="struct" />
+
+	<cfset var result = {} />
+
+	<cfif structKeyExists(arguments.args, "index")>
+		<cfset result[arguments.args.index] = arguments.args.start />
+	</cfif>
+
+	<cfif structKeyExists(arguments.args, "key")>
+		<cfset result[arguments.args.key] = coldmvc.data.key(arguments.args.in, arguments.args.start, arguments.args.delimeter) />
+	</cfif>
+
+	<cfif structKeyExists(arguments.args, "value")>
+		<cfset result[arguments.args.value] = coldmvc.data.value(arguments.args.in, arguments.args.start, arguments.args.delimeter) />
+	</cfif>
+
+	<cfif structKeyExists(arguments.args, "count")>
+		<cfset result[arguments.args.count] = arguments.args.length />
+	</cfif>
+
+	<cfif structKeyExists(arguments.args, "class")>
+
+		<cfset var class = [] />
+
+		<cfif arguments.args.start eq 1>
+			cfset arrayAppend(class, "first") />
+		</cfif>
+
+		<cfif arguments.args.start eq arguments.args.length>
+			cfset arrayAppend(class, "last") />
+		</cfif>
+
+		<cfset result[arguments.args.class] = arrayToList(class, " ") />
+
+	</cfif>
+
+	<cfreturn result />
+
+</cffunction>

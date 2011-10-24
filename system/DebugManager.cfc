@@ -8,6 +8,7 @@ component {
 	property config;
 	property fileSystem;
 	property requestManager;
+	property requestScope;
 	property templates;
 
 	public any function init() {
@@ -67,19 +68,25 @@ component {
 
 	public array function getEvents() {
 
-		return coldmvc.debug.getValue("events", []);
+		return getCache().getValue("events", []);
 
 	}
 
 	public array function getQueries() {
 
-		return coldmvc.debug.getValue("queries", []);
+		return getCache().getValue("queries", []);
 
 	}
 
 	public boolean function getReloaded() {
 
-		return coldmvc.debug.getValue("reloaded", false);
+		return getCache().getValue("reloaded", false);
+
+	}
+
+	public any function setReloaded() {
+
+		return getCache().setValue("reloaded", true);
 
 	}
 
@@ -120,11 +127,11 @@ component {
 
 	private any function append(required string key, required struct data) {
 
-		var value = coldmvc.debug.getValue(arguments.key, []);
+		var value = getCache().getValue(arguments.key, []);
 
 		arrayAppend(value, arguments.data);
 
-		return coldmvc.debug.setValue(arguments.key, value);
+		return getCache().setValue(arguments.key, value);
 
 	}
 
@@ -159,6 +166,12 @@ component {
 	public string function getStatus() {
 
 		return coldmvc.request.getStatus() & " " & coldmvc.request.getStatusText();
+
+	}
+
+	private any function getCache() {
+
+		return requestScope.getNamespace("debug");
 
 	}
 

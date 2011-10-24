@@ -356,7 +356,7 @@ component {
 
 		if (modelManager.hasProperty(arguments.model, "isDeleted")) {
 			setProperty(arguments.model, "isDeleted", 1);
-			setProperty(arguments.model, "deletedOn", coldmvc.date.get());
+			setProperty(arguments.model, "deletedOn", coldmvc.date.getDate());
 			setProperty(arguments.model, "deletedBy", coldmvc.user.getID());
 			entitySave(arguments.model);
 		} else {

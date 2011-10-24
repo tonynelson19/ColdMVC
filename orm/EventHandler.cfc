@@ -20,9 +20,9 @@ component {
 	public void function preInsert(any entity) {
 
 		var coldmvc = getHelpers();
-		set(arguments.entity, "createdOn", coldmvc.date.get());
+		set(arguments.entity, "createdOn", coldmvc.date.getDate());
 		set(arguments.entity, "createdBy", coldmvc.user.getID());
-		set(arguments.entity, "updatedOn", coldmvc.date.get());
+		set(arguments.entity, "updatedOn", coldmvc.date.getDate());
 		set(arguments.entity, "updatedBy", coldmvc.user.getID());
 		dispatchEvent("preInsert", arguments.entity);
 
@@ -36,7 +36,7 @@ component {
 
 	public void function preUpdate(any entity, struct oldData) {
 
-		set(arguments.entity, "updatedOn", coldmvc.date.get());
+		set(arguments.entity, "updatedOn", coldmvc.date.getDate());
 		set(arguments.entity, "updatedBy", coldmvc.user.getID());
 		dispatchEvent("preUpdate", arguments.entity);
 

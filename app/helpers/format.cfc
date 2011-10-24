@@ -2,7 +2,7 @@ component {
 
 	/*
 	 * indentXml pretty-prints XML and XML-like markup without requiring valid XML.
-
+	 *
 	 * @param xml      XML string to format. (Required)
 	 * @param indent      String used for creating the indention. Defaults to a space. (Optional)
 	 * @return Returns a string.

@@ -5,6 +5,9 @@ component {
 		structAppend(variables, this);
 		structDelete(variables, "this");
 		structDelete(variables, "init");
+		
+		variables.coldmvc = arguments.coldmvc;
+		variables["$"] = arguments.coldmvc;
 
 		variables.router = arguments.router;
 
@@ -67,8 +70,13 @@ component {
 		if (arguments.name != "") {
 			arguments.options.name = arguments.name;
 		}
+		
+		var constructorArgs = {
+			pattern = arguments.pattern,
+			options = arguments.options			
+		};
 
-		var route = new coldmvc.routing.Route(arguments.pattern, arguments.options);
+		var route = variables.coldmvc.factory.getBeanFactory().new("coldmvc.routing.Route", constructorArgs);
 
 		return variables.router.addRoute(route);
 

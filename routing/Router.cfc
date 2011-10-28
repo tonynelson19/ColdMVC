@@ -82,8 +82,8 @@ component {
 				var route = variables.routes[index];
 
 			}
-
-			arguments.path = route.assemble(arguments.params, arguments.routeParams);
+			
+			arguments.path = route.generate(arguments.params, arguments.routeParams);
 
 		}
 

@@ -8,6 +8,7 @@ component {
 	property defaults;
 	property params;
 	property expression;
+	property framework;
 
 	public any function init(required string pattern, struct options) {
 
@@ -33,8 +34,8 @@ component {
 		variables.params = arguments.options.params;
 		variables.aliases = arguments.options.aliases;
 		variables.name = arguments.options.name;
-		variables.validator = setValidator(arguments.options.validator);
-		variables.generator = setGenerator(arguments.options.generator);
+		setValidator(arguments.options.validator);
+		setGenerator(arguments.options.generator);
 		variables.placeholders = {};
 
 		var placeholder = {};
@@ -429,7 +430,24 @@ component {
 
 	}
 
-	public string function assemble(required struct params, required struct routeParams) {
+	public string function generate(required struct params, required struct routeParams) {
+
+		if (hasGenerator()) {
+			
+			var generator = getGenerator();
+			
+			var collection = {
+				params = arguments.params,
+				attributes = generator.attributes,
+				route = this,
+				routeParams = arguments.routeParams	
+			};
+			
+			var instance = getGeneratorInstance();
+			
+			return evaluate("instance.#generator.method#(argumentCollection=collection)");
+			
+		}
 
 		var expiry = getExpiry(arguments.params, arguments.routeParams);
 
@@ -735,7 +753,7 @@ component {
 		variables.generator = {
 			class = "",
 			method = "generate",
-			parameters = {}
+			attributes = {}
 		};
 
 		if (isSimpleValue(arguments.generator)) {
@@ -752,6 +770,22 @@ component {
 
 		return variables.generator;
 
+	}
+	
+	public boolean function hasGenerator() {
+		
+		return variables.generator.class != "";		
+		
+	}
+	
+	public any function getGeneratorInstance() {
+		
+		if (!structKeyExists(variables.generator, "instance")) {
+			variables.generator.instance = framework.getApplication().new(variables.generator.class);	
+		}
+		
+		return variables.generator.instance;
+		
 	}
 
 }

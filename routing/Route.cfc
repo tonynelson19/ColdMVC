@@ -124,7 +124,25 @@ component {
 			arguments.path = listFirst(arguments.path, ".");
 		}
 
-		return reFindNoCase(variables.expression, arguments.path);
+		var matches = reFindNoCase(variables.expression, arguments.path);
+
+		if (matches && hasValidator()) {
+
+			var validator = getValidator();
+
+			var collection = {
+				attributes = validator.attributes,
+				route = this,
+				path = arguments.path
+			};
+
+			var instance = getValidatorInstance();
+
+			return evaluate("instance.#validator.method#(argumentCollection=collection)");
+
+		}
+
+		return matches;
 
 	}
 
@@ -433,20 +451,20 @@ component {
 	public string function generate(required struct params, required struct routeParams) {
 
 		if (hasGenerator()) {
-			
+
 			var generator = getGenerator();
-			
+
 			var collection = {
 				params = arguments.params,
 				attributes = generator.attributes,
 				route = this,
-				routeParams = arguments.routeParams	
+				routeParams = arguments.routeParams
 			};
-			
+
 			var instance = getGeneratorInstance();
-			
+
 			return evaluate("instance.#generator.method#(argumentCollection=collection)");
-			
+
 		}
 
 		var expiry = getExpiry(arguments.params, arguments.routeParams);
@@ -729,7 +747,7 @@ component {
 		variables.validator = {
 			class = "",
 			method = "validate",
-			parameters = {}
+			attributes = {}
 		};
 
 		if (isSimpleValue(arguments.validator)) {
@@ -745,6 +763,22 @@ component {
 	public struct function getValidator() {
 
 		return variables.validator;
+
+	}
+
+	public boolean function hasValidator() {
+
+		return variables.validator.class != "";
+
+	}
+
+	public any function getValidatorInstance() {
+
+		if (!structKeyExists(variables.validator, "instance")) {
+			variables.validator.instance = framework.getApplication().new(variables.validator.class);
+		}
+
+		return variables.validator.instance;
 
 	}
 
@@ -771,21 +805,21 @@ component {
 		return variables.generator;
 
 	}
-	
+
 	public boolean function hasGenerator() {
-		
-		return variables.generator.class != "";		
-		
+
+		return variables.generator.class != "";
+
 	}
-	
+
 	public any function getGeneratorInstance() {
-		
+
 		if (!structKeyExists(variables.generator, "instance")) {
-			variables.generator.instance = framework.getApplication().new(variables.generator.class);	
+			variables.generator.instance = framework.getApplication().new(variables.generator.class);
 		}
-		
+
 		return variables.generator.instance;
-		
+
 	}
 
 }

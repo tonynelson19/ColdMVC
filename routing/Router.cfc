@@ -8,11 +8,13 @@ component {
 	property config;
 	property requestManager;
 	property routes;
+	property defaultRoutes;
 
 	public any function init() {
 
 		variables.routes = [];
 		variables.namedRoutes = {};
+		variables.defaultRoutes = true;
 
 		return this;
 
@@ -82,7 +84,7 @@ component {
 				var route = variables.routes[index];
 
 			}
-			
+
 			arguments.path = route.generate(arguments.params, arguments.routeParams);
 
 		}

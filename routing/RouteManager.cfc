@@ -8,12 +8,8 @@ component {
 	property pluginManager;
 	property requestManager;
 	property router;
-	property useDefaultRoutes;
 
 	public any function init() {
-
-		variables.useDefaultRoutes = true;
-		variables.aliases = {};
 
 		return this;
 
@@ -31,7 +27,7 @@ component {
 			includeConfigPath(plugins[i].mapping & path);
 		}
 
-		if (variables.useDefaultRoutes) {
+		if (router.getDefaultRoutes()) {
 			includeConfigPath("/coldmvc" & path);
 		}
 

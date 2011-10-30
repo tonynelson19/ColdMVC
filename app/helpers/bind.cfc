@@ -9,7 +9,7 @@ component {
 			index = arguments.index
 		});
 
-		return getCache().setValues(binds);
+		return set(binds);
 
 	}
 
@@ -25,7 +25,7 @@ component {
 			}
 		}
 
-		return getCache().setValues(binds);
+		return set(binds);
 
 	}
 

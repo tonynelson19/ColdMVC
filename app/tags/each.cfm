@@ -148,11 +148,11 @@
 		<cfset var class = [] />
 
 		<cfif arguments.args.start eq 1>
-			cfset arrayAppend(class, "first") />
+			<cfset arrayAppend(class, "first") />
 		</cfif>
 
 		<cfif arguments.args.start eq arguments.args.length>
-			cfset arrayAppend(class, "last") />
+			<cfset arrayAppend(class, "last") />
 		</cfif>
 
 		<cfset result[arguments.args.class] = arrayToList(class, " ") />

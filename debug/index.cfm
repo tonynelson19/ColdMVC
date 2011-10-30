@@ -22,6 +22,7 @@
 		text-align: left !important;
 		color: #555 !important;
 		line-height: 20px !important;
+		border: 0 !important;
 	}
 
 	div#coldmvc_debug h2 {

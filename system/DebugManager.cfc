@@ -43,11 +43,18 @@ component {
 		// replace any tabs with spaces
 		arguments.query = replace(arguments.query, chr(9), " ", "all");
 
-		var keys = ["from", "join", "where", "and", "or", "order by", "group by"];
+		var keys = ["from", "inner join", "left join", "join", "where", "and", "or", "order by", "group by"];
 		var i = "";
 
 		for (i = 1; i <= arrayLen(keys); i++) {
 			arguments.query = replaceNoCase(arguments.query, " #keys[i]# ", "<br />#keys[i]# ", "all");
+		}
+
+		// prevent joins from wrapping
+		var keys = ["inner", "left"];
+
+		for (i = 1; i <= arrayLen(keys); i++) {
+			arguments.query = replaceNoCase(arguments.query, "#keys[i]#<br />join ", "#keys[i]# join ", "all");
 		}
 
 		return arguments.query;

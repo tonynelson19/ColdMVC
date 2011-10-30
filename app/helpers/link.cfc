@@ -21,7 +21,7 @@ component {
 	 */
 	public void function redirect(any name="", any params="", path="", boolean reset=false) {
 
-		location(generate(arargumentCollection=arguments), false);
+		location(generate(argumentCollection=arguments), false);
 
 	}
 

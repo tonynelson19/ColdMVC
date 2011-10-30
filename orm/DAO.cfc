@@ -8,6 +8,7 @@ component {
 	property debugManager;
 	property development;
 	property framework;
+	property helperInjector;
 	property modelFactory;
 	property modelManager;
 
@@ -752,6 +753,7 @@ component {
 
 		dispatchEvent("preLoad", name, obj);
 		coldmvc.factory.autowire(obj);
+		helperInjector.inject(obj);
 		dispatchEvent("postLoad", name, obj);
 
 		return obj;

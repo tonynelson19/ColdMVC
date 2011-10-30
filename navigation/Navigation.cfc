@@ -20,12 +20,12 @@ component {
 		variables.options = {
 			breadcrumbs = {
 				id = "",
-				class = "breadcrumb",
+				class = "",
 				divider = "/"
 			},
 			menu = {
 				id = "",
-				class = "menu"
+				class = ""
 			}
 		};
 

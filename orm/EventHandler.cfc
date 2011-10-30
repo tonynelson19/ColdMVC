@@ -7,6 +7,7 @@ component {
 
 		var coldmvc = getHelpers();
 		coldmvc.factory.autowire(arguments.entity);
+		getFramework().getBean("helperInjector").inject(arguments.entity);
 		dispatchEvent("preLoad", arguments.entity);
 
 	}
@@ -36,6 +37,7 @@ component {
 
 	public void function preUpdate(any entity, struct oldData) {
 
+		var coldmvc = getHelpers();
 		set(arguments.entity, "updatedOn", coldmvc.date.getDate());
 		set(arguments.entity, "updatedBy", coldmvc.user.getID());
 		dispatchEvent("preUpdate", arguments.entity);

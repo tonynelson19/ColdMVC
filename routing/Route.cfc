@@ -8,6 +8,10 @@ component {
 	property defaults;
 	property params;
 	property expression;
+
+	/**
+	 * @inject coldmvc
+	 */
 	property framework;
 
 	public any function init(required string pattern, struct options) {
@@ -23,7 +27,8 @@ component {
 			aliases = {},
 			name = "",
 			validator = {},
-			generator = {}
+			generator = {},
+			toParam = {}
 		};
 
 		structAppend(arguments.options, defaults, false);
@@ -34,6 +39,7 @@ component {
 		variables.params = arguments.options.params;
 		variables.aliases = arguments.options.aliases;
 		variables.name = arguments.options.name;
+		variables.toParam = arguments.options.toParam;
 		setValidator(arguments.options.validator);
 		setGenerator(arguments.options.generator);
 		variables.placeholders = {};
@@ -323,7 +329,7 @@ component {
 					} else if (structKeyExists(arguments.params, key)) {
 
 						if (structKeyExists(arguments.routeParams, key)) {
-							if (arguments.params[key] != expiry[key]) {
+							if (getValue(arguments.params, key) != expiry[key]) {
 								expired = true;
 								structDelete(expiry, key);
 							}
@@ -370,7 +376,7 @@ component {
 		if (hasPlaceholder(arguments.key)) {
 			return true;
 		} else if (structKeyExists(arguments.params, arguments.key)) {
-			return hasMatchingParam(arguments.key, arguments.params[arguments.key]);
+			return hasMatchingParam(arguments.key, getValue(arguments.params, arguments.key));
 		} else if (structKeyExists(arguments.expiry, arguments.key)) {
 			return hasMatchingParam(arguments.key, arguments.expiry[arguments.key]);
 		} else {
@@ -471,7 +477,7 @@ component {
 
 		var key = "";
 		for (key in arguments.params) {
-			arguments.params[key] = getParamValue(arguments.params[key]);
+			arguments.params[key] = getValue(arguments.params, key);
 		}
 
 		var combined = {};
@@ -616,21 +622,25 @@ component {
 
 	}
 
-	public string function getParamValue(required any value) {
+	public string function getValue(required struct params, required string key) {
 
-		if (isObject(arguments.value)) {
-			if (structKeyExists(arguments.value, "toParam")) {
-				arguments.value = arguments.value.toParam();
+		var value = arguments.params[arguments.key];
+
+		if (isObject(value)) {
+			if (structKeyExists(variables.toParam, arguments.key)) {
+				value = evaluate("value.#variables.toParam[arguments.key]#()");
+			} else if (structKeyExists(value, "toParam")) {
+				value = value.toParam();
 			} else {
-				arguments.value = arguments.value.getID();
+				value = value.getID();
 			}
 		}
 
-		if (isSimpleValue(arguments.value)) {
-			arguments.value = trim(arguments.value);
+		if (isSimpleValue(value)) {
+			value = trim(value);
 		}
 
-		return arguments.value;
+		return value;
 
 	}
 

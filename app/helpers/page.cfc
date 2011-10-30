@@ -11,7 +11,7 @@ component {
 			title = {
 				prefix = "",
 				suffix = "",
-				separator = "-"
+				separator = " - "
 			}
 		};
 

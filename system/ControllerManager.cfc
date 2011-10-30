@@ -9,6 +9,7 @@ component {
 	property config;
 	property fileSystem;
 	property framework;
+	property helperInjector;
 	property metaDataFlattener;
 	property moduleManager;
 	property templateManager;
@@ -88,9 +89,15 @@ component {
 
 		if (!structKeyExists(variables.instances, key)) {
 
+			var constructorArgs = {
+				"$" = coldmvc,
+				"coldmvc" = coldmvc
+			};
+
 			var controllerDef = getController(arguments.module, arguments.controller);
-			var instance = framework.getApplication().new(controllerDef.class, {}, {}, controllerDef.name);
+			var instance = framework.getApplication().new(controllerDef.class, constructorArgs, {}, controllerDef.name);
 			actionHelperManager.addHelpers(instance);
+			helperInjector.inject(instance);
 			variables.instances[key] = instance;
 
 		}

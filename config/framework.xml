@@ -129,6 +129,8 @@
 	
 	<bean id="helperManager" class="coldmvc.helpers.HelperManager" />
 	
+	<bean id="helperInjector" class="coldmvc.helpers.HelperInjector" />
+	
 	<bean id="metaDataFlattener" class="coldmvc.metadata.MetaDataFlattener" />
 	
 	<bean id="modelFactory" class="coldmvc.model.ModelFactory">

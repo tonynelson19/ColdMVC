@@ -34,14 +34,6 @@ component {
 
 	}
 
-	public any function addAlias(required string key, required string value) {
-
-		variables.aliases[arguments.key] = arguments.value;
-
-		return this;
-
-	}
-
 	public any function recognize(required string path) {
 
 		var i = "";

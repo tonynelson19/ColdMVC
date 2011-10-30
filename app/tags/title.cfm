@@ -1,3 +1,11 @@
 <cfif thisTag.executionMode eq "end">
-	<cfset thisTag.generatedContent = "<title>#htmlEditFormat(coldmvc.page.getTitle())#</title>" />
+
+	<cfset title = coldmvc.page.getTitle() />
+
+	<cfif title eq "">
+		<cfset title = thisTag.generatedContent />
+	</cfif>
+
+	<cfset thisTag.generatedContent = "<title>#htmlEditFormat(title)#</title>" />
+
 </cfif>

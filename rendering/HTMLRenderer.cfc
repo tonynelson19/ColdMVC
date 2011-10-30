@@ -69,6 +69,10 @@
 				separator = "",
 				tag = "span"
 			},
+			text = {
+				class = "",
+				tag = "div"
+			},
 			wrapper = {
 				class = "wrapper",
 				display = true,
@@ -157,6 +161,7 @@
 		<cfset arguments.args.id = getID(arguments.args) />
 		<cfset arguments.args.title = getKey(arguments.args, "title", arguments.args.label) />
 		<cfset arguments.args.alt = getKey(arguments.args, "alt", arguments.args.label) />
+		<cfset arguments.args.escape = getKey(arguments.args, "escape", true) />
 		<cfset arguments.args.wrapper = getKey(arguments.args, "wrapper", true) />
 		<cfset arguments.args.readonly = getKey(arguments.args, "readonly", false) />
 		<cfset arguments.args.disabled = getKey(arguments.args, "disabled", false) />
@@ -388,13 +393,13 @@
 		</cfif>
 
 	</cffunction>
-	
+
 	<!------>
-		
+
 	<cffunction name="getRequestContext" access="private" output="false" returntype="any">
-			
+
 		<cfreturn coldmvc.framework.getBean("requestManager").getRequestContext() />
-			
+
 	</cffunction>
 
 	<!------>
@@ -762,6 +767,35 @@
 		</cfif>
 
 		<cfreturn trim(result) />
+
+	</cffunction>
+
+	<!------>
+
+	<cffunction name="renderTag" access="public" output="false" returntype="string">
+		<cfargument name="tag" required="true" type="string" />
+		<cfargument name="content" required="true" type="string" />
+		<cfargument name="attributes" required="false" type="struct" />
+
+		<cfif arguments.tag eq "">
+			<cfreturn arguments.content />
+		</cfif>
+
+		<cfif not structKeyExists(arguments, "attributes")>
+			<cfset arguments.attributes = {} />
+		</cfif>
+
+		<cfif structIsEmpty(arguments.attributes)>
+			<cfreturn '<#arguments.tag#>#arguments.content#</#arguments.tag#>' />
+		</cfif>
+
+		<cfset arguments.attributes = coldmvc.struct.toAttributes(arguments.attributes) />
+
+		<cfif arguments.attributes eq "">
+			<cfreturn '<#arguments.tag#>#arguments.content#</#arguments.tag#>' />
+		<cfelse>
+			<cfreturn '<#arguments.tag# #arguments.attributes#>#arguments.content#</#arguments.tag#>' />
+		</cfif>
 
 	</cffunction>
 

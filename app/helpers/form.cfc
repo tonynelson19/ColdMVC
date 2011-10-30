@@ -494,11 +494,15 @@
 
 		<cfset configure(arguments) />
 
-		<cfoutput>
-		<cfsavecontent variable="arguments.field">
-			#coldmvc.string.escape(arguments.value)#
-		</cfsavecontent>
-		</cfoutput>
+		<cfif arguments.escape>
+			<cfset var content = coldmvc.string.escape(arguments.value) />
+		<cfelse>
+			<cfset var content = arguments.value />
+		</cfif>
+
+		<cfset arguments.field = renderTag(variables.options.text.tag, content, {
+			class = variables.options.text.class
+		}) />
 
 		<cfreturn this.field(argumentCollection=arguments) />
 

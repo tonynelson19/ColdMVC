@@ -402,17 +402,23 @@ component {
 		}
 
 		if (structKeyExists(arguments.options, "offset") && isNumeric(arguments.options.offset)) {
+
 			if (arguments.options.offset < 1) {
 				arguments.options.offset = 1;
 			}
+
 			result.setFirstResult(arguments.options.offset - 1);
+
 		}
 
 		if (structKeyExists(arguments.options, "max") && isNumeric(arguments.options.max)) {
+
 			if (arguments.options.max < 0) {
 				arguments.options.max = 0;
 			}
+
 			result.setMaxResults(arguments.options.max);
+
 		}
 
 		if (arguments.unique) {

@@ -276,6 +276,7 @@ component {
 			}
 
 			var type = variables.dao.getJavaType(propertyDef.model, propertyDef.property);
+
 			var bindString = ":" & binding;
 
 			if (operator == "in" || operator == "notIn") {
@@ -307,10 +308,6 @@ component {
 			} else {
 
 				var val = variables.dao.updateOperatorValue(arguments.value, type, operatorDef);
-
-				if (isSimpleValue(val)) {
-					val = lcase(val);
-				}
 
 			}
 
@@ -455,22 +452,14 @@ component {
 
 		}
 
-		if (structKeyExists(this, "#arguments.missingMethodName#_")) {
+		if (isOperator(arguments.missingMethodName)) {
 
-			return evaluate("this.#arguments.missingMethodName#_(argumentCollection=arguments.missingMethodArguments)");
+			var property = arguments.missingMethodArguments[1];
+			var operator = arguments.missingMethodName;
+			var value = (structCount(arguments.missingMethodArguments) > 1) ? arguments.missingMethodArguments[2] : "";
+			var binding = (structCount(arguments.missingMethodArguments) > 2) ? arguments.missingMethodArguments[3] : true;
 
-		} else {
-
-			if (isOperator(arguments.missingMethodName)) {
-
-				var property = arguments.missingMethodArguments[1];
-				var operator = arguments.missingMethodName;
-				var value = (structCount(arguments.missingMethodArguments) > 1) ? arguments.missingMethodArguments[2] : "";
-				var binding = (structCount(arguments.missingMethodArguments) > 2) ? arguments.missingMethodArguments[3] : true;
-
-				return buildClause(property, operator, value, binding);
-
-			}
+			return buildClause(property, operator, value, binding);
 
 		}
 

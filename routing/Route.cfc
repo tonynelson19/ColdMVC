@@ -28,6 +28,7 @@ component {
 			name = "",
 			validator = {},
 			generator = {},
+			filter = {},
 			toParam = {}
 		};
 
@@ -42,6 +43,7 @@ component {
 		variables.toParam = arguments.options.toParam;
 		setValidator(arguments.options.validator);
 		setGenerator(arguments.options.generator);
+		setFilter(arguments.options.filter);
 		variables.placeholders = {};
 
 		var placeholder = {};
@@ -271,6 +273,22 @@ component {
 
 		if (format != "" && format != "html") {
 			result.format = format;
+		}
+
+		if (hasFilter()) {
+
+			var filter = getFilter();
+
+			var collection = {
+				params = result,
+				attributes = filter.attributes,
+				route = this
+			};
+
+			var instance = getFilterInstance();
+
+			result = evaluate("instance.#filter.method#(argumentCollection=collection)");
+
 		}
 
 		return result;
@@ -829,6 +847,46 @@ component {
 		}
 
 		return variables.generator.instance;
+
+	}
+
+	public any function setFilter(required any filter) {
+
+		variables.filter = {
+			class = "",
+			method = "filter",
+			attributes = {}
+		};
+
+		if (isSimpleValue(arguments.filter)) {
+			variables.filter.class = arguments.filter;
+		} else if (isStruct(arguments.filter)) {
+			structAppend(variables.filter, arguments.filter, true);
+		}
+
+		return this;
+
+	}
+
+	public struct function getFilter() {
+
+		return variables.filter;
+
+	}
+
+	public boolean function hasFilter() {
+
+		return variables.filter.class != "";
+
+	}
+
+	public any function getFilterInstance() {
+
+		if (!structKeyExists(variables.filter, "instance")) {
+			variables.filter.instance = framework.getApplication().new(variables.filter.class);
+		}
+
+		return variables.filter.instance;
 
 	}
 

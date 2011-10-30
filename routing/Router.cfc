@@ -42,7 +42,7 @@ component {
 
 	}
 
-	public struct function recognize(required string path) {
+	public any function recognize(required string path) {
 
 		var i = "";
 

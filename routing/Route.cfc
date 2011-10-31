@@ -836,7 +836,7 @@ component {
 
 	public boolean function hasGenerator() {
 
-		return variables.generator.class != "";
+		return variables.generator.class != "" || structKeyExists(variables.generator, "instance");
 
 	}
 

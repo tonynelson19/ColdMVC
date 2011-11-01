@@ -171,8 +171,6 @@
 	
 	<bean id="routeHandler" class="coldmvc.routing.RouteHandler" />
 	
-	<bean id="routeSerializer" class="coldmvc.routing.RouteSerializer" />
-	
 	<bean id="routeManager" class="coldmvc.routing.RouteManager" />
 	
 	<bean id="router" class="coldmvc.routing.Router" />	

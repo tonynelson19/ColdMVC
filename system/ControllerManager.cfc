@@ -176,6 +176,12 @@ component {
 
 	}
 
+	public string function getAllowed(required string module, required string controller, required string action) {
+
+		return getMethodAnnotation(arguments.module, arguments.controller, arguments.action, "allowed", "");
+
+	}
+
 	public string function getMethods(required string module, required string controller, required string action) {
 
 		return getMethodAnnotation(arguments.module, arguments.controller, arguments.action, "methods", "");
@@ -239,7 +245,7 @@ component {
 					var controller = variables.controllers[module][key];
 					var metaData = metaDataFlattener.flattenMetaData(controller.class);
 
-					controller["layout"] = findLayout("default", controller.key, metaData);
+					controller["layout"] = findLayout(module, controller.key, metaData);
 					controller["actions"] = getActions(controller, metaData);
 
 				}
@@ -326,6 +332,12 @@ component {
 					controller["notLoggedIn"] = metaData.notLoggedIn;
 				} else {
 					controller["notLoggedIn"] = false;
+				}
+
+				if (structKeyExists(metaData, "allowed")) {
+					controller["allowed"] = metaData.allowed;
+				} else {
+					controller["allowed"] = "-";
 				}
 
 				controllers[controller.key] = controller;
@@ -421,6 +433,13 @@ component {
 				action["notLoggedIn"] = arguments.controller.notLoggedIn;
 			}
 
+			if (structKeyExists(method, "allowed")) {
+				action["allowed"] = method.allowed;
+			} else {
+				action["allowed"] = arguments.controller.allowed;
+			}
+
+
 			actions[action.key] = action;
 
 		}
@@ -443,6 +462,10 @@ component {
 
 		if (templateManager.layoutExists(arguments.module, arguments.controller)) {
 			return arguments.controller;
+		}
+
+		if (templateManager.layoutExists("default", arguments.module)) {
+			return arguments.module;
 		}
 
 		return layoutController.layout;
@@ -543,7 +566,7 @@ component {
 						};
 
 						for (i = 1; i <= arrayLen(events); i++) {
-							eventDispatcher.addObserver(events[i], variables.beanName, "dispatchEvent", data);
+							eventDispatcher.addObserver(events[i], this, "dispatchEvent", data);
 						}
 
 					}

@@ -27,7 +27,7 @@ component {
 
 	}
 
-	public void function clearID() {
+	public any function clearID() {
 
 		return setID("");
 
@@ -38,7 +38,7 @@ component {
 	 */
 	public boolean function isLoggedIn() {
 
-		return getUserID() != "";
+		return getID() != "";
 
 	}
 

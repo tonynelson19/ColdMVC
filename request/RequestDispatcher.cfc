@@ -4,6 +4,7 @@
 component {
 
 	property assertionManager;
+	property acl;
 	property cgiScope;
 	property coldmvc;
 	property controllerManager;
@@ -238,6 +239,37 @@ component {
 			assertionManager.assertNotLoggedIn();
 		}
 
+		// check if the user is allowed to perform this action
+		var allowed = controllerManager.getAllowed(module, controller, action);
+
+		if (allowed != "-") {
+
+			var requestContext = requestManager.getRequestContext();
+			var resource = requestContext.getController();
+			var permission = requestContext.getAction();
+
+			if (isJSON(allowed)){
+
+				var json = deserializeJSON(allowed);
+
+				if (isStruct(json)) {
+
+					if (structKeyExists(json, "resource")) {
+						resource = json.resource;
+					}
+
+					if (structKeyExists(json, "permission")) {
+						permission = json.permission;
+					}
+
+				}
+
+			}
+
+			acl.assertAllowed(resource, permission);
+
+		}
+
 		// make sure it's an allowed request method: get, post, put, delete
 		var validMethods = controllerManager.getMethods(module, controller, action);
 		var currentMethod = cgiScope.getValue("request_method");
@@ -269,10 +301,11 @@ component {
 
 		var requestContext = requestManager.getRequestContext();
 
-		if (!development && requestContext.getController() != "error" && controllerManager.controllerExists("default", "error")) {
+		if (requestContext.getController() != "error" && controllerManager.controllerExists("default", "error")) {
 
 			// add the error to the params
 			requestContext.setParam("error", arguments.error);
+			requestContext.setParam("errorContext", duplicate(requestContext));
 
 			// if it's a valid error code, then update the response headers
 			if (isNumeric(arguments.error.errorCode)) {
@@ -290,24 +323,34 @@ component {
 			// rebuild the event object
 			var module = "default";
 			var controller = "error";
-			var action = "index";
-			var layout = controllerManager.getLayout(module, controller, action);
 			var format = requestContext.getFormat();
 
 			// check for /error/404.cfm
 			var status = coldmvc.request.getStatus();
-			var statusCodeView = checkView(module, "error/#status#.cfm", format);
-
-			// check for /error/method_not_found.cfm
 			var statusText = lcase(replace(coldmvc.request.getStatusText(status), " ", "_", "all"));
-			var statusTextView = checkView(module, "error/#statusText#.cfm", format);
 
-			if (statusCodeView != "") {
-				var view = statusCodeView;
-			} else if (statusTextView != "") {
-				var view = statusTextView;
+			if (controllerManager.hasAction(module, controller, status)) {
+				var action = status;
+			} else if (controllerManager.hasAction(module, controller, statusText)) {
+				var action = statusText;
 			} else {
-				var view = controllerManager.getView(module, controller, action);
+				var action = "index";
+			}
+
+			var layout = controllerManager.getLayout(module, controller, action);
+			var statusCodeView = checkView(module, "error/#status#.cfm", format);
+			var statusTextView = checkView(module, "error/#statusText#.cfm", format);
+			var normalView = checkView(module, controllerManager.getView(module, controller, action), format);
+
+
+			if (action == "index" && statusCodeView != "") {
+				var view = statusCodeView;
+			} else if (action == "index" && statusTextView != "") {
+				var view = statusTextView;
+			} else if (normalView != "") {
+				var view = normalView;
+			} else {
+				var view = controllerManager.getView(module, controller, "index");
 			}
 
 			requestContext.populate({

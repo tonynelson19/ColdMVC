@@ -51,11 +51,4 @@ component {
 
 	}
 
-	public boolean function isValidKey(required string key) {
-
-		// TODO
-		return false;
-
-	}
-
 }

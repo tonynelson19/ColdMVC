@@ -164,6 +164,26 @@ component {
 
 	}
 
+	public any function setKey(required string key) {
+
+		if (find(":", arguments.key)) {
+			var module = listFirst(arguments.key, ":");
+			arguments.key = listRest(arguments.key, ":");
+		} else {
+			var module = "default";
+		}
+
+		var controller = listFirst(arguments.key, ".");
+		var action = listRest(arguments.key, ".");
+
+		setModule(module);
+		setController(controller);
+		setAction(action);
+
+		return this;
+
+	}
+
 	private string function buildKey(required string module, required string controller, required string action) {
 
 		return arguments.module & ":" & arguments.controller & "." & arguments.action;

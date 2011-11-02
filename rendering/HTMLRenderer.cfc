@@ -46,6 +46,10 @@
 				display = true,
 				tag = "div"
 			},
+			flash = {
+				class = "flash",
+				tag = "div"
+			},
 			form = {
 				class = "",
 				enctype = "multipart/form-data"
@@ -68,6 +72,12 @@
 				placement = "after",
 				separator = "",
 				tag = "span"
+			},
+			submit = {
+				class = ""
+			},
+			table = {
+				class = "list"
 			},
 			text = {
 				class = "",

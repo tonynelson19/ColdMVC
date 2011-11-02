@@ -108,6 +108,7 @@ component {
 	public void function _setColdMVC(required struct coldmvc) {
 
 		variables.coldmvc = arguments.coldmvc;
+		variables["$"] = arguments.coldmvc;
 
 	}
 

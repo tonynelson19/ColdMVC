@@ -10,6 +10,7 @@ component {
 	property framework;
 	property modelFactory;
 	property modelManager;
+	property requestManager;
 
 	public any function init() {
 
@@ -79,16 +80,20 @@ component {
 
 			if (structKeyExists(arguments.role, "getRoleID")) {
 
-				roleID = evaluate("arguments.role.getRoleID()");
+				roleID = arguments.role.getRoleID();
 
 			} else if (structKeyExists(arguments.role, "getRole")) {
 
-				var value = evaluate("arguments.role.getRole()");
+				var value = arguments.role.getRole();
+
+				if (isNull(value)) {
+					value = "";
+				}
 
 				if (isSimpleValue(value)) {
 					roleID = value;
 				} else if (structKeyExists(value, "getRoleID")) {
-					roleID = evaluate("value.getRoleID()");
+					roleID = value.getRoleID();
 				} else if (structKeyExists(value, "getName")) {
 					roleID = value.getName();
 				}
@@ -250,16 +255,16 @@ component {
 
 			if (structKeyExists(arguments.resource, "getResourceID")) {
 
-				resourceID = evaluate("arguments.resource.getResourceID()");
+				resourceID = arguments.resource.getResourceID();
 
 			} else if (structKeyExists(arguments.resource, "getResource")) {
 
-				var value = evaluate("arguments.resource.getResource()");
+				var value = arguments.resource.getResource();
 
 				if (isSimpleValue(value)) {
 					resourceID = value;
 				} else if (structKeyExists(value, "getResourceID")) {
-					resourceID = evaluate("value.getResourceID()");
+					resourceID = value.getResourceID();
 				} else if (structKeyExists(value, "getName")) {
 					resourceID = value.getName();
 				}
@@ -583,7 +588,7 @@ component {
 	/**
 	 * @actionHelper assertAllowed
 	 */
-	public void function assertAllowed(required any resource, string permission="", any role, string message) {
+	public void function assertAllowed(any resource, string permission, any role, string message) {
 
 		if (!structKeyExists(arguments, "role")) {
 			arguments.role = getCurrentUser();
@@ -591,6 +596,14 @@ component {
 
 		if (!structKeyExists(arguments, "message")) {
 			arguments.message = "You are not authorized to perform this request.";
+		}
+
+		if (!structKeyExists(arguments, "resource")) {
+			arguments.resource = requestManager.getController();
+		}
+
+		if (!structKeyExists(arguments, "permission")) {
+			arguments.permission = requestManager.getAction();
 		}
 
 		if (!isAllowed(arguments.role, arguments.resource, arguments.permission)) {

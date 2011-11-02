@@ -75,6 +75,36 @@
 
 	<!------>
 
+	<cffunction name="errors" access="public" output="false" returntype="string">
+		<cfargument name="errors" type="array" required="true" />
+
+		<cfif arrayLen(arguments.errors) eq 0>
+			<cfreturn "" />
+		</cfif>
+
+		<cfif not structKeyExists(arguments, "class")>
+			<cfset arguments.class = variables.options.errors.class />
+		</cfif>
+
+		<cfset var content = "" />
+		<cfset var error = "" />
+
+		<cfoutput>
+		<cfsavecontent variable="content">
+			<cfloop array="#arguments.errors#" index="error">
+				<li>#coldmvc.string.escape(error.getMessage())#</li>
+			</cfloop>
+		</cfsavecontent>
+		</cfoutput>
+
+		<cfreturn renderTag("ul", content, {
+			class = arguments.class
+		}) />
+
+	</cffunction>
+
+	<!------>
+
 	<cffunction name="fieldset" access="public" output="false" returntype="string">
 		<cfargument name="label" required="false" />
 
@@ -464,6 +494,7 @@
 		<cfargument name="name" required="false" default="save" />
 
 		<cfset arguments.tag = "submit" />
+		<cfset append(arguments, "class", variables.options.submit.class) />
 		<cfset append(arguments, "class", variables.options.button.class) />
 
 		<cfset configure(arguments) />

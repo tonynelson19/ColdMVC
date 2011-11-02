@@ -3,9 +3,12 @@
 	<!------>
 
 	<cffunction name="table" access="public" output="false" returntype="string">
-		<cfargument name="class" required="false" default="list" />
-		<cfargument name="cellspacing" required="false" default="0" type="numeric" />
-		<cfargument name="width" required="false" default="100%" type="string" />
+		<cfargument name="cellspacing" type="numeric" required="false" default="0" />
+		<cfargument name="width" type="string" required="false" default="100%" />
+
+		<cfif not structKeyExists(arguments, "class")>
+			<cfset arguments.class = variables.options.table.class />
+		</cfif>
 
 		<cfset configure(arguments) />
 
@@ -25,8 +28,8 @@
 	<!------>
 
 	<cffunction name="tr" access="public" output="false" returntype="string">
-		<cfargument name="index" required="false" default="1" />
-		<cfargument name="class" required="false" default="" />
+		<cfargument name="index" type="string" required="false" default="1" />
+		<cfargument name="class" type="string" required="false" default="" />
 
 		<cfif not isNumeric(arguments.index)>
 			<cfset arguments.index = 1 />
@@ -57,6 +60,34 @@
 		</cfif>
 
 	</cffunction>
+
+	<!------>
+
+	<cffunction name="flash" access="public" output="false" returntype="string">
+		<cfargument name="key" type="string" required="false" default="message" />
+
+		<cfif not structKeyExists(arguments, "class")>
+			<cfset arguments.class = variables.options.flash.class />
+		</cfif>
+
+		<cfset var requestContext = coldmvc.framework.getBean("requestManager").getRequestContext() />
+
+		<cfif requestContext.flashKeyExists(arguments.key)>
+			<cfset var content = coldmvc.string.escape(requestContext.getFlashValue(arguments.key)) />
+		<cfelse>
+			<cfset var content = "" />
+		</cfif>
+
+		<cfif content eq "">
+			<cfreturn "" />
+		</cfif>
+
+		<cfreturn renderTag(variables.options.flash.tag, content, {
+			class = arguments.class
+		}) />
+
+	</cffunction>
+
 
 	<!------>
 

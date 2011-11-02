@@ -581,7 +581,7 @@ component {
 				}
 
 				if (value != "") {
-					arrayPrepend(result, value);
+					arrayPrepend(result, urlEncodedFormat(value));
 					arrayPrepend(result, "/");
 				}
 

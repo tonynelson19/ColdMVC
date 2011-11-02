@@ -299,6 +299,18 @@ component {
 
 	}
 
+	public boolean function flashKeyExists(required string key) {
+
+		return structKeyExists(variables.flash, arguments.key);
+
+	}
+
+	public any function getFlashValue(required string key) {
+
+		return variables.flash[arguments.key];
+
+	}
+
 	public any function addAction(required string key, required string action="", string controller="", string module="", string type="append") {
 
 		if (arguments.action == "") {

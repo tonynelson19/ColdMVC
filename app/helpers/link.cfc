@@ -12,6 +12,8 @@ component {
 	 */
 	public string function to(any name="", any params="", path="", boolean reset=false) {
 
+		configure(arguments);
+
 		return generate(argumentCollection=arguments);
 
 	}
@@ -21,37 +23,56 @@ component {
 	 */
 	public void function redirect(any name="", any params="", path="", boolean reset=false) {
 
+		configure(arguments);
+
 		location(generate(argumentCollection=arguments), false);
 
 	}
 
-	private string function generate(any name, any params, any path="", boolean reset=false) {
+	/**
+	 * @actionHelper returnRedirect
+	 */
+	public void function returnRedirect(any name="", any params="", path="", boolean reset=false) {
 
-		if (structKeyExists(arguments, "params")) {
-			if (isBoolean(arguments.params)) {
-				arguments.reset = arguments.params;
-				arguments.params = {};
+		configure(arguments);
+
+		arguments.params["return"] = $.framework.getBean("requestManager").getRequestContext().getPath();
+
+		location(generate(argumentCollection=arguments), false);
+
+	}
+
+	private void function configure(required struct args) {
+
+		if (structKeyExists(arguments.args, "params")) {
+			if (isBoolean(arguments.args.params)) {
+				arguments.args.reset = arguments.args.params;
+				arguments.args.params = {};
 			}
 		} else {
-			arguments.params = {};
+			arguments.args.params = {};
 		}
 
-		if (structKeyExists(arguments, "name")) {
-			if (isStruct(arguments.name)) {
-				var parameters = arguments.name;
-				arguments.name = arguments.params;
-				arguments.params = parameters;
+		if (structKeyExists(arguments.args, "name")) {
+			if (isStruct(arguments.args.name)) {
+				var parameters = arguments.args.name;
+				arguments.args.name = arguments.args.params;
+				arguments.args.params = parameters;
 			}
 		}
 
-		if (left(arguments.name, 1) == "/") {
-			arguments.path = arguments.name;
-			arguments.name = "";
+		if (left(arguments.args.name, 1) == "/") {
+			arguments.args.path = arguments.args.name;
+			arguments.args.name = "";
 		}
 
-		if (!isStruct(arguments.params)) {
-			arguments.params = {};
+		if (!isStruct(arguments.args.params)) {
+			arguments.args.params = {};
 		}
+
+	}
+
+	private string function generate(any name, any params, any path="", boolean reset=false) {
 
 		return coldmvc.framework.getBean("router").generate(argumentCollection=arguments);
 

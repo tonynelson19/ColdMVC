@@ -316,10 +316,15 @@ component {
 		var cache = getCache();
 		var breadcrumbs = cache.getValue("breadcrumbs", []);
 
+		if (!structKeyExists(arguments, "text") && left(arguments.url, "1") != "<") {
+			arguments.text = arguments.url;
+			arguments.url = coldmvc.link.to(requestManager.getRequestContext().getPath());
+		}
+
 		if (structKeyExists(arguments, "text")) {
 			breadcrumb = '<a href="#arguments.url#" title="#htmlEditFormat(arguments.text)#">#htmlEditFormat(arguments.text)#</a>';
 		} else {
-			breadcrumb = arguments.link;
+			breadcrumb = arguments.url;
 		}
 
 		arrayAppend(breadcrumbs, breadcrumb);

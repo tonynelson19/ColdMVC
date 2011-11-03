@@ -127,6 +127,8 @@
 	
 	<bean id="frameworkBeanInjector" class="coldmvc.beans.FrameworkBeanInjector" />	
 	
+	<bean id="frameworkConfigInjector" class="coldmvc.beans.FrameworkConfigInjector" bean-post-processor="true" />	
+	
 	<bean id="helperManager" class="coldmvc.helpers.HelperManager" />
 	
 	<bean id="helperInjector" class="coldmvc.helpers.HelperInjector" />

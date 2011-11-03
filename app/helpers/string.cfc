@@ -4,9 +4,134 @@ component {
 
 		setWords();
 		setPatterns();
+
+		variables.options = {
+			hash = {
+				algorithm = "sha-1"
+			},
+			random = {
+                includeUpper = true,
+                upperCharacters = "ABCDEFGHIJKLMNOPQRSTUVWXYZ",
+                minUpper = 1,
+                includeLower = true,
+                lowerCharacters = "abcdefghijklmnopqrstuvwxyz",
+                minLower = 1,
+                includeNumeric = true,
+                numericCharacters = "0123456789",
+                minNumeric = 1,
+                includeSpecial = true,
+                specialCharacters = "~`!@##$%^&*()_-+=|\/[]{}<>:;""'?.,",
+                minSpecial = 1
+			}
+        };
+
 		return this;
 
 	}
+
+	public any function setOptions(required struct options) {
+
+		var key = "";
+
+		for (key in arguments.options) {
+
+			if (!structKeyExists(variables.options, key)) {
+				variables.options[key] = {};
+			}
+
+			structAppend(variables.options[key], arguments.options[key], true);
+
+		}
+
+		return this;
+
+	}
+
+	public string function hash(required string string, required string salt, string algorithm) {
+
+		if (!structKeyExists(arguments, "algorithm")) {
+			arguments.algorithm = variables.options.hash.algorithm;
+		}
+
+		return hash(lcase(arguments.string & arguments.salt), arguments.algorithm);
+
+	}
+
+	public string function random(numeric length, numeric min=8, numeric max=12) {
+
+        if (!structKeyExists(arguments, "length")) {
+            arguments.length = randRange(arguments.min, arguments.max);
+        }
+
+        structAppend(arguments, variables.options.random, false);
+
+        var characters = [];
+        var available = "";
+
+        if (arguments.includeUpper) {
+            available = available & arguments.upperCharacters;
+            arrayAppend(characters, generateRandom(arguments.upperCharacters, arguments.minUpper));
+        }
+
+        if (arguments.includeLower) {
+            available = available & arguments.lowerCharacters;
+            arrayAppend(characters, generateRandom(arguments.lowerCharacters, arguments.minLower));
+        }
+
+        if (arguments.includeNumeric) {
+            available = available & arguments.numericCharacters;
+            arrayAppend(characters, generateRandom(arguments.numericCharacters, arguments.minNumeric));
+        }
+
+        if (arguments.includeSpecial) {
+            available = available & arguments.specialCharacters;
+            arrayAppend(characters, generateRandom(arguments.specialCharacters, arguments.minSpecial));
+        }
+
+        characters = arrayToList(characters, "");
+
+        var additional = arguments.length - len(characters);
+
+        if (additional > 0) {
+            characters = characters & generateRandom(available, additional);
+        }
+
+        return shuffle(characters);
+
+    }
+
+    private string function generateRandom(required string characters, required string length) {
+
+        if (arguments.length == 0) {
+            return "";
+        }
+
+        var result = [];
+        var i = "";
+
+        for (i = 1; i <= arguments.length; i++) {
+            arrayAppend(result, mid(arguments.characters, randRange(1, len(arguments.characters)), 1));
+        }
+
+        return shuffle(arrayToList(result, ""));
+
+    }
+
+    public string function shuffle(required string string) {
+
+		if (len(arguments.string) > 1) {
+
+        	var array = listToArray(arguments.string, "");
+
+        	createObject("java", "java.util.Collections").Shuffle(array);
+
+        	arguments.string = arrayToList(array, "");
+
+		}
+
+		return arguments.string;
+
+    }
 
 	/**
 	 * @actionHelper escape

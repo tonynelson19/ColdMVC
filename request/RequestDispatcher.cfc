@@ -15,6 +15,15 @@ component {
 	property requestManager;
 	property renderer;
 	property templateManager;
+	property catchErrors;
+
+	public any function init() {
+
+		variables.catchErrors = true;
+
+		return this;
+
+	}
 
 	public void function outputRequest() {
 
@@ -270,7 +279,9 @@ component {
 
 		var requestContext = requestManager.getRequestContext();
 
-		if (1 == 0 && requestContext.getController() != "error" && controllerManager.controllerExists("default", "error")) {
+		if (variables.catchErrors
+			&& requestContext.getController() != "error"
+			&& controllerManager.controllerExists("default", "error")) {
 
 			// add the error to the params
 			requestContext.setParam("error", arguments.error);
@@ -335,7 +346,7 @@ component {
 
 		}
 
-		throw(object=error);
+		throw(object=arguments.error);
 
 	}
 

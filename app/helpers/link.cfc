@@ -70,6 +70,21 @@ component {
 			arguments.args.params = {};
 		}
 
+		if (find(".", arguments.args.name)) {
+
+			if (find(":", arguments.args.name)) {
+				arguments.args.params.module = listFirst(arguments.args.name, ":");
+				arguments.args.name = listRest(arguments.args.name, ":");
+			} else {
+				arguments.args.params.module = "default";
+			}
+
+			arguments.args.params.controller = listFirst(arguments.args.name, ".");
+			arguments.args.params.action = listRest(arguments.args.name, ".");
+			arguments.args.name = "";
+
+		}
+
 	}
 
 	private string function generate(any name, any params, any path="", boolean reset=false) {

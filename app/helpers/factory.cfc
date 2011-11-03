@@ -27,9 +27,11 @@ component {
 
 	}
 
-	public any function autowire(required any entity) {
+	public any function autowire(required any object) {
 
-		coldmvc.framework.autowire(arguments.entity);
+		coldmvc.framework.autowire(arguments.object);
+		getBeanFactory().processBeanPostProcessors(arguments.object, "", true);
+		getBeanFactory().processBeanPostProcessors(arguments.object, "", false);
 
 		return this;
 

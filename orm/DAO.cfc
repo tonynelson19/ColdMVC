@@ -291,12 +291,14 @@ component {
 
 		for (i = 1; i <= len; i++) {
 
-			// if it's the first item, then it's the base entity
 			if (i == 1) {
+
+				// if it's the first item, then it's the base entity
 				array[i] = arguments.alias;
-			}
-			// it's a property on the previous entity
-			else {
+
+			} else {
+
+				// it's a property on the previous entity
 
 				array[i] = modelManager.getProperty(model, array[i]);
 
@@ -1166,6 +1168,10 @@ component {
 	public any function setProperty(required any model, required string property, any value) {
 
 		if (structKeyExists(arguments.model, "set#arguments.property#")) {
+
+			if (structKeyExists(arguments, "value") && isSimpleValue(arguments.value)) {
+				arguments.value = trim(arguments.value);
+			}
 
 			// if a value wasn't passed in, or it's null, or it's an empty string, set it to null
 			if (!structKeyExists(arguments, "value") || isNull(arguments.value) || (isSimpleValue(arguments.value) && arguments.value == "")) {

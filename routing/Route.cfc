@@ -581,7 +581,7 @@ component {
 				}
 
 				if (value != "") {
-					arrayPrepend(result, urlEncodedFormat(value));
+					arrayPrepend(result, value);
 					arrayPrepend(result, "/");
 				}
 
@@ -652,6 +652,10 @@ component {
 			} else {
 				value = value.getID();
 			}
+		}
+
+		if (isNull(value)) {
+			value = "";
 		}
 
 		if (isSimpleValue(value)) {

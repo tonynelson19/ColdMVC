@@ -303,7 +303,7 @@ component {
 
 	private any function getRole() {
 
-		return modelFactory.getModel("User").get(coldmvc.user.getID());
+		return coldmvc.user.getUser();
 
 	}
 

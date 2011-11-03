@@ -176,9 +176,15 @@ component {
 
 	}
 
-	public string function getAllowed(required string module, required string controller, required string action) {
+	public string function getResource(required string module, required string controller, required string action) {
 
-		return getMethodAnnotation(arguments.module, arguments.controller, arguments.action, "allowed", "");
+		return getMethodAnnotation(arguments.module, arguments.controller, arguments.action, "resource", "");
+
+	}
+
+	public string function getPermission(required string module, required string controller, required string action) {
+
+		return getMethodAnnotation(arguments.module, arguments.controller, arguments.action, "permission", "");
 
 	}
 
@@ -297,7 +303,7 @@ component {
 				var name = listFirst(files.name[i], ".");
 				controller["module"] = arguments.module;
 				controller["class"] = classPath & "." & name;
-				controller["name"] = listFirst(files.name[i], ".");
+				controller["name"] = name;
 
 				var metaData = metaDataFlattener.flattenMetaData(controller.class);
 
@@ -334,10 +340,10 @@ component {
 					controller["notLoggedIn"] = false;
 				}
 
-				if (structKeyExists(metaData, "allowed")) {
-					controller["allowed"] = metaData.allowed;
+				if (structKeyExists(metaData, "resource")) {
+					controller["resource"] = metaData.resource;
 				} else {
-					controller["allowed"] = "-";
+					controller["resource"] = left(name, len(name) - length);
 				}
 
 				controllers[controller.key] = controller;
@@ -433,10 +439,16 @@ component {
 				action["notLoggedIn"] = arguments.controller.notLoggedIn;
 			}
 
-			if (structKeyExists(method, "allowed")) {
-				action["allowed"] = method.allowed;
+			if (structKeyExists(method, "resource")) {
+				action["resource"] = method.resource;
 			} else {
-				action["allowed"] = arguments.controller.allowed;
+				action["resource"] = arguments.controller.resource;
+			}
+
+			if (structKeyExists(method, "permission")) {
+				action["permission"] = method.permission;
+			} else {
+				action["permission"] = method.name;
 			}
 
 

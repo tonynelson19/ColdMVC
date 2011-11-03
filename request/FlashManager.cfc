@@ -16,8 +16,8 @@ component {
 
 		var flash = getPreviousFlash();
 		var requestContext = requestManager.getRequestContext();
-		requestContext.setFlash(flash);
-		requestContext.appendParams(flash, true);
+		requestContext.setFlashScope(flash);
+		// requestContext.appendParams(flash, true);
 
 		return this;
 
@@ -25,7 +25,7 @@ component {
 
 	public any function endRequest() {
 
-		sessionScope.getNamespace("flash").setValue("flash", getFlashContext().getFlash());
+		sessionScope.getNamespace("flash").setValue("flash", getFlashContext().getValues());
 
 		return this;
 

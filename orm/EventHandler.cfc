@@ -21,10 +21,10 @@ component {
 	public void function preInsert(any entity) {
 
 		var coldmvc = getHelpers();
-		set(arguments.entity, "createdOn", coldmvc.date.getDate());
-		set(arguments.entity, "createdBy", coldmvc.user.getID());
-		set(arguments.entity, "updatedOn", coldmvc.date.getDate());
-		set(arguments.entity, "updatedBy", coldmvc.user.getID());
+		setProperty(arguments.entity, "createdOn", coldmvc.date.getDate());
+		setProperty(arguments.entity, "createdBy", coldmvc.user.getID());
+		setProperty(arguments.entity, "updatedOn", coldmvc.date.getDate());
+		setProperty(arguments.entity, "updatedBy", coldmvc.user.getID());
 		dispatchEvent("preInsert", arguments.entity);
 
 	}
@@ -38,8 +38,8 @@ component {
 	public void function preUpdate(any entity, struct oldData) {
 
 		var coldmvc = getHelpers();
-		set(arguments.entity, "updatedOn", coldmvc.date.getDate());
-		set(arguments.entity, "updatedBy", coldmvc.user.getID());
+		setProperty(arguments.entity, "updatedOn", coldmvc.date.getDate());
+		setProperty(arguments.entity, "updatedBy", coldmvc.user.getID());
 		dispatchEvent("preUpdate", arguments.entity);
 
 	}
@@ -62,7 +62,7 @@ component {
 
 	}
 
-	private void function set(required any model, required string property, required string value) {
+	private void function setProperty(required any model, required string property, required string value) {
 
 		if (structKeyExists(arguments.model, "set#arguments.property#")) {
 			arguments.model.prop(arguments.property, arguments.value);

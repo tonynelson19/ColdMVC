@@ -5,7 +5,7 @@ component {
 		structAppend(variables, this);
 		structDelete(variables, "this");
 		structDelete(variables, "init");
-		
+
 		variables.coldmvc = arguments.coldmvc;
 		variables["$"] = arguments.coldmvc;
 
@@ -15,14 +15,14 @@ component {
 
 	}
 
-	public any function add(required string pattern, any name, any shorthand, any options) {
+	public any function add(required string pattern, any name, any request, any options) {
 
 		if (!structKeyExists(arguments, "name")) {
 			arguments.name = "";
 		}
 
-		if (!structKeyExists(arguments, "shorthand")) {
-			arguments.shorthand = "";
+		if (!structKeyExists(arguments, "request")) {
+			arguments.request = "";
 		}
 
 		if (!structKeyExists(arguments, "options")) {
@@ -34,30 +34,30 @@ component {
 			arguments.name = "";
 		}
 
-		if (isStruct(arguments.shorthand)) {
-			arguments.options = arguments.shorthand;
-			arguments.shorthand = "";
+		if (isStruct(arguments.request)) {
+			arguments.options = arguments.request;
+			arguments.request = "";
 		}
 
 		if (find(".", arguments.name)) {
-			arguments.shorthand = arguments.name;
+			arguments.request = arguments.name;
 			arguments.name = "";
 		}
 
-		// using shorthand notation
+		// using request notation
 		// add("/contact", "contact.index")
 		// add("/login", "auth:user.login")
-		if (arguments.shorthand != "") {
+		if (arguments.request != "") {
 
 			var params = {};
 
-			if (find(":", arguments.shorthand)) {
-				params.module = listFirst(arguments.shorthand, ":");
-				arguments.shorthand = listRest(arguments.shorthand, ":");
+			if (find(":", arguments.request)) {
+				params.module = listFirst(arguments.request, ":");
+				arguments.request = listRest(arguments.request, ":");
 			}
 
-			params.controller = listFirst(arguments.shorthand, ".");
-			params.action = listRest(arguments.shorthand, ".");
+			params.controller = listFirst(arguments.request, ".");
+			params.action = listRest(arguments.request, ".");
 
 			if (!structKeyExists(arguments.options, "params")) {
 				arguments.options.params = {};
@@ -70,10 +70,10 @@ component {
 		if (arguments.name != "") {
 			arguments.options.name = arguments.name;
 		}
-		
+
 		var constructorArgs = {
 			pattern = arguments.pattern,
-			options = arguments.options			
+			options = arguments.options
 		};
 
 		var route = variables.coldmvc.factory.getBeanFactory().new("coldmvc.routing.Route", constructorArgs);

@@ -127,9 +127,9 @@ component {
 
 		} else {
 
-			var requestKey = buildKey(requestContext.getModule(), requestContext.getController(), requestContext.getAction());
+			var requestKey = buildRequestKey(requestContext.getModule(), requestContext.getController(), requestContext.getAction());
 
-			if (requestKey == getKey()) {
+			if (requestKey == getRequestKey()) {
 				return true;
 			}
 
@@ -158,23 +158,23 @@ component {
 
 	}
 
-	public string function getKey() {
+	public string function getRequestKey() {
 
-		return buildKey(getModule(), getController(), getAction());
+		return buildRequestKey(getModule(), getController(), getAction());
 
 	}
 
-	public any function setKey(required string key) {
+	public any function setRequest(required string request) {
 
-		if (find(":", arguments.key)) {
-			var module = listFirst(arguments.key, ":");
-			arguments.key = listRest(arguments.key, ":");
+		if (find(":", arguments.request)) {
+			var module = listFirst(arguments.request, ":");
+			arguments.request = listRest(arguments.request, ":");
 		} else {
 			var module = "default";
 		}
 
-		var controller = listFirst(arguments.key, ".");
-		var action = listRest(arguments.key, ".");
+		var controller = listFirst(arguments.request, ".");
+		var action = listRest(arguments.request, ".");
 
 		setModule(module);
 		setController(controller);
@@ -184,7 +184,7 @@ component {
 
 	}
 
-	private string function buildKey(required string module, required string controller, required string action) {
+	private string function buildRequestKey(required string module, required string controller, required string action) {
 
 		return arguments.module & ":" & arguments.controller & "." & arguments.action;
 

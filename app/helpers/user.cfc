@@ -42,4 +42,20 @@ component {
 
 	}
 
+	public any function getUser() {
+
+		var key = "currentUser";
+		var requestScope = coldmvc.framework.getBean("requestScope");
+		var modelFactory = coldmvc.framework.getBean("modelFactory");
+		var namespace = requestScope.getNamespace(key);
+
+		if (!namespace.hasValue(key)) {
+			var currentUser = modelFactory.getModel("User").get(coldmvc.user.getID());
+			namespace.setValue(key, currentUser);
+		}
+
+		return namespace.getValue(key);
+
+	}
+
 }

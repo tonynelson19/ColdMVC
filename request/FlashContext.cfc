@@ -8,13 +8,13 @@ component {
 
 	}
 
-	public struct function getFlash() {
+	public struct function getValues() {
 
 		return variables.flash;
 
 	}
 
-	public struct function getKey(required string key, any defaultValue="") {
+	public struct function getValue(required string key, any defaultValue="") {
 
 		if (structKeyExists(variables.flash, arguments.key)) {
 			return variables.flash[arguments.key];
@@ -24,21 +24,21 @@ component {
 
 	}
 
-	public boolean function hasKey(required string key) {
+	public boolean function hasValue(required string key) {
 
 		return structKeyExists(variables.flash, arguments.key);
 
 	}
-	
-	public any function clearKey(required string key) {
-		
+
+	public any function clearValue(required string key) {
+
 		structDelete(variables.flash, arguments.key);
-		
+
 		return this;
-		
+
 	}
 
-	public any function setKey(required string key, required any value) {
+	public any function setValue(required string key, required any value) {
 
 		variables.flash[arguments.key] = arguments.value;
 
@@ -46,9 +46,9 @@ component {
 
 	}
 
-	public any function setFlash(required struct flash) {
+	public any function setValues(required struct values) {
 
-		variables.flash = arguments.flash;
+		variables.flash = arguments.values;
 
 		return this;
 

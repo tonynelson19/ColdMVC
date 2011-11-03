@@ -145,7 +145,7 @@ component {
 
 	}
 
-	private void function processFactoryPostProcessors() {
+	public void function processFactoryPostProcessors() {
 
 		var i = "";
 
@@ -163,7 +163,7 @@ component {
 
 	}
 
-	private void function processBeanPostProcessors(required any bean, required string beanName, required boolean before) {
+	public void function processBeanPostProcessors(required any bean, required string beanName, required boolean before) {
 
 		var i = "";
 

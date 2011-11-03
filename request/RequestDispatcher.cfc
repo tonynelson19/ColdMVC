@@ -192,7 +192,7 @@ component {
 
 			var parameters = {
 				params = requestContext.getParams(),
-				flash = flashContext.getFlash()
+				flash = flashContext.getValues()
 			};
 
 			evaluate("arguments.instance.#arguments.method#(argumentCollection=parameters)");
@@ -239,37 +239,6 @@ component {
 			assertionManager.assertNotLoggedIn();
 		}
 
-		// check if the user is allowed to perform this action
-		var allowed = controllerManager.getAllowed(module, controller, action);
-
-		if (allowed != "-") {
-
-			var requestContext = requestManager.getRequestContext();
-			var resource = requestContext.getController();
-			var permission = requestContext.getAction();
-
-			if (isJSON(allowed)){
-
-				var json = deserializeJSON(allowed);
-
-				if (isStruct(json)) {
-
-					if (structKeyExists(json, "resource")) {
-						resource = json.resource;
-					}
-
-					if (structKeyExists(json, "permission")) {
-						permission = json.permission;
-					}
-
-				}
-
-			}
-
-			acl.assertAllowed(resource, permission);
-
-		}
-
 		// make sure it's an allowed request method: get, post, put, delete
 		var validMethods = controllerManager.getMethods(module, controller, action);
 		var currentMethod = cgiScope.getValue("request_method");
@@ -301,7 +270,7 @@ component {
 
 		var requestContext = requestManager.getRequestContext();
 
-		if (requestContext.getController() != "error" && controllerManager.controllerExists("default", "error")) {
+		if (1 == 0 && requestContext.getController() != "error" && controllerManager.controllerExists("default", "error")) {
 
 			// add the error to the params
 			requestContext.setParam("error", arguments.error);

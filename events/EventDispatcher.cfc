@@ -73,7 +73,7 @@ component {
 				event = arguments.event,
 				data = arguments.data,
 				params = requestContext.getParams(),
-				flash = flashContext.getFlash(),
+				flash = flashContext.getValues(),
 				requestContext = requestContext,
 				listener = listeners[i].data
 			};

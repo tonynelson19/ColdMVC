@@ -73,7 +73,7 @@
 		<cfset var requestContext = coldmvc.framework.getBean("requestManager").getRequestContext() />
 
 		<cfif requestContext.flashKeyExists(arguments.key)>
-			<cfset var content = coldmvc.string.escape(requestContext.getFlashValue(arguments.key)) />
+			<cfset var content = coldmvc.string.escape(requestContext.getFlash(arguments.key)) />
 		<cfelse>
 			<cfset var content = "" />
 		</cfif>

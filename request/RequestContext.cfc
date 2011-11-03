@@ -285,13 +285,13 @@ component {
 
 	}
 
-	public struct function getFlash() {
+	public struct function getFlashScope() {
 
 		return variables.flash;
 
 	}
 
-	public any function setFlash(required struct flash) {
+	public any function setFlashScope(required struct flash) {
 
 		variables.flash = arguments.flash;
 
@@ -305,9 +305,13 @@ component {
 
 	}
 
-	public any function getFlashValue(required string key) {
+	public any function getFlash(required string key, any defaultValue="") {
 
-		return variables.flash[arguments.key];
+		if (structKeyExists(variables.flash, arguments.key)) {
+			return variables.flash[arguments.key];
+		} else {
+			return arguments.defaultValue;
+		}
 
 	}
 

@@ -278,10 +278,14 @@
 
 			<cfelse>
 
-				<cfif requestContext.hasParam(arguments.args.originalName)>
+				<!--- look for the plural version first in case you're working with a dropdown filter --->
+				<!--- for example, params.status should not affect params.statuses from appearing in the select --->
+				<cfset var pluralized = coldmvc.string.pluralize(arguments.args.originalName) />
+
+				<cfif requestContext.hasParam(pluralized)>
+					<cfset arguments.args.options = requestContext.getParam(pluralized) />
+				<cfelseif requestContext.hasParam(arguments.args.originalName)>
 					<cfset arguments.args.options = requestContext.getParam(arguments.args.originalName) />
-				<cfelseif requestContext.hasParam(coldmvc.string.pluralize(arguments.args.originalName))>
-					<cfset arguments.args.options = requestContext.getParam(coldmvc.string.pluralize(arguments.args.originalName)) />
 				<cfelse>
 					<cfset arguments.args.options = "" />
 				</cfif>

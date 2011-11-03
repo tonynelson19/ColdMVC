@@ -206,6 +206,26 @@ component {
 	}
 
 	/**
+	 * @actionHelper flashKeyExists
+	 * @viewHelper flashKeyExists
+	 */
+	public boolean function flashKeyExists(required string key) {
+
+		return getRequestContext().flashKeyExists(arguments.key);
+
+	}
+
+	/**
+	 * @actionHelper getFlash
+	 * @viewHelper getFlash
+	 */
+	public any function getFlash(required string key, any defaultValue="") {
+
+		return getRequestContext().getFlash(arguments.key, arguments.defaultValue);
+
+	}
+
+	/**
 	 * @actionHelper getRequestContext
 	 */
 	public any function getRequestContext() {

@@ -6,6 +6,7 @@ component {
 	property addModels;
 	property assertionManager;
 	property coldmvc;
+	property controllerManager;
 	property fileSystem;
 	property framework;
 	property modelFactory;
@@ -591,19 +592,24 @@ component {
 	public void function assertAllowed(any resource, string permission, any role, string message) {
 
 		if (!structKeyExists(arguments, "role")) {
-			arguments.role = getCurrentUser();
+			arguments.role = coldmvc.user.getUser();
 		}
 
 		if (!structKeyExists(arguments, "message")) {
 			arguments.message = "You are not authorized to perform this request.";
 		}
 
+		var requestContext = requestManager.getRequestContext();
+		var module = requestContext.getModule();
+		var controller = requestContext.getController();
+		var action = requestContext.getAction();
+
 		if (!structKeyExists(arguments, "resource")) {
-			arguments.resource = requestManager.getController();
+			arguments.resource = controllerManager.getResource(module, controller, action);
 		}
 
 		if (!structKeyExists(arguments, "permission")) {
-			arguments.permission = requestManager.getAction();
+			arguments.permission = controllerManager.getPermission(module, controller, action);
 		}
 
 		if (!isAllowed(arguments.role, arguments.resource, arguments.permission)) {
@@ -619,16 +625,10 @@ component {
 	public boolean function isAllowedHelper(required any resource, string permission="", any role) {
 
 		if (!structKeyExists(arguments, "role")) {
-			arguments.role = getCurrentUser();
+			arguments.role = coldmvc.user.getUser();
 		}
 
 		return isAllowed(arguments.role, arguments.resource, arguments.permission);
-
-	}
-
-	private any function getCurrentUser() {
-
-		return modelFactory.getModel("User").get(coldmvc.user.getID());
 
 	}
 

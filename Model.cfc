@@ -3,6 +3,9 @@
  */
 component {
 
+	/**
+	 * @inject coldmvc
+	 */
 	property DAO;
 	property createdOn;
 	property createdBy;

@@ -5,6 +5,7 @@ component {
 
 	property acl;
 	property coldmvc;
+	property fileSystem;
 	property modelFactory;
 	property options;
 	property requestManager;
@@ -83,7 +84,7 @@ component {
 	public string function renderMenu(required struct options) {
 
 		var defaults = {
-			navigation = "navigation",
+			navigation = "",
 			maxDepth = "",
 			minDepth = "1",
 			class = variables.options.menu.class,
@@ -194,7 +195,7 @@ component {
 	public string function renderBreadcrumbs(required struct options) {
 
 		var defaults = {
-			navigation = "navigation",
+			navigation = "",
 			class = variables.options.breadcrumbs.class,
 			id = variables.options.breadcrumbs.id
 		};
@@ -339,10 +340,22 @@ component {
 
 		if (isSimpleValue(arguments.navigation)) {
 
+			if (arguments.navigation == "") {
+
+				var module = requestManager.getModule();
+
+				if (fileSystem.fileExists(expandPath("/config/navigation/#module#.xml"))) {
+					arguments.navigation = module;
+				} else if (module != "default") {
+					arguments.navigation = "default";
+				}
+
+			}
+
 			if (right(arguments.navigation, 4) == ".xml") {
 				var configPath = arguments.navigation;
 			} else {
-				var configPath = "/config/#arguments.navigation#.xml";
+				var configPath = "/config/navigation/#arguments.navigation#.xml";
 			}
 
 			arguments.navigation = get(arguments.navigation, expandPath(configPath));

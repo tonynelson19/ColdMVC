@@ -36,7 +36,6 @@ component {
 
 	private struct function loadHelpers() {
 
-		var globalConfig = beanFactory.getConfig();
 		var classes = componentLocator.locate("/app/helpers");
 		var helpers = {};
 		var key = "";
@@ -77,15 +76,27 @@ component {
 
 		}
 
-		if (structKeyExists(globalConfig, "coldmvc")) {
+		injectConfig(helpers, "coldmvc");
+		injectConfig(helpers, "$");
 
-			for (key in helpers) {
+		return helpers;
 
-				if (structKeyExists(globalConfig["coldmvc"], key)) {
+	}
 
-					var settings = globalConfig["coldmvc"][key];
+	private void function injectConfig(required struct helpers, required string container) {
+
+		var globalConfig = beanFactory.getConfig();
+		var key = "";
+
+		if (structKeyExists(globalConfig, arguments.container)) {
+
+			for (key in arguments.helpers) {
+
+				if (structKeyExists(globalConfig[arguments.container], key)) {
+
+					var settings = globalConfig[arguments.container][key];
 					var setting = "";
-					var instance = helpers[key];
+					var instance = arguments.helpers[key];
 
 					for (setting in settings) {
 						if (structKeyExists(instance, "set#setting#")) {
@@ -98,10 +109,6 @@ component {
 			}
 
 		}
-
-
-
-		return helpers;
 
 	}
 

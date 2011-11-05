@@ -3,9 +3,8 @@
  */
 component {
 
+	property coldmvc;
 	property development;
-	property beanInjector;
-	property modelInjector;
 
 	public any function init() {
 
@@ -33,9 +32,8 @@ component {
 			// put it into the cache now to avoid circular dependencies
 			variables.cache[arguments.name] = model;
 
-			// inject any other models into this model
-			beanInjector.autowire(model);
-			modelInjector.autowire(model);
+			// autowire the model
+			coldmvc.factory.autowire(model);
 
 		}
 

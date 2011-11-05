@@ -199,23 +199,16 @@
 			</cfif>
 		</cfloop>
 
+		<!--- store events outside of common for use w/ radios and checkboxes --->
+		<cfset arguments.args.events = [] />
+
 		<!--- check for data attributes --->
 		<cfloop collection="#arguments.args#" item="key">
 			<cfif left(key, 5) eq "data-" and arguments.args[key] neq "">
 				<cfset arrayAppend(arguments.args.common, '#lcase(key)#="#htmlEditFormat(arguments.args[key])#"') />
-			</cfif>
-		</cfloop>
-
-		<!--- store events outside of common for use w/ radios and checkboxes --->
-		<cfset arguments.args.events = [] />
-
-		<!--- check for events --->
-		<cfloop list="blur,change,click,dblclick,focus,keyup,keydown,keypress,submit" index="i">
-			<cfset var event = "on#i#" />
-			<cfset arguments.args[event] = getKey(arguments.args, event) />
-			<cfif arguments.args[event] neq "">
-				<cfset arrayAppend(arguments.args.events, '#event#="#arguments.args[event]#"') />
-				<cfset arrayAppend(arguments.args.common, '#event#="#arguments.args[event]#"') />
+			<cfelseif left(key, 2) eq "on" and arguments.args[key] neq "">
+				<cfset arrayAppend(arguments.args.events, '#lcase(key)#="#arguments.args[key]#"') />
+				<cfset arrayAppend(arguments.args.common, '#lcase(key)#="#arguments.args[key]#"') />
 			</cfif>
 		</cfloop>
 

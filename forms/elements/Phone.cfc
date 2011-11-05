@@ -6,7 +6,7 @@ component {
 	public any function init() {
 
 		super.init();
-		addValidator("telephone");
+		addValidator("phone");
 
 		return this;
 

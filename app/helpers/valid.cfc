@@ -126,7 +126,7 @@ component {
 
 	}
 
-	public boolean function telephone(required any value) {
+	public boolean function phone(required any value) {
 
 		return isValid("telephone", arguments.value);
 

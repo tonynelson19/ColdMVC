@@ -9,13 +9,13 @@ component {
 			return true;
 		}
 
-		return coldmvc.valid.telephone(arguments.value);
+		return coldmvc.valid.phone(arguments.value);
 
 	}
 
 	public string function getMessage() {
 
-		return "The value for ${name} must be a valid telephone number.";
+		return "The value for ${name} must be a valid phone number.";
 
 	}
 

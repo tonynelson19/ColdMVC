@@ -42,6 +42,10 @@ component {
 
 	}
 
+	/**
+	 * @actionHelper getUser
+	 * @viewHelper getUser
+	 */
 	public any function getUser() {
 
 		var key = "currentUser";

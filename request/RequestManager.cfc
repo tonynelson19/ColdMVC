@@ -57,7 +57,6 @@ component {
 
 	/**
 	 * @actionHelper setModule
-	 * @viewHelper setModule
 	 */
 	public any function setModule(required string module) {
 
@@ -77,7 +76,6 @@ component {
 
 	/**
 	 * @actionHelper setController
-	 * @viewHelper setController
 	 */
 	public any function setController(required string controller) {
 
@@ -97,7 +95,6 @@ component {
 
 	/**
 	 * @actionHelper setAction
-	 * @viewHelper setAction
 	 */
 	public any function setAction(required string action) {
 
@@ -117,7 +114,6 @@ component {
 
 	/**
 	 * @actionHelper setView
-	 * @viewHelper setView
 	 */
 	public any function setView(required string view) {
 
@@ -137,7 +133,6 @@ component {
 
 	/**
 	 * @actionHelper setLayout
-	 * @viewHelper setLayout
 	 */
 	public any function setLayout(required string layout) {
 
@@ -157,7 +152,6 @@ component {
 
 	/**
 	 * @actionHelper setFormat
-	 * @viewHelper setFormat
 	 */
 	public any function setFormat(required string format) {
 

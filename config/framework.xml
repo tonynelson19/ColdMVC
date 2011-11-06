@@ -181,7 +181,7 @@
 		
 	<bean id="sessionScope" class="coldmvc.scopes.SessionScope" />	
 	
-	<bean id="tableSorterFactory" class="coldmvc.tablesorter.TableSorterFactory" />
+	<bean id="sorterFactory" class="coldmvc.sorting.SorterFactory" />
 	
 	<bean id="tagInvoker" class="coldmvc.tags.TagInvoker" init-method="setup" />
 	

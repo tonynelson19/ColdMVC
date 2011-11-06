@@ -2,18 +2,18 @@
 
 	<cfif thisTag.generatedContent eq "">
 
-		<cfif not structKeyExists(attributes, "tableSorter")>
-			<cfset attributes.tableSorter = getParam("tableSorter") />
+		<cfif not structKeyExists(attributes, "sorter")>
+			<cfset attributes.sorter = getParam("sorter") />
 		</cfif>
 
-		<cfset columns = attributes.tableSorter.getColumns() />
+		<cfset columns = attributes.sorter.getColumns() />
 
 		<cfoutput>
 		<cfsavecontent variable="thisTag.generatedContent">
 			<thead>
 				<tr>
 					<cfloop array="#columns#" index="column">
-						<c:th param="#column.param#" tablesorter="#attributes.tablesorter#" />
+						<c:th param="#column.param#" sorter="#attributes.sorter#" />
 					</cfloop>
 				</tr>
 			</thead>

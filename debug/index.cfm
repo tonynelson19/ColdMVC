@@ -23,6 +23,7 @@
 		color: #555 !important;
 		line-height: 20px !important;
 		border: 0 !important;
+		background-color: #fff !important;
 	}
 
 	div#coldmvc_debug h2 {

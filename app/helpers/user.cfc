@@ -26,7 +26,10 @@ component {
 		return setValue("id", arguments.id);
 
 	}
-
+    
+    /**
+     * @actionHelper clearUserID
+     */
 	public any function clearID() {
 
 		return setID("");

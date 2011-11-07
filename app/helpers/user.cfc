@@ -27,9 +27,9 @@ component {
 
 	}
     
-    /**
-     * @actionHelper clearUserID
-     */
+	/**
+	 * @actionHelper clearUserID
+	 */
 	public any function clearID() {
 
 		return setID("");

@@ -21,12 +21,12 @@ component {
 			var collection = {};
 
 			if (isDefined("form")) {
-				structAppend(collection, form);
+				structAppend(collection, form, false);
 				structDelete(collection, "fieldnames");
 			}
 
 			if (isDefined("url")) {
-				structAppend(collection, url);
+				structAppend(collection, url, false);
 			}
 
 			var params = collectionParser.parseCollection(collection);

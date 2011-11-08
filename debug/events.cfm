@@ -2,21 +2,28 @@
 <cfset events = coldmvc.framework.getBean("debugManager").getEvents() />
 
 <cfset items = [] />
+<cfset displayed = {} />
 
 <cfloop array="#events#" index="event">
-	
-	<cfset item = {} />
-	<cfset item.name = event.event />
-	<cfset item.listeners = [] />
-	
-	<cfloop array="#event.listeners#" index="listener">
-		<cfif isSimpleValue(listener.bean)>
-			<cfset arrayAppend(item.listeners, "#listener.bean#.#listener.method#()") />	
-		</cfif>									
-	</cfloop>
-	
-	<cfset arrayAppend(items, item) />
-	
+
+	<cfif not structKeyExists(displayed, event.event)>
+
+		<cfset displayed[event.event] = true />
+
+		<cfset item = {} />
+		<cfset item.name = event.event />
+		<cfset item.listeners = [] />
+
+		<cfloop array="#event.listeners#" index="listener">
+			<cfif isSimpleValue(listener.bean)>
+				<cfset arrayAppend(item.listeners, "#listener.bean#.#listener.method#()") />
+			</cfif>
+		</cfloop>
+
+		<cfset arrayAppend(items, item) />
+
+	</cfif>
+
 </cfloop>
 </cfsilent>
 
@@ -32,7 +39,7 @@
 						<cfif arrayLen(item.listeners) gt 0>
 							<ul>
 								<cfloop array="#item.listeners#" index="listener">
-									<li>#listener#</li>							
+									<li>#listener#</li>
 								</cfloop>
 							</ul>
 						<cfelse>

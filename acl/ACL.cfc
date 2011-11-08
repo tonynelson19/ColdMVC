@@ -591,25 +591,10 @@ component {
 	 */
 	public void function assertAllowed(any resource, string permission, any role, string message) {
 
-		if (!structKeyExists(arguments, "role")) {
-			arguments.role = coldmvc.user.getUser();
-		}
+		configureArguments(arguments);
 
 		if (!structKeyExists(arguments, "message")) {
 			arguments.message = "You are not authorized to perform this request.";
-		}
-
-		var requestContext = requestManager.getRequestContext();
-		var module = requestContext.getModule();
-		var controller = requestContext.getController();
-		var action = requestContext.getAction();
-
-		if (!structKeyExists(arguments, "resource")) {
-			arguments.resource = controllerManager.getResource(module, controller, action);
-		}
-
-		if (!structKeyExists(arguments, "permission")) {
-			arguments.permission = controllerManager.getPermission(module, controller, action);
 		}
 
 		if (!isAllowed(arguments.role, arguments.resource, arguments.permission)) {
@@ -622,13 +607,40 @@ component {
 	 * @actionHelper isAllowed
 	 * @viewHelper isAllowed
 	 */
-	public boolean function isAllowedHelper(required any resource, string permission="", any role) {
+	public boolean function isAllowedHelper(any resource, string permission, any role) {
 
-		if (!structKeyExists(arguments, "role")) {
-			arguments.role = coldmvc.user.getUser();
-		}
+		configureArguments(arguments);
 
 		return isAllowed(arguments.role, arguments.resource, arguments.permission);
+
+	}
+
+	private void function configureArguments(required struct args) {
+
+		if (!structKeyExists(arguments.args, "role")) {
+			arguments.args.role = coldmvc.user.getUser();
+		}
+
+		var requestContext = requestManager.getRequestContext();
+		var module = requestContext.getModule();
+		var controller = requestContext.getController();
+		var action = requestContext.getAction();
+
+		if (structKeyExists(arguments.args, "resource")) {
+
+			// check for a shortcut
+			if (isSimpleValue(arguments.args.resource) && find(".", arguments.args.resource)) {
+				arguments.args.permission = listRest(arguments.args.resource, ".");
+				arguments.args.resource = listFirst(arguments.args.resource, ".");
+			}
+
+		} else {
+			arguments.args.resource = controllerManager.getResource(module, controller, action);
+		}
+
+		if (!structKeyExists(arguments.args, "permission")) {
+			arguments.args.permission = controllerManager.getPermission(module, controller, action);
+		}
 
 	}
 

@@ -26,7 +26,7 @@ component {
 		return setValue("id", arguments.id);
 
 	}
-    
+
 	/**
 	 * @actionHelper clearUserID
 	 */
@@ -38,6 +38,7 @@ component {
 
 	/**
 	 * @actionHelper isLoggedIn
+	 * @viewHelper isLoggedIn
 	 */
 	public boolean function isLoggedIn() {
 

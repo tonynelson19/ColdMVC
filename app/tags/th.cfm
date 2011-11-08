@@ -16,6 +16,10 @@
 		<cfset attributes.sorter = getParam("sorter") />
 	</cfif>
 
+	<cfif not structKeyExists(attributes, "param")>
+		<cfset attributes.param = thisTag.generatedContent />
+	</cfif>
+
 	<cfset column = attributes.sorter.getColumn(attributes.param) />
 	<cfset sort = column.param />
 

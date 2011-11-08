@@ -41,6 +41,9 @@
 				display = true,
 				tag = "div"
 			},
+			errors = {
+				class = "errors"
+			},
 			field = {
 				class = "field",
 				display = true,

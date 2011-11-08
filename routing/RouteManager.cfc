@@ -38,7 +38,7 @@ component {
 	private void function includeConfigPath(required string configPath) {
 
 		if (fileSystem.fileExists(expandPath(arguments.configPath))) {
-			createObject("component", "coldmvc.routing.RouteConfig").init(helperManager.getHelpers(), variables.router, arguments.configPath);
+			new coldmvc.routing.Config(helperManager.getHelpers(), variables.router, arguments.configPath);
 		}
 
 	}

@@ -42,7 +42,7 @@ component {
 		var path = "/config/acl.cfm";
 
 		if (fileSystem.fileExists(expandPath(path))) {
-			createObject("component", "coldmvc.acl.Config").init(this, path);
+			new coldmvc.acl.Config(this, path);
 		}
 
 	}
@@ -465,6 +465,26 @@ component {
 		var j = "";
 		var k = "";
 
+		for (i = 1; i <= arrayLen(arguments.asserts); i++) {
+
+			var assert = {
+				class = "",
+				method = "assert",
+				attributes = {}
+			};
+
+			if (isSimpleValue(arguments.asserts[i])) {
+				assert.class = arguments.asserts[i];
+			} else if (isObject(arguments.asserts[i])) {
+				assert.instance = arguments.asserts[i];
+			} else if (isStruct(arguments.asserts[i])) {
+				structAppend(assert, arguments.asserts[i], true);
+			}
+
+			arguments.asserts[i] = assert;
+
+		}
+
 		for (i = 1; i <= arrayLen(arguments.roles); i++) {
 
 			var role = arguments.roles[i];
@@ -566,11 +586,19 @@ component {
 
 					var assertion = permissionCache.assert[i];
 
-					if (isSimpleValue(assertion)) {
-						assertion = framework.getApplication().new(assertion);
+					if (!structKeyExists(assertion, "instance")) {
+						assertion.instance = framework.getApplication().new(assertion.class);
 					}
 
-					var result = assertion.assert(this, arguments.role, arguments.resource, arguments.permission);
+					var collection = {
+						acl = this,
+						role = arguments.role,
+						resource = arguments.resource,
+						permission = arguments.permission,
+						attributes = assertion.attributes
+					};
+
+					var result = evaluate("assertion.instance.#assertion.method#(argumentCollection=collection)");
 
 					if (!result) {
 						return false;

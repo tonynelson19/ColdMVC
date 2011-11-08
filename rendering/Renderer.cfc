@@ -63,7 +63,7 @@ component {
 
 			structAppend(arguments.parameters, params, false);
 
-			output = createObject("component", "coldmvc.rendering.Template").init(template, arguments.parameters);
+			output = new coldmvc.rendering.Template(template, arguments.parameters);
 
 		}
 

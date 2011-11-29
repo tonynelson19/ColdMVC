@@ -3,11 +3,15 @@
  */
 component {
 
+	property actionHelperManager;
+	property beanName;
+	property coldmvc;
 	property fileSystem;
 	property helperManager;
 	property pluginManager;
 	property requestManager;
 	property router;
+	property viewHelperManager;
 
 	public any function init() {
 
@@ -64,6 +68,90 @@ component {
 				route.setParam("action", "index");
 			}
 
+		}
+
+	}
+
+	public void function addNamedRouteViewHelpers() {
+
+		var namedRoutes = router.getNamedRoutes();
+		var key = "";
+
+		var parameters = [{
+			name = "name",
+			type = "any",
+			required = false,
+			"default" = ""
+		}, {
+			name = "params",
+			type = "any",
+			required = false,
+			"default" = ""
+		}, {
+			name = "path",
+			type = "any",
+			required = false,
+			"default" = ""
+		}, {
+			name = "reset",
+			type = "boolean",
+			required = false,
+			"default" = "false"
+		}];
+
+		// for each named route, add a corresponding view helper ("post" => postURL())
+		for (key in namedRoutes) {
+
+			viewHelperManager.addHelper(
+				"linkTo" & coldmvc.string.upperfirst(key),
+				variables.beanName,
+				"framework",
+				"handleNamedRoute",
+				parameters,
+				true
+			);
+
+			actionHelperManager.addHelper(
+				"redirectTo" & coldmvc.string.upperfirst(key),
+				variables.beanName,
+				"framework",
+				"handleNamedRoute",
+				parameters,
+				true
+			);
+
+		}
+
+	}
+
+	public string function handleNamedRoute(required string method, required struct parameters) {
+
+		if (left(arguments.method, 6) == "linkTo") {
+			var namedRoute = replaceNoCase(arguments.method, "linkTo", "");
+			var redirect = false;
+		} else {
+			var namedRoute = replaceNoCase(arguments.method, "redirectTo", "");
+			var redirect = true;
+		}
+
+		var args = {};
+		var key = "";
+
+		// remove numeric keys
+		for (key in arguments.parameters) {
+			if (!isNumeric(key)) {
+				args[key] = arguments.parameters[key];
+			}
+		}
+
+		coldmvc.link.configure(args);
+
+		args.name = coldmvc.string.lowerfirst(namedRoute);
+
+		if (redirect) {
+			coldmvc.link.redirect(argumentCollection=args);
+		} else {
+			return coldmvc.link.to(argumentCollection=args);
 		}
 
 	}

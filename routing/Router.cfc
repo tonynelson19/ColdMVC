@@ -9,6 +9,7 @@ component {
 	property requestManager;
 	property routes;
 	property defaultRoutes;
+	property namedRoutes;
 
 	public any function init() {
 

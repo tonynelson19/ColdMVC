@@ -21,11 +21,9 @@ component {
 		var key = "";
 
 		for (key in variables.helpers) {
-
 			if (!structKeyExists(arguments.caller, key)) {
 				arguments.caller[key] = callHelper;
 			}
-
 		}
 
 	}
@@ -41,10 +39,8 @@ component {
 		var requestContext = requestManager.getRequestContext();
 		var key = "";
 
-
 		// if a param matches the same name as the view helper, clear it out
 		for (key in variables.helpers) {
-
 			if (requestContext.hasParam(key)) {
 				requestContext.clearParam(key);
 			}

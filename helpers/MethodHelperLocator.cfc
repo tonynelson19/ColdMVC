@@ -72,7 +72,6 @@ component {
 			var fn = metaData.functions[key];
 
 			if (structKeyExists(fn, variables.annotation)) {
-
 				addHelper(
 					fn[variables.annotation],
 					arguments.name,
@@ -81,7 +80,6 @@ component {
 					fn.parameters,
 					structKeyExists(fn, "includeMethodName")
 				);
-
 			}
 
 		}
@@ -91,40 +89,40 @@ component {
 	public any function addHelper(required string name, required string key, required string type, required string method, required array parameters, required boolean includeMethod) {
 
 		if (!structKeyExists(variables.helpers, arguments.name)) {
-			
+
 			var parameterString = [];
-			
+
 			if (arrayLen(arguments.parameters) > 0) {
-				
+
 				var i = "";
-				
+
 				for (i = variables.parameterStringIndex; i <= arrayLen(arguments.parameters); i++) {
-					
-					var parameter = arguments.parameters[i];					
+
+					var parameter = arguments.parameters[i];
 					var param = parameter.name;
-					
+
 					if (structKeyExists(parameter, "type")) {
 						param = parameter.type & " " & param;
 					}
-					
+
 					if (structKeyExists(parameter, "default")) {
-						param = param & '="' & parameter.default & '"';	
+						param = param & '="' & parameter.default & '"';
 					}
-					
+
 					if (i > variables.parameterStringIndex) {
 						param = ", " & param;
 					}
-					
+
 					if (structKeyExists(parameter, "required") && !parameter.required) {
 						param = " [" & param & "]";
 					}
-					
-					arrayAppend(parameterString, param);					
-				
+
+					arrayAppend(parameterString, param);
+
 				}
-				
+
 			}
-			
+
 			variables.helpers[arguments.name] = {
 				name = arguments.name,
 				key = arguments.key,

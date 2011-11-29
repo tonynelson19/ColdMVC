@@ -36,13 +36,13 @@ component {
 
 		configure(arguments);
 
-		arguments.params["return"] = $.framework.getBean("requestManager").getRequestContext().getPath();
+		arguments.params["return"] = getRequestContext().getPath();
 
 		location(generate(argumentCollection=arguments), false);
 
 	}
 
-	private void function configure(required struct args) {
+	public void function configure(required struct args) {
 
 		if (structKeyExists(arguments.args, "params")) {
 			if (isBoolean(arguments.args.params)) {
@@ -59,6 +59,12 @@ component {
 				arguments.args.name = arguments.args.params;
 				arguments.args.params = parameters;
 			}
+		} else {
+			arguments.args.name = "";
+		}
+
+		if (!isSimpleValue(arguments.args.name)) {
+			arguments.args.name = "";
 		}
 
 		if (left(arguments.args.name, 1) == "/") {
@@ -79,8 +85,17 @@ component {
 				arguments.args.params.module = "default";
 			}
 
-			arguments.args.params.controller = listFirst(arguments.args.name, ".");
-			arguments.args.params.action = listRest(arguments.args.name, ".");
+			if (listLen(arguments.args.name, ".") == 2) {
+				arguments.args.params.controller = listFirst(arguments.args.name, ".");
+				arguments.args.params.action = listRest(arguments.args.name, ".");
+			} else if (left(arguments.args.name, 1) == ".") {
+				arguments.args.params.controller = getRequestContext().getController();
+				arguments.args.params.action = replace(arguments.args.name, ".", "");
+			} else {
+				arguments.args.params.controller = replace(arguments.args.name, ".", "");
+				arguments.args.params.action = getRequestContext().getAction();
+			}
+
 			arguments.args.name = "";
 
 		}
@@ -90,6 +105,12 @@ component {
 	private string function generate(any name, any params, any path="", boolean reset=false) {
 
 		return coldmvc.framework.getBean("router").generate(argumentCollection=arguments);
+
+	}
+
+	private any function getRequestContext() {
+
+		return $.framework.getBean("requestManager").getRequestContext();
 
 	}
 

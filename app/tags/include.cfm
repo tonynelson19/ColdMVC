@@ -9,6 +9,10 @@
 	<!--- make sure the template exists --->
 	<cfset attributes.template = coldmvc.framework.getBean("templateManager").generate(attributes.module, attributes.directory, attributes.template) />
 
+	<cfif attributes.template eq "">
+		<cfthrow message="Invalid template: #attributes.template#" />
+	</cfif>
+
 	<!--- transfer the caller to the attributes to preserve it --->
 	<cfset attributes.caller = caller />
 
@@ -22,6 +26,11 @@
 
 	<!--- tranfer the caller to the local variables --->
 	<cfset structAppend(variables, __hidden__.caller, true) />
+
+	<!--- add any params to the partial --->
+	<cfif structKeyExists(__hidden__, "params") && isStruct(__hidden__.params)>
+		<cfset structAppend(variables, __hidden__.params, true) />
+	</cfif>
 
 	<cfinclude template="#__hidden__.template#" />
 
@@ -39,5 +48,7 @@
 
 	<!--- add any variables declared inside the include back into the caller --->
 	<cfset structAppend(caller, vars, true) />
+
+
 
 </cfif>

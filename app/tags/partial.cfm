@@ -9,6 +9,10 @@
 	<!--- make sure the template exists --->
 	<cfset __hidden__ = coldmvc.framework.getBean("templateManager").generate(attributes.module, attributes.directory, attributes.template) />
 
+	<cfif __hidden__ eq "">
+		<cfthrow message="Invalid template: #attributes.template#" />
+	</cfif>
+
 	<!--- remove any tag-specific attributes --->
 	<cfset structDelete(attributes, "module") />
 	<cfset structDelete(attributes, "directory") />
@@ -18,6 +22,11 @@
 
 	<!--- add all of the attributes to the partial --->
 	<cfset structAppend(variables, attributes, true) />
+
+	<!--- add any params to the partial --->
+	<cfif structKeyExists(attributes, "params") && isStruct(attributes.params)>
+		<cfset structAppend(variables, attributes.params, true) />
+	</cfif>
 
 	<!--- remove the attributes from the variables now that they're appended --->
 	<cfset structDelete(variables, "attributes") />

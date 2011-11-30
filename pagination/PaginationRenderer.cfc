@@ -108,8 +108,10 @@ component {
 		}
 
 		if (!structKeyExists(arguments, "params")) {
-			arguments.params = requestManager.getRequestContext().getRouteParams();
+			arguments.params = {};
 		}
+
+		structAppend(arguments.params, requestManager.getRequestContext().getRouteParams(), false);
 
 		if (!structKeyExists(arguments, "style")) {
 			arguments.style = variables.options.style.type;
@@ -126,7 +128,16 @@ component {
 			}
 
 			var struct = coldmvc.querystring.toStruct(arguments.queryString);
+
 			structDelete(struct, "page");
+
+			var key = "";
+			for (key in struct) {
+				if (structKeyExists(arguments.params, key)) {
+					structDelete(struct, key);
+				}
+			}
+
 			arguments.queryString = coldmvc.struct.toQueryString(struct);
 
 		} else {

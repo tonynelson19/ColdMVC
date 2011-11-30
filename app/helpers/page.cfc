@@ -164,32 +164,8 @@ component {
 	}
 
 	/**
-	 * @viewHelper setAuthor
+	 * @viewHelper setMeta
 	 */
-	public any function setAuthor(required string author) {
-
-		return setMeta("author", arguments.author);
-
-	}
-
-	/**
-	 * @viewHelper setDescription
-	 */
-	public any function setDescription(required string description) {
-
-		return setMeta("description", arguments.description);
-
-	}
-
-	/**
-	 * @viewHelper setKeywords
-	 */
-	public any function setKeywords(required string keywords) {
-
-		return setMeta("keywords", arguments.keywords);
-
-	}
-
 	public any function setMeta(required string key, required string value) {
 
 		var meta = getData("meta", {});

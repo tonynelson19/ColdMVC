@@ -424,7 +424,12 @@ component {
 
 	}
 
-	public string function filter(required string property, required string operator, any value="") {
+	public string function filter(required string property, required string operator, any value) {
+
+		if (!structKeyExists(arguments, "value")) {
+			arguments.value = arguments.operator;
+			arguments.operator = "eq";
+		}
 
 		if (arguments.value != "") {
 			return buildClause(arguments.property, arguments.operator, arguments.value, true);

@@ -424,6 +424,16 @@ component {
 
 	}
 
+	public string function filter(required string property, required string operator, any value="") {
+
+		if (arguments.value != "") {
+			return buildClause(arguments.property, arguments.operator, arguments.value, true);
+		} else {
+			return "";
+		}
+
+	}
+
 	public any function onMissingMethod(required string missingMethodName, required struct missingMethodArguments) {
 
 		if (arguments.missingMethodName == "and" || arguments.missingMethodName == "or") {

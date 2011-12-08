@@ -49,9 +49,6 @@ component {
 			} else if (_directoryExists(expandPath("/coldmvc/"))) {
 				this.mappings["/coldmvc"] = sanitizePath(expandPath("/coldmvc/"));
 			}
-			
-			writeDump(this);
-			abort;
 				
 			request.framework = new coldmvc.system.Framework(getRootPath());
 		}

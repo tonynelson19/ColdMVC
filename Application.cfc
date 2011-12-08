@@ -41,6 +41,18 @@ component {
 		}
 
 		if (!structKeyExists(request, "framework")) {
+			
+			var rootPath = getRootPath();
+			
+			if (_directoryExists(rootPath & "coldmvc/")) {
+				this.mappings["/coldmvc"] = rootPath & "coldmvc/";
+			} else if (_directoryExists(expandPath("/coldmvc/"))) {
+				this.mappings["/coldmvc"] = sanitizePath(expandPath("/coldmvc/"));
+			}
+			
+			writeDump(this);
+			abort;
+				
 			request.framework = new coldmvc.system.Framework(getRootPath());
 		}
 
@@ -119,6 +131,31 @@ component {
 
 		framework.applyConfigSettings(this);
 
+	}
+	
+	private boolean function _directoryExists(required string path) {
+
+		var result = false;
+		
+		try {
+			result = directoryExists(arguments.path);
+		}
+		catch (any e) {}
+		
+		return result;
+		
+	}
+	
+	private string function sanitizePath(required string path) {
+
+		arguments.path = replace(arguments.path, "\", "/", "all");
+	
+		if (right(arguments.path, 1) != "/") {
+			arguments.path = arguments.path & "/";
+		}
+	
+		return arguments.path;
+	
 	}
 
 }

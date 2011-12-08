@@ -50,7 +50,7 @@ component {
 				this.mappings["/coldmvc"] = sanitizePath(expandPath("/coldmvc/"));
 			}
 				
-			request.framework = new coldmvc.system.Framework(getRootPath());
+			request.framework = new coldmvc.system.Framework(rootPath);
 		}
 
 		return request.framework;

@@ -45,12 +45,15 @@ component {
 			var rootPath = getRootPath();
 			
 			if (_directoryExists(rootPath & "coldmvc/")) {
+				// check if coldmvc is nested inside the current project
 				this.mappings["/coldmvc"] = rootPath & "coldmvc/";
-			} else if (_directoryExists(expandPath("/coldmvc/"))) {
-				this.mappings["/coldmvc"] = sanitizePath(expandPath("/coldmvc/"));
+			} else if (_directoryExists(expandPath("/coldmvc"))) {
+				// if coldmvc can be found either in the webroot or by a server mapping, create an app mapping for it
+				this.mappings["/coldmvc"] = sanitizePath(expandPath("/coldmvc"));
 			}
 				
 			request.framework = new coldmvc.system.Framework(rootPath);
+		
 		}
 
 		return request.framework;

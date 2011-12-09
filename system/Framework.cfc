@@ -53,14 +53,8 @@ component {
 
 			if (fileSystem.directoryExists(rootPath & "plugins/")) {
 				defaults["/plugins"] = rootPath & "plugins/";
-			} else if (fileSystem.directoryExists(expandPath("/plugins/"))) {
-				defaults["/plugins"] = fileSystem.sanitizeDirectory(expandPath("/plugins/"));
-			}
-
-			if (fileSystem.directoryExists(rootPath & "coldmvc/")) {
-				defaults["/coldmvc"] = rootPath & "coldmvc/";
-			} else if (fileSystem.directoryExists(expandPath("/coldmvc/"))) {
-				defaults["/coldmvc"] = fileSystem.sanitizeDirectory(expandPath("/coldmvc/"));
+			} else if (fileSystem.directoryExists(expandPath("/plugins"))) {
+				defaults["/plugins"] = fileSystem.sanitizeDirectory(expandPath("/plugins"));
 			}
 
 			variables.mappings = defaults;

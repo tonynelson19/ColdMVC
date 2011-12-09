@@ -52,7 +52,12 @@ component {
 				this.mappings["/coldmvc"] = sanitizePath(expandPath("/coldmvc"));
 			}
 				
-			request.framework = new coldmvc.system.Framework(rootPath);
+			// make sure the mapping works as expected, otherwise default to executing as if inside the coldmvc directory
+			if (_fileExists(expandPath("/coldmvc/system/Framework.cfc"))) {
+				request.framework = new coldmvc.system.Framework(rootPath);
+			} else {
+				request.framework = new system.Framework(rootPath);
+			}	
 		
 		}
 
@@ -131,6 +136,20 @@ component {
 
 		framework.applyConfigSettings(this);
 
+	}
+	
+	private boolean function _fileExists(required string path) {
+
+		var result = false;
+		
+		try {
+			result = fileExists(arguments.path);
+		}
+		catch (any e) {
+		}
+		
+		return result;
+	
 	}
 	
 	private boolean function _directoryExists(required string path) {

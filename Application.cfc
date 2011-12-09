@@ -54,9 +54,9 @@ component {
 				
 			// make sure the mapping works as expected, otherwise default to executing as if inside the coldmvc directory
 			if (_fileExists(expandPath("/coldmvc/system/Framework.cfc"))) {
-				request.framework = new coldmvc.system.Framework(rootPath);
+				request.framework = new coldmvc.system.Framework(rootPath, "coldmvc.");
 			} else {
-				request.framework = new system.Framework(rootPath);
+				request.framework = new system.Framework(rootPath, "");
 			}	
 		
 		}

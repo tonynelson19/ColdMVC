@@ -5,11 +5,13 @@ component {
 
 	property mappings;
 	property rootPath;
+	property componentPrefix;
 	property settings;
 	property fileSystem;
 
-	public any function init(required string rootPath) {
+	public any function init(required string rootPath, required string componentPrefix) {
 
+		setComponentPrefix(arguments.componentPrefix);
 		setRootPath(arguments.rootPath);
 
 		return this;
@@ -27,7 +29,7 @@ component {
 	public any function getFileSystem() {
 
 		if (!structKeyExists(variables, "fileSystem")) {
-			variables.fileSystem = new coldmvc.util.FileSystem();
+			variables.fileSystem = create("util.FileSystem");
 		}
 
 		return variables.fileSystem;
@@ -77,12 +79,9 @@ component {
 
 			if (fileSystem.fileExists(configPath)) {
 
-				// make sure the mapping works
-				if (fileSystem.fileExists(expandPath("/coldmvc/config/Ini.cfc"))) {
-					var ini = new coldmvc.config.Ini(configPath);
-				} else {
-					var ini = new config.Ini(configPath);
-				}
+				var ini = create("config.Ini", {
+					filePath = configPath
+				});
 
 				// load the default section first
 				var section = ini.getSection("default");
@@ -287,10 +286,10 @@ component {
 
 		if (!structKeyExists(variables, "pluginManager")) {
 
-			variables.pluginManager = new coldmvc.system.PluginManager(
-				"/config/plugins.cfm",
-				getFileSystem()
-			);
+			variables.pluginManager = create("system.PluginManager", {
+				configPath = "/config/plugins.cfm",
+				fileSystem = getFileSystem()
+			});
 
 		}
 
@@ -414,11 +413,11 @@ component {
 			"pluginManager" = getPluginManager()
 		};
 
-		var beanFactory = new coldmvc.beans.BeanFactory(
-			xml,
-			getSettings(),
-			beans
-		);
+		var beanFactory = create("beans.BeanFactory", {
+			xml = xml,
+			config = getSettings(),
+			beans = beans
+		});
 
 		beanFactory.loadBeans();
 
@@ -443,15 +442,15 @@ component {
 			factory.getBean("modelInjector")
 		];
 
-		var beanFactory = new coldmvc.beans.BeanFactory(
-			xml,
-			getSettings(),
-			{},
-			factoryPostProcessors,
-			beanPostProcessors
-		);
+		var beanFactory = create("beans.BeanFactory", {
+			xml = xml,
+			config = getSettings(),
+			beans = {},
+			factoryPostProcessors = factoryPostProcessors,
+			beanPostProcessors = beanPostProcessors
+		});
 
-		var beanInjector = new coldmvc.beans.BeanInjector();
+		var beanInjector = create("beans.BeanInjector");
 		beanInjector.setBeanFactory(beanFactory);
 		beanFactory.addBeanPostProcessor(beanInjector);
 
@@ -568,7 +567,7 @@ component {
 
 		if (!structKeyExists(variables, "eventDispatcher")) {
 
-			var eventDispatcher = new coldmvc.events.EventDispatcher();
+			var eventDispatcher = create("events.EventDispatcher");
 			eventDispatcher.setBeanFactory(getApplication());
 			eventDispatcher.setDebugManager(getBean("debugManager"));
 			eventDispatcher.setFileSystem(getBean("fileSystem"));
@@ -576,7 +575,7 @@ component {
 			eventDispatcher.setRequestManager(getBean("requestManager"));
 			eventDispatcher.setLogEvents(true);
 
-			var metaDataObserver = new coldmvc.metadata.MetaDataObserver();
+			var metaDataObserver = create("metadata.MetaDataObserver");
 			metaDataObserver.setBeanFactory(getApplication());
 			metaDataObserver.setEventDispatcher(eventDispatcher);
 			metaDataObserver.setMetaDataFlattener(getBean("metaDataFlattener"));
@@ -589,6 +588,22 @@ component {
 
 		return variables.eventDispatcher;
 
+	}
+	
+	private any function create(required string class, struct constructorArgs) {
+		
+		var object = createObject("component", variables.componentPrefix & arguments.class);
+		
+		if (!structKeyExists(arguments, "constructorArgs")) {
+			arguments.constructorArgs = {};
+		}
+		
+		if (structKeyExists(object, "init")) {
+			object.init(argumentCollection=arguments.constructorArgs);
+		}
+		
+		return object;
+		
 	}
 
 }

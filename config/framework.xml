@@ -112,8 +112,6 @@
 	
 	<bean id="flashManager" class="coldmvc.request.FlashManager" />
 	
-	<bean id="fileSystem" class="coldmvc.util.FileSystem" />
-	
 	<bean id="filterManager" class="coldmvc.orm.FilterManager">
 		<property name="filters">
 			<list>

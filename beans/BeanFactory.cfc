@@ -559,11 +559,18 @@ component {
 
 	}
 
-	public void function setBean(required string id, required any object) {
-
-		var class = getMetaData(arguments.object).name;
+	public void function setBean(required string id, required any bean) {
+				
+		if (isObject(arguments.bean)) {
+			var instance = arguments.bean;
+			var class = getMetaData(instance).name;		
+		} else {
+			var class = arguments.bean.class;
+			var instance = arguments.bean.instance;	
+		}
+		
 		variables.singletons[id] = class;
-		variables.beanInstances[id] = arguments.object;
+		variables.beanInstances[id] = instance;
 
 		variables.beanDefinitions[id] = {
 			id = arguments.id,

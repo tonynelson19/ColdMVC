@@ -415,9 +415,18 @@ component {
 		var xml = findBeans("/config/framework.xml");
 
 		var beans = {
-			"fileSystem" = getFileSystem(),
-			"framework" = this,
-			"pluginManager" = getPluginManager()
+			"fileSystem" = {
+				class = "coldmvc.util.FileSystem",
+				instance = getFileSystem()
+			},
+			"framework" = {
+				class = "coldmvc.Framework",
+				instance = this
+			},
+			"pluginManager" = {
+				class = "coldmvc.system.PluginManager",
+				instance = getPluginManager()
+			}
 		};
 
 		var beanFactory = create("beans.BeanFactory", {

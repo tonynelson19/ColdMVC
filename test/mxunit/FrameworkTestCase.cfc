@@ -5,7 +5,7 @@ component {
 
 	public void function beforeTests() {
 
-		variables.framework = new coldmvc.system.Framework(expandPath("/config/../"));
+		variables.framework = new coldmvc.Framework(expandPath("/config/../"), "coldmvc.");
 		application.coldmvc.framework = variables.framework;
 
 		variables.framework.onApplicationStart();

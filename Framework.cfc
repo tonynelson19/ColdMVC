@@ -3,16 +3,18 @@
  */
 component {
 
+	property componentPrefix;
+	property fileSystem;
+	property loaded;
 	property mappings;
 	property rootPath;
-	property componentPrefix;
 	property settings;
-	property fileSystem;
 
 	public any function init(required string rootPath, required string componentPrefix) {
 
 		setComponentPrefix(arguments.componentPrefix);
 		setRootPath(arguments.rootPath);
+		setLoaded(false);
 
 		return this;
 
@@ -328,6 +330,7 @@ component {
 
 		dispatchEvent("preApplication");
 		dispatchEvent("applicationStart");
+		setLoaded(true);
 
 		return this;
 
@@ -373,6 +376,10 @@ component {
 			if (reloadPassword == "" || url[reloadKey] == reloadPassword) {
 				return true;
 			}
+
+		} else if (!getLoaded()) {
+
+			return true;
 
 		}
 
@@ -589,21 +596,21 @@ component {
 		return variables.eventDispatcher;
 
 	}
-	
+
 	private any function create(required string class, struct constructorArgs) {
-		
+
 		var object = createObject("component", variables.componentPrefix & arguments.class);
-		
+
 		if (!structKeyExists(arguments, "constructorArgs")) {
 			arguments.constructorArgs = {};
 		}
-		
+
 		if (structKeyExists(object, "init")) {
 			object.init(argumentCollection=arguments.constructorArgs);
 		}
-		
+
 		return object;
-		
+
 	}
 
 }

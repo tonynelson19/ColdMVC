@@ -312,16 +312,16 @@
 				<!--- make sure the form field gets even if a value isn't selected --->
 				<input type="hidden" name="#arguments.args.name#" value="" />
 			</cfif>
-			<ul class="#type# #arguments.args.align#">
+			<#variables.options[arguments.type].tag# class="#variables.options[arguments.type].class# #arguments.type# #arguments.args.align#">
 				<cfloop from="1" to="#length#" index="i">
 					<li <cfif i eq 1>class="first"<cfelseif i eq local.length>class="last"</cfif>>
                         <label for="#arguments.args.name#[#i#]" title="#htmlEditFormat(arguments.args.options[i].title)#">
-							<input type="#type#" name="#arguments.args.name#" id="#arguments.args.name#[#i#]" value="#htmlEditFormat(arguments.args.options[i].id)#" title="#htmlEditFormat(arguments.args.options[i].title)#" <cfif listFindNoCase(arguments.args.value, arguments.args.options[i].id) or (arguments.args.value eq arguments.args.options[i].id)>checked="checked"</cfif> #arguments.args.events#>
+							<input type="#arguments.type#" name="#arguments.args.name#" id="#arguments.args.name#[#i#]" value="#htmlEditFormat(arguments.args.options[i].id)#" title="#htmlEditFormat(arguments.args.options[i].title)#" <cfif listFindNoCase(arguments.args.value, arguments.args.options[i].id) or (arguments.args.value eq arguments.args.options[i].id)>checked="checked"</cfif> #arguments.args.events#>
 							<span>#arguments.args.options[i].name#</span>
 						</label>
 					</li>
 				</cfloop>
-			</ul>
+			</#variables.options[arguments.type].tag#>
 		</cfsavecontent>
 		</cfoutput>
 

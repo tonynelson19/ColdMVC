@@ -36,6 +36,10 @@
 				class = "buttons",
 				tag = "div"
 			},
+			checkbox = {
+				class = "",
+				tag = "ul"
+			},
 			description = {
 				class = "description",
 				display = true,
@@ -67,6 +71,10 @@
 				display = true,
 				suffix = ":",
 				tag = "div"
+			},
+			radio = {
+				class = "",
+				tag = "ul"
 			},
 			required = {
 				class = "required",

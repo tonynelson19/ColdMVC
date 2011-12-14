@@ -74,7 +74,6 @@ component {
 		if (!structKeyExists(variables, "settings")) {
 
 			var settings = {};
-			var environment = "";
 			var rootPath = getRootPath();
 			var fileSystem = getFileSystem();
 			var configPath = rootPath & "config/config.ini";
@@ -82,30 +81,22 @@ component {
 			if (fileSystem.fileExists(configPath)) {
 
 				var ini = create("config.Ini", {
-					filePath = configPath
+					filePath = configPath,
+					super = "default"
 				});
-
-				// load the default section first
-				var section = ini.getSection("default");
-
-				// append the section to the settings
-				structAppend(settings, section);
 
 				// check to see if there's an environment file
 				var environmentPath = rootPath & "config/environment.txt";
 
 				if (fileSystem.fileExists(environmentPath)) {
-
-					// read the environment
-					environment = fileRead(environmentPath);
-
-					// get the config settings
-					section = ini.getSection(environment);
-
-					// adding the environments settings, overriding any default settings
-					structAppend(settings, section, true);
-
+					var environment = fileRead(environmentPath);
+				} else {
+					var environment = "default";
 				}
+
+				var section = ini.getSection(environment);
+
+				structAppend(settings, section, true);
 
 			}
 

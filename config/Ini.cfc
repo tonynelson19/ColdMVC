@@ -1,12 +1,14 @@
-/**
- * @accessors true
- */
 component {
 
-	public any function init(required string filePath) {
+	public any function init(required string filePath, string super="") {
 
+		variables.super = arguments.super;
 		variables.extendsKey = ";extends"; // safe because keys starting with a semi-colon (;) are treated as comments
-		variables.sections = processSections(parseExtends(loadSections(arguments.filePath)));
+
+		var sections = loadSections(arguments.filePath);
+		var extends = parseExtends(sections);
+
+		variables.sections = processSections(extends);
 
 		return this;
 
@@ -16,7 +18,7 @@ component {
 
 		// parse the INI file like normal
 		var sections = getProfileSections(arguments.filePath);
-		var data = {};
+		var result = {};
 		var key = "";
 
 		for (key in sections) {
@@ -31,17 +33,17 @@ component {
 				section[keys[i]] = getProfileString(arguments.filePath, key, keys[i]);
 			}
 
-			data[id] = section;
+			result[id] = section;
 
 		}
 
-		return data;
+		return result;
 
 	}
 
 	private struct function parseExtends(required struct sections) {
 
-		var data = {};
+		var result = {};
 		var key = "";
 
 		for (key in arguments.sections) {
@@ -55,43 +57,55 @@ component {
 				var extends = "";
 			}
 
-			data[id] = arguments.sections[key];
+			result[id] = arguments.sections[key];
 
 			// if it extends another section, add the key
 			if (extends != "") {
-				data[id][variables.extendsKey] = extends;
+				result[id][variables.extendsKey] = extends;
 			}
 
 		}
 
-		return data;
+		if (variables.super != "") {
+			for (key in result) {
+				if (key != variables.super) {
+					if (structKeyExists(result[key], variables.extendsKey)) {
+						result[key][variables.extendsKey] = result[key][variables.extendsKey] & ":" & variables.super;
+					} else {
+						result[key][variables.extendsKey] = variables.super;
+					}
+				}
+			}
+		}
+
+		return result;
 
 	}
 
 	private struct function processSections(required struct sections) {
 
-		var data = {};
+		var result = {};
 		var key = "";
 
 		for (key in arguments.sections) {
-			data[key] = processJSON(arguments.sections, key);
-		}
-
-		for (key in data) {
-			data[key] = processSection(data, key);
+			result[key] = processJSON(arguments.sections, key);
 		}
 
 		// flatten each section based on inheritance
-		for (key in data) {
-			data[key] = flattenSection(data, key);
+		for (key in result) {
+			result[key] = flattenSection(result, key);
+		}
+
+		for (key in result) {
+			result[key] = processSection(result, key);
 		}
 
 		// remove ;extends
-		for (key in data) {
-			structDelete(data[key], variables.extendsKey);
+		for (key in result) {
+			structDelete(result[key], variables.extendsKey);
 		}
 
-		return data;
+		return result;
 
 	}
 
@@ -99,7 +113,7 @@ component {
 
 		var section = arguments.sections[arguments.id];
 		var key = "";
-		var data = {};
+		var result = {};
 
 		// replace all complex JSON strings with complex objects
 		for (key in section) {
@@ -109,11 +123,11 @@ component {
 			if (isSimpleValue(value)) {
 
 				value = trim(value);
-				
+
 				if (value == '""') {
 					value = "";
 				}
-				
+
 				// apparently ColdFusion doesn't allow wrapping values in double quotes...
 				if (left(value, 1) == '"' && right(value, 1) == '"') {
 					value = replace(value, '"', "", "one");
@@ -128,20 +142,46 @@ component {
 
 				// simple values stay the same (prevents true from becoming YES)
 				if (isSimpleValue(deserialized)) {
-					data[key] = value;
+					result[key] = value;
 				} else {
-					data[key] = deserialized;
+					result[key] = deserialized;
 				}
 
 
 			} else {
 
-				data[key] = value;
+				result[key] = value;
 			}
 
 		}
 
-		return data;
+		return result;
+
+	}
+
+	private struct function flattenSection(required struct config, required string id) {
+
+		if (!structKeyExists(arguments.config, arguments.id)) {
+			throw("Invalid section: #arguments.id#");
+		}
+
+		var section = arguments.config[arguments.id];
+
+		// check to see if this section extends other sections
+		if (structKeyExists(section, variables.extendsKey)) {
+
+			var extends = listToArray(section[variables.extendsKey], ":");
+			var i = "";
+
+			// recursively flatten each parent section
+			for (i = 1; i <= arrayLen(extends); i++) {
+				structAppend(section, flattenSection(arguments.config, extends[i]), false);
+			}
+
+
+		}
+
+		return section;
 
 	}
 
@@ -194,32 +234,6 @@ component {
         return arguments.config;
 
     }
-
-	private struct function flattenSection(required struct config, required string id) {
-
-		if (!structKeyExists(arguments.config, arguments.id)) {
-			throw("Invalid section: #arguments.id#");
-		}
-
-		var section = arguments.config[arguments.id];
-
-		// check to see if this section extends other sections
-		if (structKeyExists(section, variables.extendsKey)) {
-
-			var extends = listToArray(section[variables.extendsKey], ":");
-			var i = "";
-
-			// recursively flatten each parent section
-			for (i = 1; i <= arrayLen(extends); i++) {
-				structAppend(section, flattenSection(arguments.config, extends[i]), false);
-			}
-
-
-		}
-
-		return section;
-
-	}
 
 	public struct function getSections() {
 

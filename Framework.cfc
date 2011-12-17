@@ -73,6 +73,7 @@ component {
 
 		if (!structKeyExists(variables, "settings")) {
 
+			var environment = "default";
 			var settings = {};
 			var rootPath = getRootPath();
 			var fileSystem = getFileSystem();
@@ -89,9 +90,7 @@ component {
 				var environmentPath = rootPath & "config/environment.txt";
 
 				if (fileSystem.fileExists(environmentPath)) {
-					var environment = fileRead(environmentPath);
-				} else {
-					var environment = "default";
+					environment = fileRead(environmentPath);
 				}
 
 				var section = ini.getSection(environment);

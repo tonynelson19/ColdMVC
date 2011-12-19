@@ -17,19 +17,8 @@ component {
 		var requestContext = getRequestContext();
 
 		if (!requestContext.hasParams()) {
-
-			var collection = {};
-
-			if (isDefined("form")) {
-				structAppend(collection, form, false);
-				structDelete(collection, "fieldnames");
-			}
-
-			if (isDefined("url")) {
-				structAppend(collection, url, false);
-			}
-
-			var params = collectionParser.parseCollection(collection);
+			
+			var params = collectionParser.parseCollection(buildParams());
 
 			if (structKeyExists(params, "format") && !requestContext.hasFormat()) {
 				requestContext.setFormat(params.format);
@@ -43,6 +32,81 @@ component {
 
 		return this;
 
+	}
+	
+	public struct function buildParams() {
+		
+		var result = {};
+		
+		if (isDefined("form")) {
+		
+			var partsArray = form.getPartsArray();
+		
+			if (isDefined("partsArray")) {
+				
+				var i = "";
+				for (i = 1; i <= arrayLen(partsArray); i++) {
+					
+					var part = partsArray[i];
+					var key = part.getName();
+					var value = part.getStringValue();
+					
+					if (!structKeyExists(result, key)) {
+						result[key] = [];
+					}
+					
+					if (part.isParam()) {
+						arrayAppend(result[key], value);
+					}
+					
+				}  
+				  
+			}
+		
+		}
+	
+		var parameterMap = getPageContext().getRequest().getParameterMap();
+	
+		if (isDefined("parameterMap")) {
+			
+			var key = "";
+			for (key in parameterMap) {
+				
+				if (!structKeyExists(result, key)) {
+					result[key] = [];
+				}
+				
+				for (i = 1; i <= arrayLen(parameterMap[key]); i++) {					
+					var value = parameterMap[key][i];
+					arrayAppend(result[key], value);					
+				}
+					
+			}
+		
+		}
+		
+		var key = "";
+		for (key in result) {
+			
+			var values = [];
+			var i = "";			
+			
+			for (i = 1; i <= arrayLen(result[key]); i++) {
+				
+				// remove empty values from the form
+				// helpful for checkboxes and radio button hidden fields with values of ""
+				if (result[key][i] != "") {
+					arrayAppend(values, result[key][i]);
+				}
+				
+			}
+					
+			result[key] = arrayToList(values);
+			
+		}
+	
+		return result;
+		
 	}
 
 	/**

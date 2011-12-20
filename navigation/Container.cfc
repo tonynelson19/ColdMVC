@@ -3,6 +3,7 @@
  */
 component {
 
+	property controllerManager;
 	property requestManager;
 	property router;
 
@@ -248,8 +249,9 @@ component {
 			}
 
 			var page = new coldmvc.navigation.Page(options);
-			page.setRouter(router);
-			page.setRequestManager(requestManager);
+			page.setControllerManager(getControllerManager());
+			page.setRouter(getRouter());
+			page.setRequestManager(getRequestManager());
 
 			if (structKeyExists(arguments.pages[i], "pages")) {
 				page.loadPages(arguments.pages[i].pages);

@@ -99,6 +99,26 @@ component {
 
 	}
 
+	public string function getResource() {
+
+		if (hasAttribute("resource")) {
+			return getAttribute("resource");
+		}
+
+		return getControllerManager().getResource(getModule(), getController(), getAction());
+
+	}
+
+	public string function getPermission() {
+
+		if (hasAttribute("permission")) {
+			return getAttribute("permission");
+		}
+
+		return getControllerManager().getPermission(getModule(), getController(), getAction());
+
+	}
+
 	public boolean function isVisible() {
 
 		if (structKeyExists(variables, "visible") && isBoolean(variables.visible)) {

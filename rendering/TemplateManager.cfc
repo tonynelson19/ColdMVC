@@ -15,7 +15,10 @@ component {
 	public TemplateManager function init() {
 
 		variables.loaded = false;
-		variables.cache = {};
+		variables.cache = {
+			layouts = {},
+			views = {}
+		};
 		variables.includes = [];
 
 		return this;
@@ -73,7 +76,7 @@ component {
 
 	private void function findTemplates(required string directory) {
 
-		variables.cache[directory] = {};
+		variables.cache[arguments.directory] = {};
 
 		var plugins = pluginManager.getPlugins();
 		var i = "";

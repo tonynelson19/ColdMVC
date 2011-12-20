@@ -5,6 +5,7 @@ component {
 
 	property acl;
 	property coldmvc;
+	property controllerManager;
 	property fileSystem;
 	property modelFactory;
 	property options;
@@ -73,8 +74,9 @@ component {
 	public any function new(required string configPath) {
 
 		var container = new coldmvc.navigation.Container();
-		container.setRouter(router);
-		container.setRequestManager(requestManager);
+		container.setControllerManager(getControllerManager());
+		container.setRequestManager(getRequestManager());
+		container.setRouter(getRouter());
 		container.load(arguments.configPath);
 
 		return container;

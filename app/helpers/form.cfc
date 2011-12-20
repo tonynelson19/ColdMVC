@@ -290,8 +290,10 @@
 
 		<cfset var length = arrayLen(arguments.args.options) />
 
+		<cfset var optionID = arguments.args.id />
+		
 		<cfif length neq 0>
-			<cfset arguments.args.id = "#arguments.args.name#[1]" />
+			<cfset arguments.args.id = "#arguments.args.id#[1]" />
 		</cfif>
 
 		<cfif not structKeyExists(arguments.args, "align")>
@@ -316,7 +318,7 @@
 				<cfloop from="1" to="#length#" index="i">
 					<li <cfif i eq 1>class="first"<cfelseif i eq local.length>class="last"</cfif>>
                         <label for="#arguments.args.name#[#i#]" title="#htmlEditFormat(arguments.args.options[i].title)#">
-							<input type="#arguments.type#" name="#arguments.args.name#" id="#arguments.args.name#[#i#]" value="#htmlEditFormat(arguments.args.options[i].id)#" title="#htmlEditFormat(arguments.args.options[i].title)#" <cfif listFindNoCase(arguments.args.value, arguments.args.options[i].id) or (arguments.args.value eq arguments.args.options[i].id)>checked="checked"</cfif> #arguments.args.events#>
+							<input type="#arguments.type#" name="#arguments.args.name#" id="#optionID#[#i#]" value="#htmlEditFormat(arguments.args.options[i].id)#" title="#htmlEditFormat(arguments.args.options[i].title)#" <cfif listFindNoCase(arguments.args.value, arguments.args.options[i].id) or (arguments.args.value eq arguments.args.options[i].id)>checked="checked"</cfif> #arguments.args.events#>
 							<span>#arguments.args.options[i].name#</span>
 						</label>
 					</li>

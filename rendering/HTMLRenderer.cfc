@@ -266,19 +266,30 @@
 				</cfif>
 
 				<cfset arguments.args.options = [] />
+				
+				<cfif not isArray(arguments.args.optionKeys)>
+					<cfset arguments.args.optionKeys = listToArray(arguments.args.optionKeys) />
+				</cfif>
+				
+				<cfif not isArray(arguments.args.optionValues)>
+					<cfset arguments.args.optionValues = listToArray(arguments.args.optionValues) />
+				</cfif>
 
-				<cfloop from="1" to="#listLen(arguments.args.optionValues)#" index="i">
+				<cfif not isArray(arguments.args.optionTitles)>
+					<cfset arguments.args.optionTitles = listToArray(arguments.args.optionTitles) />
+				</cfif>
+
+				<cfloop from="1" to="#arrayLen(arguments.args.optionKeys)#" index="i">
 
 					<cfset var option = {
-						id = listGetAt(arguments.args.optionKeys, i),
-						name = listGetAt(arguments.args.optionValues, i),
-						title = listGetAt(arguments.args.optionTitles, i)
+						id = arguments.args.optionKeys[i],
+						name = arguments.args.optionValues[i],
+						title = arguments.args.optionTitles[i]
 					} />
 
 					<cfset arrayAppend(arguments.args.options, option) />
 
 				</cfloop>
-
 
 			<cfelse>
 

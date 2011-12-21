@@ -1,6 +1,3 @@
-/**
- * @extends coldmvc.forms.TagElement
- */
-component {
+component extends="coldmvc.forms.TagElement" {
 
 }

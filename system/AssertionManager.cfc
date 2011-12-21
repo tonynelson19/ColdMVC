@@ -1,7 +1,4 @@
-/**
- * @accessors true
- */
-component {
+component accessors="true" {
 
 	property coldmvc;
 	property modelManager;
@@ -96,9 +93,9 @@ component {
 	 * @actionHelper assertParamExists
 	 */
 	public void function assertParamExists(required string key, string message) {
-		
+
 		var requestContext = requestManager.getRequestContext();
-		
+
 		if (!requestContext.hasParam(arguments.key)) {
 
 			if (!structKeyExists(arguments, "message")) {

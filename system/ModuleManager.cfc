@@ -1,7 +1,4 @@
-/**
- * @accessors true
- */
-component {
+component accessors="true" {
 
 	property pluginManager;
 	property fileSystem;

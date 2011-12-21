@@ -1,8 +1,4 @@
-/**
- * @accessors true
- * @extends coldmvc.app.helpers.factory
- */
-component {
+component accessors="true" extends="coldmvc.app.helpers.factory" {
 
 	public any function getBeanFactory() {
 

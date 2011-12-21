@@ -1,7 +1,4 @@
-/**
- * @accessors true
- */
-component {
+component accessors="true" {
 
 	property beanFactory;
 	property metaDataFlattener;
@@ -12,7 +9,7 @@ component {
 		var key = "";
 
 		for (key in metaData.properties) {
-			
+
 			var property = metaData.properties[key];
 
 			// look for @inject coldmvc annotation to autowire coldmvc singletons

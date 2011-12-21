@@ -1,7 +1,4 @@
-/**
- * @accessors true
- */
-component {
+component accessors="true" {
 
 	property config;
 
@@ -560,15 +557,15 @@ component {
 	}
 
 	public void function setBean(required string id, required any bean) {
-				
+
 		if (isObject(arguments.bean)) {
 			var instance = arguments.bean;
-			var class = getMetaData(instance).name;		
+			var class = getMetaData(instance).name;
 		} else {
 			var class = arguments.bean.class;
-			var instance = arguments.bean.instance;	
+			var instance = arguments.bean.instance;
 		}
-		
+
 		variables.singletons[id] = class;
 		variables.beanInstances[id] = instance;
 

@@ -1,7 +1,4 @@
-/**
- * @extends coldmvc.test.mxunit.FrameworkTestCase
- */
-component {
+component extends="coldmvc.test.mxunit.FrameworkTestCase" {
 
 	public void function beforeTests() {
 

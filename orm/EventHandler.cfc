@@ -1,7 +1,4 @@
-/**
- * @implements cfide.orm.IEventHandler
- */
-component {
+component implements="cfide.orm.IEventHandler" {
 
 	public void function preLoad(any entity) {
 

@@ -1,7 +1,4 @@
-/**
- * @accessors true
- */
-component {
+component accessors="true" {
 
 	property addModels;
 	property assertionManager;

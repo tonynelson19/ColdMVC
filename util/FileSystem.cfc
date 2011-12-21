@@ -1,6 +1,3 @@
-/**
- * @singleton
- */
 component {
 
 	public any function init() {

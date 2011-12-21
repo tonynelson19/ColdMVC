@@ -1,8 +1,4 @@
-/**
- * @accessors true
- * @extends coldmvc.forms.Element
- */
-component {
+component accessors="true" extends="coldmvc.forms.Element" {
 
 	/**
 	 * @inject coldmvc

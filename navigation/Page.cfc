@@ -1,8 +1,4 @@
-/**
- * @accessors true
- * @extends coldmvc.navigation.Container
- */
-component {
+component accessors="true" extends="coldmvc.navigation.Container" {
 
 	property action;
 	property controller;

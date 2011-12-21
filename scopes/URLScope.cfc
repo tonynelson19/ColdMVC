@@ -1,7 +1,4 @@
-/**
- * @extends coldmvc.scopes.Scope
- */
-component {
+component extends="coldmvc.scopes.Scope" {
 
 	public struct function getScope() {
 

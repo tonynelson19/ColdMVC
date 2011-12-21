@@ -1,7 +1,4 @@
-/**
- * @accessors true
- */
-component {
+component accessors="true" {
 
 	property componentPrefix;
 	property fileSystem;
@@ -289,6 +286,21 @@ component {
 
 	}
 
+	public any function getLibraryManager() {
+
+		if (!structKeyExists(variables, "libraryManager")) {
+
+			variables.libraryManager = create("system.LibraryManager", {}, {
+				pluginManager = getPluginManager(),
+				fileSystem = getFileSystem()
+			});
+
+		}
+
+		return variables.libraryManager;
+
+	}
+
 	public any function getBeanFactory() {
 
 		return variables.internalBeanFactory;
@@ -413,6 +425,10 @@ component {
 				class = "coldmvc.Framework",
 				instance = this
 			},
+			"libraryManager" = {
+				class = "coldmvc.system.LibraryManager",
+				instance = getLibraryManager()
+			},
 			"pluginManager" = {
 				class = "coldmvc.system.PluginManager",
 				instance = getPluginManager()
@@ -456,8 +472,10 @@ component {
 			beanPostProcessors = beanPostProcessors
 		});
 
-		var beanInjector = create("beans.BeanInjector");
-		beanInjector.setBeanFactory(beanFactory);
+		var beanInjector = create("beans.BeanInjector", {}, {
+			beanFactory = beanFactory
+		});
+
 		beanFactory.addBeanPostProcessor(beanInjector);
 
 		beanFactory.loadBeans();
@@ -573,18 +591,20 @@ component {
 
 		if (!structKeyExists(variables, "eventDispatcher")) {
 
-			var eventDispatcher = create("events.EventDispatcher");
-			eventDispatcher.setBeanFactory(getApplication());
-			eventDispatcher.setDebugManager(getBean("debugManager"));
-			eventDispatcher.setFileSystem(getBean("fileSystem"));
-			eventDispatcher.setFlashManager(getBean("flashManager"));
-			eventDispatcher.setRequestManager(getBean("requestManager"));
-			eventDispatcher.setLogEvents(true);
+			var eventDispatcher = create("events.EventDispatcher", {}, {
+				beanFactory = getApplication(),
+				debugManager = getBean("debugManager"),
+				fileSystem = getBean("fileSystem"),
+				flashManager = getBean("flashManager"),
+				requestManager = getBean("requestManager"),
+				logEvents = true
+			});
 
-			var metaDataObserver = create("metadata.MetaDataObserver");
-			metaDataObserver.setBeanFactory(getApplication());
-			metaDataObserver.setEventDispatcher(eventDispatcher);
-			metaDataObserver.setMetaDataFlattener(getBean("metaDataFlattener"));
+			var metaDataObserver = create("metadata.MetaDataObserver", {}, {
+				beanFactory = getApplication(),
+				eventDispatcher = eventDispatcher,
+				metaDataFlattener = getBean("metaDataFlattener")
+			});
 
 			eventDispatcher.addObserver("preApplication", metaDataObserver, "findObservers");
 
@@ -596,7 +616,7 @@ component {
 
 	}
 
-	private any function create(required string class, struct constructorArgs) {
+	private any function create(required string class, struct constructorArgs, struct properties) {
 
 		var object = createObject("component", variables.componentPrefix & arguments.class);
 
@@ -606,6 +626,17 @@ component {
 
 		if (structKeyExists(object, "init")) {
 			object.init(argumentCollection=arguments.constructorArgs);
+		}
+
+		if (!structKeyExists(arguments, "properties")) {
+			arguments.properties = {};
+		}
+
+		var key = "";
+		for (key in arguments.properties) {
+			if (structKeyExists(object, "set#key#")) {
+				evaluate("object.set#key#(arguments.properties[key])");
+			}
 		}
 
 		return object;

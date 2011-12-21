@@ -1,8 +1,4 @@
-/**
- * @accessors true
- * @extends coldmvc.helpers.MethodHelperLocator
- */
-component {
+component accessors="true" extends="coldmvc.helpers.MethodHelperLocator" {
 
 	property requestManager;
 

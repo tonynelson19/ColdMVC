@@ -1,7 +1,4 @@
-/**
- * @extends coldmvc.validation.Validator
- */
-component {
+component extends="coldmvc.validation.Validator" {
 
 	public boolean function isValid(required any value, required struct options) {
 

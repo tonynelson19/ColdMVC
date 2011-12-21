@@ -1,7 +1,4 @@
-/**
- * @accessors true
- */
-component {
+component accessors="true" {
 
 	property fileSystem;
 	property pluginManager;
@@ -41,14 +38,14 @@ component {
 
 					var folder = replaceNoCase(component_directory & "/", directory, "");
 					folder = getClassPath(folder);
-					
+
 					var bean = {};
 					if (folder == "") {
 						bean.class = classPath & "." & name;
 					} else {
 						bean.class = classPath & "." & folder & "." & name;
 					}
-					
+
 					bean.id = getBeanName(bean.class);
 
 					// make sure this bean isn't already explicitly defined inside a beans.xml file
@@ -67,12 +64,12 @@ component {
 		}
 
 	}
-	
+
 	private string function getBeanName(required string class) {
-		
+
 		var metaData = getComponentMetaData(arguments.class);
 		var name = listLast(metaData.fullName, ".");
-		
+
 		while (structKeyExists(metaData, "extends")) {
 
 			if (structKeyExists(metaData, "beanName")) {
@@ -82,9 +79,9 @@ component {
 			metaData = metaData.extends;
 
 		}
-		
+
 		return lcase(left(name, 1)) & replace(name, left(name, 1), "");
-		
+
 	}
 
 	private boolean function isSingleton(required string class) {

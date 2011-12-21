@@ -1,8 +1,4 @@
-/**
- * @accessors true
- * @singleton
- */
-component {
+component accessors="true" {
 
 	property coldmvc;
 	property modelManager;

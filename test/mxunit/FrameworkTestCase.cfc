@@ -1,7 +1,4 @@
-/**
- * @extends coldmvc.test.mxunit.TestCase
- */
-component {
+component extends="coldmvc.test.mxunit.TestCase" {
 
 	public void function beforeTests() {
 

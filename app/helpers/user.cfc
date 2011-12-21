@@ -1,7 +1,4 @@
-/**
- * @extends coldmvc.scopes.SessionScope
- */
-component {
+component extends="coldmvc.scopes.SessionScope" {
 
 	private struct function getScope() {
 

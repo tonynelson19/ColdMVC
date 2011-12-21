@@ -1,7 +1,4 @@
-/**
- * @extends mxunit.framework.TestCase
- */
-component {
+component extends="mxunit.framework.TestCase" {
 
 	private void function assertStructEquals(required struct expected, required any actual) {
 

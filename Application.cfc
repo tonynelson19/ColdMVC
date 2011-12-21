@@ -9,6 +9,7 @@ component {
 
 		structAppend(this.mappings, framework.getMappings(), false);
 		structAppend(this.mappings, framework.getPluginManager().getMappings(), false);
+		structAppend(this.mappings, framework.getLibraryManager().getMappings(), false);
 
 		coldmvc = {};
 		coldmvc.framework = framework;

@@ -157,7 +157,7 @@
 
 	<!------>
 
-	<cffunction name="configure" access="private" output="false" returntype="void">
+	<cffunction name="configure" access="public" output="false" returntype="struct">
 		<cfargument name="args" required="true" type="struct" />
 		<cfargument name="commonKeys" required="false" default="" type="string" />
 
@@ -241,11 +241,13 @@
 		<cfset arguments.args.common = arrayToList(arguments.args.common, " ") />
 		<cfset arguments.args.events = arrayToList(arguments.args.events, " ") />
 
+		<cfreturn arguments.args />
+
 	</cffunction>
 
 	<!------>
 
-	<cffunction name="configureOptions" access="private" output="false" returntype="void">
+	<cffunction name="configureOptions" access="public" output="false" returntype="struct">
 		<cfargument name="args" required="true" type="struct" />
 
 		<cfset var array = [] />
@@ -266,11 +268,11 @@
 				</cfif>
 
 				<cfset arguments.args.options = [] />
-				
+
 				<cfif not isArray(arguments.args.optionKeys)>
 					<cfset arguments.args.optionKeys = listToArray(arguments.args.optionKeys) />
 				</cfif>
-				
+
 				<cfif not isArray(arguments.args.optionValues)>
 					<cfset arguments.args.optionValues = listToArray(arguments.args.optionValues) />
 				</cfif>
@@ -420,6 +422,8 @@
 			<cfset arguments.args.value = arrayToList(value) />
 
 		</cfif>
+
+		<cfreturn arguments.args />
 
 	</cffunction>
 

@@ -162,7 +162,7 @@
 		<cfargument name="commonKeys" required="false" default="" type="string" />
 
 		<cfif structKeyExists(arguments.args, "_processed")>
-			<cfreturn />
+			<cfreturn arguments.args />
 		</cfif>
 
 		<cfset var i = "" />

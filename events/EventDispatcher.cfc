@@ -82,7 +82,7 @@ component accessors="true" {
 	}
 
 	private array function getListeners(required string event) {
-
+		
 		var listeners = [];
 		var i = "";
 

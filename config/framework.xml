@@ -74,6 +74,7 @@
 						<value>modelHelperManager.findHelpers</value>
 						<value>viewHelperManager.findHelpers</value>
 						<value>templateManager.loadTemplates</value>
+						<value>controllerManager.loadObservers</value>
 						<value>routeManager.addNamedRouteViewHelpers</value>
 						<value>acl.loadConfig</value>
 					</list>

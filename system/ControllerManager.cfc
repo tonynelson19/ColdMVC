@@ -255,8 +255,6 @@ component accessors="true" {
 
 			}
 
-			loadObservers();
-
 			variables.loaded = true;
 
 		}
@@ -546,17 +544,18 @@ component accessors="true" {
 
 	}
 
-	private void function loadObservers() {
+	public void function loadObservers() {
 
 		var module = "";
 		var key = "";
 		var eventDispatcher = framework.getEventDispatcher();
+		var controllers = getControllers();
 
-		for (module in variables.controllers) {
+		for (module in controllers) {
 
-			for (key in variables.controllers[module]) {
+			for (key in controllers[module]) {
 
-				var controller = variables.controllers[module][key];
+				var controller = controllers[module][key];
 				var metaData = metaDataFlattener.flattenMetaData(controller.class);
 				var method = "";
 

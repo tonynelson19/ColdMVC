@@ -87,7 +87,8 @@ component accessors="true" {
 			maxDepth = "",
 			minDepth = "1",
 			class = variables.options.menu.class,
-			id = variables.options.menu.id
+			id = variables.options.menu.id,
+			params = {}
 		};
 
 		structAppend(arguments.options, defaults, false);
@@ -95,13 +96,13 @@ component accessors="true" {
 		var navigation = getNavigation(arguments.options.navigation);
 		var attributes = buildAttributes(arguments.options);
 
-		var html = buildMenu([], navigation, 1, arguments.options.minDepth, arguments.options.maxDepth, attributes);
+		var html = buildMenu([], navigation, 1, arguments.options.minDepth, arguments.options.maxDepth, attributes, arguments.options.params);
 
 		return arrayToList(html, chr(10));
 
 	}
 
-	private array function buildMenu(required array html, required any navigation, required numeric currentDepth, required numeric minDepth, required any maxDepth, required string attributes) {
+	private array function buildMenu(required array html, required any navigation, required numeric currentDepth, required numeric minDepth, required any maxDepth, required string attributes, required struct params) {
 
 		var i = "";
 
@@ -114,7 +115,7 @@ component accessors="true" {
 				var page = pages[i];
 
 				if (page.isActive()) {
-					return buildMenu(arguments.html, page, arguments.currentDepth + 1, arguments.minDepth, arguments.maxDepth, arguments.attributes);
+					return buildMenu(arguments.html, page, arguments.currentDepth + 1, arguments.minDepth, arguments.maxDepth, arguments.attributes, arguments.params);
 				}
 
 			}
@@ -178,9 +179,9 @@ component accessors="true" {
 				class = ' class="#class#"';
 			}
 
-			arrayAppend(arguments.html, indent & variables.padding & "<li#class#>");
-			arrayAppend(arguments.html, indent & variables.padding & variables.padding & page.render());
-			arguments.html = buildMenu(arguments.html, page, arguments.currentDepth + 1, arguments.minDepth, arguments.maxDepth, '');
+			arrayAppend(arguments.html, indent & variables.padding & "<li#class##renderPageAttributes(page)#>");
+			arrayAppend(arguments.html, indent & variables.padding & variables.padding & page.render(arguments.params));
+			arguments.html = buildMenu(arguments.html, page, arguments.currentDepth + 1, arguments.minDepth, arguments.maxDepth, '', arguments.params);
 			arrayAppend(arguments.html,  indent & variables.padding &  "</li>");
 
 		}
@@ -191,19 +192,42 @@ component accessors="true" {
 
 	}
 
+	private string function renderPageAttributes(required any page) {
+
+		var attributes = arguments.page.getAttributes();
+		var struct = {};
+		var key = "";
+
+		for (key in attributes) {
+			if (left(key, 5) == "data-") {
+				struct[key] = attributes[key];
+			}
+		}
+
+		var string = coldmvc.struct.toAttributes(struct);
+
+		if (string != "") {
+			return " " & string;
+		} else {
+			return string;
+		}
+
+	}
+
 	public string function renderBreadcrumbs(required struct options) {
 
 		var defaults = {
 			navigation = "",
 			class = variables.options.breadcrumbs.class,
-			id = variables.options.breadcrumbs.id
+			id = variables.options.breadcrumbs.id,
+			params = {}
 		};
 
 		structAppend(arguments.options, defaults, false);
 
 		var navigation = getNavigation(arguments.options.navigation);
 		var attributes = buildAttributes(arguments.options);
-		var breadcrumbs = buildBreadcrumbs([], navigation);
+		var breadcrumbs = buildBreadcrumbs([], navigation, arguments.options.params);
 		var cache = getCache();
 		var additional = cache.getValue("breadcrumbs", []);
 		var i = "";
@@ -259,7 +283,7 @@ component accessors="true" {
 
 	}
 
-	private array function buildBreadcrumbs(required array breadcrumbs, required any navigation) {
+	private array function buildBreadcrumbs(required array breadcrumbs, required any navigation, required struct params) {
 
 		var pages = arguments.navigation.getPages();
 
@@ -269,11 +293,11 @@ component accessors="true" {
 
 			if (isAllowed(page) && page.isVisible() && page.isActive()) {
 
-				var html = page.render();
+				var html = page.render(arguments.params);
 
 				if (html != "") {
-					arrayAppend(arguments.breadcrumbs, page.render());
-					arguments.breadcrumbs = buildBreadcrumbs(arguments.breadcrumbs, page);
+					arrayAppend(arguments.breadcrumbs, html);
+					arguments.breadcrumbs = buildBreadcrumbs(arguments.breadcrumbs, page, arguments.params);
 				}
 
 				break;

@@ -136,6 +136,21 @@ component accessors="true" {
 
 	}
 
+	public struct function getAttributes() {
+
+		var attributes = {};
+		var key = "";
+
+		for (key in variables) {
+			if (isSimpleValue(variables[key])) {
+				attributes[key] = variables[key];
+			}
+		}
+
+		return attributes;
+
+	}
+
 	public string function getAttribute(required string key, string defaultValue="") {
 
 		if (structKeyExists(variables, arguments.key)) {

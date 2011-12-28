@@ -235,7 +235,7 @@ component accessors="true" extends="coldmvc.navigation.Container" {
 
 	}
 
-	public string function render() {
+	public string function render(struct params) {
 
 		if (getLabel() != "") {
 
@@ -245,12 +245,16 @@ component accessors="true" extends="coldmvc.navigation.Container" {
 			attributes.class = getAttribute("class");
 			attributes.id = getAttribute("id");
 
+			if (!structKeyExists(arguments, "params")) {
+				arguments.params = {};
+			}
+
 			if (getURL() != "") {
 				attributes.href = getURL();
 			} else if (getPath() != "") {
-				attributes.href = router.generate(path=getPath(), params=getRouteParams(), reset=getReset());
+				attributes.href = router.generate(path=getPath(), params=combineParams(arguments.params), reset=getReset());
 			} else {
-				attributes.href = router.generate(name=getRoute(), params=getRouteParams(), reset=getReset());
+				attributes.href = router.generate(name=getRoute(), params=combineParams(arguments.params), reset=getReset());
 			}
 
 			attributes = structToAttributes(attributes);
@@ -260,6 +264,46 @@ component accessors="true" extends="coldmvc.navigation.Container" {
 		}
 
 		return "";
+
+	}
+
+	/* Allows for adding dynamic params to pages
+	 *
+	 * In the menu XML:
+	 *
+	 * 		<param key="id" value=":id" />
+	 *
+	 * In the view: <c:menu>
+	 *
+	 * 		<c:menu>
+	 * 			<c:param key="id" value="12" />
+	 *		</c:menu>
+	 */
+	public struct function combineParams(required struct params) {
+
+		var result = {};
+		structAppend(result, getRouteParams(), true);
+
+		var key = "";
+		for (key in result) {
+
+			var value = result[key];
+
+			if (left(value, 1) == ":") {
+
+				var name = replace(value, ":", "");
+
+				if (structKeyExists(arguments.params, name)) {
+					value = arguments.params[name];
+				}
+
+			}
+
+			result[key] = value;
+
+		}
+
+		return result;
 
 	}
 

@@ -40,7 +40,7 @@ component accessors="true" {
 		var attribs = duplicate(variables.attributes);
 		attribs.generatedContent = arrayToList(content, chr(10));
 
-		return tagInvoker.invoke("form", attribs);
+		return variables.tagInvoker.invoke("form", attribs);
 
 	}
 
@@ -85,6 +85,12 @@ component accessors="true" {
 		return this;
 
 	}
+    
+    public any function setLabel(required string label) {
+
+        return setAttribute("label", arguments.label);
+
+    }
 
 	public array function getElements() {
 

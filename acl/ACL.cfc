@@ -20,14 +20,14 @@ component accessors="true" {
 		return this;
 
 	}
-	
+
 	/**
 	 * @actionHelper getACL
 	 */
 	public any function getACL() {
-		
+
 		return this;
-		
+
 	}
 
 	public void function loadConfig() {
@@ -124,7 +124,7 @@ component accessors="true" {
 
 	}
 
-	public any function addRole(required any role) {
+	public any function addRole(required any role, string name) {
 
 		var roleID = getRoleID(arguments.role);
 
@@ -138,8 +138,13 @@ component accessors="true" {
 			var instance = arguments.role;
 		}
 
+		if (!structKeyExists(arguments, "name")) {
+			arguments.name = roleID;
+		}
+
 		variables.roles[roleID] = {
 			id = roleID,
+			name = arguments.name,
 			value = arguments.role,
 			instance = instance
 		};
@@ -295,7 +300,7 @@ component accessors="true" {
 
 	}
 
-	public any function addResource(required any resource) {
+	public any function addResource(required any resource, string name) {
 
 		var resourceID = getResourceID(arguments.resource);
 
@@ -309,8 +314,13 @@ component accessors="true" {
 			var instance = arguments.resource;
 		}
 
+		if (!structKeyExists(arguments, "name")) {
+			arguments.name = resourceID;
+		}
+
 		variables.resources[resourceID] = {
 			id = resourceID,
+			name = arguments.name,
 			value = arguments.resource,
 			instance = instance
 		};

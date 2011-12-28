@@ -13,6 +13,9 @@ component accessors="true" {
 
 	}
 
+	/**
+	 * @actionHelper getHelpers
+	 */
 	public struct function getHelpers() {
 
 		if (!structKeyExists(variables, "helpers")) {
@@ -23,6 +26,9 @@ component accessors="true" {
 
 	}
 
+	/**
+	 * @actionHelper getHelper
+	 */
 	public any function getHelper(required string key) {
 
 		var helpers = getHelpers();

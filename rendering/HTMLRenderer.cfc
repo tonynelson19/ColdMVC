@@ -406,6 +406,41 @@
 
 			</cfloop>
 
+		<cfelseif isStruct(arguments.args.options)>
+			
+			<cfset var optionKeys = structKeyArray(arguments.args.options) />
+			<cfset arraySort(optionKeys, "textnocase") />
+				
+			<cfloop from="1" to="#arrayLen(optionKeys)#" index="i">
+				
+				<cfset var id = optionKeys[i] />
+				<cfset var value = arguments.args.options[id] />
+				
+				<cfif isSimpleValue(value)>
+						
+					<cfset var option = {
+						id = id,
+						name = trim(value),
+						title = trim(value)
+					} />	
+						
+					<cfset arrayAppend(array, option) />	
+						
+				<cfelse>
+					
+					<!--- struct of structs --->					
+					<cfset var option = {
+						id = id,
+						name = trim(value[arguments.args.optionValue]),
+						title = trim(value[arguments.args.optionTitle])
+					} />
+					
+					<cfset arrayAppend(array, option) />
+					
+				</cfif>
+				
+			</cfloop>
+
 		</cfif>
 
 		<cfset arguments.args.options = array />

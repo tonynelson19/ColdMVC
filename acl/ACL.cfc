@@ -20,6 +20,15 @@ component accessors="true" {
 		return this;
 
 	}
+	
+	/**
+	 * @actionHelper getACL
+	 */
+	public any function getACL() {
+		
+		return this;
+		
+	}
 
 	public void function loadConfig() {
 

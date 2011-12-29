@@ -179,7 +179,7 @@ component accessors="true" {
 				class = ' class="#class#"';
 			}
 
-			arrayAppend(arguments.html, indent & variables.padding & "<li#class##renderPageAttributes(page)#>");
+			arrayAppend(arguments.html, indent & variables.padding & "<li#class#>");
 			arrayAppend(arguments.html, indent & variables.padding & variables.padding & page.render(arguments.params));
 			arguments.html = buildMenu(arguments.html, page, arguments.currentDepth + 1, arguments.minDepth, arguments.maxDepth, '', arguments.params);
 			arrayAppend(arguments.html,  indent & variables.padding &  "</li>");
@@ -189,28 +189,6 @@ component accessors="true" {
 		arrayAppend(arguments.html, indent & "</ul>");
 
 		return arguments.html;
-
-	}
-
-	private string function renderPageAttributes(required any page) {
-
-		var attributes = arguments.page.getAttributes();
-		var struct = {};
-		var key = "";
-
-		for (key in attributes) {
-			if (left(key, 5) == "data-") {
-				struct[key] = attributes[key];
-			}
-		}
-
-		var string = coldmvc.struct.toAttributes(struct);
-
-		if (string != "") {
-			return " " & string;
-		} else {
-			return string;
-		}
 
 	}
 

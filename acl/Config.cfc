@@ -17,9 +17,9 @@ component {
 
 	}
 
-	public any function addRole(required any role) {
+	public any function addRole(required any role, string name) {
 
-		return variables.acl.addRole(arguments.role);
+		return variables.acl.addRole(argumentCollection=arguments);
 
 	}
 
@@ -41,9 +41,9 @@ component {
 
 	}
 
-	public any function addResource(required any resource) {
+	public any function addResource(required any resource, string name) {
 
-		return variables.acl.addResource(arguments.resource);
+		return variables.acl.addResource(argumentCollection=arguments);
 
 	}
 

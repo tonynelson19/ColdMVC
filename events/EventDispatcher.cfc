@@ -39,9 +39,6 @@ component accessors="true" {
 
 	}
 
-	/**
-	 * @actionHelper dispatchEvent
-	 */
 	public void function dispatchEvent(required string event, struct data) {
 
 		if (!structKeyExists(arguments, "data")) {

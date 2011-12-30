@@ -267,16 +267,19 @@ component accessors="true" extends="coldmvc.navigation.Container" {
 
 	}
 
-	/* Allows for adding dynamic params to pages
+	/**
+	 * Allows for adding dynamic params to pages
 	 *
 	 * In the menu XML:
 	 *
-	 * 		<param key="id" value=":id" />
+	 * 		<page label="Edit User" request="user.edit">
+	 * 			<params id=":id" />
+	 * 		</page>
 	 *
-	 * In the view: <c:menu>
+	 * In the view:
 	 *
 	 * 		<c:menu>
-	 * 			<c:param key="id" value="12" />
+	 * 			<c:param key="id" value="#user#" />
 	 *		</c:menu>
 	 */
 	public struct function combineParams(required struct params) {

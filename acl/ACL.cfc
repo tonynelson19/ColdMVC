@@ -128,26 +128,26 @@ component accessors="true" {
 
 		var roleID = getRoleID(arguments.role);
 
-		if (hasRole(roleID)) {
-			throw("Role already exists: #roleID#");
-		}
+		if (!hasRole(roleID)) {
 
-		if (isSimpleValue(arguments.role) || !structKeyExists(arguments.role, "getRoleID")) {
-			var instance = new coldmvc.acl.Role(roleID);
-		} else {
-			var instance = arguments.role;
+			if (isSimpleValue(arguments.role) || !structKeyExists(arguments.role, "getRoleID")) {
+				var instance = new coldmvc.acl.Role(roleID);
+			} else {
+				var instance = arguments.role;
+			}
+	
+			if (!structKeyExists(arguments, "name")) {
+				arguments.name = roleID;
+			}
+	
+			variables.roles[roleID] = {
+				id = roleID,
+				name = arguments.name,
+				value = arguments.role,
+				instance = instance
+			};
+		
 		}
-
-		if (!structKeyExists(arguments, "name")) {
-			arguments.name = roleID;
-		}
-
-		variables.roles[roleID] = {
-			id = roleID,
-			name = arguments.name,
-			value = arguments.role,
-			instance = instance
-		};
 
 		return this;
 
@@ -304,26 +304,26 @@ component accessors="true" {
 
 		var resourceID = getResourceID(arguments.resource);
 
-		if (hasResource(resourceID)) {
-			throw("Resource already exists: #resourceID#");
+		if (!hasResource(resourceID)) {
+			
+			if (isSimpleValue(arguments.resource) || !structKeyExists(arguments.resource, "getResourceID")) {
+				var instance = new coldmvc.acl.Resource(resourceID);
+			} else {
+				var instance = arguments.resource;
+			}
+	
+			if (!structKeyExists(arguments, "name")) {
+				arguments.name = resourceID;
+			}
+	
+			variables.resources[resourceID] = {
+				id = resourceID,
+				name = arguments.name,
+				value = arguments.resource,
+				instance = instance
+			};
+		
 		}
-
-		if (isSimpleValue(arguments.resource) || !structKeyExists(arguments.resource, "getResourceID")) {
-			var instance = new coldmvc.acl.Resource(resourceID);
-		} else {
-			var instance = arguments.resource;
-		}
-
-		if (!structKeyExists(arguments, "name")) {
-			arguments.name = resourceID;
-		}
-
-		variables.resources[resourceID] = {
-			id = resourceID,
-			name = arguments.name,
-			value = arguments.resource,
-			instance = instance
-		};
 
 		return this;
 

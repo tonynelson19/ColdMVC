@@ -198,6 +198,7 @@ component accessors="true" {
 			navigation = "",
 			class = variables.options.breadcrumbs.class,
 			id = variables.options.breadcrumbs.id,
+            divider = variables.options.breadcrumbs.divider,
 			params = {}
 		};
 
@@ -248,7 +249,7 @@ component accessors="true" {
 			if (i == length) {
 				var breadcrumb = breadcrumbs[i];
 			} else {
-				var breadcrumb = breadcrumbs[i] & ' <span class="divider">#variables.options.breadcrumbs.divider#</span>';
+				var breadcrumb = breadcrumbs[i] & ' <span class="divider">#arguments.options.divider#</span>';
 			}
 
 			arrayAppend(html, variables.padding & "<li#class#>" & breadcrumb & "</li>");

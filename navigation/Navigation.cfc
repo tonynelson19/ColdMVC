@@ -208,11 +208,30 @@ component accessors="true" {
 		var attributes = buildAttributes(arguments.options);
 		var breadcrumbs = buildBreadcrumbs([], navigation, arguments.options.params);
 		var cache = getCache();
-		var additional = cache.getValue("breadcrumbs", []);
+		var addedBreadcrumbs = cache.getValue("addedBreadcrumbs", []);
+		var insertedBreadcrumbs = cache.getValue("insertedBreadcrumbs", {});
 		var i = "";
 
-		for (i = 1; i <= arrayLen(additional); i++) {
-			arrayAppend(breadcrumbs, additional[i]);
+		for (i = 1; i <= arrayLen(addedBreadcrumbs); i++) {
+			arrayAppend(breadcrumbs, addedBreadcrumbs[i]);
+		}
+
+		if (!structIsEmpty(insertedBreadcrumbs)) {
+
+			var sorted = listToArray(listSort(structKeyList(insertedBreadcrumbs), "numeric"));
+
+			for (i = 1; i <= arrayLen(sorted); i++) {
+
+				var index = sorted[i];
+
+				if (index <= arrayLen(breadcrumbs)) {
+					arrayInsertAt(breadcrumbs, index, insertedBreadcrumbs[index]);
+				} else {
+					arrayAppend(breadcrumbs, insertedBreadcrumbs[index]);
+				}
+
+			}
+
 		}
 
 		if (arrayLen(breadcrumbs) == 0) {
@@ -315,9 +334,30 @@ component accessors="true" {
 	 */
 	public any function addBreadcrumb(required string url, string text) {
 
-		var breadcrumb = "";
 		var cache = getCache();
-		var breadcrumbs = cache.getValue("breadcrumbs", []);
+		var breadcrumbs = cache.getValue("addedBreadcrumbs", []);
+		var breadcrumb = buildBreadcrumb(argumentCollection=arguments);
+		arrayAppend(breadcrumbs, breadcrumb);
+		cache.setValue("addedBreadcrumbs", breadcrumbs);
+		return this;
+
+	}
+
+	/**
+	 * @viewHelper insertBreadcrumb
+	 */
+	public any function insertBreadcrumb(required numeric index, required string url, string text) {
+
+		var cache = getCache();
+		var breadcrumbs = cache.getValue("insertedBreadcrumbs", {});
+		var breadcrumb = buildBreadcrumb(argumentCollection=arguments);
+		breadcrumbs[arguments.index] = breadcrumb;
+		cache.setValue("insertedBreadcrumbs", breadcrumbs);
+		return this;
+
+	}
+
+	private string function buildBreadcrumb(required string url, string text) {
 
 		if (!structKeyExists(arguments, "text") && left(arguments.url, "1") != "<") {
 			arguments.text = arguments.url;
@@ -325,16 +365,12 @@ component accessors="true" {
 		}
 
 		if (structKeyExists(arguments, "text")) {
-			breadcrumb = '<a href="#arguments.url#" title="#htmlEditFormat(arguments.text)#">#htmlEditFormat(arguments.text)#</a>';
+			var breadcrumb = '<a href="#arguments.url#" title="#htmlEditFormat(arguments.text)#">#htmlEditFormat(arguments.text)#</a>';
 		} else {
-			breadcrumb = arguments.url;
+			var breadcrumb = arguments.url;
 		}
 
-		arrayAppend(breadcrumbs, breadcrumb);
-
-		cache.setValue("breadcrumbs", breadcrumbs);
-
-		return this;
+		return breadcrumb;
 
 	}
 

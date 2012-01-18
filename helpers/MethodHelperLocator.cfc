@@ -180,10 +180,18 @@
 
 		if (structKeyExists(arguments.args, "1") && arrayLen(helper.parameters) > 0) {
 
+			var unnamed = [];
+
 			for (i = 1; i <= structCount(arguments.args); i++) {
 				if (arrayLen(helper.parameters) >= i) {
 					parameters[helper.parameters[i].name] = arguments.args[i];
+					arrayAppend(unnamed, i);
 				}
+			}
+			
+			// clean up any unnamed arguments that were mapped correctly
+			for (i = 1; i <= arrayLen(unnamed); i++) {
+				structDelete(arguments.args, unnamed[i]);
 			}
 
 		}

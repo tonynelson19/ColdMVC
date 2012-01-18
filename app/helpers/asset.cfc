@@ -7,14 +7,25 @@ component {
 
 		if (alreadyRendered("css", arguments.name)) {
 			return "";
-		} else {
-			markRendered("css", arguments.name);
-			var link = '<link rel="stylesheet" href="#linkToCSS(arguments.name)##appendVersion(arguments.name, arguments.cache)#" type="text/css" media="#arguments.media#" />';
-			if (arguments.condition != "") {
-				link = '<!--[if #arguments.condition#]>#link#<![endif]-->';
-			}
-			return link;
 		}
+			
+		markRendered("css", arguments.name);
+		
+		var attributes = {
+			rel = "stylesheet",
+			href = "#linkToCSS(arguments.name)##appendVersion(arguments.name, arguments.cache)#",
+			type = "text/css"
+		};
+		
+		attributes = cleanAttributes(attributes, arguments, "name,condition,cache");
+		
+		var link = '<link #coldmvc.struct.toAttributes(attributes)# />';
+		
+		if (arguments.condition != "") {
+			link = '<!--[if #arguments.condition#]>#link#<![endif]-->';
+		}
+		
+		return link;
 
 	}
 
@@ -25,14 +36,24 @@ component {
 
 		if (alreadyRendered("js", arguments.name)) {
 			return "";
-		} else {
-			markRendered("js", arguments.name);
-			var link = '<script type="text/javascript" src="#linkToJS(arguments.name)##appendVersion(arguments.name, arguments.cache)#"></script>';
-			if (arguments.condition != "") {
-				link = '<!--[if #arguments.condition#]>#link#<![endif]-->';
-			}
-			return link;
 		}
+		
+		markRendered("js", arguments.name);
+		
+		var attributes = {
+			src = "#linkToJS(arguments.name)##appendVersion(arguments.name, arguments.cache)#",
+			type = "text/javascript"
+		};
+		
+		attributes = cleanAttributes(attributes, arguments, "name,condition,cache");
+		
+		var link = '<script #coldmvc.struct.toAttributes(attributes)# ></script>';
+		
+		if (arguments.condition != "") {
+			link = '<!--[if #arguments.condition#]>#link#<![endif]-->';
+		}
+		
+		return link;
 
 	}
 
@@ -41,12 +62,13 @@ component {
 	 */
 	public string function renderImage(required string name, string alt="") {
 
-		var attrs = structCopy(arguments);
-		structDelete(attrs, "name");
-		structDelete(attrs, "alt");
-		attrs = coldmvc.struct.toAttributes(attrs);
+		var attributes = {
+			src = linkToImage(arguments.name)
+		};
+		
+		attributes = cleanAttributes(attributes, arguments, "name");
 
-		return '<img src="#linkToImage(arguments.name)#" alt="#arguments.alt#" #attrs# />';
+		return '<img #coldmvc.struct.toAttributes(attributes)# />';
 
 	}
 
@@ -126,6 +148,20 @@ component {
 
 		return dateFormat(timestamp, "mmddyyyy") & timeFormat(timestamp, "hhmmss");
 
+	}
+	
+	private struct function cleanAttributes(required struct attributes, required struct args, required string keys) {
+		
+		structAppend(arguments.attributes, arguments.args, false);
+		arguments.keys = listToArray(arguments.keys);
+		var i = "";
+		
+		for (i = 1; i <= arrayLen(arguments.keys); i++) {
+			structDelete(arguments.attributes, arguments.keys[i]);
+		}
+
+		return arguments.attributes;
+		
 	}
 
 	private void function markRendered(required string type, required string name) {

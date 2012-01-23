@@ -340,8 +340,11 @@ component accessors="true" {
 
 	public any function onApplicationReload() {
 
-		dispatchEvent("postReload");
-		getBean("debugManager").setReloaded();
+		// only try to reload the framework if it's already loaded in case the initial startup failed
+		if (getLoaded()) {
+			dispatchEvent("postReload");
+			getBean("debugManager").setReloaded();
+		}
 
 		return this;
 

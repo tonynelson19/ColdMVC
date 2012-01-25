@@ -374,19 +374,43 @@ component accessors="true" {
 		return "";
 
 	}
-
 	private struct function paramsToStruct(required struct params) {
+
+		// TODO: This should probably recursively build the struct.
+		// Currently only always for a single level of arrays, not arrays containing arrays
+		// Keep it simple for now though
 
 		var result = {};
 		var key = "";
+		
 		for (key in arguments.params) {
 
 			var value = arguments.params[key];
+			
+			if (isArray(value)) {
 
-			if (isObject(value)) {
-				if (structKeyExists(value, "toStruct")) {
+				var values = [];
+				var i = "";
+	
+				for (i = 1; i <= arrayLen(value); i++) {
+					
+					if (isObject(value[i]) && structKeyExists(value[i], "toStruct")) {
+						arrayAppend(values, value[i].toStruct());
+					} else {
+						arrayAppend(values, value[i]);
+					}
+
+				}
+	
+				value = values;
+	
+			}
+			else {
+	
+				if (isObject(value) && structKeyExists(value, "toStruct")) {
 					value = value.toStruct();
 				}
+	
 			}
 
 			result[lcase(key)] = value;

@@ -207,20 +207,26 @@ component accessors="true" {
 
 	}
 
-	public struct function getValues() {
+	public struct function getValues(string elements) {
 
+        if (structKeyExists(arguments, "elements")) {
+            arguments.elements = listToArray(arguments.elements);
+        } else {
+            arguments.elements = variables.elements;
+        }  
+        
 		var values = {};
+		var i = "";    
+            
+        for (i = 1; i <= arrayLen(arguments.elements); i++) {
+                
+            var element = getElement(arguments.elements[i]);
 
-		var i = "";
-		for (i = 1; i <= arrayLen(variables.elements); i++) {
-
-			var element = variables.elements[i];
-
-			if (!element.getIgnore()) {
-				values[element.getName()] = element.getValue();
-			}
-
-		}
+            if (!element.getIgnore()) {
+                values[element.getName()] = element.getValue();
+            }
+        
+        }
 
 		return values;
 

@@ -46,14 +46,13 @@ component accessors="true" {
 
 					var part = partsArray[i];
 					var key = part.getName();
-					var value = part.getStringValue();
 
 					if (!structKeyExists(result, key)) {
 						result[key] = [];
 					}
 
 					if (part.isParam()) {
-						arrayAppend(result[key], value);
+						arrayAppend(result[key], part.getStringValue());
 					}
 
 				}

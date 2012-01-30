@@ -605,13 +605,17 @@ component accessors="true" {
 					if (!structKeyExists(assertion, "instance")) {
 						assertion.instance = framework.getApplication().new(assertion.class);
 					}
+					
+					var requestContext = requestManager.getRequestContext();
 
 					var collection = {
 						acl = this,
 						role = arguments.role,
 						resource = arguments.resource,
 						permission = arguments.permission,
-						attributes = assertion.attributes
+						attributes = assertion.attributes,
+						params = requestContext.getParams(),
+						requestContext = requestContext
 					};
 
 					var result = evaluate("assertion.instance.#assertion.method#(argumentCollection=collection)");

@@ -189,6 +189,8 @@
 		<cfset arguments.args.visible = getKey(arguments.args, "visible", true) />
 		<cfset arguments.args.required = getKey(arguments.args, "required", false) />
 		<cfset arguments.args.autofocus = getKey(arguments.args, "autofocus", false) />
+		<cfset arguments.args.escapeLabel = getKey(arguments.args, "escapeLabel", true) />
+		<cfset arguments.args.escapeValue = getKey(arguments.args, "escapeValue", true) />
 
 		<cfloop list="class,style,description,instructions,placeholder,autocomplete,#arguments.commonKeys#" index="i">
 			<cfset arguments.args[i] = getKey(arguments.args, i) />
@@ -645,6 +647,38 @@
 		<cfreturn value />
 
 	</cffunction>
+	
+	<!------>
+		
+	<cffunction name="renderValue" access="private" output="false" returntype="string">
+		<cfargument name="args" required="true" type="struct" />
+		
+		<cfreturn escapeKey(arguments.args, "value") />
+		
+	</cffunction>
+	
+	<!------>
+		
+	<cffunction name="escapeKey" access="private" output="false" returntype="string">
+		<cfargument name="args" required="true" type="struct" />
+		<cfargument name="key" required="true" type="string" />
+		
+		<cfset var value = arguments.args[arguments.key] />
+		<cfset var escapeKey = "escape" & arguments.key />
+		
+		<cfif structKeyExists(arguments.args, escapeKey)>
+			
+			<cfset var escape = arguments.args[escapeKey] />
+			
+			<cfif isBoolean(escape) and escape>
+				<cfset value = htmlEditFormat(value) />
+			</cfif>
+			
+		</cfif>
+		
+		<cfreturn value />
+		
+	</cffunction>
 
 	<!------>
 
@@ -762,7 +796,7 @@
 
 		<cfif variables.options.label.display>
 
-			<cfset var labelText = htmlEditFormat(arguments.label) & variables.options.label.suffix />
+			<cfset var labelText = escapeKey(arguments, "label") & variables.options.label.suffix />
 
 			<cfif arguments.required>
 

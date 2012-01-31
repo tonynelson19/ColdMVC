@@ -27,7 +27,7 @@
 
 		<cfoutput>
 		<cfsavecontent variable="arguments.field">
-			<input type="color" #arguments.common# value="#htmlEditFormat(arguments.value)#" />
+			<input type="color" #arguments.common# value="#renderValue(arguments)#" />
 		</cfsavecontent>
 		</cfoutput>
 
@@ -46,7 +46,7 @@
 
 		<cfoutput>
 		<cfsavecontent variable="arguments.field">
-			<input type="date" #arguments.common# value="#htmlEditFormat(arguments.value)#" />
+			<input type="date" #arguments.common# value="#renderValue(arguments)#" />
 		</cfsavecontent>
 		</cfoutput>
 
@@ -65,7 +65,7 @@
 
 		<cfoutput>
 		<cfsavecontent variable="arguments.field">
-			<input type="email" #arguments.common# value="#htmlEditFormat(arguments.value)#" />
+			<input type="email" #arguments.common# value="#renderValue(arguments)#" />
 		</cfsavecontent>
 		</cfoutput>
 
@@ -181,7 +181,7 @@
 
 		<cfoutput>
 		<cfsavecontent variable="arguments.field">
-			<input type="hidden" name="#arguments.name#" id="#arguments.id#" value="#htmlEditFormat(arguments.value)#" />
+			<input type="hidden" name="#arguments.name#" id="#arguments.id#" value="#renderValue(arguments)#" />
 		</cfsavecontent>
 		</cfoutput>
 
@@ -199,7 +199,7 @@
 
 		<cfoutput>
 		<cfsavecontent variable="arguments.field">
-			<input type="text" #arguments.common# value="#htmlEditFormat(arguments.value)#" />
+			<input type="text" #arguments.common# value="#renderValue(arguments)#" />
 		</cfsavecontent>
 		</cfoutput>
 
@@ -221,7 +221,7 @@
 
 		<cfoutput>
 		<cfsavecontent variable="arguments.field">
-			<input type="number" #arguments.common# value="#htmlEditFormat(arguments.value)#" />
+			<input type="number" #arguments.common# value="#renderValue(arguments)#" />
 		</cfsavecontent>
 		</cfoutput>
 
@@ -240,7 +240,7 @@
 
 		<cfoutput>
 		<cfsavecontent variable="arguments.field">
-			<input type="password" #arguments.common# value="#htmlEditFormat(arguments.value)#" />
+			<input type="password" #arguments.common# value="#renderValue(arguments)#" />
 		</cfsavecontent>
 		</cfoutput>
 
@@ -259,7 +259,7 @@
 
 		<cfoutput>
 		<cfsavecontent variable="arguments.field">
-			<input type="tel" #arguments.common# value="#htmlEditFormat(arguments.value)#" />
+			<input type="tel" #arguments.common# value="#renderValue(arguments)#" />
 		</cfsavecontent>
 		</cfoutput>
 
@@ -342,7 +342,7 @@
 
 		<cfoutput>
 		<cfsavecontent variable="arguments.field">
-			<input type="range" #arguments.common# value="#htmlEditFormat(arguments.value)#" />
+			<input type="range" #arguments.common# value="#renderValue(arguments)#" />
 		</cfsavecontent>
 		</cfoutput>
 
@@ -403,7 +403,7 @@
 
 		<cfoutput>
 		<cfsavecontent variable="arguments.field">
-			<input type="search" #arguments.common# value="#htmlEditFormat(arguments.value)#" />
+			<input type="search" #arguments.common# value="#renderValue(arguments)#" />
 		</cfsavecontent>
 		</cfoutput>
 
@@ -551,7 +551,7 @@
 
 		<cfoutput>
 		<cfsavecontent variable="arguments.field">
-			<textarea #arguments.common#>#htmlEditFormat(arguments.value)#</textarea>
+			<textarea #arguments.common#>#renderValue(arguments)#</textarea>
 		</cfsavecontent>
 		</cfoutput>
 
@@ -570,7 +570,7 @@
 
 		<cfoutput>
 		<cfsavecontent variable="arguments.field">
-			<input type="time" #arguments.common# value="#htmlEditFormat(arguments.value)#" />
+			<input type="time" #arguments.common# value="#renderValue(arguments)#" />
 		</cfsavecontent>
 		</cfoutput>
 
@@ -607,7 +607,7 @@
 
 		<cfoutput>
 		<cfsavecontent variable="arguments.field">
-			<input type="url" #arguments.common# value="#htmlEditFormat(arguments.value)#" />
+			<input type="url" #arguments.common# value="#renderValue(arguments)#" />
 		</cfsavecontent>
 		</cfoutput>
 

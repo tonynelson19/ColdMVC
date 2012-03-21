@@ -4,7 +4,7 @@ component accessors="true" {
 	 * @inject coldmvc
 	 */
 	property coldmvc;
-    
+
     /**
      * @inject coldmvc
      */
@@ -39,7 +39,7 @@ component accessors="true" {
 		var i = "";
 
 		for (i = 1; i <= arrayLen(variables.elements); i++) {
-			arrayAppend(content, variables.elements[i].render());
+			arrayAppend(content, getElement(variables.elements[i]).render());
 		}
 
 		var attribs = duplicate(variables.attributes);
@@ -90,7 +90,7 @@ component accessors="true" {
 		return this;
 
 	}
-    
+
     public any function setLabel(required string label) {
 
         return setAttribute("label", arguments.label);
@@ -150,7 +150,7 @@ component accessors="true" {
 			removeElement(name);
 		}
 
-		arrayAppend(variables.elements, arguments.element);
+		arrayAppend(variables.elements, name);
 		variables.elementStruct[name] = arguments.element;
 		this[name] = arguments.element;
 
@@ -213,19 +213,19 @@ component accessors="true" {
             arguments.elements = listToArray(arguments.elements);
         } else {
             arguments.elements = variables.elements;
-        }  
-        
+        }
+
 		var values = {};
-		var i = "";    
-            
+		var i = "";
+
         for (i = 1; i <= arrayLen(arguments.elements); i++) {
-                
+
             var element = getElement(arguments.elements[i]);
 
             if (!element.getIgnore()) {
                 values[element.getName()] = element.getValue();
             }
-        
+
         }
 
 		return values;
@@ -265,7 +265,7 @@ component accessors="true" {
 
 		for (i = 1; i <= arrayLen(variables.elements); i++) {
 
-			var element = variables.elements[i];
+			var element = getElement(variables.elements[i]);
 
 			if (!element.getIgnore() && !element.isValid()) {
 

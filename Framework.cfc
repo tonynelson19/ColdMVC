@@ -504,7 +504,7 @@ component accessors="true" {
 		addBeans(beans, "/coldmvc" & arguments.xmlPath);
 
 		var xml = toString(beans);
-		xml = replace(xml, "<!---->", "", "all");
+		xml = replace(xml, "#ch(60)#!----#chr(62)#", "", "all");
 
 		return xml;
 

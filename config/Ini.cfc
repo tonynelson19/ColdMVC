@@ -2,7 +2,7 @@ component {
 
 	public any function init(required string filePath, string super="") {
 
-		variables.super = arguments.super;
+		variables.parentSection = arguments.super;
 		variables.extendsKey = ";extends"; // safe because keys starting with a semi-colon (;) are treated as comments
 
 		var sections = loadSections(arguments.filePath);
@@ -66,13 +66,13 @@ component {
 
 		}
 
-		if (variables.super != "") {
+		if (variables.parentSection != "") {
 			for (key in result) {
-				if (key != variables.super) {
+				if (key != variables.parentSection) {
 					if (structKeyExists(result[key], variables.extendsKey)) {
-						result[key][variables.extendsKey] = result[key][variables.extendsKey] & ":" & variables.super;
+						result[key][variables.extendsKey] = result[key][variables.extendsKey] & ":" & variables.parentSection;
 					} else {
-						result[key][variables.extendsKey] = variables.super;
+						result[key][variables.extendsKey] = variables.parentSection;
 					}
 				}
 			}

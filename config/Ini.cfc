@@ -66,7 +66,7 @@ component {
 
 		}
 
-		if (variables.super != "") {
+		if (!isinstanceOf(variables.super, "config.Ini")) {
 			for (key in result) {
 				if (key != variables.super) {
 					if (structKeyExists(result[key], variables.extendsKey)) {

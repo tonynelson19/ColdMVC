@@ -1,8 +1,8 @@
 component {
 
-	public any function init(required string filePath, string super="") {
+	public any function init(required string filePath, string parentSection="") {
 
-		variables.parentSection = arguments.super;
+		variables.parentSection = arguments.parentSection;
 		variables.extendsKey = ";extends"; // safe because keys starting with a semi-colon (;) are treated as comments
 
 		var sections = loadSections(arguments.filePath);

@@ -80,7 +80,7 @@ component accessors="true" {
 
 				var ini = create("config.Ini", {
 					filePath = configPath,
-					super = "default"
+					parentSection = "default"
 				});
 
 				// check to see if there's an environment file

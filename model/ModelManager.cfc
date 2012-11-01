@@ -9,7 +9,12 @@ component accessors="true" {
 		variables.cache = {};
 
 		var settings = application.getApplicationSettings();
-		variables.ormEnabled = settings.ormEnabled;
+		
+		if (structKeyExists(settings, "ormEnabled")) {
+			variables.ormEnabled = settings.ormEnabled;
+		} else {
+			variables.ormEnabled = true;
+		}
 
 		if (variables.ormEnabled) {
 

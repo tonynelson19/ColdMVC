@@ -13,9 +13,14 @@ component accessors="true" {
 		variables.models = {};
 
 		var settings = application.getApplicationSettings();
-		variables.ormEnabled = settings.ormEnabled;
+		
+		if (structKeyExists(settings, "ormEnabled")) {
+			variables.ormEnabled = settings.ormEnabled;
+		} else {
+			variables.ormEnabled = true;
+		}
 
-		if (structKeyExists(settings, "ormEnabled") && settings.ormEnabled) {
+		if (variables.ormEnabled) {
 
 			try {
 				variables.models = ormGetSessionFactory().getAllClassMetaData();

@@ -5,34 +5,20 @@ component {
 
 	public any function onApplicationStart() {
 
+		structDelete(application, "coldmvc");
+
 		var framework = getFramework();
 
 		structAppend(this.mappings, framework.getMappings(), false);
 		structAppend(this.mappings, framework.getPluginManager().getMappings(), false);
 		structAppend(this.mappings, framework.getLibraryManager().getMappings(), false);
 
-		coldmvc = {};
-		coldmvc.framework = framework;
-		coldmvc.mappings = this.mappings;
+		application.coldmvc = {
+			framework = framework,
+			mappings = this.mappings	
+		};
 
-		var reloading = true;
-
-		lock name="coldmvc.application.#this.name#" type="exclusive" timeout="30" throwontimeout="true" {
-
-			if (structKeyExists(application, "coldmvc")) {
-				framework.onApplicationReload();
-			} else {
-				var reloading = false;
-				application.coldmvc = coldmvc;
-			}
-
-		}
-
-		framework.onApplicationStart();
-
-		if (reloading) {
-			application.coldmvc = coldmvc;
-		}
+		application.coldmvc.framework.onApplicationStart();
 
 	}
 

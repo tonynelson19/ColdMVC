@@ -6,16 +6,20 @@ component accessors="true" {
 
 		var settings = application.getApplicationSettings();
 
-		ormEnabled = settings.ormEnabled;
+		if (structKeyExists(settings, "ormEnabled")) {
+			variables.ormEnabled = settings.ormEnabled;
+		} else {
+			variables.ormEnabled = true;
+		}
 
-		if (ormEnabled) {
+		if (variables.ormEnabled) {
 
 			try {
 				ormGetSessionFactory();
 			}
 			catch(any e) {
 				// No entity using this datasource.
-				ormEnabled = false;
+				variables.ormEnabled = false;
 			}
 
 		}
